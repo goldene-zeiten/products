@@ -1,0 +1,6 @@
+/.idea export-ignore
+/Build export-ignore
+/Tests export-ignore
+
+.gitignore export-ignore
+.gitattributes export-ignore
