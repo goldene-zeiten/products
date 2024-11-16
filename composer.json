@@ -1,0 +1,8 @@
+{
+  "name": "goldene-zeiten/products",
+  "description": "TYPO3 Shop system",
+  "type": "typo3-cms-extension",
+  "license": [
+    "GPL-2.0-or-later"
+  ]
+}
