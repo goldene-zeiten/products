@@ -1,0 +1,17 @@
+includes:
+  - ../../.Build/vendor/saschaegerer/phpstan-typo3/extension.neon
+  - phpstan-baseline.neon
+
+parameters:
+  # Use local .cache dir instead of /tmp
+  tmpDir: ../../.cache/phpstan
+  ignoreErrors:
+    - '#Variable \$_EXTKEY might not be defined\.#'
+  level: 8
+
+  paths:
+    - ../../.
+
+  excludePaths:
+    - ../../.Build/*
+    - ../../Build/*

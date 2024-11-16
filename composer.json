@@ -4,5 +4,46 @@
   "type": "typo3-cms-extension",
   "license": [
     "GPL-2.0-or-later"
-  ]
+  ],
+  "config": {
+    "vendor-dir": ".Build/vendor",
+    "sort-packages": true,
+    "bin-dir": ".Build/bin",
+    "allow-plugins": {
+      "typo3/cms-composer-installers": true,
+      "typo3/class-alias-loader": true
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\": "Classes/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\Tests\\": "Tests/"
+    }
+  },
+  "require": {
+    "php": "^8.2 || ^8.3 || ^8.4",
+    "typo3/cms-backend": "^13.4",
+    "typo3/cms-core": "^13.4",
+    "typo3/cms-fluid": "^13.4",
+    "typo3/cms-frontend": "^13.4"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.64",
+    "phpunit/phpunit": "^11",
+    "saschaegerer/phpstan-typo3": "^1.10",
+    "typo3/cms-install": "^13.4",
+    "typo3/cms-lowlevel": "^13.4",
+    "typo3/cms-tstemplate": "^13.4",
+    "typo3/testing-framework": "^9.0"
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "products",
+      "web-dir": ".Build/Web"
+    }
+  }
 }
