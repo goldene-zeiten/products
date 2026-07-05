@@ -140,6 +140,9 @@
       <path value="$PROJECT_DIR$/.Build/vendor/symfony/polyfill-mbstring" />
       <path value="$PROJECT_DIR$/.Build/vendor/symfony/polyfill-intl-grapheme" />
       <path value="$PROJECT_DIR$/.Build/vendor/theseer/tokenizer" />
+      <path value="$PROJECT_DIR$/.Build/vendor/staabm/side-effects-detector" />
+      <path value="$PROJECT_DIR$/.Build/vendor/symfony/polyfill-php84" />
+      <path value="$PROJECT_DIR$/.Build/vendor/ergebnis/agent-detector" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />

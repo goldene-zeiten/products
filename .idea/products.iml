@@ -132,6 +132,9 @@
       <excludeFolder url="file://$MODULE_DIR$/.Build/vendor/typo3/testing-framework" />
       <excludeFolder url="file://$MODULE_DIR$/.Build/vendor/typo3fluid/fluid" />
       <excludeFolder url="file://$MODULE_DIR$/.Build/vendor/webmozart/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/.Build/vendor/ergebnis/agent-detector" />
+      <excludeFolder url="file://$MODULE_DIR$/.Build/vendor/staabm/side-effects-detector" />
+      <excludeFolder url="file://$MODULE_DIR$/.Build/vendor/symfony/polyfill-php84" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
