@@ -21,7 +21,7 @@ final class ProductControllerTest extends FunctionalTestCase
     ];
 
     protected array $testExtensionsToLoad = [
-        'typo3conf/ext/products',
+        'goldene-zeiten/products',
     ];
 
     /**

@@ -1,82 +1,86 @@
-products:
-  pids:
-    storageFolder:
-      type: integer
-      label: Storage folder UID
-      default: 0
-    detailPage:
-      type: integer
-      label: Detail page UID
-      default: 0
-    basketPage:
-      type: integer
-      label: Basket page UID
-      default: 0
-    checkoutPage:
-      type: integer
-      label: Checkout page UID
-      default: 0
-    orderHistoryPage:
-      type: integer
-      label: Order history page UID
-      default: 0
-  pricing:
-    mode:
-      type: string
-      label: Pricing mode (gross|net)
-      default: 'gross'
-    currency:
-      type: string
-      label: Currency
-      default: 'EUR'
-  tax:
-    defaultCountry:
-      type: string
-      label: Default tax country (alpha-2)
-      default: 'DE'
-    rounding:
-      type: string
-      label: Tax rounding (perLine|perTotal)
-      default: 'perLine'
-  order:
-    numberPrefix:
-      type: string
-      label: Order number prefix
-      default: 'ORD-'
-    storeClientIp:
-      type: boolean
-      label: Store client IP address
-      default: false
-  email:
-    senderEmail:
-      type: string
-      label: Sender email
-      default: ''
-    senderName:
-      type: string
-      label: Sender name
-      default: ''
-    templateRootPaths:
-      type: array
-      label: Template root paths
-      default:
-        0: 'EXT:products/Resources/Private/Templates/Email/'
-  payment:
-    invoice:
-      enabled:
-        type: boolean
-        label: Invoice payment enabled
-        default: true
-      minValue:
-        type: integer
-        label: Minimum order value (cents)
-        default: 0
-      maxValue:
-        type: integer
-        label: Maximum order value (cents)
-        default: 0
-  ajax:
-    pageType:
-      type: integer
-      label: AJAX page typeNum
-      default: 1729512000
+categories:
+  products:
+    label: Products
+
+settings:
+  products.pids.storageFolder:
+    type: int
+    default: 0
+    label: Storage folder UID
+    category: products
+  products.pids.detailPage:
+    type: int
+    default: 0
+    label: Detail page UID
+    category: products
+  products.pids.basketPage:
+    type: int
+    default: 0
+    label: Basket page UID
+    category: products
+  products.pids.checkoutPage:
+    type: int
+    default: 0
+    label: Checkout page UID
+    category: products
+  products.pids.orderHistoryPage:
+    type: int
+    default: 0
+    label: Order history page UID
+    category: products
+  products.pricing.mode:
+    type: string
+    default: 'gross'
+    label: 'Pricing mode (gross|net)'
+    category: products
+  products.pricing.currency:
+    type: string
+    default: 'EUR'
+    label: Currency
+    category: products
+  products.tax.defaultCountry:
+    type: string
+    default: 'DE'
+    label: 'Default tax country (alpha-2)'
+    category: products
+  products.tax.rounding:
+    type: string
+    default: 'perLine'
+    label: 'Tax rounding (perLine|perTotal)'
+    category: products
+  products.order.numberPrefix:
+    type: string
+    default: 'ORD-'
+    label: Order number prefix
+    category: products
+  products.order.storeClientIp:
+    type: bool
+    default: false
+    label: Store client IP address
+    category: products
+  products.email.senderEmail:
+    type: string
+    default: ''
+    label: Sender email
+    category: products
+  products.email.senderName:
+    type: string
+    default: ''
+    label: Sender name
+    category: products
+  products.email.templateRootPaths:
+    type: stringlist
+    default:
+      - 'EXT:products/Resources/Private/Templates/Email/'
+    label: Template root paths
+    category: products
+  products.payment.invoice.enabled:
+    type: bool
+    default: true
+    label: Invoice payment enabled
+    category: products
+  products.ajax.pageType:
+    type: int
+    default: 1729512000
+    label: AJAX page typeNum
+    category: products

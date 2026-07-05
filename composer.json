@@ -11,7 +11,8 @@
     "bin-dir": ".Build/bin",
     "allow-plugins": {
       "typo3/cms-composer-installers": true,
-      "typo3/class-alias-loader": true
+      "typo3/class-alias-loader": true,
+      "sbuerk/fixture-packages": true
     }
   },
   "autoload": {
@@ -37,6 +38,7 @@
     "friendsofphp/php-cs-fixer": "^3.64",
     "phpunit/phpunit": "^11",
     "saschaegerer/phpstan-typo3": "^1.10",
+    "sbuerk/fixture-packages": "^1.1",
     "sbuerk/typo3-site-based-test-trait": "^2.0",
     "typo3/cms-lowlevel": "^13.4 || ^14.3",
     "typo3/cms-tstemplate": "^13.4 || ^14.3",
@@ -46,6 +48,11 @@
     "typo3/cms": {
       "extension-key": "products",
       "web-dir": ".Build/Web"
+    },
+    "sbuerk/fixture-packages": {
+      "paths": [
+        "Tests/Functional/Fixtures/Extensions/*"
+      ]
     }
   }
 }

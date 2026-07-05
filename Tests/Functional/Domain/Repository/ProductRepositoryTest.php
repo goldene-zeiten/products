@@ -12,7 +12,7 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 final class ProductRepositoryTest extends FunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'typo3conf/ext/products',
+        'goldene-zeiten/products',
     ];
 
     private ProductRepository $productRepository;
