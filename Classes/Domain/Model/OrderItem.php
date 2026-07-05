@@ -18,12 +18,18 @@ class OrderItem extends AbstractEntity
     protected string $articleTitle = '';
     protected string $itemNumber = '';
     protected int $quantity = 0;
+    /** @var int */
     protected int $unitPriceNet = 0;
+    /** @var int */
     protected int $unitPriceGross = 0;
     protected float $taxRate = 0.0;
+    /** @var int */
     protected int $lineTotalNet = 0;
+    /** @var int */
     protected int $lineTotalTax = 0;
+    /** @var int */
     protected int $lineTotalGross = 0;
+    /** @var string */
     protected string $options = '[]';
 
     public function getParentOrder(): ?Order

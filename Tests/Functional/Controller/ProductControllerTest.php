@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Controller\ProductController;
-use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
+use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 final class ProductControllerTest extends FunctionalTestCase
 {
@@ -60,7 +59,7 @@ final class ProductControllerTest extends FunctionalTestCase
         $response = $this->executeFrontendSubRequest($request);
 
         self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('SUCCESS_TYPOSCRIPT', (string)$response->getBody());
+        self::assertStringContainsString('Product 1', (string)$response->getBody());
     }
 
     /**

@@ -18,6 +18,7 @@ class Product extends AbstractEntity
     protected string $description = '';
     protected string $itemNumber = '';
     protected string $ean = '';
+    /** @var string */
     protected string $price = '0.00';
     protected ?TaxClass $taxClass = null;
     /**
@@ -36,6 +37,11 @@ class Product extends AbstractEntity
     protected ObjectStorage $articles;
 
     public function __construct()
+    {
+        $this->initializeObject();
+    }
+
+    public function initializeObject(): void
     {
         $this->categories = new ObjectStorage();
         $this->articles = new ObjectStorage();

@@ -25,11 +25,16 @@ class Order extends AbstractEntity
     protected OrderStatus $status = OrderStatus::NEW;
     protected string $invoiceNumber = '';
     protected string $currency = 'EUR';
+    /** @var int */
     protected int $totalNet = 0;
+    /** @var int */
     protected int $totalTax = 0;
+    /** @var int */
     protected int $totalGross = 0;
     protected string $taxCountry = '';
+    /** @var string */
     protected string $taxBreakdown = '[]';
+    /** @var string */
     protected string $statusLog = '[]';
     /**
      * @var ObjectStorage<OrderItem>
@@ -38,13 +43,18 @@ class Order extends AbstractEntity
     protected string $customerNote = '';
     protected ?\DateTime $termsAcceptedAt = null;
     protected string $siteIdentifier = '';
+    /** @var string */
     protected string $legacyOrderData = '[]';
     protected string $legacyCountryName = '';
 
     public function __construct()
     {
+        $this->initializeObject();
+    }
+
+    public function initializeObject(): void
+    {
         $this->items = new ObjectStorage();
-        $this->orderDate = new \DateTime();
     }
 
     public function getOrderNumber(): string

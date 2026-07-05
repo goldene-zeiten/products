@@ -22,6 +22,11 @@ class Category extends AbstractEntity
 
     public function __construct()
     {
+        $this->initializeObject();
+    }
+
+    public function initializeObject(): void
+    {
         $this->subCategories = new ObjectStorage();
     }
 

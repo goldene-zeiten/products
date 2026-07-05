@@ -15,6 +15,7 @@ class Article extends AbstractEntity
     protected string $title = '';
     protected string $itemNumber = '';
     protected string $ean = '';
+    /** @var string */
     protected string $price = '0.00';
     protected int $inStock = 0;
     protected int $weight = 0;
