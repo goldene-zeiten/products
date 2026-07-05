@@ -117,21 +117,6 @@
 			<trans-unit id="back_to_shop" resname="back_to_shop">
 				<source>Back to Shop</source>
 			</trans-unit>
-			<trans-unit id="order_confirmation" resname="order_confirmation">
-				<source>Order Confirmation</source>
-			</trans-unit>
-			<trans-unit id="hello" resname="hello">
-				<source>Hello,</source>
-			</trans-unit>
-			<trans-unit id="thank_you_for_order" resname="thank_you_for_order">
-				<source>thank you for your order %s.</source>
-			</trans-unit>
-			<trans-unit id="best_regards" resname="best_regards">
-				<source>Best regards,</source>
-			</trans-unit>
-			<trans-unit id="shop_team" resname="shop_team">
-				<source>Shop Team</source>
-			</trans-unit>
 			<trans-unit id="details" resname="details">
 				<source>Details</source>
 			</trans-unit>
@@ -143,9 +128,6 @@
 			</trans-unit>
 			<trans-unit id="payment_method_invoice" resname="payment_method_invoice">
 				<source>Invoice</source>
-			</trans-unit>
-			<trans-unit id="order_confirmation_subject" resname="order_confirmation_subject">
-				<source>Order Confirmation: %s</source>
 			</trans-unit>
 			<trans-unit id="order_summary" resname="order_summary">
 				<source>Order Summary</source>

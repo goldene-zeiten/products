@@ -19,6 +19,11 @@ plugin.tx_products {
             numberPrefix = {$plugin.tx_products.settings.order.numberPrefix}
             storeClientIp = {$plugin.tx_products.settings.order.storeClientIp}
         }
+        email {
+            senderEmail = {$plugin.tx_products.settings.email.senderEmail}
+            senderName = {$plugin.tx_products.settings.email.senderName}
+            merchantRecipient = {$plugin.tx_products.settings.email.merchantRecipient}
+        }
         ajax {
             pageType = {$plugin.tx_products.settings.ajax.pageType}
         }

@@ -13,8 +13,8 @@
         </div>
         <div class="col-md-6">
             <p><strong><f:translate key="date" />:</strong> {order.orderDate -> f:format.date(format: 'd.m.Y H:i')}</p>
-            <p><strong><f:translate key="status" />:</strong> {order.status}</p>
-            <p><strong><f:translate key="payment_status" />:</strong> {order.paymentStatus}</p>
+            <p><strong><f:translate key="status" />:</strong> {order.status.value}</p>
+            <p><strong><f:translate key="payment_status" />:</strong> {order.paymentStatus.value}</p>
             <p><strong><f:translate key="payment_method" />:</strong> {order.paymentMethod}</p>
         </div>
     </div>

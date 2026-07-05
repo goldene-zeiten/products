@@ -20,6 +20,7 @@ final class OrderRepository extends Repository
     public function findByFrontendUser(int $frontendUser): QueryResultInterface
     {
         $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage(false);
         $query->matching($query->equals('frontendUser', $frontendUser));
         $query->setOrderings(['orderDate' => QueryInterface::ORDER_DESCENDING]);
         return $query->execute();

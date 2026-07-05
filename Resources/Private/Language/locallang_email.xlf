@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="EXT:products/Resources/Private/Language/locallang_email.xlf" date="2026-07-05T22:08:00Z" product-name="products">
+		<header/>
+		<body>
+			<trans-unit id="order_confirmation_subject" resname="order_confirmation_subject">
+				<source>Order Confirmation: %s</source>
+			</trans-unit>
+			<trans-unit id="order_confirmation" resname="order_confirmation">
+				<source>Order Confirmation</source>
+			</trans-unit>
+			<trans-unit id="hello" resname="hello">
+				<source>Hello,</source>
+			</trans-unit>
+			<trans-unit id="thank_you_for_order" resname="thank_you_for_order">
+				<source>thank you for your order %s.</source>
+			</trans-unit>
+			<trans-unit id="order_total" resname="order_total">
+				<source>Total</source>
+			</trans-unit>
+			<trans-unit id="best_regards" resname="best_regards">
+				<source>Best regards,</source>
+			</trans-unit>
+			<trans-unit id="shop_team" resname="shop_team">
+				<source>Shop Team</source>
+			</trans-unit>
+			<trans-unit id="merchant_notification_subject" resname="merchant_notification_subject">
+				<source>New Order: %s</source>
+			</trans-unit>
+			<trans-unit id="merchant_notification_intro" resname="merchant_notification_intro">
+				<source>A new order has been placed.</source>
+			</trans-unit>
+			<trans-unit id="order_number" resname="order_number">
+				<source>Order Number</source>
+			</trans-unit>
+			<trans-unit id="customer_email" resname="customer_email">
+				<source>Customer Email</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

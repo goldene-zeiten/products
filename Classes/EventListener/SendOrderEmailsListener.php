@@ -5,27 +5,36 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\EventListener;
 
 use GoldeneZeiten\Products\Event\AfterOrderFinalizedEvent;
-use GoldeneZeiten\Products\Service\MailService;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
+use GoldeneZeiten\Products\Service\OrderMailService;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
 #[AsEventListener]
-final class SendOrderEmailsListener implements LoggerAwareInterface
+final class SendOrderEmailsListener
 {
-    use LoggerAwareTrait;
-
     public function __construct(
-        private readonly MailService $mailService
+        private readonly OrderMailService $mailService,
+        private readonly LoggerInterface $logger
     ) {}
 
     public function __invoke(AfterOrderFinalizedEvent $event): void
     {
+        $order = $event->getOrder();
+
         try {
-            $this->mailService->sendOrderConfirmation($event->getOrder());
+            $this->mailService->sendOrderConfirmation($order);
         } catch (\Throwable $exception) {
-            $this->logger?->error(
-                sprintf('Failed to send order confirmation mail for order %d.', $event->getOrder()->getUid() ?? 0),
+            $this->logger->error(
+                sprintf('Failed to send order confirmation mail for order %d.', $order->getUid() ?? 0),
+                ['exception' => $exception]
+            );
+        }
+
+        try {
+            $this->mailService->sendMerchantNotification($order);
+        } catch (\Throwable $exception) {
+            $this->logger->error(
+                sprintf('Failed to send merchant notification mail for order %d.', $order->getUid() ?? 0),
                 ['exception' => $exception]
             );
         }

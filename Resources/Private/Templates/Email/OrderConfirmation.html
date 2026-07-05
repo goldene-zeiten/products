@@ -1,5 +1,5 @@
-<h1><f:translate key="order_confirmation" /></h1>
-<p><f:translate key="hello" /></p>
-<p><f:translate key="thank_you_for_order" arguments="{0: order.orderNumber}" /></p>
-<p><f:translate key="total" />: {order.totalGross.decimalString} {order.currency}</p>
-<p><f:translate key="best_regards" /><br><f:translate key="shop_team" /></p>
+<h1><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:order_confirmation" /></h1>
+<p><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:hello" /></p>
+<p><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:thank_you_for_order" arguments="{0: order.orderNumber}" /></p>
+<p><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:order_total" />: {order.totalGross.decimalString} {order.currency}</p>
+<f:render partial="Email/Signature" arguments="{_all}" />

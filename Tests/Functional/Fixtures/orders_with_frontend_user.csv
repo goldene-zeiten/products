@@ -1,0 +1,8 @@
+"fe_users",,,,,
+,"uid","pid","disable","deleted","username"
+,1,2,0,0,"user-a"
+,2,2,0,0,"user-b"
+
+"tx_products_domain_model_order",,,,,,,,,,,
+,"uid","pid","deleted","order_number","frontend_user","email","currency","total_gross","items","status","payment_status"
+,1,2,0,"ORD-1",1,"usera@example.com","EUR",1999,1,"new","open"

@@ -30,6 +30,14 @@ plugin.tx_products {
             # cat=plugin.tx_products.order; type=boolean; label=Store client IP address
             storeClientIp = 0
         }
+        email {
+            # cat=plugin.tx_products.email; type=string; label=Sender email
+            senderEmail =
+            # cat=plugin.tx_products.email; type=string; label=Sender name
+            senderName =
+            # cat=plugin.tx_products.email; type=string; label=Merchant notification recipient (empty disables the notification)
+            merchantRecipient =
+        }
         ajax {
             # cat=plugin.tx_products.ajax; type=int; label=AJAX page typeNum
             pageType = 1729512000

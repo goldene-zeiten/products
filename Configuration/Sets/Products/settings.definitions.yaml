@@ -74,6 +74,23 @@ settings:
       - 'EXT:products/Resources/Private/Templates/Email/'
     label: Template root paths
     category: products
+  products.email.partialRootPaths:
+    type: stringlist
+    default:
+      - 'EXT:products/Resources/Private/Partials/'
+    label: Partial root paths
+    category: products
+  products.email.layoutRootPaths:
+    type: stringlist
+    default:
+      - 'EXT:products/Resources/Private/Layouts/'
+    label: Layout root paths
+    category: products
+  products.email.merchantRecipient:
+    type: string
+    default: ''
+    label: 'Merchant notification recipient (empty disables the notification)'
+    category: products
   products.payment.invoice.enabled:
     type: bool
     default: true
