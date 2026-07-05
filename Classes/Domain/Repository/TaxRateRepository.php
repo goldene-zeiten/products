@@ -1,16 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Domain\Repository;
 
 use GoldeneZeiten\Products\Domain\Model\TaxClass;
 use GoldeneZeiten\Products\Domain\Model\TaxRate;
-use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
- * @extends Repository<TaxRate>
+ * @extends AbstractReadOnlyRepository<TaxRate>
  */
-final class TaxRateRepository extends Repository
+final class TaxRateRepository extends AbstractReadOnlyRepository
 {
     public function findByTaxClassAndCountry(TaxClass $taxClass, string $countryCode, \DateTimeInterface $now): ?TaxRate
     {
@@ -28,9 +28,11 @@ final class TaxRateRepository extends Repository
             ),
         ];
 
-        return $query->matching($query->logicalAnd(...$constraints))
+        $taxRate = $query->matching($query->logicalAnd(...$constraints))
             ->setLimit(1)
             ->execute()
             ->getFirst();
+
+        return $taxRate instanceof TaxRate ? $taxRate : null;
     }
 }
