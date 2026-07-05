@@ -15,7 +15,7 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 final class OrderRepository extends Repository
 {
     /**
-     * @return QueryResultInterface<int, Order>
+     * @return QueryResultInterface<Order>
      */
     public function findByFrontendUser(int $frontendUser): QueryResultInterface
     {

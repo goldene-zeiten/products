@@ -31,7 +31,7 @@ final class OrderController extends ActionController
     public function showAction(Order $order): ResponseInterface
     {
         $frontendUser = $this->request->getAttribute('frontend.user');
-        if (!$frontendUser instanceof FrontendUserAuthentication || $order->getFrontendUser() !== (int)$frontendUser->user['uid']) {
+        if (!$frontendUser instanceof FrontendUserAuthentication || $order->getFrontendUser() !== (int)($frontendUser->user['uid'] ?? 0)) {
             return $this->redirect('list');
         }
 
