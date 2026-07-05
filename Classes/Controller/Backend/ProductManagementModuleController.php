@@ -177,7 +177,7 @@ final class ProductManagementModuleController
         $dbList->setRequest($request);
         $dbList->calcPerms = new Permission($backendUser->calcPerms($pageInfo));
         $dbList->pageRow = $pageInfo;
-        $dbList->tableList = self::TABLE_CATEGORY . ',' . self::TABLE_PRODUCT;
+        $dbList->tableList = self::TABLE_PRODUCT;
         $dbList->start($pid, '', 0);
         return $dbList->generateList();
     }
