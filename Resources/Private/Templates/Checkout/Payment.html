@@ -5,7 +5,7 @@
             <div class="form-check">
                 <f:form.radio name="paymentMethod" value="{method.identifier}" checked="{f:if(condition: '{paymentMethod} == {method.identifier}', then: '1')}" class="form-check-input" id="method-{method.identifier}" />
                 <label class="form-check-label" for="method-{method.identifier}">
-                    {method.title}
+                    {method.label}
                 </label>
             </div>
         </f:for>
