@@ -1,0 +1,215 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GoldeneZeiten\Products\Domain\Model;
+
+use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
+
+#[Exclude]
+class Product extends AbstractEntity
+{
+    protected string $title = '';
+    protected string $subtitle = '';
+    protected string $slug = '';
+    protected string $description = '';
+    protected string $itemNumber = '';
+    protected string $ean = '';
+    protected string $price = '0.00';
+    protected ?TaxClass $taxClass = null;
+    /**
+     * @var ObjectStorage<Category>
+     */
+    protected ObjectStorage $categories;
+    protected int $inStock = 0;
+    protected int $basketMinQuantity = 0;
+    protected int $basketMaxQuantity = 0;
+    protected int $weight = 0;
+    protected bool $isOffer = false;
+    protected bool $isHighlight = false;
+    /**
+     * @var ObjectStorage<Article>
+     */
+    protected ObjectStorage $articles;
+
+    public function __construct()
+    {
+        $this->categories = new ObjectStorage();
+        $this->articles = new ObjectStorage();
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
+
+    public function getSubtitle(): string
+    {
+        return $this->subtitle;
+    }
+
+    public function setSubtitle(string $subtitle): void
+    {
+        $this->subtitle = $subtitle;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): void
+    {
+        $this->slug = $slug;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
+
+    public function getItemNumber(): string
+    {
+        return $this->itemNumber;
+    }
+
+    public function setItemNumber(string $itemNumber): void
+    {
+        $this->itemNumber = $itemNumber;
+    }
+
+    public function getEan(): string
+    {
+        return $this->ean;
+    }
+
+    public function setEan(string $ean): void
+    {
+        $this->ean = $ean;
+    }
+
+    public function getPrice(): Money
+    {
+        return Money::fromDecimalString($this->price);
+    }
+
+    public function setPrice(Money $price): void
+    {
+        $this->price = $price->getDecimalString();
+    }
+
+    public function getTaxClass(): ?TaxClass
+    {
+        return $this->taxClass;
+    }
+
+    public function setTaxClass(?TaxClass $taxClass): void
+    {
+        $this->taxClass = $taxClass;
+    }
+
+    /**
+     * @return ObjectStorage<Category>
+     */
+    public function getCategories(): ObjectStorage
+    {
+        return $this->categories;
+    }
+
+    /**
+     * @param ObjectStorage<Category> $categories
+     */
+    public function setCategories(ObjectStorage $categories): void
+    {
+        $this->categories = $categories;
+    }
+
+    public function getInStock(): int
+    {
+        return $this->inStock;
+    }
+
+    public function setInStock(int $inStock): void
+    {
+        $this->inStock = $inStock;
+    }
+
+    public function getBasketMinQuantity(): int
+    {
+        return $this->basketMinQuantity;
+    }
+
+    public function setBasketMinQuantity(int $basketMinQuantity): void
+    {
+        $this->basketMinQuantity = $basketMinQuantity;
+    }
+
+    public function getBasketMaxQuantity(): int
+    {
+        return $this->basketMaxQuantity;
+    }
+
+    public function setBasketMaxQuantity(int $basketMaxQuantity): void
+    {
+        $this->basketMaxQuantity = $basketMaxQuantity;
+    }
+
+    public function getWeight(): int
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(int $weight): void
+    {
+        $this->weight = $weight;
+    }
+
+    public function isOffer(): bool
+    {
+        return $this->isOffer;
+    }
+
+    public function setIsOffer(bool $isOffer): void
+    {
+        $this->isOffer = $isOffer;
+    }
+
+    public function isHighlight(): bool
+    {
+        return $this->isHighlight;
+    }
+
+    public function setIsHighlight(bool $isHighlight): void
+    {
+        $this->isHighlight = $isHighlight;
+    }
+
+    /**
+     * @return ObjectStorage<Article>
+     */
+    public function getArticles(): ObjectStorage
+    {
+        return $this->articles;
+    }
+
+    /**
+     * @param ObjectStorage<Article> $articles
+     */
+    public function setArticles(ObjectStorage $articles): void
+    {
+        $this->articles = $articles;
+    }
+}

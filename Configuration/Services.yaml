@@ -1,0 +1,9 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  GoldeneZeiten\Products\:
+    resource: '../Classes/*'
+    exclude: '../Classes/Exception/*'
