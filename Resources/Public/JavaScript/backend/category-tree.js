@@ -21,7 +21,7 @@ class ProductsCategoryTree extends LitElement {
         super();
         this.nodes = [];
         this.expanded = new Set();
-        this.children = new Map();
+        this.childNodesByIdentifier = new Map();
     }
 
     createRenderRoot() {
@@ -47,8 +47,8 @@ class ProductsCategoryTree extends LitElement {
             this.expanded.delete(node.identifier);
         } else {
             this.expanded.add(node.identifier);
-            if (!this.children.has(node.identifier)) {
-                this.children.set(node.identifier, await this.fetchNodes(node.identifier));
+            if (!this.childNodesByIdentifier.has(node.identifier)) {
+                this.childNodesByIdentifier.set(node.identifier, await this.fetchNodes(node.identifier));
             }
         }
         this.requestUpdate();
@@ -91,7 +91,7 @@ class ProductsCategoryTree extends LitElement {
 
     renderNode(node) {
         const expanded = this.expanded.has(node.identifier);
-        const childNodes = this.children.get(node.identifier) ?? [];
+        const childNodes = this.childNodesByIdentifier.get(node.identifier) ?? [];
         return html`
             <li>
                 <div class="d-flex align-items-center gap-1">${this.renderToggle(node)}${this.renderLabel(node)}</div>
