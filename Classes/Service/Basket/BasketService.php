@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service\Basket;
 
 use GoldeneZeiten\Products\Domain\Dto\Basket;
 use GoldeneZeiten\Products\Domain\Dto\BasketItem;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
+use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ArticleRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
