@@ -1,0 +1,59 @@
+<f:layout name="Module" />
+<f:section name="Content">
+    <div class="row">
+        <div class="col-md-3">
+            <goldene-zeiten-products-category-tree></goldene-zeiten-products-category-tree>
+        </div>
+        <div class="col-md-9">
+            <div class="mb-3">
+                <f:for each="{actions}" as="action">
+                    <a class="btn btn-default" href="{action.url}">{action.label}</a>
+                </f:for>
+            </div>
+
+            <f:if condition="{selectedCategory}">
+                <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:labels.category" />: {selectedCategory.title}</h2>
+            </f:if>
+            <f:if condition="{selectedProduct}">
+                <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:labels.product" />: {selectedProduct.title}</h2>
+            </f:if>
+
+            <f:if condition="{mode} == 'overview'">
+                <f:then>
+                    <f:format.raw>{overviewHtml}</f:format.raw>
+                </f:then>
+                <f:else>
+                    <f:if condition="{items}">
+                        <f:then>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>{itemsLabel}</th>
+                                        <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:column.item_number" /></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <f:for each="{items}" as="item">
+                                        <tr>
+                                            <td class="{f:if(condition: item.hidden, then: 'text-body-secondary fst-italic')}">{item.title}</td>
+                                            <td>{item.itemNumber}</td>
+                                            <td class="text-end">
+                                                <a class="btn btn-default btn-sm" href="{item.editUrl}">
+                                                    <core:icon identifier="actions-open" size="small" />
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </f:for>
+                                </tbody>
+                            </table>
+                        </f:then>
+                        <f:else>
+                            <p><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:message.no_records" /></p>
+                        </f:else>
+                    </f:if>
+                </f:else>
+            </f:if>
+        </div>
+    </div>
+</f:section>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<xliff version="1.0">
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
 	<file source-language="en" datatype="plaintext" original="EXT:products/Resources/Private/Language/locallang_be.xlf" date="2026-07-05T20:00:00Z" product-name="products">
 		<header/>
 		<body>
@@ -20,6 +20,60 @@
 			</trans-unit>
 			<trans-unit id="plugin.order_history" resname="plugin.order_history">
 				<source>Order History</source>
+			</trans-unit>
+			<trans-unit id="module.products.title" resname="module.products.title">
+				<source>Products</source>
+			</trans-unit>
+			<trans-unit id="module.products_management.title" resname="module.products_management.title">
+				<source>Categories &amp; Products</source>
+			</trans-unit>
+			<trans-unit id="module.products_management.shortDescription" resname="module.products_management.shortDescription">
+				<source>Manage the category tree, products and articles</source>
+			</trans-unit>
+			<trans-unit id="actions.new_category" resname="actions.new_category">
+				<source>New category</source>
+			</trans-unit>
+			<trans-unit id="actions.new_subcategory" resname="actions.new_subcategory">
+				<source>New subcategory here</source>
+			</trans-unit>
+			<trans-unit id="actions.new_product" resname="actions.new_product">
+				<source>New product in this category</source>
+			</trans-unit>
+			<trans-unit id="actions.new_article" resname="actions.new_article">
+				<source>New article for this product</source>
+			</trans-unit>
+			<trans-unit id="actions.edit_category" resname="actions.edit_category">
+				<source>Edit category</source>
+			</trans-unit>
+			<trans-unit id="actions.edit_product" resname="actions.edit_product">
+				<source>Edit product</source>
+			</trans-unit>
+			<trans-unit id="column.products" resname="column.products">
+				<source>Products</source>
+			</trans-unit>
+			<trans-unit id="column.articles" resname="column.articles">
+				<source>Articles</source>
+			</trans-unit>
+			<trans-unit id="column.item_number" resname="column.item_number">
+				<source>Item number</source>
+			</trans-unit>
+			<trans-unit id="labels.category" resname="labels.category">
+				<source>Category</source>
+			</trans-unit>
+			<trans-unit id="labels.product" resname="labels.product">
+				<source>Product</source>
+			</trans-unit>
+			<trans-unit id="message.no_records" resname="message.no_records">
+				<source>No records found.</source>
+			</trans-unit>
+			<trans-unit id="tree.expand" resname="tree.expand">
+				<source>Expand</source>
+			</trans-unit>
+			<trans-unit id="tree.collapse" resname="tree.collapse">
+				<source>Collapse</source>
+			</trans-unit>
+			<trans-unit id="message.no_storage_folder" resname="message.no_storage_folder">
+				<source>No storage folder configured. Set the "products.pids.storageFolder" site setting to enable record management.</source>
 			</trans-unit>
 		</body>
 	</file>

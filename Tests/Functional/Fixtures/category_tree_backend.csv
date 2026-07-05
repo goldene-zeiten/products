@@ -1,0 +1,30 @@
+"be_groups",,,,
+,"uid","pid","title","tx_products_category_mounts"
+,5,0,"Mounted Group","13"
+
+"be_users",,,,,,
+,"uid","pid","username","admin","usergroup","tx_products_category_mounts"
+,1,0,"admin","1","",""
+,2,0,"restricted_own","0","","10"
+,3,0,"restricted_group","0","5",""
+,4,0,"no_mount","0","",""
+
+"tx_products_domain_model_category",,,,,,
+,"uid","pid","title","parent_category","hidden","deleted"
+,10,2,"Root A","0","0","0"
+,11,2,"Child A1","10","0","0"
+,12,2,"Hidden Child A2","10","1","0"
+,13,2,"Root B","0","0","0"
+,14,2,"Deleted Child","10","0","1"
+
+"tx_products_domain_model_product",,,,
+,"uid","pid","title","tax_class"
+,20,2,"Product X",1
+
+"tx_products_product_category_mm",,,
+,"uid_local","uid_foreign","sorting"
+,20,11,1
+
+"tx_products_domain_model_article",,,,
+,"uid","pid","product","title"
+,30,2,20,"Article X1"
