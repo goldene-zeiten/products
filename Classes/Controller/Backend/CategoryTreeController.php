@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Backend\CategoryMountResolver;
 use GoldeneZeiten\Products\Backend\CategoryTreeRepository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Http\JsonResponse;
 
@@ -19,6 +20,7 @@ use TYPO3\CMS\Core\Http\JsonResponse;
  *
  * @internal Backend AJAX endpoint, not part of any public API.
  */
+#[AsController]
 final class CategoryTreeController
 {
     public function __construct(
