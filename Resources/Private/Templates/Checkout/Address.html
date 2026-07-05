@@ -1,0 +1,37 @@
+<div class="checkout-address">
+    <h2><f:translate key="checkout_address" /></h2>
+    <f:form action="submitAddress" name="address" object="{address}">
+        <div class="mb-3">
+            <label for="email" class="form-label"><f:translate key="email" /></label>
+            <f:form.textfield property="email" class="form-control" type="email" />
+        </div>
+        <div class="mb-3">
+            <label for="firstName" class="form-label"><f:translate key="first_name" /></label>
+            <f:form.textfield property="firstName" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label for="lastName" class="form-label"><f:translate key="last_name" /></label>
+            <f:form.textfield property="lastName" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label for="street" class="form-label"><f:translate key="street" /></label>
+            <f:form.textfield property="street" class="form-control" />
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="zip" class="form-label"><f:translate key="zip" /></label>
+                <f:form.textfield property="zip" class="form-control" />
+            </div>
+            <div class="col-md-8 mb-3">
+                <label for="city" class="form-label"><f:translate key="city" /></label>
+                <f:form.textfield property="city" class="form-control" />
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="country" class="form-label"><f:translate key="country" /></label>
+            <f:variable name="countries" value="{DE: '{f:translate(key: \'germany\')}', AT: '{f:translate(key: \'austria\')}', CH: '{f:translate(key: \'switzerland\')}'}" />
+            <f:form.select property="country" options="{countries}" class="form-select" />
+        </div>
+        <f:form.submit value="{f:translate(key: 'continue_to_payment')}" class="btn btn-primary" />
+    </f:form>
+</div>

@@ -1,0 +1,16 @@
+<div class="products-list">
+    <f:if condition="{products}">
+        <f:then>
+            <div class="row">
+                <f:for each="{products}" as="product">
+                    <div class="col-md-4">
+                        <f:render partial="Product/ListItem" arguments="{_all}" />
+                    </div>
+                </f:for>
+            </div>
+        </f:then>
+        <f:else>
+            <p><f:translate key="no_products_found" /></p>
+        </f:else>
+    </f:if>
+</div>

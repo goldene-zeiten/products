@@ -1,0 +1,38 @@
+plugin.tx_products {
+    settings {
+        pids {
+            # cat=plugin.tx_products.pids; type=int; label=Storage folder UID
+            storageFolder = 0
+            # cat=plugin.tx_products.pids; type=int; label=Detail page UID
+            detailPage = 0
+            # cat=plugin.tx_products.pids; type=int; label=Basket page UID
+            basketPage = 0
+            # cat=plugin.tx_products.pids; type=int; label=Checkout page UID
+            checkoutPage = 0
+            # cat=plugin.tx_products.pids; type=int; label=Order history page UID
+            orderHistoryPage = 0
+        }
+        pricing {
+            # cat=plugin.tx_products.pricing; type=string; label=Pricing mode (gross|net)
+            mode = gross
+            # cat=plugin.tx_products.pricing; type=string; label=Currency
+            currency = EUR
+        }
+        tax {
+            # cat=plugin.tx_products.tax; type=string; label=Default tax country (alpha-2)
+            defaultCountry = DE
+            # cat=plugin.tx_products.tax; type=string; label=Tax rounding (perLine|perTotal)
+            rounding = perLine
+        }
+        order {
+            # cat=plugin.tx_products.order; type=string; label=Order number prefix
+            numberPrefix = ORD-
+            # cat=plugin.tx_products.order; type=boolean; label=Store client IP address
+            storeClientIp = 0
+        }
+        ajax {
+            # cat=plugin.tx_products.ajax; type=int; label=AJAX page typeNum
+            pageType = 1729512000
+        }
+    }
+}

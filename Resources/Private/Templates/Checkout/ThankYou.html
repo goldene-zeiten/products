@@ -1,0 +1,13 @@
+<div class="checkout-thank-you">
+    <h2><f:translate key="thank_you_order" /></h2>
+    <p><f:translate key="order_number_is" arguments="{0: order.orderNumber}" /></p>
+    <p><f:translate key="confirmation_email_sent" /></p>
+    
+    <div class="mt-4">
+        <f:render partial="Order/Summary" arguments="{summary: order}" />
+    </div>
+
+    <div class="mt-4">
+        <f:link.action action="list" controller="Product" class="btn btn-primary"><f:translate key="back_to_shop" /></f:link.action>
+    </div>
+</div>

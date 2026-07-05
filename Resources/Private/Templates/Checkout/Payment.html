@@ -1,0 +1,16 @@
+<div class="checkout-payment">
+    <h2><f:translate key="checkout_payment" /></h2>
+    <f:form action="submitPayment">
+        <f:for each="{paymentMethods}" as="method">
+            <div class="form-check">
+                <f:form.radio name="paymentMethod" value="{method.identifier}" checked="{f:if(condition: '{paymentMethod} == {method.identifier}', then: '1')}" class="form-check-input" id="method-{method.identifier}" />
+                <label class="form-check-label" for="method-{method.identifier}">
+                    {method.title}
+                </label>
+            </div>
+        </f:for>
+        <div class="mt-3">
+            <f:form.submit value="{f:translate(key: 'continue_to_review')}" class="btn btn-primary" />
+        </div>
+    </f:form>
+</div>

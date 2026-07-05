@@ -1,0 +1,82 @@
+products:
+  pids:
+    storageFolder:
+      type: integer
+      label: Storage folder UID
+      default: 0
+    detailPage:
+      type: integer
+      label: Detail page UID
+      default: 0
+    basketPage:
+      type: integer
+      label: Basket page UID
+      default: 0
+    checkoutPage:
+      type: integer
+      label: Checkout page UID
+      default: 0
+    orderHistoryPage:
+      type: integer
+      label: Order history page UID
+      default: 0
+  pricing:
+    mode:
+      type: string
+      label: Pricing mode (gross|net)
+      default: 'gross'
+    currency:
+      type: string
+      label: Currency
+      default: 'EUR'
+  tax:
+    defaultCountry:
+      type: string
+      label: Default tax country (alpha-2)
+      default: 'DE'
+    rounding:
+      type: string
+      label: Tax rounding (perLine|perTotal)
+      default: 'perLine'
+  order:
+    numberPrefix:
+      type: string
+      label: Order number prefix
+      default: 'ORD-'
+    storeClientIp:
+      type: boolean
+      label: Store client IP address
+      default: false
+  email:
+    senderEmail:
+      type: string
+      label: Sender email
+      default: ''
+    senderName:
+      type: string
+      label: Sender name
+      default: ''
+    templateRootPaths:
+      type: array
+      label: Template root paths
+      default:
+        0: 'EXT:products/Resources/Private/Templates/Email/'
+  payment:
+    invoice:
+      enabled:
+        type: boolean
+        label: Invoice payment enabled
+        default: true
+      minValue:
+        type: integer
+        label: Minimum order value (cents)
+        default: 0
+      maxValue:
+        type: integer
+        label: Maximum order value (cents)
+        default: 0
+  ajax:
+    pageType:
+      type: integer
+      label: AJAX page typeNum
+      default: 1729512000

@@ -1,0 +1,13 @@
+<div class="article-selector mt-3">
+    <h6><f:translate key="choose_variant" /></h6>
+    <f:form action="add" controller="Basket" extensionName="Products" pluginName="Basket">
+        <f:form.hidden name="product" value="{product}" />
+        <div class="mb-3">
+            <f:form.select name="article" options="{product.articles}" optionLabelField="title" class="form-select" />
+        </div>
+        <div class="mb-3">
+            <f:form.textfield name="quantity" value="1" type="number" class="form-control" additionalAttributes="{min: 1}" />
+        </div>
+        <f:form.submit value="{f:translate(key: 'add_to_basket')}" class="btn btn-primary" />
+    </f:form>
+</div>

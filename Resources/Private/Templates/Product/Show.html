@@ -1,0 +1,38 @@
+<div class="product-detail">
+    <h1>{product.title}</h1>
+    <f:if condition="{product.subtitle}">
+        <h2 class="text-muted">{product.subtitle}</h2>
+    </f:if>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <f:format.html>{product.description}</f:format.html>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-3">
+                <f:render partial="Product/Price" arguments="{price: product.price}" />
+                
+                <f:if condition="{product.articles}">
+                    <f:then>
+                        <f:render partial="Product/ArticleSelector" arguments="{product: product}" />
+                    </f:then>
+                    <f:else>
+                        <f:render partial="Product/AddToBasketForm" arguments="{product: product}" />
+                    </f:else>
+                </f:if>
+                
+                <div class="mt-3">
+                    <p><f:translate key="item_no" /> {product.itemNumber}</p>
+                    <f:if condition="{product.inStock} > 0">
+                        <f:then>
+                            <p class="text-success"><f:translate key="in_stock" arguments="{0: product.inStock}" /></p>
+                        </f:then>
+                        <f:else>
+                            <p class="text-danger"><f:translate key="out_of_stock" /></p>
+                        </f:else>
+                    </f:if>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

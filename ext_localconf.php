@@ -1,0 +1,70 @@
+<?php
+
+use GoldeneZeiten\Products\Controller\BasketController;
+use GoldeneZeiten\Products\Controller\CheckoutController;
+use GoldeneZeiten\Products\Controller\OrderController;
+use GoldeneZeiten\Products\Controller\ProductController;
+use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
+
+defined('TYPO3') or die();
+
+ExtensionUtility::configurePlugin(
+    'Products',
+    'ProductList',
+    [
+        ProductController::class => 'list, listByAjax',
+    ],
+    // non-cacheable actions
+    [],
+    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+);
+
+ExtensionUtility::configurePlugin(
+    'Products',
+    'ProductDetail',
+    [
+        ProductController::class => 'show',
+    ],
+    // non-cacheable actions
+    [],
+    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+);
+
+ExtensionUtility::configurePlugin(
+    'Products',
+    'Basket',
+    [
+        BasketController::class => 'show, add, update, remove',
+    ],
+    // non-cacheable actions
+    [
+        BasketController::class => 'show, add, update, remove',
+    ],
+    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+);
+
+ExtensionUtility::configurePlugin(
+    'Products',
+    'Checkout',
+    [
+        CheckoutController::class => 'address, submitAddress, payment, submitPayment, review, finalize, paymentReturn, paymentCancel, thankYou',
+    ],
+    // non-cacheable actions
+    [
+        CheckoutController::class => 'address, submitAddress, payment, submitPayment, review, finalize, paymentReturn, paymentCancel, thankYou',
+    ],
+    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+);
+
+ExtensionUtility::configurePlugin(
+    'Products',
+    'OrderHistory',
+    [
+        OrderController::class => 'list, show',
+    ],
+    // non-cacheable actions
+    [
+        OrderController::class => 'list, show',
+    ],
+    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+);

@@ -1,0 +1,52 @@
+plugin.tx_products {
+    settings {
+        pids {
+            storageFolder = {$plugin.tx_products.settings.pids.storageFolder}
+            detailPage = {$plugin.tx_products.settings.pids.detailPage}
+            basketPage = {$plugin.tx_products.settings.pids.basketPage}
+            checkoutPage = {$plugin.tx_products.settings.pids.checkoutPage}
+            orderHistoryPage = {$plugin.tx_products.settings.pids.orderHistoryPage}
+        }
+        pricing {
+            mode = {$plugin.tx_products.settings.pricing.mode}
+            currency = {$plugin.tx_products.settings.pricing.currency}
+        }
+        tax {
+            defaultCountry = {$plugin.tx_products.settings.tax.defaultCountry}
+            rounding = {$plugin.tx_products.settings.tax.rounding}
+        }
+        order {
+            numberPrefix = {$plugin.tx_products.settings.order.numberPrefix}
+            storeClientIp = {$plugin.tx_products.settings.order.storeClientIp}
+        }
+        ajax {
+            pageType = {$plugin.tx_products.settings.ajax.pageType}
+        }
+    }
+}
+
+products_ajax = PAGE
+products_ajax {
+    typeNum = {$plugin.tx_products.settings.ajax.pageType}
+    config {
+        disableAllHeaderCode = 1
+        xhtml_cleaning = 0
+        admPanel = 0
+        debug = 0
+        no_cache = 1
+    }
+    10 = USER
+    10 {
+        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+        extensionName = Products
+        pluginName = ProductList
+        vendorName = GoldeneZeiten
+        controller = ProductController
+        action = listByAjax
+        switchableControllerActions {
+            ProductController {
+                1 = listByAjax
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+<div class="product-list-item card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">{product.title}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{product.subtitle}</h6>
+        <p class="card-text">
+            <f:render partial="Product/Price" arguments="{price: product.price}" />
+        </p>
+        <f:link.action action="show" arguments="{product: product}" class="btn btn-primary"><f:translate key="details" /></f:link.action>
+    </div>
+</div>
