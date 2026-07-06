@@ -81,6 +81,9 @@
 			<trans-unit id="tree.new_category" resname="tree.new_category">
 				<source>New category</source>
 			</trans-unit>
+			<trans-unit id="tree.new_category_title" resname="tree.new_category_title">
+				<source>Category title:</source>
+			</trans-unit>
 			<trans-unit id="tree.edit" resname="tree.edit">
 				<source>Edit</source>
 			</trans-unit>

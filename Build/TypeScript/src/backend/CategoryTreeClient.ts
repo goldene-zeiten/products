@@ -60,6 +60,14 @@ export class CategoryTreeClient {
     return this.submitDataHandler(body);
   }
 
+  async createCategory(title: string, parentCategoryUid: number): Promise<boolean> {
+    const newId = `NEW${Math.floor(Math.random() * 1e9).toString(16)}`;
+    const body = new URLSearchParams();
+    body.set(`data[${TABLES.category}][${newId}][title]`, title);
+    body.set(`data[${TABLES.category}][${newId}][parent_category]`, String(parentCategoryUid));
+    return this.submitDataHandler(body);
+  }
+
   async reparentCategory(uid: number, newParentUid: number): Promise<boolean> {
     const body = new URLSearchParams();
     body.set(`data[${TABLES.category}][${uid}][parent_category]`, String(newParentUid));

@@ -18,7 +18,6 @@ use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -37,7 +36,6 @@ final class ProductManagementModuleController
 
     public function __construct(
         private readonly ModuleTemplateFactory $moduleTemplateFactory,
-        private readonly PageRenderer $pageRenderer,
         private readonly UriBuilder $uriBuilder,
         private readonly CategoryTreeRepository $treeRepository,
         private readonly CategoryMountResolver $mountResolver,
@@ -47,25 +45,14 @@ final class ProductManagementModuleController
 
     public function mainAction(ServerRequestInterface $request): ResponseInterface
     {
-        $this->pageRenderer->loadJavaScriptModule('@goldene-zeiten/products/backend/category-tree.js');
-        $this->pageRenderer->addInlineLanguageLabelFile('EXT:products/Resources/Private/Language/locallang_be.xlf', 'tree.');
         $mounts = $this->mountResolver->resolveMountUids($this->getBackendUser());
         $categoryUid = $this->resolveSelectedCategory($request, $mounts);
         $productUid = $categoryUid > 0 ? 0 : $this->resolveSelectedProduct($request, $mounts);
 
         $moduleTemplate = $this->moduleTemplateFactory->create($request);
         $moduleTemplate->setTitle($this->translate('module.products_management.title'));
-        $moduleTemplate->assignMultiple([
-            ...$this->buildViewData($request, $moduleTemplate, $categoryUid, $productUid),
-            'newCategoryUrl' => $this->buildNewCategoryUrl($request),
-        ]);
+        $moduleTemplate->assignMultiple($this->buildViewData($request, $moduleTemplate, $categoryUid, $productUid));
         return $moduleTemplate->renderResponse('Backend/ProductManagement/Main');
-    }
-
-    private function buildNewCategoryUrl(ServerRequestInterface $request): string
-    {
-        $returnUrl = (string)$this->uriBuilder->buildUriFromRequest($request, []);
-        return $this->buildAction('tree.new_category', self::TABLE_CATEGORY, ['parent_category' => 0], $returnUrl)['url'];
     }
 
     /**

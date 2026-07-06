@@ -1,9 +1,14 @@
 import { LitElement, html, nothing, TemplateResult } from 'lit';
 import '@typo3/backend/element/icon-element.js';
+import { ModuleStateStorage } from '@typo3/backend/storage/module-state-storage.js';
+import { ModuleUtility } from '@typo3/backend/module.js';
 import './TreeToolbar';
 import { CategoryTreeClient } from './CategoryTreeClient';
 import { TreeState } from './TreeState';
+import { NEW_CATEGORY_DATA_TRANSFER_TYPE } from './TreeTypes';
 import type { DropPosition, NodeType, SearchMatch, TreeNode } from './TreeTypes';
+
+const MODULE_TYPE = 'products_management';
 
 interface DragPayload {
   identifier: string;
@@ -31,13 +36,11 @@ function label(key: string, fallback: string): string {
  */
 export class ProductsCategoryTree extends LitElement {
   static properties = {
-    newCategoryUrl: { attribute: 'new-category-url' },
     rootNodes: { state: true },
     searchMatches: { state: true },
     searchActive: { state: true },
   };
 
-  declare newCategoryUrl: string;
   declare rootNodes: TreeNode[];
   declare searchMatches: SearchMatch[];
   declare searchActive: boolean;
@@ -53,7 +56,6 @@ export class ProductsCategoryTree extends LitElement {
 
   constructor() {
     super();
-    this.newCategoryUrl = '';
     this.rootNodes = [];
     this.searchMatches = [];
     this.searchActive = false;
@@ -66,39 +68,38 @@ export class ProductsCategoryTree extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
     this.expanded = this.state.getExpanded();
-    this.selected = this.state.getSelected();
     void this.initialize();
   }
 
+  /**
+   * This element lives in the persistent .scaffold-content-navigation slot
+   * (see navigationComponent in Configuration/Backend/Modules.php), not inside
+   * the module's own content iframe, so the selection is restored from
+   * ModuleStateStorage (sessionStorage, like PageTree) rather than from
+   * window.location - this element's own window never carries ?category=/
+   * ?product=, only the separate content iframe does.
+   */
   private async initialize(): Promise<void> {
     await this.loadRoot();
-    if (this.hasSelectionInUrl()) {
-      this.selected = this.currentSelectionIdentifier();
-      this.state.setSelected(this.selected);
+    const state = ModuleStateStorage.current(MODULE_TYPE);
+    if (state.identifier) {
+      this.selected = state.identifier;
       await this.revealSelected();
+      this.navigateContent(state.identifier);
+    }
+  }
+
+  private navigateContent(identifier: string): void {
+    const [type, uid] = identifier.split('-');
+    if (type !== 'category' && type !== 'product') {
       return;
     }
-    if (this.selected) {
-      this.navigateTo(this.selected);
+    const moduleInfo = ModuleUtility.getFromName(MODULE_TYPE);
+    if (!moduleInfo) {
+      return;
     }
-  }
-
-  private hasSelectionInUrl(): boolean {
-    const params = new URLSearchParams(window.location.search);
-    return params.has('category') || params.has('product');
-  }
-
-  private currentSelectionIdentifier(): string | null {
-    const params = new URLSearchParams(window.location.search);
-    const category = params.get('category');
-    const product = params.get('product');
-    if (category) {
-      return `category-${category}`;
-    }
-    if (product) {
-      return `product-${product}`;
-    }
-    return null;
+    const separator = moduleInfo.link.includes('?') ? '&' : '?';
+    typo3().Backend.ContentContainer.setUrl(`${moduleInfo.link}${separator}${type}=${uid}`);
   }
 
   private async revealSelected(): Promise<void> {
@@ -154,23 +155,14 @@ export class ProductsCategoryTree extends LitElement {
     this.requestUpdate();
   }
 
-  private navigateTo(identifier: string): void {
-    const [type, uid] = identifier.split('-');
-    const url = new URL(window.location.href);
-    url.searchParams.delete('category');
-    url.searchParams.delete('product');
-    if (type === 'category' || type === 'product') {
-      url.searchParams.set(type, uid);
-    }
-    window.location.href = url.toString();
-  }
-
   private selectNode(node: TreeNode): void {
     if (node.type === 'article') {
       return;
     }
-    this.state.setSelected(node.identifier);
-    this.navigateTo(node.identifier);
+    this.selected = node.identifier;
+    ModuleStateStorage.update(MODULE_TYPE, node.identifier);
+    this.navigateContent(node.identifier);
+    this.requestUpdate();
   }
 
   private onSearchInput(event: CustomEvent<string>): void {
@@ -258,6 +250,19 @@ export class ProductsCategoryTree extends LitElement {
   }
 
   private onDragOver(event: DragEvent, target: TreeNode): void {
+    if (event.dataTransfer?.types.includes(NEW_CATEGORY_DATA_TRANSFER_TYPE)) {
+      // Stop here regardless of target validity so hovering a product/article
+      // node can't fall through to the root drop zone's "create at root"
+      // handling further up the bubbling chain.
+      event.stopPropagation();
+      if (target.type !== 'category') {
+        return;
+      }
+      event.preventDefault();
+      this.dropTarget = { identifier: target.identifier, position: 'into' };
+      this.requestUpdate();
+      return;
+    }
     if (!this.dragPayload || this.dragPayload.identifier === target.identifier) {
       return;
     }
@@ -268,6 +273,33 @@ export class ProductsCategoryTree extends LitElement {
     event.preventDefault();
     this.dropTarget = { identifier: target.identifier, position };
     this.requestUpdate();
+  }
+
+  private onRootDragOver(event: DragEvent): void {
+    if (event.dataTransfer?.types.includes(NEW_CATEGORY_DATA_TRANSFER_TYPE)) {
+      event.preventDefault();
+    }
+  }
+
+  private async onRootDrop(event: DragEvent): Promise<void> {
+    if (!event.dataTransfer?.types.includes(NEW_CATEGORY_DATA_TRANSFER_TYPE)) {
+      return;
+    }
+    event.preventDefault();
+    await this.createCategory(0, 'root');
+  }
+
+  private async createCategory(parentUid: number, parentIdentifier: string): Promise<void> {
+    const title = window.prompt(label('new_category_title', 'Category title:'));
+    if (!title) {
+      return;
+    }
+    const succeeded = await this.client.createCategory(title, parentUid);
+    if (succeeded) {
+      await this.refreshParent(parentIdentifier);
+    } else {
+      this.notifyError();
+    }
   }
 
   private onDragLeave(): void {
@@ -300,11 +332,19 @@ export class ProductsCategoryTree extends LitElement {
 
   private async onDrop(event: DragEvent, target: TreeNode): Promise<void> {
     event.preventDefault();
+    const isNewCategory = event.dataTransfer?.types.includes(NEW_CATEGORY_DATA_TRANSFER_TYPE) ?? false;
     const dragged = this.dragPayload;
     const position = this.dropTarget?.position ?? null;
     this.dragPayload = null;
     this.dropTarget = null;
     this.requestUpdate();
+    if (isNewCategory) {
+      event.stopPropagation();
+      if (target.type === 'category') {
+        await this.createCategory(target.uid, target.identifier);
+      }
+      return;
+    }
     if (!dragged || !position || !this.canDrop(dragged.type, target.type, position)) {
       return;
     }
@@ -457,7 +497,6 @@ export class ProductsCategoryTree extends LitElement {
   render(): TemplateResult {
     return html`
       <goldene-zeiten-products-tree-toolbar
-        new-category-url="${this.newCategoryUrl}"
         search-label="${label('search_placeholder', 'Search...')}"
         new-category-label="${label('new_category', 'New category')}"
         @tree-search="${(event: CustomEvent<string>) => this.onSearchInput(event)}"
@@ -465,9 +504,22 @@ export class ProductsCategoryTree extends LitElement {
       ${this.searchActive && this.searchMatches.length === 0
         ? html`<p class="text-body-secondary">${label('no_results', 'No matches found.')}</p>`
         : nothing}
-      <ul class="list-unstyled ps-0">${this.rootNodes.map((node) => this.renderNode(node))}</ul>
+      <ul
+        class="list-unstyled ps-0"
+        style="min-height:2rem"
+        @dragover="${(event: DragEvent) => this.onRootDragOver(event)}"
+        @drop="${(event: DragEvent) => void this.onRootDrop(event)}"
+      >${this.rootNodes.map((node) => this.renderNode(node))}</ul>
     `;
   }
 }
 
 customElements.define('goldene-zeiten-products-category-tree', ProductsCategoryTree);
+
+/**
+ * Read by @typo3/backend/viewport/navigation-container.js's showComponent() to
+ * know this module exports a Lit custom element (rather than falling back to
+ * its legacy AMD-style `.initialize()` path) - required for navigationComponent
+ * wiring in Configuration/Backend/Modules.php to find the right tag name.
+ */
+export const navigationComponentName = 'goldene-zeiten-products-category-tree';

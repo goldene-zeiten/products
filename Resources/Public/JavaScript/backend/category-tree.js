@@ -1,10 +1,19 @@
-import { LitElement, nothing, html } from 'lit';
+import { LitElement, html, nothing } from 'lit';
 import '@typo3/backend/element/icon-element.js';
+import { ModuleStateStorage } from '@typo3/backend/storage/module-state-storage.js';
+import { ModuleUtility } from '@typo3/backend/module.js';
+
+/**
+ * Custom dataTransfer type identifying a drag originating from the toolbar's
+ * "new category" drag handle, mirroring PageTree's own newTreenode pattern
+ * (see @typo3/backend/enum/data-transfer-types.js) so drop handlers can tell
+ * "create a new node here" apart from "move this existing node here".
+ */
+const NEW_CATEGORY_DATA_TRANSFER_TYPE = 'application/x-goldene-zeiten-new-category';
 
 class ProductsTreeToolbar extends LitElement {
     constructor() {
         super();
-        this.newCategoryUrl = '';
         this.searchLabel = 'Search...';
         this.newCategoryLabel = 'New category';
     }
@@ -15,9 +24,15 @@ class ProductsTreeToolbar extends LitElement {
         const query = event.target.value;
         this.dispatchEvent(new CustomEvent('tree-search', { detail: query, bubbles: true, composed: true }));
     }
+    onNewCategoryDragStart(event) {
+        event.dataTransfer?.setData(NEW_CATEGORY_DATA_TRANSFER_TYPE, '1');
+        if (event.dataTransfer) {
+            event.dataTransfer.effectAllowed = 'copy';
+        }
+    }
     render() {
         return html `
-      <div class="d-flex gap-2 mb-2">
+      <div class="d-flex gap-2 mb-2 align-items-center">
         <input
           type="search"
           class="form-control form-control-sm"
@@ -25,15 +40,20 @@ class ProductsTreeToolbar extends LitElement {
           aria-label="${this.searchLabel}"
           @input="${this.onInput}"
         />
-        ${this.newCategoryUrl
-            ? html `<a class="btn btn-default btn-sm text-nowrap" href="${this.newCategoryUrl}">${this.newCategoryLabel}</a>`
-            : nothing}
+        <div
+          class="btn btn-default btn-sm text-nowrap"
+          draggable="true"
+          title="${this.newCategoryLabel}"
+          aria-label="${this.newCategoryLabel}"
+          @dragstart="${(event) => this.onNewCategoryDragStart(event)}"
+        >
+          <typo3-backend-icon identifier="products-category" size="small"></typo3-backend-icon>
+        </div>
       </div>
     `;
     }
 }
 ProductsTreeToolbar.properties = {
-    newCategoryUrl: { attribute: 'new-category-url' },
     searchLabel: { attribute: 'search-label' },
     newCategoryLabel: { attribute: 'new-category-label' },
 };
@@ -90,6 +110,13 @@ class CategoryTreeClient {
         body.set(`data[${tableForType(type)}][${uid}][hidden]`, hidden ? '1' : '0');
         return this.submitDataHandler(body);
     }
+    async createCategory(title, parentCategoryUid) {
+        const newId = `NEW${Math.floor(Math.random() * 1e9).toString(16)}`;
+        const body = new URLSearchParams();
+        body.set(`data[${TABLES.category}][${newId}][title]`, title);
+        body.set(`data[${TABLES.category}][${newId}][parent_category]`, String(parentCategoryUid));
+        return this.submitDataHandler(body);
+    }
     async reparentCategory(uid, newParentUid) {
         const body = new URLSearchParams();
         body.set(`data[${TABLES.category}][${uid}][parent_category]`, String(newParentUid));
@@ -125,11 +152,12 @@ class CategoryTreeClient {
 }
 
 const EXPANDED_STORAGE_KEY = 'products-category-tree-expanded';
-const SELECTED_STORAGE_KEY = 'products-category-tree-selected';
 /**
- * Persists expand state (survives browser restarts, like the page tree) and the last
- * selected node (survives a module reload within the same tab), mirroring core's own
- * split between localStorage and sessionStorage for the same two concerns.
+ * Persists expand state in localStorage (survives browser restarts, like the
+ * page tree). Selection state is a separate concern handled by TYPO3 core's
+ * own ModuleStateStorage (sessionStorage), since this element lives in the
+ * persistent navigation slot and TYPO3.Backend.ContentContainer/
+ * ModuleStateStorage are the mechanism core itself uses for that.
  */
 class TreeState {
     getExpanded() {
@@ -149,29 +177,9 @@ class TreeState {
             // Storage unavailable (private browsing, quota) - expand state simply won't persist.
         }
     }
-    getSelected() {
-        try {
-            return window.sessionStorage.getItem(SELECTED_STORAGE_KEY);
-        }
-        catch {
-            return null;
-        }
-    }
-    setSelected(identifier) {
-        try {
-            if (identifier === null) {
-                window.sessionStorage.removeItem(SELECTED_STORAGE_KEY);
-            }
-            else {
-                window.sessionStorage.setItem(SELECTED_STORAGE_KEY, identifier);
-            }
-        }
-        catch {
-            // Storage unavailable - selection simply won't survive a reload.
-        }
-    }
 }
 
+const MODULE_TYPE = 'products_management';
 function typo3() {
     return window.top.TYPO3;
 }
@@ -200,7 +208,6 @@ class ProductsCategoryTree extends LitElement {
         this.dragPayload = null;
         this.dropTarget = null;
         this.searchTimer = null;
-        this.newCategoryUrl = '';
         this.rootNodes = [];
         this.searchMatches = [];
         this.searchActive = false;
@@ -211,36 +218,36 @@ class ProductsCategoryTree extends LitElement {
     connectedCallback() {
         super.connectedCallback();
         this.expanded = this.state.getExpanded();
-        this.selected = this.state.getSelected();
         void this.initialize();
     }
+    /**
+     * This element lives in the persistent .scaffold-content-navigation slot
+     * (see navigationComponent in Configuration/Backend/Modules.php), not inside
+     * the module's own content iframe, so the selection is restored from
+     * ModuleStateStorage (sessionStorage, like PageTree) rather than from
+     * window.location - this element's own window never carries ?category=/
+     * ?product=, only the separate content iframe does.
+     */
     async initialize() {
         await this.loadRoot();
-        if (this.hasSelectionInUrl()) {
-            this.selected = this.currentSelectionIdentifier();
-            this.state.setSelected(this.selected);
+        const state = ModuleStateStorage.current(MODULE_TYPE);
+        if (state.identifier) {
+            this.selected = state.identifier;
             await this.revealSelected();
+            this.navigateContent(state.identifier);
+        }
+    }
+    navigateContent(identifier) {
+        const [type, uid] = identifier.split('-');
+        if (type !== 'category' && type !== 'product') {
             return;
         }
-        if (this.selected) {
-            this.navigateTo(this.selected);
+        const moduleInfo = ModuleUtility.getFromName(MODULE_TYPE);
+        if (!moduleInfo) {
+            return;
         }
-    }
-    hasSelectionInUrl() {
-        const params = new URLSearchParams(window.location.search);
-        return params.has('category') || params.has('product');
-    }
-    currentSelectionIdentifier() {
-        const params = new URLSearchParams(window.location.search);
-        const category = params.get('category');
-        const product = params.get('product');
-        if (category) {
-            return `category-${category}`;
-        }
-        if (product) {
-            return `product-${product}`;
-        }
-        return null;
+        const separator = moduleInfo.link.includes('?') ? '&' : '?';
+        typo3().Backend.ContentContainer.setUrl(`${moduleInfo.link}${separator}${type}=${uid}`);
     }
     async revealSelected() {
         if (!this.selected) {
@@ -291,22 +298,14 @@ class ProductsCategoryTree extends LitElement {
         this.persistExpanded();
         this.requestUpdate();
     }
-    navigateTo(identifier) {
-        const [type, uid] = identifier.split('-');
-        const url = new URL(window.location.href);
-        url.searchParams.delete('category');
-        url.searchParams.delete('product');
-        if (type === 'category' || type === 'product') {
-            url.searchParams.set(type, uid);
-        }
-        window.location.href = url.toString();
-    }
     selectNode(node) {
         if (node.type === 'article') {
             return;
         }
-        this.state.setSelected(node.identifier);
-        this.navigateTo(node.identifier);
+        this.selected = node.identifier;
+        ModuleStateStorage.update(MODULE_TYPE, node.identifier);
+        this.navigateContent(node.identifier);
+        this.requestUpdate();
     }
     onSearchInput(event) {
         const query = event.detail.trim();
@@ -388,6 +387,19 @@ class ProductsCategoryTree extends LitElement {
         }
     }
     onDragOver(event, target) {
+        if (event.dataTransfer?.types.includes(NEW_CATEGORY_DATA_TRANSFER_TYPE)) {
+            // Stop here regardless of target validity so hovering a product/article
+            // node can't fall through to the root drop zone's "create at root"
+            // handling further up the bubbling chain.
+            event.stopPropagation();
+            if (target.type !== 'category') {
+                return;
+            }
+            event.preventDefault();
+            this.dropTarget = { identifier: target.identifier, position: 'into' };
+            this.requestUpdate();
+            return;
+        }
         if (!this.dragPayload || this.dragPayload.identifier === target.identifier) {
             return;
         }
@@ -398,6 +410,31 @@ class ProductsCategoryTree extends LitElement {
         event.preventDefault();
         this.dropTarget = { identifier: target.identifier, position };
         this.requestUpdate();
+    }
+    onRootDragOver(event) {
+        if (event.dataTransfer?.types.includes(NEW_CATEGORY_DATA_TRANSFER_TYPE)) {
+            event.preventDefault();
+        }
+    }
+    async onRootDrop(event) {
+        if (!event.dataTransfer?.types.includes(NEW_CATEGORY_DATA_TRANSFER_TYPE)) {
+            return;
+        }
+        event.preventDefault();
+        await this.createCategory(0, 'root');
+    }
+    async createCategory(parentUid, parentIdentifier) {
+        const title = window.prompt(label('new_category_title', 'Category title:'));
+        if (!title) {
+            return;
+        }
+        const succeeded = await this.client.createCategory(title, parentUid);
+        if (succeeded) {
+            await this.refreshParent(parentIdentifier);
+        }
+        else {
+            this.notifyError();
+        }
     }
     onDragLeave() {
         this.dropTarget = null;
@@ -426,11 +463,19 @@ class ProductsCategoryTree extends LitElement {
     }
     async onDrop(event, target) {
         event.preventDefault();
+        const isNewCategory = event.dataTransfer?.types.includes(NEW_CATEGORY_DATA_TRANSFER_TYPE) ?? false;
         const dragged = this.dragPayload;
         const position = this.dropTarget?.position ?? null;
         this.dragPayload = null;
         this.dropTarget = null;
         this.requestUpdate();
+        if (isNewCategory) {
+            event.stopPropagation();
+            if (target.type === 'category') {
+                await this.createCategory(target.uid, target.identifier);
+            }
+            return;
+        }
         if (!dragged || !position || !this.canDrop(dragged.type, target.type, position)) {
             return;
         }
@@ -575,7 +620,6 @@ class ProductsCategoryTree extends LitElement {
     render() {
         return html `
       <goldene-zeiten-products-tree-toolbar
-        new-category-url="${this.newCategoryUrl}"
         search-label="${label('search_placeholder', 'Search...')}"
         new-category-label="${label('new_category', 'New category')}"
         @tree-search="${(event) => this.onSearchInput(event)}"
@@ -583,17 +627,28 @@ class ProductsCategoryTree extends LitElement {
       ${this.searchActive && this.searchMatches.length === 0
             ? html `<p class="text-body-secondary">${label('no_results', 'No matches found.')}</p>`
             : nothing}
-      <ul class="list-unstyled ps-0">${this.rootNodes.map((node) => this.renderNode(node))}</ul>
+      <ul
+        class="list-unstyled ps-0"
+        style="min-height:2rem"
+        @dragover="${(event) => this.onRootDragOver(event)}"
+        @drop="${(event) => void this.onRootDrop(event)}"
+      >${this.rootNodes.map((node) => this.renderNode(node))}</ul>
     `;
     }
 }
 ProductsCategoryTree.properties = {
-    newCategoryUrl: { attribute: 'new-category-url' },
     rootNodes: { state: true },
     searchMatches: { state: true },
     searchActive: { state: true },
 };
 customElements.define('goldene-zeiten-products-category-tree', ProductsCategoryTree);
+/**
+ * Read by @typo3/backend/viewport/navigation-container.js's showComponent() to
+ * know this module exports a Lit custom element (rather than falling back to
+ * its legacy AMD-style `.initialize()` path) - required for navigationComponent
+ * wiring in Configuration/Backend/Modules.php to find the right tag name.
+ */
+const navigationComponentName = 'goldene-zeiten-products-category-tree';
 
-export { ProductsCategoryTree };
+export { ProductsCategoryTree, navigationComponentName };
 //# sourceMappingURL=category-tree.js.map

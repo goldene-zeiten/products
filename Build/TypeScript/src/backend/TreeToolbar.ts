@@ -1,19 +1,18 @@
-import { LitElement, html, nothing } from 'lit';
+import { LitElement, html } from 'lit';
+import '@typo3/backend/element/icon-element.js';
+import { NEW_CATEGORY_DATA_TRANSFER_TYPE } from './TreeTypes';
 
 export class ProductsTreeToolbar extends LitElement {
   static properties = {
-    newCategoryUrl: { attribute: 'new-category-url' },
     searchLabel: { attribute: 'search-label' },
     newCategoryLabel: { attribute: 'new-category-label' },
   };
 
-  declare newCategoryUrl: string;
   declare searchLabel: string;
   declare newCategoryLabel: string;
 
   constructor() {
     super();
-    this.newCategoryUrl = '';
     this.searchLabel = 'Search...';
     this.newCategoryLabel = 'New category';
   }
@@ -27,9 +26,16 @@ export class ProductsTreeToolbar extends LitElement {
     this.dispatchEvent(new CustomEvent<string>('tree-search', { detail: query, bubbles: true, composed: true }));
   }
 
+  private onNewCategoryDragStart(event: DragEvent): void {
+    event.dataTransfer?.setData(NEW_CATEGORY_DATA_TRANSFER_TYPE, '1');
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'copy';
+    }
+  }
+
   render() {
     return html`
-      <div class="d-flex gap-2 mb-2">
+      <div class="d-flex gap-2 mb-2 align-items-center">
         <input
           type="search"
           class="form-control form-control-sm"
@@ -37,9 +43,15 @@ export class ProductsTreeToolbar extends LitElement {
           aria-label="${this.searchLabel}"
           @input="${this.onInput}"
         />
-        ${this.newCategoryUrl
-          ? html`<a class="btn btn-default btn-sm text-nowrap" href="${this.newCategoryUrl}">${this.newCategoryLabel}</a>`
-          : nothing}
+        <div
+          class="btn btn-default btn-sm text-nowrap"
+          draggable="true"
+          title="${this.newCategoryLabel}"
+          aria-label="${this.newCategoryLabel}"
+          @dragstart="${(event: DragEvent) => this.onNewCategoryDragStart(event)}"
+        >
+          <typo3-backend-icon identifier="products-category" size="small"></typo3-backend-icon>
+        </div>
       </div>
     `;
   }

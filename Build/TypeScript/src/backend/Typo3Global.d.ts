@@ -6,6 +6,11 @@ declare global {
       ajaxUrls: Record<string, string>;
     };
     lang: Record<string, string>;
+    Backend: {
+      ContentContainer: {
+        setUrl(url: string): void;
+      };
+    };
   }
 
   interface Window {
