@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Updates;
 
-use Doctrine\DBAL\ParameterType;
 use GoldeneZeiten\Products\Backend\StorageFolderResolver;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -32,7 +31,7 @@ final class TtProductsCategoryUpgradeWizard implements UpgradeWizardInterface, C
     public function __construct(
         private readonly ConnectionPool $connectionPool,
         private readonly LegacyMigrationHelper $migrationHelper,
-        private readonly LegacyOverlayDeduplicator $overlayDeduplicator,
+        private readonly LegacyOverlayMigrator $overlayMigrator,
         private readonly StorageFolderResolver $storageFolderResolver,
     ) {}
 
@@ -58,7 +57,7 @@ final class TtProductsCategoryUpgradeWizard implements UpgradeWizardInterface, C
             return false;
         }
         return $this->migrationHelper->countUnmigrated(self::LEGACY_TABLE, self::LOCAL_TABLE) > 0
-            || $this->overlaysToMigrate() !== [];
+            || $this->overlayMigrator->hasPending($this->overlayConfig());
     }
 
     public function executeUpdate(): bool
@@ -72,7 +71,7 @@ final class TtProductsCategoryUpgradeWizard implements UpgradeWizardInterface, C
                 $this->migrateCategory($row, $pid);
             }
         }
-        $this->migrateOverlays();
+        $this->overlayMigrator->migrate($this->output, $this->overlayConfig(), $this->overlayValues(...));
         return true;
     }
 
@@ -82,6 +81,16 @@ final class TtProductsCategoryUpgradeWizard implements UpgradeWizardInterface, C
     public function getPrerequisites(): array
     {
         return [DatabaseUpdatedPrerequisite::class];
+    }
+
+    private function overlayConfig(): OverlayMigrationConfig
+    {
+        return new OverlayMigrationConfig(
+            legacyLanguageTable: self::LEGACY_LANGUAGE_TABLE,
+            parentField: 'cat_uid',
+            legacyParentTable: self::LEGACY_TABLE,
+            localTable: self::LOCAL_TABLE,
+        );
     }
 
     /**
@@ -126,105 +135,17 @@ final class TtProductsCategoryUpgradeWizard implements UpgradeWizardInterface, C
         return $localUid;
     }
 
-    private function migrateOverlays(): void
-    {
-        foreach ($this->overlaysToMigrate() as $winner) {
-            $this->migrateOverlay($winner);
-        }
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function overlaysToMigrate(): array
-    {
-        if (!$this->migrationHelper->tablesExist(self::LEGACY_LANGUAGE_TABLE)) {
-            return [];
-        }
-        $deduplicated = $this->overlayDeduplicator->deduplicate($this->fetchLanguageRows(), 'cat_uid');
-        $this->reportLosers($deduplicated['losers']);
-        return array_values(array_filter(
-            $deduplicated['winners'],
-            fn(array $winner): bool => $this->migrationHelper->resolveLocalUid(
-                self::LEGACY_LANGUAGE_TABLE,
-                (int)$winner['uid'],
-                self::LOCAL_TABLE
-            ) === null
-        ));
-    }
-
-    /**
-     * @param array<int, array<string, mixed>> $losers
-     */
-    private function reportLosers(array $losers): void
-    {
-        foreach ($losers as $loser) {
-            $this->output->writeln(sprintf(
-                '<comment>Skipped duplicate tt_products_cat_language uid %d (parent %d, language %d).</comment>',
-                (int)$loser['uid'],
-                (int)$loser['cat_uid'],
-                (int)$loser['sys_language_uid']
-            ));
-        }
-    }
-
     /**
      * @param array<string, mixed> $winner
+     * @return array<string, mixed>
      */
-    private function migrateOverlay(array $winner): void
+    private function overlayValues(array $winner): array
     {
-        $parentLocalUid = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, (int)$winner['cat_uid'], self::LOCAL_TABLE);
-        if ($parentLocalUid === null) {
-            $this->output->writeln(sprintf(
-                '<comment>Skipped tt_products_cat_language uid %d: parent uid %d was never migrated.</comment>',
-                (int)$winner['uid'],
-                (int)$winner['cat_uid']
-            ));
-            // Recorded with a sentinel 0 local uid so this permanently unmigratable
-            // overlay is not reconsidered (and re-warned about) on every future run.
-            $this->migrationHelper->recordMapping(self::LEGACY_LANGUAGE_TABLE, (int)$winner['uid'], self::LOCAL_TABLE, 0);
-            return;
-        }
-        $this->insertOverlay($winner, $parentLocalUid);
-    }
-
-    /**
-     * @param array<string, mixed> $winner
-     */
-    private function insertOverlay(array $winner, int $parentLocalUid): void
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::LOCAL_TABLE);
-        $queryBuilder->insert(self::LOCAL_TABLE)->values([
-            'pid' => $this->fetchPid($parentLocalUid),
-            'hidden' => (int)$winner['hidden'],
-            'sys_language_uid' => (int)$winner['sys_language_uid'],
-            'l10n_parent' => $parentLocalUid,
+        return [
             'title' => (string)$winner['title'],
             'slug' => (string)($winner['slug'] ?? ''),
             'description' => (string)($winner['note'] ?? ''),
             'parent_category' => 0,
-        ])->executeStatement();
-        $localUid = (int)$this->connectionPool->getConnectionForTable(self::LOCAL_TABLE)->lastInsertId();
-        $this->migrationHelper->recordMapping(self::LEGACY_LANGUAGE_TABLE, (int)$winner['uid'], self::LOCAL_TABLE, $localUid);
-    }
-
-    private function fetchPid(int $localUid): int
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::LOCAL_TABLE);
-        $queryBuilder->getRestrictions()->removeAll();
-        $pid = $queryBuilder->select('pid')->from(self::LOCAL_TABLE)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($localUid, ParameterType::INTEGER)))
-            ->executeQuery()->fetchOne();
-        return (int)$pid;
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function fetchLanguageRows(): array
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::LEGACY_LANGUAGE_TABLE);
-        $queryBuilder->getRestrictions()->removeAll();
-        return $queryBuilder->select('*')->from(self::LEGACY_LANGUAGE_TABLE)->executeQuery()->fetchAllAssociative();
+        ];
     }
 }

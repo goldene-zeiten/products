@@ -21,6 +21,7 @@ CREATE TABLE tt_products (
 	weight decimal(19,6) DEFAULT '0.000000' NOT NULL,
 	offer int(11) DEFAULT '0' NOT NULL,
 	highlight int(11) DEFAULT '0' NOT NULL,
+	image text,
 
 	PRIMARY KEY (uid)
 );
