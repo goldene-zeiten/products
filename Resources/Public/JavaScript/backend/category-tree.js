@@ -654,7 +654,9 @@ class ProductsCategoryTree extends LitElement {
       aria-label="${text}"
       title="${text}"
       @click="${() => void this.toggleNode(node)}"
-    >${expanded ? '−' : '+'}</button>`;
+    >
+      ${expanded ? '−' : '+'}
+    </button>`;
     }
     rowStateClasses(node) {
         const classes = ['d-flex', 'align-items-center', 'gap-1'];
@@ -679,7 +681,9 @@ class ProductsCategoryTree extends LitElement {
     }
     renderDraftRow(draft) {
         const icon = draft.type === 'category' ? 'products-category' : 'products-product';
-        const titleLabel = draft.type === 'category' ? label('new_category_title', 'Category title:') : label('new_product_title', 'Product title:');
+        const titleLabel = draft.type === 'category'
+            ? label('new_category_title', 'Category title:')
+            : label('new_product_title', 'Product title:');
         return html `
       <li>
         <div class="d-flex align-items-center gap-1">
@@ -714,18 +718,25 @@ class ProductsCategoryTree extends LitElement {
           @contextmenu="${(event) => this.onContextMenu(event, node)}"
         >
           ${this.renderToggle(node)}
-          <typo3-backend-icon identifier="${node.icon}" size="small" state="${node.hidden ? 'disabled' : 'default'}"></typo3-backend-icon>
+          <typo3-backend-icon
+            identifier="${node.icon}"
+            size="small"
+            state="${node.hidden ? 'disabled' : 'default'}"
+          ></typo3-backend-icon>
           <a
             href="#"
             class="flex-grow-1${node.hidden ? ' text-body-secondary fst-italic' : ''}"
-            @click="${(event) => { event.preventDefault(); this.selectNode(node); }}"
-          >${node.title}</a>
+            @click="${(event) => {
+            event.preventDefault();
+            this.selectNode(node);
+        }}"
+            >${node.title}</a
+          >
         </div>
         ${expanded && (children.length > 0 || draft)
             ? html `<ul class="list-unstyled ps-4">
-              ${children.map((child) => this.renderNode(child))}
-              ${draft ? this.renderDraftRow(draft) : nothing}
-            </ul>`
+                ${children.map((child) => this.renderNode(child))} ${draft ? this.renderDraftRow(draft) : nothing}
+              </ul>`
             : nothing}
       </li>
     `;

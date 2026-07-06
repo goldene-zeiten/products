@@ -35,7 +35,7 @@ export class CategoryTreeClient {
   async fetchConfiguration(): Promise<TreeConfiguration> {
     return this.getJson<TreeConfiguration>(
       new URL(ajaxUrl('products_category_tree_configuration'), window.location.href),
-      { storageFolderPid: 0 }
+      { storageFolderPid: 0 },
     );
   }
 
