@@ -10,7 +10,6 @@ return [
         'crdate' => 'crdate',
         'delete' => 'deleted',
         'enablecolumns' => [],
-        'searchFields' => 'order_number,email,invoice_number',
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [

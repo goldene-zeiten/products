@@ -12,7 +12,6 @@ return [
         'crdate' => 'crdate',
         'delete' => 'deleted',
         'enablecolumns' => [],
-        'searchFields' => 'first_name,last_name,email,city,zip',
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [

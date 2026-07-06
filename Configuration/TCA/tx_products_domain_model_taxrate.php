@@ -19,7 +19,6 @@ return [
             'starttime' => 'valid_from',
             'endtime' => 'valid_until',
         ],
-        'searchFields' => 'country',
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
