@@ -17,7 +17,7 @@ return [
         'access' => 'user',
         'workspaces' => 'live',
         'iconIdentifier' => 'products-module',
-        'navigationComponent' => '@goldene-zeiten/products/backend/category-tree.js',
+        'navigationComponent' => '@goldene-zeiten/products/backend/category-tree',
         'labels' => [
             'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:module.products_management.title',
             'shortDescription' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:module.products_management.shortDescription',
