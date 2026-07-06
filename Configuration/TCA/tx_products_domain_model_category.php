@@ -18,7 +18,7 @@ return [
             'disabled' => 'hidden',
         ],
         'searchFields' => 'title,slug,description',
-        'iconfile' => 'products-category',
+        'iconfile' => 'EXT:products/Resources/Public/Icons/Category.svg',
     ],
     'types' => [
         '1' => ['showitem' => 'title, slug, parent_category, description, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],

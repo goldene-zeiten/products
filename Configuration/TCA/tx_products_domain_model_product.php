@@ -18,7 +18,7 @@ return [
             'disabled' => 'hidden',
         ],
         'searchFields' => 'title,subtitle,slug,description,item_number,ean',
-        'iconfile' => 'products-product',
+        'iconfile' => 'EXT:products/Resources/Public/Icons/Product.svg',
     ],
     'types' => [
         '1' => ['showitem' => 'title, subtitle, slug, item_number, ean, price, tax_class, categories, in_stock, basket_min_quantity, basket_max_quantity, weight, is_offer, is_highlight, description, articles, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
