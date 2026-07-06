@@ -7,3 +7,11 @@ services:
   GoldeneZeiten\Products\:
     resource: '../Classes/*'
     exclude: '../Classes/Exception/*'
+
+  # DataHandler's classic hooks (registered in ext_localconf.php via
+  # $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']) are fetched with
+  # GeneralUtility::makeInstance() from code that isn't itself a DI-resolved
+  # service, so the container needs this to be public to hand it out - a
+  # private service can only be injected as another service's dependency.
+  GoldeneZeiten\Products\Hooks\CategoryMountAccessHook:
+    public: true
