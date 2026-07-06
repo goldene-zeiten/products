@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Controller\Backend;
 use GoldeneZeiten\Products\Backend\CategoryAccessGuard;
 use GoldeneZeiten\Products\Backend\CategoryMountResolver;
 use GoldeneZeiten\Products\Backend\CategoryTreeRepository;
+use GoldeneZeiten\Products\Backend\StorageFolderResolver;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
@@ -27,7 +28,19 @@ final class CategoryTreeController
         private readonly CategoryTreeRepository $treeRepository,
         private readonly CategoryMountResolver $mountResolver,
         private readonly CategoryAccessGuard $accessGuard,
+        private readonly StorageFolderResolver $storageFolderResolver,
     ) {}
+
+    /**
+     * Mirrors PageTree's own page_tree_configuration action: fetched once by
+     * the tree on connect. New-record creation needs a `pid` (DataHandler's
+     * physical storage location) distinct from our own `parent_category`
+     * tree-parent field, and the client has no other way to learn it.
+     */
+    public function fetchConfigurationAction(): ResponseInterface
+    {
+        return new JsonResponse(['storageFolderPid' => $this->storageFolderResolver->resolve()]);
+    }
 
     public function fetchDataAction(ServerRequestInterface $request): ResponseInterface
     {

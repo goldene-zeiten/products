@@ -71,6 +71,7 @@ export class ProductsCategoryTree extends LitElement {
   private searchTimer: number | null = null;
   private newCategoryDraft: { parentUid: number; parentIdentifier: string } | null = null;
   private shouldFocusDraftInput = false;
+  private storageFolderPid = 0;
 
   constructor() {
     super();
@@ -137,6 +138,8 @@ export class ProductsCategoryTree extends LitElement {
    * ?product=, only the separate content iframe does.
    */
   private async initialize(): Promise<void> {
+    const configuration = await this.client.fetchConfiguration();
+    this.storageFolderPid = configuration.storageFolderPid;
     await this.loadRoot();
     await this.restoreExpandedState();
     const state = ModuleStateStorage.current(MODULE_TYPE);
@@ -379,7 +382,7 @@ export class ProductsCategoryTree extends LitElement {
       this.requestUpdate();
       return;
     }
-    const succeeded = await this.client.createCategory(trimmedTitle, draft.parentUid);
+    const succeeded = await this.client.createCategory(trimmedTitle, draft.parentUid, this.storageFolderPid);
     if (succeeded) {
       await this.refreshParent(draft.parentIdentifier);
     } else {

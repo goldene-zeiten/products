@@ -27,7 +27,18 @@ export function tableForType(type: NodeType): string {
  * category/product here shares one flat storage-folder pid and DataHandler's
  * generic cmd[move] can't express "reorder within this parent_category branch".
  */
+export interface TreeConfiguration {
+  storageFolderPid: number;
+}
+
 export class CategoryTreeClient {
+  async fetchConfiguration(): Promise<TreeConfiguration> {
+    return this.getJson<TreeConfiguration>(
+      new URL(ajaxUrl('products_category_tree_configuration'), window.location.href),
+      { storageFolderPid: 0 }
+    );
+  }
+
   async fetchNodes(parentIdentifier: string): Promise<TreeNode[]> {
     const url = new URL(ajaxUrl('products_category_tree_data'), window.location.href);
     url.searchParams.set('parent', parentIdentifier);
@@ -54,9 +65,10 @@ export class CategoryTreeClient {
     return response.ok;
   }
 
-  async createCategory(title: string, parentCategoryUid: number): Promise<boolean> {
+  async createCategory(title: string, parentCategoryUid: number, storageFolderPid: number): Promise<boolean> {
     const newId = `NEW${Math.floor(Math.random() * 1e9).toString(16)}`;
     const body = new URLSearchParams();
+    body.set(`data[${TABLES.category}][${newId}][pid]`, String(storageFolderPid));
     body.set(`data[${TABLES.category}][${newId}][title]`, title);
     body.set(`data[${TABLES.category}][${newId}][parent_category]`, String(parentCategoryUid));
     return this.submitDataHandler(body);

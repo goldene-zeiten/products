@@ -81,16 +81,10 @@ function ajaxUrl(routeIdentifier) {
 function tableForType(type) {
     return TABLES[type];
 }
-/**
- * All reads go through this extension's own AJAX endpoints (CategoryTreeController).
- * Writes reuse TYPO3 core's generic, table-agnostic DataHandler AJAX route
- * ("record_process") wherever DataHandler's own model fits (field updates, delete,
- * copy) - CategoryMountAccessHook enforces mount restrictions there regardless of
- * caller. Sibling reordering goes through a dedicated endpoint instead, since every
- * category/product here shares one flat storage-folder pid and DataHandler's
- * generic cmd[move] can't express "reorder within this parent_category branch".
- */
 class CategoryTreeClient {
+    async fetchConfiguration() {
+        return this.getJson(new URL(ajaxUrl('products_category_tree_configuration'), window.location.href), { storageFolderPid: 0 });
+    }
     async fetchNodes(parentIdentifier) {
         const url = new URL(ajaxUrl('products_category_tree_data'), window.location.href);
         url.searchParams.set('parent', parentIdentifier);
@@ -113,9 +107,10 @@ class CategoryTreeClient {
         const response = await fetch(ajaxUrl('products_category_tree_reorder'), { method: 'POST', body });
         return response.ok;
     }
-    async createCategory(title, parentCategoryUid) {
+    async createCategory(title, parentCategoryUid, storageFolderPid) {
         const newId = `NEW${Math.floor(Math.random() * 1e9).toString(16)}`;
         const body = new URLSearchParams();
+        body.set(`data[${TABLES.category}][${newId}][pid]`, String(storageFolderPid));
         body.set(`data[${TABLES.category}][${newId}][title]`, title);
         body.set(`data[${TABLES.category}][${newId}][parent_category]`, String(parentCategoryUid));
         return this.submitDataHandler(body);
@@ -211,6 +206,7 @@ class ProductsCategoryTree extends LitElement {
         this.searchTimer = null;
         this.newCategoryDraft = null;
         this.shouldFocusDraftInput = false;
+        this.storageFolderPid = 0;
         /**
          * The only generically-listenable signal context-menu-actions.js emits for
          * any table (see class doc) - used to drop a deleted node from the cache
@@ -266,6 +262,8 @@ class ProductsCategoryTree extends LitElement {
      * ?product=, only the separate content iframe does.
      */
     async initialize() {
+        const configuration = await this.client.fetchConfiguration();
+        this.storageFolderPid = configuration.storageFolderPid;
         await this.loadRoot();
         await this.restoreExpandedState();
         const state = ModuleStateStorage.current(MODULE_TYPE);
@@ -491,7 +489,7 @@ class ProductsCategoryTree extends LitElement {
             this.requestUpdate();
             return;
         }
-        const succeeded = await this.client.createCategory(trimmedTitle, draft.parentUid);
+        const succeeded = await this.client.createCategory(trimmedTitle, draft.parentUid, this.storageFolderPid);
         if (succeeded) {
             await this.refreshParent(draft.parentIdentifier);
         }

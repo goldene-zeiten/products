@@ -5,6 +5,12 @@ declare(strict_types=1);
 use GoldeneZeiten\Products\Controller\Backend\CategoryTreeController;
 
 return [
+    'products_category_tree_configuration' => [
+        'path' => '/products/category-tree/configuration',
+        'methods' => ['GET'],
+        'target' => CategoryTreeController::class . '::fetchConfigurationAction',
+        'inheritAccessFromModule' => 'products_management',
+    ],
     'products_category_tree_data' => [
         'path' => '/products/category-tree/data',
         'methods' => ['GET'],
