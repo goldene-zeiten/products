@@ -7,8 +7,8 @@ import ContextMenu from '@typo3/backend/context-menu.js';
 import './TreeToolbar';
 import { CategoryTreeClient, tableForType } from './CategoryTreeClient';
 import { TreeState } from './TreeState';
-import { NEW_CATEGORY_DATA_TRANSFER_TYPE } from './TreeTypes';
-import type { DropPosition, NodeType, SearchMatch, TreeNode } from './TreeTypes';
+import { NEW_CATEGORY_DATA_TRANSFER_TYPE, NEW_PRODUCT_DATA_TRANSFER_TYPE } from './TreeTypes';
+import type { DropPosition, NewNodeType, NodeType, SearchMatch, TreeNode } from './TreeTypes';
 
 const MODULE_TYPE = 'products_management';
 
@@ -69,7 +69,7 @@ export class ProductsCategoryTree extends LitElement {
   private dragPayload: DragPayload | null = null;
   private dropTarget: { identifier: string; position: DropPosition } | null = null;
   private searchTimer: number | null = null;
-  private newCategoryDraft: { parentUid: number; parentIdentifier: string } | null = null;
+  private newNodeDraft: { type: NewNodeType; parentUid: number; parentIdentifier: string } | null = null;
   private shouldFocusDraftInput = false;
   private storageFolderPid = 0;
 
@@ -88,7 +88,7 @@ export class ProductsCategoryTree extends LitElement {
     super.updated(changedProperties);
     if (this.shouldFocusDraftInput) {
       this.shouldFocusDraftInput = false;
-      this.querySelector<HTMLInputElement>('[data-new-category-draft-input]')?.focus();
+      this.querySelector<HTMLInputElement>('[data-new-node-draft-input]')?.focus();
     }
   }
 
@@ -304,13 +304,39 @@ export class ProductsCategoryTree extends LitElement {
     }
   }
 
+  /**
+   * A category drag is droppable on another category (nest) or empty tree
+   * background (top-level); a product drag is droppable on a category only -
+   * a product MUST have a category, so root/background isn't valid for it.
+   */
+  private resolveNewNodeType(dataTransfer: DataTransfer | null): NewNodeType | null {
+    if (!dataTransfer) {
+      return null;
+    }
+    if (dataTransfer.types.includes(NEW_CATEGORY_DATA_TRANSFER_TYPE)) {
+      return 'category';
+    }
+    if (dataTransfer.types.includes(NEW_PRODUCT_DATA_TRANSFER_TYPE)) {
+      return 'product';
+    }
+    return null;
+  }
+
+  private canDropNewNode(newNodeType: NewNodeType, targetType: NodeType | null): boolean {
+    if (targetType === 'category') {
+      return true;
+    }
+    return newNodeType === 'category' && targetType === null;
+  }
+
   private onDragOver(event: DragEvent, target: TreeNode): void {
-    if (event.dataTransfer?.types.includes(NEW_CATEGORY_DATA_TRANSFER_TYPE)) {
-      // Stop here regardless of target validity so hovering a product/article
+    const newNodeType = this.resolveNewNodeType(event.dataTransfer);
+    if (newNodeType) {
+      // Stop here regardless of target validity so hovering an ineligible
       // node can't fall through to the root drop zone's "create at root"
       // handling further up the bubbling chain.
       event.stopPropagation();
-      if (target.type !== 'category') {
+      if (!this.canDropNewNode(newNodeType, target.type)) {
         return;
       }
       event.preventDefault();
@@ -331,31 +357,33 @@ export class ProductsCategoryTree extends LitElement {
   }
 
   private onRootDragOver(event: DragEvent): void {
-    if (event.dataTransfer?.types.includes(NEW_CATEGORY_DATA_TRANSFER_TYPE)) {
+    const newNodeType = this.resolveNewNodeType(event.dataTransfer);
+    if (newNodeType && this.canDropNewNode(newNodeType, null)) {
       event.preventDefault();
     }
   }
 
   private async onRootDrop(event: DragEvent): Promise<void> {
-    if (!event.dataTransfer?.types.includes(NEW_CATEGORY_DATA_TRANSFER_TYPE)) {
+    const newNodeType = this.resolveNewNodeType(event.dataTransfer);
+    if (!newNodeType || !this.canDropNewNode(newNodeType, null)) {
       return;
     }
     event.preventDefault();
-    await this.startCategoryDraft(0, 'root');
+    await this.startNewNodeDraft(newNodeType, 0, 'root');
   }
 
   /**
    * Mirrors PageTree's own drag-to-create UX (page-tree-element.js's
-   * handleNodeAdd -> editNode): dropping the toolbar's drag handle doesn't
+   * handleNodeAdd -> editNode): dropping a toolbar drag handle doesn't
    * prompt, it opens an inline text input directly in the tree at the drop
    * location, committed on Enter/blur and cancelled on Escape.
    */
-  private async startCategoryDraft(parentUid: number, parentIdentifier: string): Promise<void> {
+  private async startNewNodeDraft(type: NewNodeType, parentUid: number, parentIdentifier: string): Promise<void> {
     if (parentIdentifier !== 'root') {
       await this.ensureChildrenLoaded(parentIdentifier);
     }
     this.expanded.add(parentIdentifier);
-    this.newCategoryDraft = { parentUid, parentIdentifier };
+    this.newNodeDraft = { type, parentUid, parentIdentifier };
     this.shouldFocusDraftInput = true;
     this.requestUpdate();
   }
@@ -363,26 +391,29 @@ export class ProductsCategoryTree extends LitElement {
   private onDraftKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       event.preventDefault();
-      void this.commitCategoryDraft((event.target as HTMLInputElement).value);
+      void this.commitNewNodeDraft((event.target as HTMLInputElement).value);
     } else if (event.key === 'Escape') {
       event.preventDefault();
-      this.newCategoryDraft = null;
+      this.newNodeDraft = null;
       this.requestUpdate();
     }
   }
 
-  private async commitCategoryDraft(title: string): Promise<void> {
-    const draft = this.newCategoryDraft;
+  private async commitNewNodeDraft(title: string): Promise<void> {
+    const draft = this.newNodeDraft;
     if (!draft) {
       return;
     }
-    this.newCategoryDraft = null;
+    this.newNodeDraft = null;
     const trimmedTitle = title.trim();
     if (trimmedTitle === '') {
       this.requestUpdate();
       return;
     }
-    const succeeded = await this.client.createCategory(trimmedTitle, draft.parentUid, this.storageFolderPid);
+    const succeeded =
+      draft.type === 'category'
+        ? await this.client.createCategory(trimmedTitle, draft.parentUid, this.storageFolderPid)
+        : await this.client.createProduct(trimmedTitle, draft.parentUid, this.storageFolderPid);
     if (succeeded) {
       await this.refreshParent(draft.parentIdentifier);
     } else {
@@ -421,16 +452,16 @@ export class ProductsCategoryTree extends LitElement {
 
   private async onDrop(event: DragEvent, target: TreeNode): Promise<void> {
     event.preventDefault();
-    const isNewCategory = event.dataTransfer?.types.includes(NEW_CATEGORY_DATA_TRANSFER_TYPE) ?? false;
+    const newNodeType = this.resolveNewNodeType(event.dataTransfer);
     const dragged = this.dragPayload;
     const position = this.dropTarget?.position ?? null;
     this.dragPayload = null;
     this.dropTarget = null;
     this.requestUpdate();
-    if (isNewCategory) {
+    if (newNodeType) {
       event.stopPropagation();
-      if (target.type === 'category') {
-        await this.startCategoryDraft(target.uid, target.identifier);
+      if (this.canDropNewNode(newNodeType, target.type)) {
+        await this.startNewNodeDraft(newNodeType, target.uid, target.identifier);
       }
       return;
     }
@@ -531,20 +562,23 @@ export class ProductsCategoryTree extends LitElement {
     return classes.join(' ');
   }
 
-  private renderDraftRow(): TemplateResult {
+  private renderDraftRow(draft: { type: NewNodeType; parentUid: number; parentIdentifier: string }): TemplateResult {
+    const icon = draft.type === 'category' ? 'products-category' : 'products-product';
+    const titleLabel =
+      draft.type === 'category' ? label('new_category_title', 'Category title:') : label('new_product_title', 'Product title:');
     return html`
       <li>
         <div class="d-flex align-items-center gap-1">
           <span class="d-inline-block" style="width:1.5rem"></span>
-          <typo3-backend-icon identifier="products-category" size="small"></typo3-backend-icon>
+          <typo3-backend-icon identifier="${icon}" size="small"></typo3-backend-icon>
           <input
             type="text"
             class="form-control form-control-sm flex-grow-1"
-            data-new-category-draft-input
-            placeholder="${label('new_category_title', 'Category title:')}"
-            aria-label="${label('new_category_title', 'Category title:')}"
+            data-new-node-draft-input
+            placeholder="${titleLabel}"
+            aria-label="${titleLabel}"
             @keydown="${(event: KeyboardEvent) => this.onDraftKeyDown(event)}"
-            @blur="${(event: FocusEvent) => void this.commitCategoryDraft((event.target as HTMLInputElement).value)}"
+            @blur="${(event: FocusEvent) => void this.commitNewNodeDraft((event.target as HTMLInputElement).value)}"
           />
         </div>
       </li>
@@ -554,7 +588,7 @@ export class ProductsCategoryTree extends LitElement {
   private renderNode(node: TreeNode): TemplateResult {
     const expanded = this.expanded.has(node.identifier);
     const children = this.childrenByParent.get(node.identifier) ?? [];
-    const showDraft = this.newCategoryDraft?.parentIdentifier === node.identifier;
+    const draft = this.newNodeDraft?.parentIdentifier === node.identifier ? this.newNodeDraft : null;
     return html`
       <li>
         <div
@@ -574,10 +608,10 @@ export class ProductsCategoryTree extends LitElement {
             @click="${(event: Event) => { event.preventDefault(); this.selectNode(node); }}"
           >${node.title}</a>
         </div>
-        ${expanded && (children.length > 0 || showDraft)
+        ${expanded && (children.length > 0 || draft)
           ? html`<ul class="list-unstyled ps-4">
               ${children.map((child) => this.renderNode(child))}
-              ${showDraft ? this.renderDraftRow() : nothing}
+              ${draft ? this.renderDraftRow(draft) : nothing}
             </ul>`
           : nothing}
       </li>
@@ -590,6 +624,7 @@ export class ProductsCategoryTree extends LitElement {
         <goldene-zeiten-products-tree-toolbar
           search-label="${label('search_placeholder', 'Search...')}"
           new-category-label="${label('new_category', 'New category')}"
+          new-product-label="${label('new_product', 'New product')}"
           @tree-search="${(event: CustomEvent<string>) => this.onSearchInput(event)}"
         ></goldene-zeiten-products-tree-toolbar>
         <div class="navigation-tree-container">
@@ -603,7 +638,7 @@ export class ProductsCategoryTree extends LitElement {
             @drop="${(event: DragEvent) => void this.onRootDrop(event)}"
           >
             ${this.rootNodes.map((node) => this.renderNode(node))}
-            ${this.newCategoryDraft?.parentIdentifier === 'root' ? this.renderDraftRow() : nothing}
+            ${this.newNodeDraft?.parentIdentifier === 'root' ? this.renderDraftRow(this.newNodeDraft) : nothing}
           </ul>
         </div>
       </div>

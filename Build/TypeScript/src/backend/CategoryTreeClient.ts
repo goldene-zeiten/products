@@ -74,6 +74,15 @@ export class CategoryTreeClient {
     return this.submitDataHandler(body);
   }
 
+  async createProduct(title: string, categoryUid: number, storageFolderPid: number): Promise<boolean> {
+    const newId = `NEW${Math.floor(Math.random() * 1e9).toString(16)}`;
+    const body = new URLSearchParams();
+    body.set(`data[${TABLES.product}][${newId}][pid]`, String(storageFolderPid));
+    body.set(`data[${TABLES.product}][${newId}][title]`, title);
+    body.set(`data[${TABLES.product}][${newId}][categories]`, String(categoryUid));
+    return this.submitDataHandler(body);
+  }
+
   async reparentCategory(uid: number, newParentUid: number): Promise<boolean> {
     const body = new URLSearchParams();
     body.set(`data[${TABLES.category}][${uid}][parent_category]`, String(newParentUid));

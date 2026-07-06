@@ -84,6 +84,12 @@
 			<trans-unit id="tree.new_category_title" resname="tree.new_category_title">
 				<source>Category title:</source>
 			</trans-unit>
+			<trans-unit id="tree.new_product" resname="tree.new_product">
+				<source>New product</source>
+			</trans-unit>
+			<trans-unit id="tree.new_product_title" resname="tree.new_product_title">
+				<source>Product title:</source>
+			</trans-unit>
 			<trans-unit id="tree.error_generic" resname="tree.error_generic">
 				<source>The action could not be completed.</source>
 			</trans-unit>
