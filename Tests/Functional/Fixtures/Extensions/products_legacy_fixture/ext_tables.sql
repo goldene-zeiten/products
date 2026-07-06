@@ -111,3 +111,51 @@ CREATE TABLE tt_products_articles_language (
 
 	PRIMARY KEY (uid)
 );
+
+CREATE TABLE sys_products_orders (
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	tstamp int(11) DEFAULT '0' NOT NULL,
+	crdate int(11) DEFAULT '0' NOT NULL,
+	deleted tinyint(4) DEFAULT '0' NOT NULL,
+	hidden tinyint(4) DEFAULT '0' NOT NULL,
+	feusers_uid int(11) DEFAULT '0' NOT NULL,
+	first_name varchar(50) DEFAULT '' NOT NULL,
+	last_name varchar(50) DEFAULT '' NOT NULL,
+	salutation int(11) DEFAULT '0' NOT NULL,
+	company varchar(80) DEFAULT '' NOT NULL,
+	vat_id varchar(20) DEFAULT '' NOT NULL,
+	address varchar(255) DEFAULT '' NOT NULL,
+	house_no varchar(20) DEFAULT '' NOT NULL,
+	zip varchar(20) DEFAULT '' NOT NULL,
+	city varchar(50) DEFAULT '' NOT NULL,
+	country varchar(60) DEFAULT '' NOT NULL,
+	telephone varchar(20) DEFAULT '' NOT NULL,
+	email varchar(80) DEFAULT '' NOT NULL,
+	amount decimal(19,2) DEFAULT '0.00' NOT NULL,
+	pay_mode tinyint(3) DEFAULT '0' NOT NULL,
+	tracking_code varchar(64) DEFAULT '' NOT NULL,
+	status tinyint(4) unsigned DEFAULT '0' NOT NULL,
+	status_log blob,
+	orderData mediumblob,
+	agb tinyint(1) DEFAULT '0' NOT NULL,
+	client_ip varchar(50) DEFAULT '' NOT NULL,
+	bill_no varchar(80) DEFAULT '' NOT NULL,
+
+	PRIMARY KEY (uid)
+);
+
+CREATE TABLE sys_products_orders_mm_tt_products (
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	tstamp int(11) DEFAULT '0' NOT NULL,
+	crdate int(11) DEFAULT '0' NOT NULL,
+	deleted tinyint(4) DEFAULT '0' NOT NULL,
+	hidden tinyint(4) DEFAULT '0' NOT NULL,
+	uid_local int(11) DEFAULT '0' NOT NULL,
+	uid_foreign int(11) DEFAULT '0' NOT NULL,
+	sys_products_orders_qty int(11) unsigned DEFAULT '0' NOT NULL,
+	tt_products_articles_uid int(11) DEFAULT '0' NOT NULL,
+
+	PRIMARY KEY (uid)
+);
