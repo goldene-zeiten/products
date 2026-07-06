@@ -143,6 +143,7 @@ Usage: $0 [options] [file]
 Options:
     -s <...>
         Specifies which test suite to run
+            - buildJs: build javascript/typescript assets
             - cgl: cgl test and fix all php files
             - checkBom: check UTF-8 files do not contain BOM
             - checkExceptionCodes: Check for duplicate exception codes
@@ -156,8 +157,10 @@ Options:
             - composer: "composer" with all remaining arguments dispatched.
             - composerUpdate: "composer update", handy if host has no PHP
             - functional: functional tests
+            - lintJs: javascript/typescript linting
             - lintPhp: PHP linting
             - lintTypoScript: TypoScript linting
+            - npmInstall: "npm ci", use after initial clone or when package.json changed
             - renderDocumentation: This uses the official rendering container to render the extension documentation.
             - phpstan: phpstan analyze
             - phpstanGenerateBaseline: regenerate phpstan baseline, handy after phpstan updates
@@ -245,7 +248,7 @@ Options:
         replay the unit tests in that order.
 
     -n
-        Only with -s cgl
+        Only with -s cgl or -s lintJs
         Activate dry-run in CGL check that does not actively change files and only prints broken ones.
 
     -u
@@ -426,6 +429,7 @@ IMAGE_PHP="ghcr.io/typo3/core-testing-$(echo "php${PHP_VERSION}" | sed -e 's/\./
 IMAGE_ALPINE="docker.io/alpine:3.8"
 IMAGE_DOCS="ghcr.io/typo3-documentation/render-guides:latest"
 IMAGE_SELENIUM="docker.io/selenium/standalone-chrome:4.0.0-20211102"
+IMAGE_NODEJS="ghcr.io/typo3/core-testing-nodejs24:1.1"
 IMAGE_MARIADB="docker.io/mariadb:${DBMS_VERSION}"
 IMAGE_MYSQL="docker.io/mysql:${DBMS_VERSION}"
 IMAGE_POSTGRES="docker.io/postgres:${DBMS_VERSION}-alpine"
@@ -444,7 +448,7 @@ echo "Architecture" ${ARCH} "requires" ${IMAGE_SELENIUM} "to run acceptance test
 shift $((OPTIND - 1))
 
 SUFFIX=$(echo $RANDOM)
-NETWORK="lavitto-form-to-database-${SUFFIX}"
+NETWORK="products-${SUFFIX}"
 ${CONTAINER_BIN} network create ${NETWORK} >/dev/null
 
 if [ "${CONTAINER_BIN}" == "docker" ]; then
@@ -470,6 +474,11 @@ fi
 
 # Suite execution
 case ${TEST_SUITE} in
+    buildJs)
+        COMMAND=(npm run build)
+        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name buildJs-${SUFFIX} -e npm_config_cache=.Build/.cache/npm ${IMAGE_NODEJS} "${COMMAND[@]}"
+        SUITE_EXIT_CODE=$?
+        ;;
     cgl)
         if [ "${CGLCHECK_DRY_RUN}" -eq 1 ]; then
             COMMAND="php -dxdebug.mode=off .Build/bin/php-cs-fixer fix --config Build/php-cs-fixer/config.php -v --dry-run --using-cache no --diff"
@@ -574,6 +583,15 @@ case ${TEST_SUITE} in
                 ;;
         esac
         ;;
+    lintJs)
+        if [ "${CGLCHECK_DRY_RUN}" -eq 1 ]; then
+            COMMAND="npm run lint:js"
+        else
+            COMMAND="npm run lint:js:fix"
+        fi
+        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name lintJs-${SUFFIX} -e npm_config_cache=.Build/.cache/npm ${IMAGE_NODEJS} /bin/sh -c "${COMMAND}"
+        SUITE_EXIT_CODE=$?
+        ;;
     lintPhp)
         COMMAND="find . -name \\*.php ! -path "./.Build/\\*" ! -path "./.cache/\\*" ! -path "./original/\\*" -print0 | xargs -0 -n1 -P4 php -dxdebug.mode=off -l >/dev/null"
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name lint-php-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} /bin/sh -c "${COMMAND}"
@@ -591,6 +609,11 @@ case ${TEST_SUITE} in
         fi
         COMMAND="php -dxdebug.mode=off .Build/bin/typoscript-lint --ansi --config=./Build/typoscript-lint/typoscript-lint.yml"
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name lint-php-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} /bin/sh -c "${COMMAND}"
+        SUITE_EXIT_CODE=$?
+        ;;
+    npmInstall)
+        COMMAND=(npm ci)
+        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name npm-install-${SUFFIX} -e npm_config_cache=.Build/.cache/npm ${IMAGE_NODEJS} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
         ;;
     renderDocumentation)
