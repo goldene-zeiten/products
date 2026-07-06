@@ -7,9 +7,9 @@ namespace GoldeneZeiten\Products\Tests\Functional\Domain\Repository;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\Exception\RepositoryIsReadOnlyException;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
+use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 
-final class ProductRepositoryTest extends FunctionalTestCase
+final class ProductRepositoryTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products',

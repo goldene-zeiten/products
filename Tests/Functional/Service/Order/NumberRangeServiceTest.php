@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
 
 use GoldeneZeiten\Products\Service\Order\NumberRangeService;
-use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
+use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 
-final class NumberRangeServiceTest extends FunctionalTestCase
+final class NumberRangeServiceTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products',

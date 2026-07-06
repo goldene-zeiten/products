@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Updates;
 
+use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Updates\LegacyMigrationHelper;
 use GoldeneZeiten\Products\Updates\TtProductsProductUpgradeWizard;
 use Symfony\Component\Console\Output\BufferedOutput;
-use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
-final class TtProductsProductUpgradeWizardTest extends FunctionalTestCase
+final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products',

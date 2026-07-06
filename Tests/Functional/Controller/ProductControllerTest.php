@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Controller;
 
+use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
-use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
-final class ProductControllerTest extends FunctionalTestCase
+final class ProductControllerTest extends AbstractFunctionalTestCase
 {
     use SiteBasedTestTrait;
 

@@ -7,9 +7,9 @@ namespace GoldeneZeiten\Products\Tests\Functional\Backend;
 use GoldeneZeiten\Products\Backend\CategoryAccessGuard;
 use GoldeneZeiten\Products\Backend\CategoryMountResolver;
 use GoldeneZeiten\Products\Backend\CategoryTreeRepository;
-use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
+use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 
-final class CategoryTreeRepositoryTest extends FunctionalTestCase
+final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products',

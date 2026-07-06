@@ -94,6 +94,7 @@ final class OrderFactory
      */
     private function buildOrderItems(BasketViewModel $basketViewModel, Order $order): ObjectStorage
     {
+        /** @var ObjectStorage<OrderItem> $orderItems */
         $orderItems = new ObjectStorage();
         foreach ($basketViewModel->getItems() as $viewItem) {
             $orderItems->attach($this->buildOrderItem($viewItem, $order));

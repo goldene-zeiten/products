@@ -10,9 +10,9 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Service\Order\Exception\InvalidOrderStatusTransitionException;
 use GoldeneZeiten\Products\Service\Order\Exception\InvalidPaymentStatusTransitionException;
 use GoldeneZeiten\Products\Service\Order\OrderStatusManager;
-use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
+use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 
-final class OrderStatusManagerTest extends FunctionalTestCase
+final class OrderStatusManagerTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products',

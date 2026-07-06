@@ -6,9 +6,9 @@ namespace GoldeneZeiten\Products\Tests\Functional\Payment;
 
 use GoldeneZeiten\Products\Payment\Exception\PaymentMethodNotFoundException;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
-use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
+use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 
-final class PaymentMethodRegistryTest extends FunctionalTestCase
+final class PaymentMethodRegistryTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products',

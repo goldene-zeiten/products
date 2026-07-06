@@ -74,8 +74,9 @@ final class MoneyViewHelper extends AbstractViewHelper
             return $locale;
         }
 
-        if ($this->renderingContext->hasAttribute(\Psr\Http\Message\ServerRequestInterface::class)) {
-            $request = $this->renderingContext->getAttribute(\Psr\Http\Message\ServerRequestInterface::class);
+        $renderingContext = $this->renderingContext;
+        if ($renderingContext !== null && $renderingContext->hasAttribute(\Psr\Http\Message\ServerRequestInterface::class)) {
+            $request = $renderingContext->getAttribute(\Psr\Http\Message\ServerRequestInterface::class);
             $siteLanguage = $request->getAttribute('language');
             if ($siteLanguage instanceof SiteLanguage) {
                 return (string)$siteLanguage->getLocale();
@@ -88,8 +89,8 @@ final class MoneyViewHelper extends AbstractViewHelper
     private function resolveCurrencySymbol(\NumberFormatter $formatter, string $currency): string
     {
         $formatter->setTextAttribute(\NumberFormatter::CURRENCY_CODE, $currency);
-        $symbol = $formatter->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
+        $symbol = (string)$formatter->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
 
-        return $symbol !== false && $symbol !== '' ? $symbol : $currency;
+        return $symbol !== '' ? $symbol : $currency;
     }
 }

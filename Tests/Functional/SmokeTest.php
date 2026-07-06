@@ -7,9 +7,8 @@ namespace GoldeneZeiten\Products\Tests\Functional;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
-final class SmokeTest extends FunctionalTestCase
+final class SmokeTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products',
@@ -20,7 +19,7 @@ final class SmokeTest extends FunctionalTestCase
      */
     public function extensionCanBeLoaded(): void
     {
-        self::assertTrue(true);
+        self::assertGreaterThan(0, $this->get(Typo3Version::class)->getMajorVersion());
     }
 
     /**

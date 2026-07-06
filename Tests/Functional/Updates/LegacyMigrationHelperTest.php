@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Updates;
 
+use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Updates\LegacyMigrationHelper;
-use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
-final class LegacyMigrationHelperTest extends FunctionalTestCase
+final class LegacyMigrationHelperTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products',

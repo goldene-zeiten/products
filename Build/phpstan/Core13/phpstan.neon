@@ -7,6 +7,15 @@ parameters:
   tmpDir: ../../../.cache/phpstan
   ignoreErrors:
     - '#Variable \$_EXTKEY might not be defined\.#'
+    -
+      # TYPO3 v13's QueryResultInterface has one template param (ModelType), v14's has two
+      # (TKey, TValue) - OrderRepository is annotated for v14's shape since that's the
+      # direction this codebase is moving; ignored here rather than v14's phpstan.neon.
+      message: '#Generic type TYPO3\\CMS\\Extbase\\Persistence\\QueryResultInterface#'
+      path: ../../../Classes/Domain/Repository/OrderRepository.php
+    -
+      message: '#OrderRepository::findByFrontendUser\(\) should return#'
+      path: ../../../Classes/Domain/Repository/OrderRepository.php
   level: 8
 
   paths:
