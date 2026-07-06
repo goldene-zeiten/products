@@ -575,7 +575,7 @@ case ${TEST_SUITE} in
         esac
         ;;
     lintPhp)
-        COMMAND="find . -name \\*.php ! -path "./.Build/\\*" ! -path "./.cache/\\*" -print0 | xargs -0 -n1 -P4 php -dxdebug.mode=off -l >/dev/null"
+        COMMAND="find . -name \\*.php ! -path "./.Build/\\*" ! -path "./.cache/\\*" ! -path "./original/\\*" -print0 | xargs -0 -n1 -P4 php -dxdebug.mode=off -l >/dev/null"
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name lint-php-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} /bin/sh -c "${COMMAND}"
         SUITE_EXIT_CODE=$?
         ;;

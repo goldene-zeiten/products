@@ -14,6 +14,7 @@ FILES=`find . -type f \
     ! -path "./.php_cs.cache" \
     ! -path "./.php-cs-fixer.cache" \
     ! -path "./Documentation-GENERATED-temp/*" \
+    ! -path "./original/*" \
     -print0 | xargs -0 -n1 -P8 file {} | grep 'UTF-8 Unicode (with BOM)'`
 
 if [ -n "${FILES}" ]; then

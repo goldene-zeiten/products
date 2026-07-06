@@ -4,6 +4,7 @@
 /original
 /var
 /.claude
+/Documentation-GENERATED-temp
 composer.lock
 node_modules/
 Resources/Public/JavaScript/backend/*.js.map

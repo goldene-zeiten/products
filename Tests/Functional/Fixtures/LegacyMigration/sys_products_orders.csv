@@ -12,7 +12,7 @@
 ,"uid","pid","crdate","deleted","feusers_uid","first_name","last_name","salutation","company","address","house_no","zip","city","country","telephone","email","pay_mode","tracking_code","status","orderData","agb","client_ip","bill_no","amount"
 ,1,1,1700000000,0,0,"Jane","Doe",1,"","Main St","1","12345","Berlin","Germany","0123456","jane@example.com",1,"TRACK1",13,"a:1:{s:7:""version"";s:3:""1.0"";}",1,"1.2.3.4","INV-001","99.99"
 ,2,1,1700000001,0,5,"John","Smith",0,"Acme","Side St","2","54321","Munich","Wonderland","0129876","john@example.com",4,"","999","not-a-serialized-value",0,"5.6.7.8","","49.50"
-,3,1,1700000002,1,0,"Deleted","Order",0,"","","","","","","","deleted@example.com",0,"","0","",0,"","",""
+,3,1,1700000002,1,0,"Deleted","Order",0,"","","","","","","","deleted@example.com",0,"","0","",0,"","","0.00"
 "sys_products_orders_mm_tt_products",,,,,,,
 ,"uid","pid","deleted","uid_local","uid_foreign","sys_products_orders_qty","tt_products_articles_uid"
 ,1,1,0,1,1,2,0
