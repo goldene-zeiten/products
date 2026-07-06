@@ -35,22 +35,29 @@ export class ProductsTreeToolbar extends LitElement {
 
   render() {
     return html`
-      <div class="d-flex gap-2 mb-2 align-items-center">
-        <input
-          type="search"
-          class="form-control form-control-sm"
-          placeholder="${this.searchLabel}"
-          aria-label="${this.searchLabel}"
-          @input="${this.onInput}"
-        />
-        <div
-          class="btn btn-default btn-sm text-nowrap"
-          draggable="true"
-          title="${this.newCategoryLabel}"
-          aria-label="${this.newCategoryLabel}"
-          @dragstart="${(event: DragEvent) => this.onNewCategoryDragStart(event)}"
-        >
-          <typo3-backend-icon identifier="products-category" size="small"></typo3-backend-icon>
+      <div class="tree-toolbar">
+        <div class="tree-toolbar__menu">
+          <div class="tree-toolbar__search">
+            <label for="productsTreeToolbarSearch" class="visually-hidden">${this.searchLabel}</label>
+            <input
+              type="search"
+              id="productsTreeToolbarSearch"
+              class="form-control form-control-sm search-input"
+              placeholder="${this.searchLabel}"
+              @input="${this.onInput}"
+            />
+          </div>
+        </div>
+        <div class="tree-toolbar__submenu">
+          <div
+            class="tree-toolbar__menuitem tree-toolbar__drag-node"
+            title="${this.newCategoryLabel}"
+            draggable="true"
+            aria-hidden="true"
+            @dragstart="${(event: DragEvent) => this.onNewCategoryDragStart(event)}"
+          >
+            <typo3-backend-icon identifier="products-category" size="small"></typo3-backend-icon>
+          </div>
         </div>
       </div>
     `;

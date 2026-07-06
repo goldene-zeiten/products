@@ -28,3 +28,20 @@ declare module '@typo3/backend/module.js' {
     static getFromName(name: string): ModuleInfo | null;
   }
 }
+
+declare module '@typo3/backend/context-menu.js' {
+  interface ContextMenuApi {
+    show(
+      table: string,
+      uid: string,
+      context: string,
+      iconIdentifier: string,
+      enDataParams: string,
+      eventSource: HTMLElement,
+      originalEvent: Event
+    ): void;
+  }
+
+  const contextMenu: ContextMenuApi;
+  export default contextMenu;
+}

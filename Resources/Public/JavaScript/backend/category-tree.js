@@ -2,6 +2,7 @@ import { LitElement, html, nothing } from 'lit';
 import '@typo3/backend/element/icon-element.js';
 import { ModuleStateStorage } from '@typo3/backend/storage/module-state-storage.js';
 import { ModuleUtility } from '@typo3/backend/module.js';
+import ContextMenu from '@typo3/backend/context-menu.js';
 
 /**
  * Custom dataTransfer type identifying a drag originating from the toolbar's
@@ -32,22 +33,29 @@ class ProductsTreeToolbar extends LitElement {
     }
     render() {
         return html `
-      <div class="d-flex gap-2 mb-2 align-items-center">
-        <input
-          type="search"
-          class="form-control form-control-sm"
-          placeholder="${this.searchLabel}"
-          aria-label="${this.searchLabel}"
-          @input="${this.onInput}"
-        />
-        <div
-          class="btn btn-default btn-sm text-nowrap"
-          draggable="true"
-          title="${this.newCategoryLabel}"
-          aria-label="${this.newCategoryLabel}"
-          @dragstart="${(event) => this.onNewCategoryDragStart(event)}"
-        >
-          <typo3-backend-icon identifier="products-category" size="small"></typo3-backend-icon>
+      <div class="tree-toolbar">
+        <div class="tree-toolbar__menu">
+          <div class="tree-toolbar__search">
+            <label for="productsTreeToolbarSearch" class="visually-hidden">${this.searchLabel}</label>
+            <input
+              type="search"
+              id="productsTreeToolbarSearch"
+              class="form-control form-control-sm search-input"
+              placeholder="${this.searchLabel}"
+              @input="${this.onInput}"
+            />
+          </div>
+        </div>
+        <div class="tree-toolbar__submenu">
+          <div
+            class="tree-toolbar__menuitem tree-toolbar__drag-node"
+            title="${this.newCategoryLabel}"
+            draggable="true"
+            aria-hidden="true"
+            @dragstart="${(event) => this.onNewCategoryDragStart(event)}"
+          >
+            <typo3-backend-icon identifier="products-category" size="small"></typo3-backend-icon>
+          </div>
         </div>
       </div>
     `;
@@ -105,11 +113,6 @@ class CategoryTreeClient {
         const response = await fetch(ajaxUrl('products_category_tree_reorder'), { method: 'POST', body });
         return response.ok;
     }
-    async setHidden(type, uid, hidden) {
-        const body = new URLSearchParams();
-        body.set(`data[${tableForType(type)}][${uid}][hidden]`, hidden ? '1' : '0');
-        return this.submitDataHandler(body);
-    }
     async createCategory(title, parentCategoryUid) {
         const newId = `NEW${Math.floor(Math.random() * 1e9).toString(16)}`;
         const body = new URLSearchParams();
@@ -125,16 +128,6 @@ class CategoryTreeClient {
     async assignProductToCategory(uid, categoryUid) {
         const body = new URLSearchParams();
         body.set(`data[${TABLES.product}][${uid}][categories]`, String(categoryUid));
-        return this.submitDataHandler(body);
-    }
-    async deleteRecord(type, uid) {
-        const body = new URLSearchParams();
-        body.set(`cmd[${tableForType(type)}][${uid}][delete]`, '1');
-        return this.submitDataHandler(body);
-    }
-    async copyRecord(type, uid, targetPid) {
-        const body = new URLSearchParams();
-        body.set(`cmd[${tableForType(type)}][${uid}][copy]`, String(targetPid));
         return this.submitDataHandler(body);
     }
     async submitDataHandler(body) {
@@ -188,14 +181,22 @@ function label(key, fallback) {
 }
 /**
  * Category/product/article backend tree, modeled after the page tree's behaviour:
- * lazy-loaded nodes, search-and-reveal, drag & drop, inline actions, and expand
- * state that survives a module reload. Deliberately not built on top of
- * TYPO3\CMS\Backend's internal AbstractTree/tree.js hierarchy (@internal, not a
- * public API) - this stays a small, self-contained Lit element instead, reusing
- * only public building blocks (typo3-backend-icon, the DataHandler AJAX route).
+ * lazy-loaded nodes, search-and-reveal, drag & drop, edit/hide/delete/copy via
+ * the standard context menu, and expand state that survives a module reload.
+ * Deliberately not built on top of TYPO3\CMS\Backend's internal
+ * AbstractTree/tree.js hierarchy (@internal, not a public API) - this stays a
+ * small, self-contained Lit element instead, reusing only public building
+ * blocks (typo3-backend-icon, the context menu, the DataHandler AJAX route).
  *
  * Articles are read-only leaves here (see .claude/TREE.md: "Articles from
- * products are not part of the tree, yet.") - not draggable, no inline actions.
+ * products are not part of the tree, yet.") - not draggable, no context menu.
+ *
+ * The context menu's own hide/copy actions (context-menu-actions.js) commit
+ * straight through the content iframe or a raw AJAX call with no event this
+ * tree can generically listen for (only "delete" dispatches a listenable
+ * typo3:datahandler:process event) - toggleNode() therefore always re-fetches
+ * on expand rather than trusting the cache, so any such change is visible the
+ * next time a branch is opened, not just after a full module reload.
  */
 class ProductsCategoryTree extends LitElement {
     constructor() {
@@ -208,6 +209,28 @@ class ProductsCategoryTree extends LitElement {
         this.dragPayload = null;
         this.dropTarget = null;
         this.searchTimer = null;
+        /**
+         * The only generically-listenable signal context-menu-actions.js emits for
+         * any table (see class doc) - used to drop a deleted node from the cache
+         * immediately instead of waiting for its parent to be re-expanded.
+         */
+        this.onDataHandlerProcess = (event) => {
+            const payload = event.detail?.payload;
+            if (!payload || payload.action !== 'delete' || payload.table === undefined || payload.uid === undefined) {
+                return;
+            }
+            const type = ['category', 'product', 'article'].find((candidate) => tableForType(candidate) === payload.table);
+            if (!type) {
+                return;
+            }
+            const identifier = `${type}-${payload.uid}`;
+            const node = this.findCachedNode(identifier);
+            this.expanded.delete(identifier);
+            this.childrenByParent.delete(identifier);
+            if (node) {
+                void this.refreshParent(node.parentIdentifier);
+            }
+        };
         this.rootNodes = [];
         this.searchMatches = [];
         this.searchActive = false;
@@ -218,7 +241,12 @@ class ProductsCategoryTree extends LitElement {
     connectedCallback() {
         super.connectedCallback();
         this.expanded = this.state.getExpanded();
+        document.addEventListener('typo3:datahandler:process', this.onDataHandlerProcess);
         void this.initialize();
+    }
+    disconnectedCallback() {
+        document.removeEventListener('typo3:datahandler:process', this.onDataHandlerProcess);
+        super.disconnectedCallback();
     }
     /**
      * This element lives in the persistent .scaffold-content-navigation slot
@@ -293,7 +321,7 @@ class ProductsCategoryTree extends LitElement {
         }
         else {
             this.expanded.add(node.identifier);
-            await this.ensureChildrenLoaded(node.identifier);
+            await this.ensureChildrenLoaded(node.identifier, true);
         }
         this.persistExpanded();
         this.requestUpdate();
@@ -332,45 +360,17 @@ class ProductsCategoryTree extends LitElement {
         this.searchActive = true;
         this.requestUpdate();
     }
-    async onToggleHidden(node) {
-        const succeeded = await this.client.setHidden(node.type, node.uid, !node.hidden);
-        if (succeeded) {
-            await this.refreshParent(node.parentIdentifier);
-        }
-        else {
-            this.notifyError();
-        }
-    }
-    async onDelete(node) {
-        if (!window.confirm(label('delete_confirm', 'Are you sure you want to delete "%s"?').replace('%s', node.title))) {
+    /**
+     * Mirrors page-tree-element.js's showContextMenu handler exactly: the
+     * standard context menu (RecordProvider) already offers edit/hide/delete/
+     * copy/history for any TCA table with no extra registration needed.
+     */
+    onContextMenu(event, node) {
+        if (node.type === 'article') {
             return;
         }
-        const succeeded = await this.client.deleteRecord(node.type, node.uid);
-        if (succeeded) {
-            this.expanded.delete(node.identifier);
-            this.childrenByParent.delete(node.identifier);
-            await this.refreshParent(node.parentIdentifier);
-        }
-        else {
-            this.notifyError();
-        }
-    }
-    async onCopy(node) {
-        const parentUid = this.parentUidForCopy(node);
-        const succeeded = await this.client.copyRecord(node.type, node.uid, parentUid);
-        if (succeeded) {
-            await this.refreshParent(node.parentIdentifier);
-        }
-        else {
-            this.notifyError();
-        }
-    }
-    parentUidForCopy(node) {
-        if (node.parentIdentifier === 'root') {
-            return 0;
-        }
-        const [, uid] = node.parentIdentifier.split('-');
-        return parseInt(uid, 10);
+        event.preventDefault();
+        ContextMenu.show(tableForType(node.type), String(node.uid), 'tree', '', '', event.currentTarget, event);
     }
     notifyError() {
         window.alert(label('error_generic', 'The action could not be completed.'));
@@ -546,28 +546,6 @@ class ProductsCategoryTree extends LitElement {
       @click="${() => void this.toggleNode(node)}"
     >${expanded ? '−' : '+'}</button>`;
     }
-    renderActions(node) {
-        if (node.type === 'article') {
-            return nothing;
-        }
-        const toggleLabel = node.hidden ? label('enable', 'Enable') : label('disable', 'Disable');
-        return html `
-      <span class="d-flex gap-1 ms-auto">
-        <button type="button" class="btn btn-borderless btn-sm p-0" title="${toggleLabel}" aria-label="${toggleLabel}"
-          @click="${(event) => { event.stopPropagation(); void this.onToggleHidden(node); }}">
-          <typo3-backend-icon identifier="${node.hidden ? 'actions-eye' : 'actions-ban'}" size="small"></typo3-backend-icon>
-        </button>
-        <button type="button" class="btn btn-borderless btn-sm p-0" title="${label('copy', 'Copy')}" aria-label="${label('copy', 'Copy')}"
-          @click="${(event) => { event.stopPropagation(); void this.onCopy(node); }}">
-          <typo3-backend-icon identifier="actions-copy" size="small"></typo3-backend-icon>
-        </button>
-        <button type="button" class="btn btn-borderless btn-sm p-0" title="${label('delete', 'Delete')}" aria-label="${label('delete', 'Delete')}"
-          @click="${(event) => { event.stopPropagation(); void this.onDelete(node); }}">
-          <typo3-backend-icon identifier="actions-delete" size="small"></typo3-backend-icon>
-        </button>
-      </span>
-    `;
-    }
     rowStateClasses(node) {
         const classes = ['d-flex', 'align-items-center', 'gap-1'];
         if (this.selected === node.identifier) {
@@ -601,6 +579,7 @@ class ProductsCategoryTree extends LitElement {
           @dragover="${(event) => this.onDragOver(event, node)}"
           @dragleave="${() => this.onDragLeave()}"
           @drop="${(event) => void this.onDrop(event, node)}"
+          @contextmenu="${(event) => this.onContextMenu(event, node)}"
         >
           ${this.renderToggle(node)}
           <typo3-backend-icon identifier="${node.icon}" size="small" state="${node.hidden ? 'disabled' : 'default'}"></typo3-backend-icon>
@@ -609,7 +588,6 @@ class ProductsCategoryTree extends LitElement {
             class="flex-grow-1${node.hidden ? ' text-body-secondary fst-italic' : ''}"
             @click="${(event) => { event.preventDefault(); this.selectNode(node); }}"
           >${node.title}</a>
-          ${this.renderActions(node)}
         </div>
         ${expanded && children.length > 0
             ? html `<ul class="list-unstyled ps-4">${children.map((child) => this.renderNode(child))}</ul>`
@@ -619,20 +597,24 @@ class ProductsCategoryTree extends LitElement {
     }
     render() {
         return html `
-      <goldene-zeiten-products-tree-toolbar
-        search-label="${label('search_placeholder', 'Search...')}"
-        new-category-label="${label('new_category', 'New category')}"
-        @tree-search="${(event) => this.onSearchInput(event)}"
-      ></goldene-zeiten-products-tree-toolbar>
-      ${this.searchActive && this.searchMatches.length === 0
-            ? html `<p class="text-body-secondary">${label('no_results', 'No matches found.')}</p>`
+      <div class="tree">
+        <goldene-zeiten-products-tree-toolbar
+          search-label="${label('search_placeholder', 'Search...')}"
+          new-category-label="${label('new_category', 'New category')}"
+          @tree-search="${(event) => this.onSearchInput(event)}"
+        ></goldene-zeiten-products-tree-toolbar>
+        <div class="navigation-tree-container">
+          ${this.searchActive && this.searchMatches.length === 0
+            ? html `<p class="text-body-secondary px-2">${label('no_results', 'No matches found.')}</p>`
             : nothing}
-      <ul
-        class="list-unstyled ps-0"
-        style="min-height:2rem"
-        @dragover="${(event) => this.onRootDragOver(event)}"
-        @drop="${(event) => void this.onRootDrop(event)}"
-      >${this.rootNodes.map((node) => this.renderNode(node))}</ul>
+          <ul
+            class="list-unstyled ps-0"
+            style="min-height:2rem"
+            @dragover="${(event) => this.onRootDragOver(event)}"
+            @drop="${(event) => void this.onRootDrop(event)}"
+          >${this.rootNodes.map((node) => this.renderNode(node))}</ul>
+        </div>
+      </div>
     `;
     }
 }
