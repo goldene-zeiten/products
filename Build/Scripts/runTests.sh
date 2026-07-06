@@ -216,10 +216,11 @@ Options:
             - 15    maintained until 2027-11-11
             - 16    maintained until 2028-11-09
 
-    -t <13>
-        Only with -s composerInstall|composerInstallMin|composerInstallMax
+    -t <13|14>
+        Only with -s composerUpdate|phpstan|phpstanGenerateBaseline
         Specifies the TYPO3 CORE Version to be used
             - 13: (default) use TYPO3 v13
+            - 14: use TYPO3 v14
 
     -p <8.2|8.3|8.4>
         Specifies the PHP minor version to be used
@@ -338,7 +339,7 @@ while getopts "a:b:s:d:i:p:t:xy:o:nhu" OPT; do
             ;;
         t)
             CORE_VERSION=${OPTARG}
-            if ! [[ ${CORE_VERSION} =~ ^(13)$ ]]; then
+            if ! [[ ${CORE_VERSION} =~ ^(13|14)$ ]]; then
                 INVALID_OPTIONS+=("t ${OPTARG}")
             fi
             ;;
@@ -523,9 +524,19 @@ case ${TEST_SUITE} in
         SUITE_EXIT_CODE=$?
         ;;
     composerUpdate)
-        COMMAND=(composer update)
+        # composer.json declares "^13.4 || ^14.3" for typo3/cms-core, so a plain
+        # "composer update" always resolves the newest matching major regardless
+        # of -t. Temporarily requiring typo3/minimal:^<CORE_VERSION> forces the
+        # solver to pin that major; composer.json is restored afterwards so the
+        # temporary requirement is never committed, while the resulting
+        # composer.lock/vendor stay resolved to that version.
+        rm -f composer.lock
+        rm -rf .Build/vendor
+        cp composer.json composer.json.orig
+        COMMAND=(composer require --dev "typo3/minimal:^${CORE_VERSION}" --with-all-dependencies --no-progress --no-interaction)
         ${CONTAINER_BIN} run ${CONTAINER_SIMPLE_PARAMS} --name composer-command-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
+        mv composer.json.orig composer.json
         ;;
     functional)
         PHPUNIT_CONFIG_FILE="Build/phpunit/FunctionalTests.xml"
@@ -587,13 +598,13 @@ case ${TEST_SUITE} in
         SUITE_EXIT_CODE=$?
         ;;
     phpstan)
-        PHPSTAN_CONFIG_FILE="Build/phpstan/phpstan.neon"
+        PHPSTAN_CONFIG_FILE="Build/phpstan/Core${CORE_VERSION}/phpstan.neon"
         COMMAND=(php -dxdebug.mode=off .Build/bin/phpstan analyse -c ${PHPSTAN_CONFIG_FILE} --no-progress --no-interaction --memory-limit 4G "$@")
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name phpstan-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
         ;;
     phpstanGenerateBaseline)
-        PHPSTAN_CONFIG_FILE="Build/phpstan/phpstan.neon"
+        PHPSTAN_CONFIG_FILE="Build/phpstan/Core${CORE_VERSION}/phpstan.neon"
         COMMAND=(php -dxdebug.mode=off .Build/bin/phpstan analyse -c ${PHPSTAN_CONFIG_FILE} --no-progress --no-interaction --memory-limit 4G --allow-empty-baseline --generate-baseline=Build/phpstan/phpstan-baseline.neon)
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name phpstan-baseline-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?

@@ -4,9 +4,14 @@ use GoldeneZeiten\Products\Controller\BasketController;
 use GoldeneZeiten\Products\Controller\CheckoutController;
 use GoldeneZeiten\Products\Controller\OrderController;
 use GoldeneZeiten\Products\Controller\ProductController;
+use GoldeneZeiten\Products\Hooks\CategoryMountAccessHook;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
 defined('TYPO3') or die();
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['checkRecordUpdateAccess'][] = CategoryMountAccessHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = CategoryMountAccessHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = CategoryMountAccessHook::class;
 
 ExtensionUtility::configurePlugin(
     'Products',

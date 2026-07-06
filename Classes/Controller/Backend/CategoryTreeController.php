@@ -49,6 +49,60 @@ final class CategoryTreeController
         return new JsonResponse($this->buildChildNodes($identifier['type'], $identifier['uid'], $parent));
     }
 
+    public function filterDataAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $query = trim((string)($request->getQueryParams()['query'] ?? ''));
+        if ($query === '') {
+            return new JsonResponse([]);
+        }
+        $mounts = $this->mountResolver->resolveMountUids($this->getBackendUser());
+        $matches = [
+            ...$this->buildCategoryMatches($query, $mounts),
+            ...$this->buildProductMatches($query, $mounts),
+            ...$this->buildArticleMatches($query, $mounts),
+        ];
+        return new JsonResponse($matches);
+    }
+
+    public function reorderAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $params = (array)$request->getParsedBody();
+        $identifier = $this->parseIdentifier((string)($params['identifier'] ?? ''));
+        if ($identifier === null || $identifier['type'] === 'article') {
+            return new JsonResponse([], 400);
+        }
+        $mounts = $this->mountResolver->resolveMountUids($this->getBackendUser());
+        if (!$this->isAccessible($identifier['type'], $identifier['uid'], $mounts)) {
+            return new JsonResponse([], 403);
+        }
+        $beforeUid = $this->resolveBeforeUid((string)($params['beforeIdentifier'] ?? ''), $identifier['type']);
+        if ($identifier['type'] === 'category') {
+            $this->treeRepository->reorderCategorySiblings($identifier['uid'], $beforeUid);
+        } else {
+            $this->treeRepository->reorderProducts($identifier['uid'], $beforeUid);
+        }
+        return new JsonResponse(['success' => true]);
+    }
+
+    private function resolveBeforeUid(string $beforeIdentifier, string $expectedType): ?int
+    {
+        $parsed = $this->parseIdentifier($beforeIdentifier);
+        return $parsed !== null && $parsed['type'] === $expectedType ? $parsed['uid'] : null;
+    }
+
+    public function fetchRootlineAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $identifier = $this->parseIdentifier((string)($request->getQueryParams()['identifier'] ?? ''));
+        if ($identifier === null) {
+            return new JsonResponse([], 400);
+        }
+        $mounts = $this->mountResolver->resolveMountUids($this->getBackendUser());
+        if (!$this->isAccessible($identifier['type'], $identifier['uid'], $mounts)) {
+            return new JsonResponse([], 403);
+        }
+        return new JsonResponse($this->buildAncestorIdentifiers($identifier['type'], $identifier['uid'], $mounts));
+    }
+
     /**
      * @param int[]|null $mounts
      * @return array<int, array<string, mixed>>
@@ -93,11 +147,96 @@ final class CategoryTreeController
      */
     private function isAccessible(string $type, int $uid, ?array $mounts): bool
     {
+        if ($type === 'article') {
+            $article = $this->treeRepository->fetchArticleByUid($uid);
+            return $article !== null && $this->accessGuard->isProductAccessible($article['product'], $mounts);
+        }
         return match ($type) {
             'category' => $this->accessGuard->isCategoryAccessible($uid, $mounts),
             'product' => $this->accessGuard->isProductAccessible($uid, $mounts),
             default => false,
         };
+    }
+
+    /**
+     * @param int[]|null $mounts
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildCategoryMatches(string $query, ?array $mounts): array
+    {
+        $matches = [];
+        foreach ($this->treeRepository->searchCategories($query) as $category) {
+            if (!$this->accessGuard->isCategoryAccessible($category['uid'], $mounts)) {
+                continue;
+            }
+            $ancestors = $this->buildAncestorIdentifiers('category', $category['uid'], $mounts);
+            $parentIdentifier = $ancestors === [] ? 'root' : $ancestors[count($ancestors) - 1];
+            $matches[] = [...$this->mapCategoryNode($category, $parentIdentifier), 'ancestors' => $ancestors];
+        }
+        return $matches;
+    }
+
+    /**
+     * @param int[]|null $mounts
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildProductMatches(string $query, ?array $mounts): array
+    {
+        $matches = [];
+        foreach ($this->treeRepository->searchProducts($query) as $product) {
+            if (!$this->accessGuard->isProductAccessible($product['uid'], $mounts)) {
+                continue;
+            }
+            $ancestors = $this->buildAncestorIdentifiers('product', $product['uid'], $mounts);
+            $parentIdentifier = $ancestors === [] ? 'root' : $ancestors[count($ancestors) - 1];
+            $matches[] = [...$this->mapProductNode($product, $parentIdentifier), 'ancestors' => $ancestors];
+        }
+        return $matches;
+    }
+
+    /**
+     * @param int[]|null $mounts
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildArticleMatches(string $query, ?array $mounts): array
+    {
+        $matches = [];
+        foreach ($this->treeRepository->searchArticles($query) as $article) {
+            $productUid = $this->treeRepository->fetchArticleByUid($article['uid'])['product'] ?? 0;
+            if (!$this->accessGuard->isProductAccessible($productUid, $mounts)) {
+                continue;
+            }
+            $ancestors = $this->buildAncestorIdentifiers('article', $article['uid'], $mounts);
+            $parentIdentifier = $ancestors === [] ? 'root' : $ancestors[count($ancestors) - 1];
+            $matches[] = [...$this->mapArticleNode($article, $parentIdentifier), 'ancestors' => $ancestors];
+        }
+        return $matches;
+    }
+
+    /**
+     * Composite identifiers from root to (excluding) the given node itself, root-first.
+     * @param int[]|null $mounts
+     * @return string[]
+     */
+    private function buildAncestorIdentifiers(string $type, int $uid, ?array $mounts): array
+    {
+        if ($type === 'category') {
+            return array_map(static fn(int $c): string => 'category-' . $c, $this->treeRepository->fetchCategoryAncestorChain($uid));
+        }
+        if ($type === 'product') {
+            $categoryUid = $this->treeRepository->fetchPrimaryCategoryUidOfProduct($uid, $mounts);
+            if ($categoryUid === null) {
+                return [];
+            }
+            $chain = $this->treeRepository->fetchCategoryAncestorChain($categoryUid);
+            $chain[] = $categoryUid;
+            return array_map(static fn(int $c): string => 'category-' . $c, $chain);
+        }
+        $article = $this->treeRepository->fetchArticleByUid($uid);
+        if ($article === null) {
+            return [];
+        }
+        return [...$this->buildAncestorIdentifiers('product', $article['product'], $mounts), 'product-' . $article['product']];
     }
 
     /**
@@ -113,6 +252,7 @@ final class CategoryTreeController
             'uid' => $category['uid'],
             'title' => $category['title'],
             'hidden' => $category['hidden'],
+            'icon' => 'products-category',
             'hasChildren' => $this->treeRepository->categoryHasChildren($category['uid']) || $this->treeRepository->fetchProductsByCategory($category['uid']) !== [],
         ];
     }
@@ -131,6 +271,7 @@ final class CategoryTreeController
             'title' => $product['title'],
             'hidden' => $product['hidden'],
             'itemNumber' => $product['itemNumber'],
+            'icon' => 'products-product',
             'hasChildren' => $this->treeRepository->productHasArticles($product['uid']),
         ];
     }
@@ -149,6 +290,7 @@ final class CategoryTreeController
             'title' => $article['title'],
             'hidden' => $article['hidden'],
             'itemNumber' => $article['itemNumber'],
+            'icon' => 'products-article',
             'hasChildren' => false,
         ];
     }

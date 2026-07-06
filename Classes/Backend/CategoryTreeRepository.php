@@ -163,6 +163,148 @@ final class CategoryTreeRepository
         return $parent === false ? null : (int)$parent;
     }
 
+    /**
+     * @return array<int, array{uid: int, title: string, hidden: bool}>
+     */
+    public function searchCategories(string $query): array
+    {
+        $queryBuilder = $this->categoryQueryBuilder();
+        $this->applySearch($queryBuilder, ['title', 'slug', 'description'], $query);
+        return $this->fetchCategories($queryBuilder);
+    }
+
+    /**
+     * @return array<int, array{uid: int, title: string, hidden: bool, itemNumber: string}>
+     */
+    public function searchProducts(string $query): array
+    {
+        $queryBuilder = $this->productQueryBuilder();
+        $this->applySearch(
+            $queryBuilder,
+            ['product.title', 'product.subtitle', 'product.slug', 'product.description', 'product.item_number', 'product.ean'],
+            $query
+        );
+        return $this->fetchItems($queryBuilder);
+    }
+
+    /**
+     * @return array<int, array{uid: int, title: string, hidden: bool, itemNumber: string}>
+     */
+    public function searchArticles(string $query): array
+    {
+        $queryBuilder = $this->articleQueryBuilder();
+        $this->applySearch($queryBuilder, ['article.title', 'article.item_number', 'article.ean'], $query);
+        return $this->fetchItems($queryBuilder);
+    }
+
+    /**
+     * @return array{uid: int, title: string, hidden: bool, itemNumber: string, product: int}|null
+     */
+    public function fetchArticleByUid(int $uid): ?array
+    {
+        $queryBuilder = $this->articleQueryBuilder();
+        $queryBuilder->addSelect('article.product')
+            ->andWhere($queryBuilder->expr()->eq(
+                'article.uid',
+                $queryBuilder->createNamedParameter($uid, ParameterType::INTEGER)
+            ));
+        $row = $queryBuilder->executeQuery()->fetchAssociative();
+        if ($row === false) {
+            return null;
+        }
+        return [
+            'uid' => (int)$row['uid'],
+            'title' => (string)$row['title'],
+            'hidden' => (bool)$row['hidden'],
+            'itemNumber' => (string)$row['item_number'],
+            'product' => (int)$row['product'],
+        ];
+    }
+
+    /**
+     * First category of a product that is within the given mounts (or the first one at all when unrestricted).
+     * @param int[]|null $mounts
+     */
+    public function fetchPrimaryCategoryUidOfProduct(int $productUid, ?array $mounts): ?int
+    {
+        $categoryUids = $this->fetchCategoryUidsOfProduct($productUid);
+        if ($mounts === null) {
+            return $categoryUids[0] ?? null;
+        }
+        foreach ($categoryUids as $categoryUid) {
+            if (in_array($categoryUid, $mounts, true) || in_array($this->fetchParentCategoryUid($categoryUid), $mounts, true)) {
+                return $categoryUid;
+            }
+        }
+        return $categoryUids[0] ?? null;
+    }
+
+    /**
+     * Ancestor category uids from root to (but excluding) the given category, root-first.
+     * @return int[]
+     */
+    public function fetchCategoryAncestorChain(int $categoryUid): array
+    {
+        $chain = [];
+        $current = $categoryUid;
+        for ($depth = 0; $depth < 100; $depth++) {
+            $parent = $this->fetchParentCategoryUid($current);
+            if ($parent === null || $parent === 0) {
+                break;
+            }
+            $chain[] = $parent;
+            $current = $parent;
+        }
+        return array_reverse($chain);
+    }
+
+    /**
+     * @return array<int, array{uid: int, title: string, hidden: bool, itemNumber: string}>
+     */
+    public function fetchAllProductsOrdered(): array
+    {
+        return $this->fetchItems($this->productQueryBuilder());
+    }
+
+    /**
+     * Renumbers `sorting` for category siblings sharing $uid's parent, placing it directly
+     * before $beforeUid (or last, when null). TYPO3's native sortby is pid-scoped only, and
+     * every category here shares one flat storage-folder pid, so DataHandler's generic
+     * cmd[move] can't express "reorder within this parent_category branch" - this does.
+     */
+    public function reorderCategorySiblings(int $uid, ?int $beforeUid): void
+    {
+        $parentUid = $this->fetchParentCategoryUid($uid) ?? 0;
+        $siblingUids = array_map(static fn(array $c): int => $c['uid'], $this->fetchChildCategories($parentUid));
+        $this->applyReorder(self::TABLE_CATEGORY, $siblingUids, $uid, $beforeUid);
+    }
+
+    /**
+     * Same rationale as reorderCategorySiblings(), for the flat top-level product list.
+     */
+    public function reorderProducts(int $uid, ?int $beforeUid): void
+    {
+        $siblingUids = array_map(static fn(array $p): int => $p['uid'], $this->fetchAllProductsOrdered());
+        $this->applyReorder(self::TABLE_PRODUCT, $siblingUids, $uid, $beforeUid);
+    }
+
+    /**
+     * @param int[] $siblingUids current order, ascending
+     */
+    private function applyReorder(string $table, array $siblingUids, int $uid, ?int $beforeUid): void
+    {
+        $withoutMoved = array_values(array_filter($siblingUids, static fn(int $u): bool => $u !== $uid));
+        $insertAt = $beforeUid === null ? false : array_search($beforeUid, $withoutMoved, true);
+        array_splice($withoutMoved, $insertAt === false ? count($withoutMoved) : $insertAt, 0, [$uid]);
+        foreach ($withoutMoved as $index => $siblingUid) {
+            $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
+            $queryBuilder->update($table)
+                ->set('sorting', ($index + 1) * 2)
+                ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($siblingUid, ParameterType::INTEGER)))
+                ->executeStatement();
+        }
+    }
+
     public function categoryExists(int $uid): bool
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_CATEGORY);
@@ -185,7 +327,7 @@ final class CategoryTreeRepository
         $queryBuilder->select('uid', 'title', 'hidden')
             ->from(self::TABLE_CATEGORY)
             ->andWhere($queryBuilder->expr()->eq('sys_language_uid', 0))
-            ->orderBy('title');
+            ->orderBy('sorting');
         return $queryBuilder;
     }
 
@@ -196,7 +338,7 @@ final class CategoryTreeRepository
         $queryBuilder->select('product.uid', 'product.title', 'product.hidden', 'product.item_number')
             ->from(self::TABLE_PRODUCT, 'product')
             ->andWhere($queryBuilder->expr()->eq('product.sys_language_uid', 0))
-            ->orderBy('product.title');
+            ->orderBy('product.sorting');
         return $queryBuilder;
     }
 
@@ -207,7 +349,7 @@ final class CategoryTreeRepository
         $queryBuilder->select('article.uid', 'article.title', 'article.hidden', 'article.item_number')
             ->from(self::TABLE_ARTICLE, 'article')
             ->andWhere($queryBuilder->expr()->eq('article.sys_language_uid', 0))
-            ->orderBy('article.title');
+            ->orderBy('article.sorting');
         return $queryBuilder;
     }
 
@@ -225,6 +367,19 @@ final class CategoryTreeRepository
     private function getBackendUser(): BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
+    }
+
+    /**
+     * @param string[] $fields
+     */
+    private function applySearch(QueryBuilder $queryBuilder, array $fields, string $query): void
+    {
+        $needle = '%' . $queryBuilder->escapeLikeWildcards($query) . '%';
+        $conditions = array_map(
+            fn(string $field): string => $queryBuilder->expr()->like($field, $queryBuilder->createNamedParameter($needle)),
+            $fields
+        );
+        $queryBuilder->andWhere($queryBuilder->expr()->or(...$conditions));
     }
 
     /**

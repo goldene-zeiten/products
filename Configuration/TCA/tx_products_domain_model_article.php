@@ -13,11 +13,12 @@ return [
         'transOrigPointerField' => 'l10n_parent',
         'transOrigDiffSourceField' => 'l10n_diffsource',
         'delete' => 'deleted',
+        'sortby' => 'sorting',
         'enablecolumns' => [
             'disabled' => 'hidden',
         ],
         'searchFields' => 'title,item_number,ean',
-        'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
+        'iconfile' => 'products-article',
     ],
     'types' => [
         '1' => ['showitem' => 'product, title, item_number, ean, price, in_stock, weight, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],

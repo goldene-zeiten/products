@@ -55,8 +55,17 @@ final class ProductManagementModuleController
 
         $moduleTemplate = $this->moduleTemplateFactory->create($request);
         $moduleTemplate->setTitle($this->translate('module.products_management.title'));
-        $moduleTemplate->assignMultiple($this->buildViewData($request, $moduleTemplate, $categoryUid, $productUid));
+        $moduleTemplate->assignMultiple([
+            ...$this->buildViewData($request, $moduleTemplate, $categoryUid, $productUid),
+            'newCategoryUrl' => $this->buildNewCategoryUrl($request),
+        ]);
         return $moduleTemplate->renderResponse('Backend/ProductManagement/Main');
+    }
+
+    private function buildNewCategoryUrl(ServerRequestInterface $request): string
+    {
+        $returnUrl = (string)$this->uriBuilder->buildUriFromRequest($request, []);
+        return $this->buildAction('tree.new_category', self::TABLE_CATEGORY, ['parent_category' => 0], $returnUrl)['url'];
     }
 
     /**

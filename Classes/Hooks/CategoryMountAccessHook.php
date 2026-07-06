@@ -1,0 +1,160 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GoldeneZeiten\Products\Hooks;
+
+use GoldeneZeiten\Products\Backend\CategoryAccessGuard;
+use GoldeneZeiten\Products\Backend\CategoryMountResolver;
+use GoldeneZeiten\Products\Backend\CategoryTreeRepository;
+use GoldeneZeiten\Products\Exception\CategoryAccessDeniedException;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\SysLog\Action\Database as SystemLogDatabaseAction;
+use TYPO3\CMS\Core\SysLog\Error as SystemLogErrorClassification;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+/**
+ * Enforces CategoryAccessGuard's category-mount restrictions for every DataHandler
+ * write to the category/product/article tables, regardless of entry point (this
+ * extension's own tree AJAX endpoints, FormEngine's record_edit, the record list, ...).
+ *
+ * @internal Registered as a classic DataHandler hook in ext_localconf.php.
+ */
+final class CategoryMountAccessHook
+{
+    private const TABLE_CATEGORY = 'tx_products_domain_model_category';
+    private const TABLE_PRODUCT = 'tx_products_domain_model_product';
+    private const TABLE_ARTICLE = 'tx_products_domain_model_article';
+
+    public function __construct(
+        private readonly CategoryAccessGuard $accessGuard,
+        private readonly CategoryMountResolver $mountResolver,
+        private readonly CategoryTreeRepository $treeRepository,
+    ) {}
+
+    /**
+     * @param array<string, mixed> $incomingFieldArray
+     */
+    public function checkRecordUpdateAccess(string $table, int|string $id, array $incomingFieldArray, ?bool $currentAccess, DataHandler $dataHandler): ?bool
+    {
+        if (!$this->isManagedTable($table) || !is_int($id)) {
+            return $currentAccess;
+        }
+        $mounts = $this->mountResolver->resolveMountUids($dataHandler->BE_USER);
+        if ($mounts === null || $this->isRecordAccessible($table, $id, $mounts)) {
+            return $currentAccess;
+        }
+        return false;
+    }
+
+    /**
+     * @param mixed $value
+     * @param mixed $pasteUpdate
+     */
+    public function processCmdmap(string $command, string $table, int|string $id, $value, bool &$commandIsProcessed, DataHandler $dataHandler, $pasteUpdate): void
+    {
+        if ($commandIsProcessed || !$this->isManagedTable($table) || !is_int($id)) {
+            return;
+        }
+        $mounts = $this->mountResolver->resolveMountUids($dataHandler->BE_USER);
+        if ($mounts === null || $this->isRecordAccessible($table, $id, $mounts)) {
+            return;
+        }
+        $commandIsProcessed = true;
+        $dataHandler->log(
+            $table,
+            $id,
+            SystemLogDatabaseAction::UPDATE,
+            null,
+            SystemLogErrorClassification::USER_ERROR,
+            'Attempt to "{command}" record {table}:{uid} denied by category mount restrictions',
+            null,
+            ['command' => $command, 'table' => $table, 'uid' => $id]
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $incomingFieldArray
+     */
+    public function processDatamap_preProcessFieldArray(array &$incomingFieldArray, string $table, int|string $id, DataHandler $dataHandler): void
+    {
+        if (!$this->isManagedTable($table)) {
+            return;
+        }
+        $mounts = $this->mountResolver->resolveMountUids($dataHandler->BE_USER);
+        $accessible = $this->isTargetAccessible($table, $incomingFieldArray, $mounts);
+        if ($accessible === null || $accessible) {
+            return;
+        }
+        throw new CategoryAccessDeniedException(
+            sprintf('New/edited category assignment for table %s is outside the current user\'s category mounts.', $table),
+            1751800000
+        );
+    }
+
+    private function isManagedTable(string $table): bool
+    {
+        return in_array($table, [self::TABLE_CATEGORY, self::TABLE_PRODUCT, self::TABLE_ARTICLE], true);
+    }
+
+    /**
+     * @param int[] $mounts
+     */
+    private function isRecordAccessible(string $table, int $id, array $mounts): bool
+    {
+        return match ($table) {
+            self::TABLE_CATEGORY => $this->accessGuard->isCategoryAccessible($id, $mounts),
+            self::TABLE_PRODUCT => $this->accessGuard->isProductAccessible($id, $mounts),
+            self::TABLE_ARTICLE => $this->isArticleAccessible($id, $mounts),
+            default => true,
+        };
+    }
+
+    /**
+     * @param int[] $mounts
+     */
+    private function isArticleAccessible(int $articleUid, array $mounts): bool
+    {
+        $article = $this->treeRepository->fetchArticleByUid($articleUid);
+        return $article === null || $this->accessGuard->isProductAccessible($article['product'], $mounts);
+    }
+
+    /**
+     * @param array<string, mixed> $incomingFieldArray
+     * @param int[]|null $mounts
+     */
+    private function isTargetAccessible(string $table, array $incomingFieldArray, ?array $mounts): ?bool
+    {
+        if ($mounts === null) {
+            return true;
+        }
+        if ($table === self::TABLE_CATEGORY && array_key_exists('parent_category', $incomingFieldArray)) {
+            $parent = (int)$incomingFieldArray['parent_category'];
+            return $parent === 0 || $this->accessGuard->isCategoryAccessible($parent, $mounts);
+        }
+        if ($table === self::TABLE_PRODUCT && array_key_exists('categories', $incomingFieldArray)) {
+            return $this->isAnyCategoryAccessible((string)$incomingFieldArray['categories'], $mounts);
+        }
+        if ($table === self::TABLE_ARTICLE && array_key_exists('product', $incomingFieldArray)) {
+            return $this->accessGuard->isProductAccessible((int)$incomingFieldArray['product'], $mounts);
+        }
+        return null;
+    }
+
+    /**
+     * @param int[] $mounts
+     */
+    private function isAnyCategoryAccessible(string $commaSeparatedUids, array $mounts): bool
+    {
+        $categoryUids = GeneralUtility::intExplode(',', $commaSeparatedUids, true);
+        if ($categoryUids === []) {
+            return true;
+        }
+        foreach ($categoryUids as $categoryUid) {
+            if ($this->accessGuard->isCategoryAccessible($categoryUid, $mounts)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

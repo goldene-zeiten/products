@@ -13,11 +13,12 @@ return [
         'transOrigPointerField' => 'l10n_parent',
         'transOrigDiffSourceField' => 'l10n_diffsource',
         'delete' => 'deleted',
+        'sortby' => 'sorting',
         'enablecolumns' => [
             'disabled' => 'hidden',
         ],
         'searchFields' => 'title,subtitle,slug,description,item_number,ean',
-        'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
+        'iconfile' => 'products-product',
     ],
     'types' => [
         '1' => ['showitem' => 'title, subtitle, slug, item_number, ean, price, tax_class, categories, in_stock, basket_min_quantity, basket_max_quantity, weight, is_offer, is_highlight, description, articles, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
@@ -193,6 +194,7 @@ return [
                 'type' => 'inline',
                 'foreign_table' => 'tx_products_domain_model_article',
                 'foreign_field' => 'product',
+                'foreign_sortby' => 'sorting',
                 'maxitems' => 9999,
                 'appearance' => [
                     'collapseAll' => 1,
