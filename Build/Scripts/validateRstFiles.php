@@ -50,7 +50,7 @@ class validateRstFiles
     /**
      * @var string
      */
-    protected $baseDir = 'Documentation';
+    protected $baseDir = 'Documentation/Changelog';
 
     public function __construct(string $dir = '')
     {
@@ -61,6 +61,14 @@ class validateRstFiles
 
     public function validate()
     {
+        // This validator checks TYPO3-core-style Changelog entries (Feature/Breaking/Deprecation
+        // with an issue number and index tags), not the extension's general documentation pages -
+        // nothing to check until this extension actually has a Documentation/Changelog directory.
+        if (!is_dir($this->baseDir)) {
+            printf('No ' . $this->baseDir . ' directory, nothing to check.' . chr(10));
+            exit(0);
+        }
+
         printf('Searching for rst snippets in ' . $this->baseDir . chr(10));
 
         $count = 0;
