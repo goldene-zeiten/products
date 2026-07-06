@@ -38,7 +38,7 @@ declare module '@typo3/backend/context-menu.js' {
       iconIdentifier: string,
       enDataParams: string,
       eventSource: HTMLElement,
-      originalEvent: Event
+      originalEvent: Event,
     ): void;
   }
 

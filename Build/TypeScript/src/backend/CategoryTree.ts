@@ -115,7 +115,7 @@ export class ProductsCategoryTree extends LitElement {
       return;
     }
     const type = (['category', 'product', 'article'] as const).find(
-      (candidate) => tableForType(candidate) === payload.table
+      (candidate) => tableForType(candidate) === payload.table,
     );
     if (!type) {
       return;
@@ -285,7 +285,15 @@ export class ProductsCategoryTree extends LitElement {
       return;
     }
     event.preventDefault();
-    ContextMenu.show(tableForType(node.type), String(node.uid), 'tree', '', '', event.currentTarget as HTMLElement, event);
+    ContextMenu.show(
+      tableForType(node.type),
+      String(node.uid),
+      'tree',
+      '',
+      '',
+      event.currentTarget as HTMLElement,
+      event,
+    );
   }
 
   private notifyError(): void {
@@ -539,7 +547,9 @@ export class ProductsCategoryTree extends LitElement {
       aria-label="${text}"
       title="${text}"
       @click="${() => void this.toggleNode(node)}"
-    >${expanded ? '−' : '+'}</button>`;
+    >
+      ${expanded ? '−' : '+'}
+    </button>`;
   }
 
   private rowStateClasses(node: TreeNode): string {
@@ -565,7 +575,9 @@ export class ProductsCategoryTree extends LitElement {
   private renderDraftRow(draft: { type: NewNodeType; parentUid: number; parentIdentifier: string }): TemplateResult {
     const icon = draft.type === 'category' ? 'products-category' : 'products-product';
     const titleLabel =
-      draft.type === 'category' ? label('new_category_title', 'Category title:') : label('new_product_title', 'Product title:');
+      draft.type === 'category'
+        ? label('new_category_title', 'Category title:')
+        : label('new_product_title', 'Product title:');
     return html`
       <li>
         <div class="d-flex align-items-center gap-1">
@@ -601,19 +613,28 @@ export class ProductsCategoryTree extends LitElement {
           @contextmenu="${(event: MouseEvent) => this.onContextMenu(event, node)}"
         >
           ${this.renderToggle(node)}
-          <typo3-backend-icon identifier="${node.icon}" size="small" state="${node.hidden ? 'disabled' : 'default'}"></typo3-backend-icon>
+          <typo3-backend-icon
+            identifier="${node.icon}"
+            size="small"
+            state="${node.hidden ? 'disabled' : 'default'}"
+          ></typo3-backend-icon>
           <a
             href="#"
             class="flex-grow-1${node.hidden ? ' text-body-secondary fst-italic' : ''}"
-            @click="${(event: Event) => { event.preventDefault(); this.selectNode(node); }}"
-          >${node.title}</a>
+            @click="${(event: Event) => {
+              event.preventDefault();
+              this.selectNode(node);
+            }}"
+            >${node.title}</a
+          >
         </div>
-        ${expanded && (children.length > 0 || draft)
-          ? html`<ul class="list-unstyled ps-4">
-              ${children.map((child) => this.renderNode(child))}
-              ${draft ? this.renderDraftRow(draft) : nothing}
-            </ul>`
-          : nothing}
+        ${
+          expanded && (children.length > 0 || draft)
+            ? html`<ul class="list-unstyled ps-4">
+                ${children.map((child) => this.renderNode(child))} ${draft ? this.renderDraftRow(draft) : nothing}
+              </ul>`
+            : nothing
+        }
       </li>
     `;
   }
@@ -628,9 +649,11 @@ export class ProductsCategoryTree extends LitElement {
           @tree-search="${(event: CustomEvent<string>) => this.onSearchInput(event)}"
         ></goldene-zeiten-products-tree-toolbar>
         <div class="navigation-tree-container">
-          ${this.searchActive && this.searchMatches.length === 0
-            ? html`<p class="text-body-secondary px-2">${label('no_results', 'No matches found.')}</p>`
-            : nothing}
+          ${
+            this.searchActive && this.searchMatches.length === 0
+              ? html`<p class="text-body-secondary px-2">${label('no_results', 'No matches found.')}</p>`
+              : nothing
+          }
           <ul
             class="list-unstyled ps-0"
             style="min-height:2rem"
