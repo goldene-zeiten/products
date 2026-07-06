@@ -15,3 +15,11 @@ services:
   # private service can only be injected as another service's dependency.
   GoldeneZeiten\Products\Hooks\CategoryMountAccessHook:
     public: true
+
+  # EXT:install resolves upgrade wizards via its tagged_locator (keyed by the #[UpgradeWizard]
+  # identifier, not the class name), so production code never needs these public. Functional
+  # tests instantiate a wizard directly via $this->get(ClassName::class) though, which only
+  # works for public services.
+  GoldeneZeiten\Products\Updates\:
+    resource: '../Classes/Updates/*UpgradeWizard.php'
+    public: true

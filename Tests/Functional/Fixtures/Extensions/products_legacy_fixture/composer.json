@@ -1,0 +1,14 @@
+{
+  "name": "goldene-zeiten/products-legacy-fixture",
+  "type": "typo3-cms-extension",
+  "description": "Trimmed legacy tt_products schema for functional tests of the upgrade wizards.",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "typo3/cms-core": "^13.4 || ^14.3"
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "products_legacy_fixture"
+    }
+  }
+}
