@@ -209,6 +209,8 @@ class ProductsCategoryTree extends LitElement {
         this.dragPayload = null;
         this.dropTarget = null;
         this.searchTimer = null;
+        this.newCategoryDraft = null;
+        this.shouldFocusDraftInput = false;
         /**
          * The only generically-listenable signal context-menu-actions.js emits for
          * any table (see class doc) - used to drop a deleted node from the cache
@@ -238,6 +240,13 @@ class ProductsCategoryTree extends LitElement {
     createRenderRoot() {
         return this;
     }
+    updated(changedProperties) {
+        super.updated(changedProperties);
+        if (this.shouldFocusDraftInput) {
+            this.shouldFocusDraftInput = false;
+            this.querySelector('[data-new-category-draft-input]')?.focus();
+        }
+    }
     connectedCallback() {
         super.connectedCallback();
         this.expanded = this.state.getExpanded();
@@ -258,12 +267,34 @@ class ProductsCategoryTree extends LitElement {
      */
     async initialize() {
         await this.loadRoot();
+        await this.restoreExpandedState();
         const state = ModuleStateStorage.current(MODULE_TYPE);
         if (state.identifier) {
             this.selected = state.identifier;
             await this.revealSelected();
             this.navigateContent(state.identifier);
         }
+    }
+    /**
+     * The persisted `expanded` set only records identifiers - it doesn't imply
+     * their children were ever fetched into childrenByParent. Without this, a
+     * node restored as "expanded" (toggle shows collapse state) would render no
+     * children at all after a fresh page load, since renderNode() only shows a
+     * branch when both expanded AND its children are cached. Walks down from
+     * the roots, loading children for every persisted-expanded node reachable
+     * that way (not just the current selection's ancestors).
+     */
+    async restoreExpandedState() {
+        const queue = [...this.rootNodes];
+        while (queue.length > 0) {
+            const node = queue.shift();
+            if (!this.expanded.has(node.identifier)) {
+                continue;
+            }
+            const children = await this.ensureChildrenLoaded(node.identifier);
+            queue.push(...children);
+        }
+        this.requestUpdate();
     }
     navigateContent(identifier) {
         const [type, uid] = identifier.split('-');
@@ -421,19 +452,52 @@ class ProductsCategoryTree extends LitElement {
             return;
         }
         event.preventDefault();
-        await this.createCategory(0, 'root');
+        await this.startCategoryDraft(0, 'root');
     }
-    async createCategory(parentUid, parentIdentifier) {
-        const title = window.prompt(label('new_category_title', 'Category title:'));
-        if (!title) {
+    /**
+     * Mirrors PageTree's own drag-to-create UX (page-tree-element.js's
+     * handleNodeAdd -> editNode): dropping the toolbar's drag handle doesn't
+     * prompt, it opens an inline text input directly in the tree at the drop
+     * location, committed on Enter/blur and cancelled on Escape.
+     */
+    async startCategoryDraft(parentUid, parentIdentifier) {
+        if (parentIdentifier !== 'root') {
+            await this.ensureChildrenLoaded(parentIdentifier);
+        }
+        this.expanded.add(parentIdentifier);
+        this.newCategoryDraft = { parentUid, parentIdentifier };
+        this.shouldFocusDraftInput = true;
+        this.requestUpdate();
+    }
+    onDraftKeyDown(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            void this.commitCategoryDraft(event.target.value);
+        }
+        else if (event.key === 'Escape') {
+            event.preventDefault();
+            this.newCategoryDraft = null;
+            this.requestUpdate();
+        }
+    }
+    async commitCategoryDraft(title) {
+        const draft = this.newCategoryDraft;
+        if (!draft) {
             return;
         }
-        const succeeded = await this.client.createCategory(title, parentUid);
+        this.newCategoryDraft = null;
+        const trimmedTitle = title.trim();
+        if (trimmedTitle === '') {
+            this.requestUpdate();
+            return;
+        }
+        const succeeded = await this.client.createCategory(trimmedTitle, draft.parentUid);
         if (succeeded) {
-            await this.refreshParent(parentIdentifier);
+            await this.refreshParent(draft.parentIdentifier);
         }
         else {
             this.notifyError();
+            this.requestUpdate();
         }
     }
     onDragLeave() {
@@ -472,7 +536,7 @@ class ProductsCategoryTree extends LitElement {
         if (isNewCategory) {
             event.stopPropagation();
             if (target.type === 'category') {
-                await this.createCategory(target.uid, target.identifier);
+                await this.startCategoryDraft(target.uid, target.identifier);
             }
             return;
         }
@@ -567,9 +631,29 @@ class ProductsCategoryTree extends LitElement {
         }
         return classes.join(' ');
     }
+    renderDraftRow() {
+        return html `
+      <li>
+        <div class="d-flex align-items-center gap-1">
+          <span class="d-inline-block" style="width:1.5rem"></span>
+          <typo3-backend-icon identifier="products-category" size="small"></typo3-backend-icon>
+          <input
+            type="text"
+            class="form-control form-control-sm flex-grow-1"
+            data-new-category-draft-input
+            placeholder="${label('new_category_title', 'Category title:')}"
+            aria-label="${label('new_category_title', 'Category title:')}"
+            @keydown="${(event) => this.onDraftKeyDown(event)}"
+            @blur="${(event) => void this.commitCategoryDraft(event.target.value)}"
+          />
+        </div>
+      </li>
+    `;
+    }
     renderNode(node) {
         const expanded = this.expanded.has(node.identifier);
         const children = this.childrenByParent.get(node.identifier) ?? [];
+        const showDraft = this.newCategoryDraft?.parentIdentifier === node.identifier;
         return html `
       <li>
         <div
@@ -589,8 +673,11 @@ class ProductsCategoryTree extends LitElement {
             @click="${(event) => { event.preventDefault(); this.selectNode(node); }}"
           >${node.title}</a>
         </div>
-        ${expanded && children.length > 0
-            ? html `<ul class="list-unstyled ps-4">${children.map((child) => this.renderNode(child))}</ul>`
+        ${expanded && (children.length > 0 || showDraft)
+            ? html `<ul class="list-unstyled ps-4">
+              ${children.map((child) => this.renderNode(child))}
+              ${showDraft ? this.renderDraftRow() : nothing}
+            </ul>`
             : nothing}
       </li>
     `;
@@ -612,7 +699,10 @@ class ProductsCategoryTree extends LitElement {
             style="min-height:2rem"
             @dragover="${(event) => this.onRootDragOver(event)}"
             @drop="${(event) => void this.onRootDrop(event)}"
-          >${this.rootNodes.map((node) => this.renderNode(node))}</ul>
+          >
+            ${this.rootNodes.map((node) => this.renderNode(node))}
+            ${this.newCategoryDraft?.parentIdentifier === 'root' ? this.renderDraftRow() : nothing}
+          </ul>
         </div>
       </div>
     `;
