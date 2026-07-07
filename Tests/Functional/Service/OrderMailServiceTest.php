@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\OrderMailService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
 use GoldeneZeiten\Products\Tests\Functional\Fixtures\TestMailer;
+use PHPUnit\Framework\Attributes\Test;
 
 final class OrderMailServiceTest extends AbstractFrontendTestCase
 {
@@ -21,9 +22,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->subject = $this->get(OrderMailService::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sendOrderConfirmationSendsMailToCustomer(): void
     {
         $order = $this->buildOrder();
@@ -37,9 +36,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         self::assertStringContainsString('thank you for your order ORD-1', (string)$sentEmails[0]->getTextBody());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sendMerchantNotificationIsSkippedWithoutConfiguredRecipient(): void
     {
         $this->subject->sendMerchantNotification($this->buildOrder());
@@ -47,9 +44,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         self::assertCount(0, TestMailer::getSentEmails());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sendMerchantNotificationSendsMailWhenRecipientIsConfigured(): void
     {
         $this->writeSiteConfiguration(
@@ -76,9 +71,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         self::assertStringContainsString('ORD-1', (string)$sentEmails[0]->getSubject());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sendOrderConfirmationUsesOverriddenPartialFromFixtureExtension(): void
     {
         $this->writeSiteConfiguration(

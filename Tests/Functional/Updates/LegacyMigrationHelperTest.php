@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Updates;
 
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Updates\LegacyMigrationHelper;
+use PHPUnit\Framework\Attributes\Test;
 
 final class LegacyMigrationHelperTest extends AbstractFunctionalTestCase
 {
@@ -27,33 +28,25 @@ final class LegacyMigrationHelperTest extends AbstractFunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/LegacyMigration/legacy_migration_helper.csv');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function tablesExistIsTrueForExistingTable(): void
     {
         self::assertTrue($this->subject->tablesExist(self::LEGACY_TABLE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function tablesExistIsFalseWhenAnyTableIsMissing(): void
     {
         self::assertFalse($this->subject->tablesExist(self::LEGACY_TABLE, 'tt_products_does_not_exist'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function countUnmigratedExcludesDeletedAndAlreadyMappedRows(): void
     {
         self::assertSame(1, $this->subject->countUnmigrated(self::LEGACY_TABLE, self::LOCAL_TABLE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fetchUnmigratedBatchReturnsOnlyTheRemainingRow(): void
     {
         $rows = $this->subject->fetchUnmigratedBatch(self::LEGACY_TABLE, self::LOCAL_TABLE);
@@ -62,25 +55,19 @@ final class LegacyMigrationHelperTest extends AbstractFunctionalTestCase
         self::assertSame(2, (int)$rows[0]['uid']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function resolveLocalUidReturnsNullForUnmappedRow(): void
     {
         self::assertNull($this->subject->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function resolveLocalUidReturnsMappedUid(): void
     {
         self::assertSame(100, $this->subject->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function recordMappingMakesRowResolvableAndExcludedFromUnmigratedBatch(): void
     {
         $this->subject->recordMapping(self::LEGACY_TABLE, 2, self::LOCAL_TABLE, 200);

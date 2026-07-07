@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
 
 use GoldeneZeiten\Products\Service\Order\NumberRangeService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 final class NumberRangeServiceTest extends AbstractFunctionalTestCase
 {
@@ -21,17 +22,13 @@ final class NumberRangeServiceTest extends AbstractFunctionalTestCase
         $this->subject = $this->get(NumberRangeService::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function nextStartsAtOneForNewScope(): void
     {
         self::assertSame(1, $this->subject->next('order'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function nextIncrementsSequentiallyForSameScope(): void
     {
         self::assertSame(1, $this->subject->next('order'));
@@ -39,9 +36,7 @@ final class NumberRangeServiceTest extends AbstractFunctionalTestCase
         self::assertSame(3, $this->subject->next('order'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function nextKeepsIndependentCountersPerScope(): void
     {
         self::assertSame(1, $this->subject->next('order'));

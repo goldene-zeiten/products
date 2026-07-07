@@ -28,6 +28,8 @@
         stopOnIncomplete="false"
         stopOnSkipped="false"
         beStrictAboutTestsThatDoNotTestAnything="false"
+        displayDetailsOnPhpunitDeprecations="true"
+        failOnPhpunitDeprecation="true"
         failOnWarning="true"
         failOnRisky="true"
 >

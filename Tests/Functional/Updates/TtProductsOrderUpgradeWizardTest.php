@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Updates;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Updates\LegacyMigrationHelper;
 use GoldeneZeiten\Products\Updates\TtProductsOrderUpgradeWizard;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
@@ -36,17 +37,13 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         $this->subject->setOutput($this->output);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function updateIsNecessaryInitially(): void
     {
         self::assertTrue($this->subject->updateNecessary());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function deletedOrderIsNeverMigrated(): void
     {
         $this->subject->executeUpdate();
@@ -54,9 +51,7 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         self::assertNull($this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 3, self::LOCAL_TABLE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function normalOrderIsMigratedWithResolvedStatusAndCountry(): void
     {
         $this->subject->executeUpdate();
@@ -75,9 +70,7 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         self::assertNotSame(0, (int)$order['terms_accepted_at']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function billingAddressIsCreatedAndLinked(): void
     {
         $this->subject->executeUpdate();
@@ -95,9 +88,7 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         self::assertSame('DE', $address['country']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function parsedOrderDataIsStoredAsJson(): void
     {
         $this->subject->executeUpdate();
@@ -110,9 +101,7 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         self::assertSame(['version' => '1.0'], $legacyOrderData['order_data']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function unknownStatusUnrecognizedCountryAndUnparseableBlobAreHandledConservatively(): void
     {
         $this->subject->executeUpdate();
@@ -134,9 +123,7 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         self::assertStringContainsString('used electronic pay_mode 4', $output);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function lineItemWithResolvableProductIsMigratedWithCurrentPrice(): void
     {
         $this->subject->executeUpdate();
@@ -156,9 +143,7 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function lineItemWithResolvableArticleUsesArticlePrice(): void
     {
         $this->subject->executeUpdate();
@@ -174,9 +159,7 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         self::assertStringContainsString('referenced missing article uid 999, kept as product-only', $this->output->fetch());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function executeUpdateIsIdempotent(): void
     {
         $this->subject->executeUpdate();

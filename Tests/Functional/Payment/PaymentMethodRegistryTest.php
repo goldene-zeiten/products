@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Payment;
 use GoldeneZeiten\Products\Payment\Exception\PaymentMethodNotFoundException;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 final class PaymentMethodRegistryTest extends AbstractFunctionalTestCase
 {
@@ -22,17 +23,13 @@ final class PaymentMethodRegistryTest extends AbstractFunctionalTestCase
         $this->subject = $this->get(PaymentMethodRegistry::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function invoicePaymentMethodIsRegistered(): void
     {
         self::assertSame('invoice', $this->subject->get('invoice')->getIdentifier());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getThrowsExceptionForUnknownIdentifier(): void
     {
         $this->expectException(PaymentMethodNotFoundException::class);

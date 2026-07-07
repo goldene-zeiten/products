@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Updates;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Updates\LegacyMigrationHelper;
 use GoldeneZeiten\Products\Updates\TtProductsProductUpgradeWizard;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCase
@@ -35,17 +36,13 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         $this->subject->setOutput($this->output);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function updateIsNecessaryInitially(): void
     {
         self::assertTrue($this->subject->updateNecessary());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function executeUpdateMigratesVisibleProductsExcludingDeleted(): void
     {
         self::assertTrue($this->subject->executeUpdate());
@@ -54,9 +51,7 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertNull($this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 4, self::LOCAL_TABLE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function priceIsFormattedAsADecimalString(): void
     {
         $this->subject->executeUpdate();
@@ -65,9 +60,7 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertSame('19.99', $this->fetchField((int)$productUid, 'price'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function taxCategoryIsMappedToTheResolvedTaxClass(): void
     {
         $this->subject->executeUpdate();
@@ -82,9 +75,7 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertStringContainsString('unknown taxcat_id 9', $this->output->fetch());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function categoryIsLinkedViaTheMigrationMap(): void
     {
         $this->subject->executeUpdate();
@@ -93,9 +84,7 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertSame(1, $this->countMmRows($productUid, 50));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function orphanCategoryIsLeftUnassignedAndWarns(): void
     {
         $this->subject->executeUpdate();
@@ -105,9 +94,7 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertStringContainsString('referenced missing category uid 999', $this->output->fetch());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function presentImageTriggersAnOutOfScopeNotice(): void
     {
         $this->subject->executeUpdate();
@@ -115,9 +102,7 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertStringContainsString('tt_products uid 2 had an image', $this->output->fetch());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function overlaysAreDeduplicatedAndOrphansAreSkipped(): void
     {
         $this->subject->executeUpdate();
@@ -132,9 +117,7 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertStringContainsString('parent uid 999 was never migrated', $output);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function executeUpdateIsIdempotent(): void
     {
         $this->subject->executeUpdate();

@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Updates;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Updates\LegacyMigrationHelper;
 use GoldeneZeiten\Products\Updates\TtProductsArticleUpgradeWizard;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCase
@@ -34,17 +35,13 @@ final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCas
         $this->subject->setOutput($this->output);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function updateIsNecessaryInitially(): void
     {
         self::assertTrue($this->subject->updateNecessary());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function executeUpdateMigratesArticleWithResolvedProduct(): void
     {
         self::assertTrue($this->subject->executeUpdate());
@@ -56,9 +53,7 @@ final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertSame(10, (int)$this->fetchField((int)$articleUid, 'in_stock'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function articleWithMissingProductIsSkippedAndWarns(): void
     {
         self::assertTrue($this->subject->executeUpdate());
@@ -67,9 +62,7 @@ final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertStringContainsString('referenced missing product uid 999', $this->output->fetch());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function deletedArticleIsNeverMigrated(): void
     {
         $this->subject->executeUpdate();
@@ -77,9 +70,7 @@ final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertNull($this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 3, self::LOCAL_TABLE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function overlaysAreDeduplicatedAndOrphansAreSkipped(): void
     {
         $this->subject->executeUpdate();
@@ -93,9 +84,7 @@ final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertStringContainsString('parent uid 999 was never migrated', $output);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function executeUpdateIsIdempotent(): void
     {
         $this->subject->executeUpdate();

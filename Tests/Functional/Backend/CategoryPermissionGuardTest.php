@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Backend;
 
 use GoldeneZeiten\Products\Backend\CategoryPermissionGuard;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
 {
@@ -23,9 +24,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
         $this->subject = $this->get(CategoryPermissionGuard::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function adminIsAlwaysAllowed(): void
     {
         $backendUser = $this->setUpBackendUser(1);
@@ -33,9 +32,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
         self::assertTrue($this->subject->isCategoryEditable(100, $backendUser));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function ownerUserIsGrantedTheirOwnPermission(): void
     {
         $backendUser = $this->setUpBackendUser(2);
@@ -43,9 +40,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
         self::assertTrue($this->subject->isCategoryEditable(100, $backendUser));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function nonOwnerIsDeniedWithoutGroupOrEverybodyGrant(): void
     {
         $backendUser = $this->setUpBackendUser(3);
@@ -53,9 +48,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
         self::assertFalse($this->subject->isCategoryEditable(100, $backendUser));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function everybodyGrantAllowsAnyUser(): void
     {
         $backendUser = $this->setUpBackendUser(3);
@@ -63,9 +56,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
         self::assertTrue($this->subject->isCategoryEditable(101, $backendUser));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function groupGrantAllowsMemberUser(): void
     {
         $backendUser = $this->setUpBackendUser(4);
@@ -73,9 +64,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
         self::assertTrue($this->subject->isCategoryEditable(102, $backendUser));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function groupGrantDeniesNonMemberUser(): void
     {
         $backendUser = $this->setUpBackendUser(3);
@@ -83,9 +72,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
         self::assertFalse($this->subject->isCategoryEditable(102, $backendUser));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function missingCategoryIsDenied(): void
     {
         $backendUser = $this->setUpBackendUser(3);

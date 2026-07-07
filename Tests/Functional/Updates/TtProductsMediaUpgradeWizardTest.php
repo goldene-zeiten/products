@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Updates;
 
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Updates\TtProductsMediaUpgradeWizard;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
@@ -28,17 +29,13 @@ final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
         $this->subject->setOutput($this->output);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function updateIsNecessaryInitially(): void
     {
         self::assertTrue($this->subject->updateNecessary());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function existingFalReferencesAreCopiedToLocalRecords(): void
     {
         self::assertTrue($this->subject->executeUpdate());
@@ -49,9 +46,7 @@ final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
         self::assertSame(503, $this->fetchReferenceFileUid('tx_products_domain_model_article', 'images', 60));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function secondaryThumbnailsAndSliderImagesAreReportedNotMigrated(): void
     {
         $this->subject->executeUpdate();
@@ -61,9 +56,7 @@ final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
         self::assertStringContainsString('tt_products_cat uid 1: "sliderimage" is a redundant thumbnail', $output);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function linkedDownloadsCatalogIsReportedNotMigrated(): void
     {
         $this->subject->executeUpdate();
@@ -71,9 +64,7 @@ final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
         self::assertStringContainsString('tt_products uid 1 had catalog downloads linked', $this->output->fetch());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function missingRawFilenameFileIsWarnedAndSkipped(): void
     {
         $this->subject->executeUpdate();
@@ -82,9 +73,7 @@ final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
         self::assertStringContainsString('media file "missing.jpg" not found on disk, skipped', $this->output->fetch());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function executeUpdateIsIdempotentForMigratedRows(): void
     {
         $this->subject->executeUpdate();

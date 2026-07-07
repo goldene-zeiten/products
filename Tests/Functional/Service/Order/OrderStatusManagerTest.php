@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Service\Order\Exception\InvalidOrderStatusTransitionE
 use GoldeneZeiten\Products\Service\Order\Exception\InvalidPaymentStatusTransitionException;
 use GoldeneZeiten\Products\Service\Order\OrderStatusManager;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 final class OrderStatusManagerTest extends AbstractFunctionalTestCase
 {
@@ -26,9 +27,7 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
         $this->subject = $this->get(OrderStatusManager::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function transitionChangesStatusAndAppendsLog(): void
     {
         $order = new Order();
@@ -41,9 +40,7 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
         self::assertSame('pending', $order->getStatusLog()[0]['to']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function transitionToSameStatusIsNoop(): void
     {
         $order = new Order();
@@ -54,9 +51,7 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
         self::assertCount(0, $order->getStatusLog());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function transitionThrowsExceptionForInvalidTransition(): void
     {
         $order = new Order();
@@ -68,9 +63,7 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
         $this->subject->transition($order, OrderStatus::CONFIRMED);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function transitionPaymentChangesPaymentStatus(): void
     {
         $order = new Order();
@@ -80,9 +73,7 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
         self::assertSame(PaymentStatus::PAID, $order->getPaymentStatus());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function transitionPaymentThrowsExceptionForInvalidTransition(): void
     {
         $order = new Order();

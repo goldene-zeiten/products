@@ -14,9 +14,7 @@ final class SmokeTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    /**
-     * @test
-     */
+    #[Test]
     public function extensionCanBeLoaded(): void
     {
         self::assertGreaterThan(0, $this->get(Typo3Version::class)->getMajorVersion());

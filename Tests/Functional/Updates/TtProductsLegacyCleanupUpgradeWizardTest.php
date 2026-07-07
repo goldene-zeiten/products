@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Updates;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Updates\LegacyMigrationHelper;
 use GoldeneZeiten\Products\Updates\TtProductsLegacyCleanupUpgradeWizard;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 final class TtProductsLegacyCleanupUpgradeWizardTest extends AbstractFunctionalTestCase
@@ -33,17 +34,13 @@ final class TtProductsLegacyCleanupUpgradeWizardTest extends AbstractFunctionalT
         $this->subject->setOutput($this->output);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function updateIsNecessaryWhileLegacyTablesExist(): void
     {
         self::assertTrue($this->subject->updateNecessary());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function refusesToDropTablesWhileMigrationIsIncomplete(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/LegacyMigration/legacy_cleanup_incomplete.csv');
@@ -53,15 +50,7 @@ final class TtProductsLegacyCleanupUpgradeWizardTest extends AbstractFunctionalT
         self::assertStringContainsString('refusing to drop legacy tables', $this->output->fetch());
     }
 
-    /**
-     * Combined with the "no longer necessary" assertion rather than a separate test method: this
-     * test drops the legacy tables, and MySQL/MariaDB functional runs share the schema across test
-     * methods within a class (only fixture data is reset between tests, not the schema) - a second
-     * test whose setUp() re-imports the same legacy-table fixture would fail with
-     * "table does not exist" once this one has actually dropped it.
-     *
-     * @test
-     */
+    #[Test]
     public function dropsLegacyTablesOnceEveryEntityIsMigratedAndIsNoLongerNecessaryAfterwards(): void
     {
         self::assertTrue($this->subject->executeUpdate());
