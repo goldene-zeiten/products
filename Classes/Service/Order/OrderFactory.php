@@ -7,7 +7,7 @@ namespace GoldeneZeiten\Products\Service\Order;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementAdjustments;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementDetails;
 use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
@@ -43,7 +43,7 @@ final class OrderFactory
         BasketViewModel $basketViewModel,
         Address $address,
         string $paymentMethodIdentifier,
-        PlacementAdjustments $adjustments
+        PlacementDetails $details
     ): Order {
         $order = new Order();
         $order->setFrontendUser($this->frontendUserResolver->getUid($request));
@@ -57,9 +57,10 @@ final class OrderFactory
         $order->setCurrency($basketViewModel->getCurrency());
         $order->setTotalNet($basketViewModel->getTotalNet());
         $order->setTotalTax($basketViewModel->getTotalTax());
-        $this->applyAdjustments($order, $basketViewModel->getTotalGross(), $adjustments);
+        $this->applyAdjustments($order, $basketViewModel->getTotalGross(), $details);
         $order->setTaxCountry($address->getCountry());
         $order->setBillingAddress($this->buildBillingAddress($address));
+        $this->applyGiftOrderDetails($order, $details);
         $order->setItems($this->buildOrderItems($basketViewModel, $order));
         return $order;
     }
@@ -69,13 +70,25 @@ final class OrderFactory
      * shipping cost; total_net/total_tax stay pre-discount since tax was legitimately due on the
      * goods and neither adjustment is a retroactive price change.
      */
-    private function applyAdjustments(Order $order, Money $basketGrossTotal, PlacementAdjustments $adjustments): void
+    private function applyAdjustments(Order $order, Money $basketGrossTotal, PlacementDetails $details): void
     {
-        $order->setTotalGross($basketGrossTotal->subtract($adjustments->getTotalDiscount())->add($adjustments->getShippingCost()));
-        $order->setDiscountTotal($adjustments->getTotalDiscount());
-        $order->setVoucherCodes($adjustments->getVoucherCodes());
-        $order->setShippingMethod($adjustments->getShippingMethodUid());
-        $order->setShippingTotal($adjustments->getShippingCost());
+        $order->setTotalGross($basketGrossTotal->subtract($details->getTotalDiscount())->add($details->getShippingCost()));
+        $order->setDiscountTotal($details->getTotalDiscount());
+        $order->setVoucherCodes($details->getVoucherCodes());
+        $order->setShippingMethod($details->getShippingMethodUid());
+        $order->setShippingTotal($details->getShippingCost());
+    }
+
+    /**
+     * Unset (null) leaves the order billing-only, same as every order placed before this feature
+     * existed - delivery_address stays 0/unset and gift_message stays empty.
+     */
+    private function applyGiftOrderDetails(Order $order, PlacementDetails $details): void
+    {
+        if ($details->getDeliveryAddress() !== null) {
+            $order->setDeliveryAddress($this->buildDeliveryAddress($details->getDeliveryAddress()));
+        }
+        $order->setGiftMessage($details->getGiftMessage());
     }
 
     private function resolveSiteIdentifier(ServerRequestInterface $request): string
@@ -93,17 +106,27 @@ final class OrderFactory
 
     private function buildBillingAddress(Address $address): OrderAddress
     {
-        $billingAddress = new OrderAddress();
-        $billingAddress->setAddressType('billing');
-        $billingAddress->setSalutation($address->getSalutation());
-        $billingAddress->setFirstName($address->getFirstName());
-        $billingAddress->setLastName($address->getLastName());
-        $billingAddress->setCompany($address->getCompany());
-        $billingAddress->setStreet($address->getStreet());
-        $billingAddress->setZip($address->getZip());
-        $billingAddress->setCity($address->getCity());
-        $billingAddress->setCountry($address->getCountry());
-        return $billingAddress;
+        return $this->buildOrderAddress($address, 'billing');
+    }
+
+    private function buildDeliveryAddress(Address $address): OrderAddress
+    {
+        return $this->buildOrderAddress($address, 'delivery');
+    }
+
+    private function buildOrderAddress(Address $address, string $addressType): OrderAddress
+    {
+        $orderAddress = new OrderAddress();
+        $orderAddress->setAddressType($addressType);
+        $orderAddress->setSalutation($address->getSalutation());
+        $orderAddress->setFirstName($address->getFirstName());
+        $orderAddress->setLastName($address->getLastName());
+        $orderAddress->setCompany($address->getCompany());
+        $orderAddress->setStreet($address->getStreet());
+        $orderAddress->setZip($address->getZip());
+        $orderAddress->setCity($address->getCity());
+        $orderAddress->setCountry($address->getCountry());
+        return $orderAddress;
     }
 
     /**

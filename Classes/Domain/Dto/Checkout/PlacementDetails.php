@@ -4,23 +4,26 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Domain\Dto\Checkout;
 
+use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketDiscountSummary;
 use GoldeneZeiten\Products\Domain\Model\Voucher;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**
- * Combines the resolved amounts OrderFactory needs to apply to an order's totals: vouchers and
- * points reduce it, shipping adds to it. Vouchers carry their own codes for the order snapshot,
- * points only ever contribute an amount.
+ * Everything OrderFactory needs beyond the basic request/basket/address/paymentMethod: the
+ * resolved amounts that adjust the order's totals (vouchers and points reduce it, shipping adds
+ * to it), plus an optional alternate delivery address/gift message it snapshots as-is.
  */
 #[Exclude]
-final readonly class PlacementAdjustments
+final readonly class PlacementDetails
 {
     public function __construct(
         private BasketDiscountSummary $voucherSummary,
         private Money $pointsDiscountAmount,
-        private ShippingSelection $shippingSelection
+        private ShippingSelection $shippingSelection,
+        private ?Address $deliveryAddress = null,
+        private string $giftMessage = ''
     ) {}
 
     public function getTotalDiscount(): Money
@@ -47,5 +50,15 @@ final readonly class PlacementAdjustments
     public function getShippingMethodUid(): int
     {
         return $this->shippingSelection->getShippingMethodUid();
+    }
+
+    public function getDeliveryAddress(): ?Address
+    {
+        return $this->deliveryAddress;
+    }
+
+    public function getGiftMessage(): string
+    {
+        return $this->giftMessage;
     }
 }

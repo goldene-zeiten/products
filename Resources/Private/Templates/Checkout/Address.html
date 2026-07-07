@@ -32,6 +32,45 @@
             <f:variable name="countries" value="{DE: '{f:translate(key: \'germany\')}', AT: '{f:translate(key: \'austria\')}', CH: '{f:translate(key: \'switzerland\')}'}" />
             <f:form.select property="country" options="{countries}" class="form-select" />
         </div>
+
+        <div class="form-check mb-3">
+            <f:form.checkbox name="shipToDifferentAddress" value="1" checked="{shipToDifferentAddress}" class="form-check-input" id="shipToDifferentAddress" />
+            <label class="form-check-label" for="shipToDifferentAddress"><f:translate key="ship_to_different_address" /></label>
+        </div>
+        <div class="checkout-delivery-address">
+            <h4><f:translate key="delivery_address" /></h4>
+            <div class="mb-3">
+                <label for="deliveryFirstName" class="form-label"><f:translate key="first_name" /></label>
+                <f:form.textfield name="deliveryAddress[firstName]" value="{deliveryAddress.firstName}" class="form-control" id="deliveryFirstName" />
+            </div>
+            <div class="mb-3">
+                <label for="deliveryLastName" class="form-label"><f:translate key="last_name" /></label>
+                <f:form.textfield name="deliveryAddress[lastName]" value="{deliveryAddress.lastName}" class="form-control" id="deliveryLastName" />
+            </div>
+            <div class="mb-3">
+                <label for="deliveryStreet" class="form-label"><f:translate key="street" /></label>
+                <f:form.textfield name="deliveryAddress[street]" value="{deliveryAddress.street}" class="form-control" id="deliveryStreet" />
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="deliveryZip" class="form-label"><f:translate key="zip" /></label>
+                    <f:form.textfield name="deliveryAddress[zip]" value="{deliveryAddress.zip}" class="form-control" id="deliveryZip" />
+                </div>
+                <div class="col-md-8 mb-3">
+                    <label for="deliveryCity" class="form-label"><f:translate key="city" /></label>
+                    <f:form.textfield name="deliveryAddress[city]" value="{deliveryAddress.city}" class="form-control" id="deliveryCity" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="deliveryCountry" class="form-label"><f:translate key="country" /></label>
+                <f:form.select name="deliveryAddress[country]" value="{deliveryAddress.country}" options="{countries}" class="form-select" id="deliveryCountry" />
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="giftMessage" class="form-label"><f:translate key="gift_message" /></label>
+            <f:form.textarea name="giftMessage" value="{giftMessage}" class="form-control" id="giftMessage" rows="3" />
+        </div>
+
         <f:form.submit value="{f:translate(key: 'continue_to_payment')}" class="btn btn-primary" />
     </f:form>
 </div>

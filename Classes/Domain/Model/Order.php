@@ -46,6 +46,7 @@ class Order extends AbstractEntity
      */
     protected ObjectStorage $items;
     protected string $customerNote = '';
+    protected string $giftMessage = '';
     protected ?\DateTime $termsAcceptedAt = null;
     protected string $siteIdentifier = '';
     /** @var string */
@@ -314,6 +315,16 @@ class Order extends AbstractEntity
     public function setCustomerNote(string $customerNote): void
     {
         $this->customerNote = $customerNote;
+    }
+
+    public function getGiftMessage(): string
+    {
+        return $this->giftMessage;
+    }
+
+    public function setGiftMessage(string $giftMessage): void
+    {
+        $this->giftMessage = $giftMessage;
     }
 
     public function getTermsAcceptedAt(): ?\DateTime

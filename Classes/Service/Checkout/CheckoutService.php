@@ -17,6 +17,8 @@ final class CheckoutService
     private const SESSION_KEY_ADDRESS = 'tx_products_checkout_address';
     private const SESSION_KEY_PAYMENT = 'tx_products_checkout_payment';
     private const SESSION_KEY_SHIPPING_METHOD = 'tx_products_checkout_shipping_method';
+    private const SESSION_KEY_DELIVERY_ADDRESS = 'tx_products_checkout_delivery_address';
+    private const SESSION_KEY_GIFT_MESSAGE = 'tx_products_checkout_gift_message';
 
     public function __construct(
         private readonly BasketService $basketService,
@@ -83,6 +85,56 @@ final class CheckoutService
         return 0;
     }
 
+    /**
+     * Null clears any previously chosen alternate delivery address, e.g. when the shopper
+     * unchecks "ship to a different address" again.
+     */
+    public function setDeliveryAddress(ServerRequestInterface $request, ?Address $deliveryAddress): void
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if ($frontendUser instanceof FrontendUserAuthentication) {
+            $frontendUser->setKey('ses', self::SESSION_KEY_DELIVERY_ADDRESS, $deliveryAddress !== null ? serialize($deliveryAddress) : null);
+            $frontendUser->storeSessionData();
+        }
+    }
+
+    /**
+     * Null means "ship to the billing address" - meaningfully different from an Address with
+     * blank fields, so no alternate address is ever returned as a real-but-empty Address.
+     */
+    public function getDeliveryAddress(ServerRequestInterface $request): ?Address
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if ($frontendUser instanceof FrontendUserAuthentication) {
+            $data = $frontendUser->getKey('ses', self::SESSION_KEY_DELIVERY_ADDRESS);
+            if (!empty($data)) {
+                $address = unserialize((string)$data, ['allowed_classes' => [Address::class]]);
+                if ($address instanceof Address) {
+                    return $address;
+                }
+            }
+        }
+        return null;
+    }
+
+    public function setGiftMessage(ServerRequestInterface $request, string $giftMessage): void
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if ($frontendUser instanceof FrontendUserAuthentication) {
+            $frontendUser->setKey('ses', self::SESSION_KEY_GIFT_MESSAGE, $giftMessage);
+            $frontendUser->storeSessionData();
+        }
+    }
+
+    public function getGiftMessage(ServerRequestInterface $request): string
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if ($frontendUser instanceof FrontendUserAuthentication) {
+            return (string)$frontendUser->getKey('ses', self::SESSION_KEY_GIFT_MESSAGE);
+        }
+        return '';
+    }
+
     public function getBasketViewModel(ServerRequestInterface $request): BasketViewModel
     {
         return $this->basketService->getBasketViewModel($request);
@@ -100,6 +152,8 @@ final class CheckoutService
             $frontendUser->setKey('ses', self::SESSION_KEY_ADDRESS, null);
             $frontendUser->setKey('ses', self::SESSION_KEY_PAYMENT, null);
             $frontendUser->setKey('ses', self::SESSION_KEY_SHIPPING_METHOD, null);
+            $frontendUser->setKey('ses', self::SESSION_KEY_DELIVERY_ADDRESS, null);
+            $frontendUser->setKey('ses', self::SESSION_KEY_GIFT_MESSAGE, null);
             $frontendUser->storeSessionData();
         }
     }

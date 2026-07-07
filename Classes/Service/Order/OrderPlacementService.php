@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Service\Order;
 
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\OrderPlacementResult;
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
@@ -39,15 +40,20 @@ final class OrderPlacementService
         ServerRequestInterface $request,
         Address $address,
         string $paymentMethodIdentifier,
-        int $spendPoints = 0,
-        int $shippingMethodUid = 0
+        CheckoutChoices $choices = new CheckoutChoices()
     ): OrderPlacementResult {
         $basketViewModel = $this->basketService->getBasketViewModel($request);
         $this->assertBasketNotEmpty($basketViewModel);
-        if ($spendPoints > 0) {
-            $this->creditPointsService->assertSpendable($this->frontendUserResolver->getUid($request), $spendPoints);
+        if ($choices->getSpendPoints() > 0) {
+            $this->creditPointsService->assertSpendable($this->frontendUserResolver->getUid($request), $choices->getSpendPoints());
         }
-        $checkoutSelections = new CheckoutSelections($this->basketService->getAppliedVoucherCodes($request), $spendPoints, $shippingMethodUid);
+        $checkoutSelections = new CheckoutSelections(
+            $this->basketService->getAppliedVoucherCodes($request),
+            $choices->getSpendPoints(),
+            $choices->getShippingMethodUid(),
+            $choices->getDeliveryAddress(),
+            $choices->getGiftMessage()
+        );
         $paymentMethod = $this->paymentMethodRegistry->get($paymentMethodIdentifier);
         $this->dispatchBeforeOrderPlaced($request, $basketViewModel, $address, $paymentMethod);
 

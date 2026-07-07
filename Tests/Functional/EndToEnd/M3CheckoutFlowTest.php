@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Tests\Functional\EndToEnd;
 
 use GoldeneZeiten\Products\Domain\Dto\Address;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\CreditPointsTransactionRepository;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
@@ -88,7 +89,7 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
         $this->applyVoucher($request, 'SOLO');
         self::assertSame(['SOLO'], $this->basketService->getAppliedVoucherCodes($request), 'A non-combinable voucher must replace, not join, an existing code.');
 
-        $order = $this->orderPlacementService->place($request, $this->address(), 'invoice', 30)->getOrder();
+        $order = $this->orderPlacementService->place($request, $this->address(), 'invoice', new CheckoutChoices(30))->getOrder();
 
         self::assertSame(9200, $order->getTotalGross()->getCents());
         self::assertSame(800, $order->getDiscountTotal()->getCents());
@@ -115,14 +116,14 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
 
         $orderCountBefore = $this->countOrders();
         try {
-            $this->orderPlacementService->place($request, $this->address(), 'invoice', 10);
+            $this->orderPlacementService->place($request, $this->address(), 'invoice', new CheckoutChoices(10));
             self::fail('Expected InsufficientCreditPointsException was not thrown for a guest requesting points.');
         } catch (InsufficientCreditPointsException) {
             // expected: guests always have a zero balance
         }
         self::assertSame($orderCountBefore, $this->countOrders(), 'A rejected points request must not place an order.');
 
-        $order = $this->orderPlacementService->place($request, $this->address(), 'invoice', 0)->getOrder();
+        $order = $this->orderPlacementService->place($request, $this->address(), 'invoice')->getOrder();
 
         self::assertSame(9000, $order->getTotalGross()->getCents());
         self::assertSame(1000, $order->getDiscountTotal()->getCents());

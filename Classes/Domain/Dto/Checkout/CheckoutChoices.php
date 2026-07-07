@@ -8,32 +8,20 @@ use GoldeneZeiten\Products\Domain\Dto\Address;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**
- * Bundles the raw, unresolved checkout-step choices a shopper brings into checkout - voucher
- * codes, spent points, the selected shipping method, and an optional alternate delivery
- * address/gift message - so they travel as a single argument through
- * OrderPlacementTransaction/OrderCreationService instead of one positional parameter each.
+ * Bundles everything CheckoutController already knows (from session state and the finalize form)
+ * that OrderPlacementService needs beyond the billing address and payment method, so place() stays
+ * at 4 parameters instead of growing a 5th/6th scalar each time checkout gains another optional
+ * per-order choice.
  */
 #[Exclude]
-final readonly class CheckoutSelections
+final readonly class CheckoutChoices
 {
-    /**
-     * @param string[] $voucherCodes
-     */
     public function __construct(
-        private array $voucherCodes,
-        private int $spendPoints,
+        private int $spendPoints = 0,
         private int $shippingMethodUid = 0,
         private ?Address $deliveryAddress = null,
         private string $giftMessage = ''
     ) {}
-
-    /**
-     * @return string[]
-     */
-    public function getVoucherCodes(): array
-    {
-        return $this->voucherCodes;
-    }
 
     public function getSpendPoints(): int
     {
