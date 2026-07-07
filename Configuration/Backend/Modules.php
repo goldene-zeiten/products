@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use GoldeneZeiten\Products\Controller\Backend\OrderManagementModuleController;
 use GoldeneZeiten\Products\Controller\Backend\ProductManagementModuleController;
 
 return [
@@ -10,6 +11,22 @@ return [
             'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:module.products.title',
         ],
         'iconIdentifier' => 'products-module',
+    ],
+    'products_order' => [
+        'parent' => 'products',
+        'position' => [],
+        'access' => 'user',
+        'workspaces' => 'live',
+        'iconIdentifier' => 'products-module',
+        'labels' => [
+            'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:module.products_order.title',
+            'shortDescription' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:module.products_order.shortDescription',
+        ],
+        'routes' => [
+            '_default' => [
+                'target' => OrderManagementModuleController::class . '::mainAction',
+            ],
+        ],
     ],
     'products_management' => [
         'parent' => 'products',

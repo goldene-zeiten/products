@@ -84,3 +84,22 @@ list, or via the :guilabel:`Products` backend module. Each article can then be t
 *   Every attribute value used by a product's articles shows up in that product's dropdowns; values
     not used by any of that product's articles are not filtered out of the list — pick a
     combination that has a matching article, or nothing is added to the basket.
+
+..  _users-manual-orders:
+
+Managing orders
+================
+
+The :guilabel:`Orders` submodule (under the :guilabel:`Products` main module) lists all orders,
+filterable by status, order number and email. Opening an order shows a summary (date, email,
+status, payment status, payment method, total, customer note) and the actions available for it:
+
+*   :guilabel:`Mark paid` — sets the payment status to "paid". Shown only while the order's current
+    payment status can actually move there (mirrors the invoice workflow: confirm payment once the
+    bank transfer arrives).
+*   :guilabel:`Set status: ...` — one button per status the order can legally move to next (e.g.
+    "confirmed" → "shipped" → "completed", or "cancelled" from an early status). Illegal transitions
+    are never offered, so there is no way to put an order into an invalid state from this module.
+
+This module only manages status; full order details (line items, addresses) remain in the record
+edit view for now — a fuller order-detail view is a good candidate for a later milestone.
