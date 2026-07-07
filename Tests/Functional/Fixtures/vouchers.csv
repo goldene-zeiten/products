@@ -1,0 +1,12 @@
+"tx_products_domain_model_voucher",,,,,,,,,
+,"uid","pid","code","discount_type","discount_value","combinable","usage_limit","min_basket_value","bound_frontend_user","valid_until"
+,1,1,"SAVE10","percentage","10.00",1,0,"0.00",0,0
+,2,1,"FLAT5","fixed","5.00",0,0,"0.00",0,0
+,3,1,"EXPIRED","percentage","10.00",1,0,"0.00",0,946684800
+,4,1,"LIMITED","percentage","10.00",1,1,"0.00",0,0
+,5,1,"VIPONLY","percentage","10.00",1,0,"0.00",42,0
+,6,1,"BIGORDER","percentage","10.00",1,0,"1000.00",0,0
+
+"tx_products_domain_model_voucherredemption",,,,
+,"uid","pid","voucher_uid","order_uid","frontend_user"
+,1,1,4,900,1

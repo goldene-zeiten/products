@@ -142,3 +142,30 @@ that user even though they can see it.
 Leaving all :guilabel:`Access` checkboxes empty on a category means "no one but an admin can edit
 it" — set at least :guilabel:`Everybody` → :guilabel:`Edit` to keep the previous mounts-only
 behaviour where any user with mount access could also edit.
+
+..  _users-manual-vouchers:
+
+Voucher codes
+==============
+
+Create vouchers as plain records (storage folder record list, or the record list view of the
+:guilabel:`Products` module) with a :guilabel:`Code`, a :guilabel:`Discount type` (percentage or
+fixed amount) and a :guilabel:`Discount value`. Shoppers enter a code in the basket; if it applies,
+the discount shows there and carries through checkout.
+
+*   :guilabel:`Combinable with other vouchers` — off by default. A non-combinable voucher always
+    applies alone: entering it removes any other codes already applied, and it cannot be added
+    alongside an existing one either. Combinable vouchers stack with each other freely.
+*   :guilabel:`Usage limit` — the total number of times the code can be redeemed across all
+    customers, 0 for unlimited. Once reached, the code stops working for everyone.
+*   :guilabel:`Minimum basket value` — the code is rejected below this basket total; 0 means no
+    minimum.
+*   :guilabel:`Bound to customer` — restricts the code to one specific customer account; leave
+    empty for a public code anyone can use.
+*   :guilabel:`Valid from` / :guilabel:`Valid until` — the same start/end-time fields used
+    everywhere else in TYPO3; outside this window the code behaves as if it doesn't exist.
+*   A discount can never exceed the basket's total, so applying a voucher never makes the amount
+    due negative.
+
+A code that becomes invalid after being applied (expired, exhausted by someone else, etc.) simply
+stops contributing to the discount shown in the basket — remove it to add a different one.
