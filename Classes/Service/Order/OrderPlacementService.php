@@ -34,10 +34,11 @@ final class OrderPlacementService
     {
         $basketViewModel = $this->basketService->getBasketViewModel($request);
         $this->assertBasketNotEmpty($basketViewModel);
+        $voucherCodes = $this->basketService->getAppliedVoucherCodes($request);
         $paymentMethod = $this->paymentMethodRegistry->get($paymentMethodIdentifier);
         $this->dispatchBeforeOrderPlaced($request, $basketViewModel, $address, $paymentMethod);
 
-        [$order, $paymentResult] = $this->orderPlacementTransaction->run($request, $basketViewModel, $address, $paymentMethod);
+        [$order, $paymentResult] = $this->orderPlacementTransaction->run($request, $basketViewModel, $voucherCodes, $address, $paymentMethod);
         $this->eventDispatcher->dispatch(new PaymentInitiatedEvent($order, $paymentResult));
 
         return $this->buildPlacementResult($order, $paymentResult, $request);

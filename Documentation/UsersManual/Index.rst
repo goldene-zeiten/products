@@ -167,5 +167,14 @@ the discount shows there and carries through checkout.
 *   A discount can never exceed the basket's total, so applying a voucher never makes the amount
     due negative.
 
-A code that becomes invalid after being applied (expired, exhausted by someone else, etc.) simply
-stops contributing to the discount shown in the basket — remove it to add a different one.
+A code that becomes invalid while just viewing the basket (expired, exhausted by someone else,
+etc.) simply stops contributing to the discount shown there — remove it to add a different one.
+If a code was still valid on the basket page but became invalid by the time the shopper places the
+order (someone else exhausted it in the meantime, for example), the whole order placement fails
+with an error message instead of silently placing the order at a different price; the shopper is
+sent back to the review step to remove the code and try again.
+
+Once an order is placed, the applied voucher code(s) and the total discount are stored on the
+order and shown in the backend order module's detail view, alongside a redemption record per
+code (visible in the :guilabel:`Voucher redemption` record list) that keeps counting towards the
+code's usage limit even if the order is later cancelled.

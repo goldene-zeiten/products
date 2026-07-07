@@ -36,6 +36,9 @@ class Order extends AbstractEntity
     protected string $taxBreakdown = '[]';
     /** @var string */
     protected string $statusLog = '[]';
+    protected int $discountTotal = 0;
+    /** @var string */
+    protected string $voucherCodes = '[]';
     /**
      * @var ObjectStorage<OrderItem>
      */
@@ -237,6 +240,32 @@ class Order extends AbstractEntity
     public function setStatusLog(array $statusLog): void
     {
         $this->statusLog = (string)json_encode($statusLog);
+    }
+
+    public function getDiscountTotal(): Money
+    {
+        return Money::fromCents($this->discountTotal);
+    }
+
+    public function setDiscountTotal(Money $discountTotal): void
+    {
+        $this->discountTotal = $discountTotal->getCents();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getVoucherCodes(): array
+    {
+        return json_decode($this->voucherCodes, true) ?: [];
+    }
+
+    /**
+     * @param string[] $voucherCodes
+     */
+    public function setVoucherCodes(array $voucherCodes): void
+    {
+        $this->voucherCodes = (string)json_encode($voucherCodes);
     }
 
     /**

@@ -36,6 +36,23 @@ final class VoucherService
     }
 
     /**
+     * Strict counterpart to buildDiscountSummary(): used at order placement, where a code that
+     * became invalid since the basket was last viewed must fail the whole placement rather than
+     * be silently dropped.
+     *
+     * @param string[] $codes
+     * @throws VoucherNotFoundException|VoucherNotApplicableException
+     */
+    public function resolveAllOrFail(array $codes, Money $basketGoodsTotal, int $frontendUser): BasketDiscountSummary
+    {
+        $vouchers = [];
+        foreach ($codes as $code) {
+            $vouchers[] = $this->resolve($code, $basketGoodsTotal, $frontendUser);
+        }
+        return new BasketDiscountSummary($vouchers, $this->calculateCombinedDiscount($vouchers, $basketGoodsTotal));
+    }
+
+    /**
      * @param Voucher[] $vouchers
      */
     public function calculateCombinedDiscount(array $vouchers, Money $basketGoodsTotal): Money

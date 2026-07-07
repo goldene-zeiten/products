@@ -122,6 +122,8 @@ final class OrderManagementRepository
             'paymentStatus' => (string)$row['payment_status'],
             'paymentMethod' => (string)$row['payment_method'],
             'totalGrossCents' => (int)$row['total_gross'],
+            'discountTotalCents' => (int)($row['discount_total'] ?? 0),
+            'voucherCodes' => json_decode((string)($row['voucher_codes'] ?? ''), true) ?: [],
             'currency' => (string)$row['currency'],
             'customerNote' => (string)($row['customer_note'] ?? ''),
         ];

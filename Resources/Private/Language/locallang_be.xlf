@@ -66,6 +66,12 @@
 			<trans-unit id="order.column.note" resname="order.column.note">
 				<source>Customer note</source>
 			</trans-unit>
+			<trans-unit id="order.column.vouchers" resname="order.column.vouchers">
+				<source>Vouchers applied</source>
+			</trans-unit>
+			<trans-unit id="order.column.discount" resname="order.column.discount">
+				<source>Discount</source>
+			</trans-unit>
 			<trans-unit id="order.action.filter" resname="order.action.filter">
 				<source>Filter</source>
 			</trans-unit>
