@@ -4,6 +4,8 @@
         <h2 class="text-muted">{product.subtitle}</h2>
     </f:if>
 
+    <f:render partial="Product/Gallery" arguments="{images: product.images}" />
+
     <div class="row mt-4">
         <div class="col-md-6">
             <f:format.html>{product.description}</f:format.html>
@@ -35,4 +37,6 @@
             </div>
         </div>
     </div>
+
+    <f:render partial="Product/Downloads" arguments="{downloads: product.downloads}" />
 </div>

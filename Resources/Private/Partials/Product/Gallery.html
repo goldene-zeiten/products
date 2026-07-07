@@ -1,0 +1,9 @@
+<f:if condition="{images}">
+    <div class="product-gallery row mb-3">
+        <f:for each="{images}" as="image">
+            <div class="col-3 mb-2">
+                <f:image image="{image}" width="200c" alt="{image.alternative}" title="{image.title}" class="img-fluid rounded" />
+            </div>
+        </f:for>
+    </div>
+</f:if>

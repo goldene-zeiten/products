@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Domain\Model;
 
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
@@ -35,6 +36,14 @@ class Product extends AbstractEntity
      * @var ObjectStorage<Article>
      */
     protected ObjectStorage $articles;
+    /**
+     * @var ObjectStorage<FileReference>
+     */
+    protected ObjectStorage $images;
+    /**
+     * @var ObjectStorage<FileReference>
+     */
+    protected ObjectStorage $downloads;
 
     public function __construct()
     {
@@ -45,6 +54,8 @@ class Product extends AbstractEntity
     {
         $this->categories = new ObjectStorage();
         $this->articles = new ObjectStorage();
+        $this->images = new ObjectStorage();
+        $this->downloads = new ObjectStorage();
     }
 
     public function getTitle(): string
@@ -217,5 +228,45 @@ class Product extends AbstractEntity
     public function setArticles(ObjectStorage $articles): void
     {
         $this->articles = $articles;
+    }
+
+    /**
+     * @return ObjectStorage<FileReference>
+     */
+    public function getImages(): ObjectStorage
+    {
+        return $this->images;
+    }
+
+    /**
+     * @param ObjectStorage<FileReference> $images
+     */
+    public function setImages(ObjectStorage $images): void
+    {
+        $this->images = $images;
+    }
+
+    public function getPrimaryImage(): ?FileReference
+    {
+        foreach ($this->images as $image) {
+            return $image;
+        }
+        return null;
+    }
+
+    /**
+     * @return ObjectStorage<FileReference>
+     */
+    public function getDownloads(): ObjectStorage
+    {
+        return $this->downloads;
+    }
+
+    /**
+     * @param ObjectStorage<FileReference> $downloads
+     */
+    public function setDownloads(ObjectStorage $downloads): void
+    {
+        $this->downloads = $downloads;
     }
 }

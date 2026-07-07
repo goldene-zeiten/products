@@ -56,6 +56,10 @@ and upgrade wizards that migrate existing ``tt_products`` installations in place
 
         Site settings and the backend management module.
 
+    ..  card:: :ref:`Users Manual <users-manual>`
+
+        Day-to-day editor tasks: managing the catalog, media, pricing and orders.
+
     ..  card:: :ref:`Upgrading from tt_products <upgrading>`
 
         Migrating an existing ``tt_products`` shop with the built-in upgrade wizards.
@@ -69,6 +73,7 @@ and upgrade wizards that migrate existing ``tt_products`` installations in place
     Introduction/Index
     Installation/Index
     Configuration/Index
+    UsersManual/Index
     Upgrading/Index
 
 ..  Meta Menu
