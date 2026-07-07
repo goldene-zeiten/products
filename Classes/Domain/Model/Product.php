@@ -304,4 +304,23 @@ class Product extends AbstractEntity
         }
         return $lowest;
     }
+
+    /**
+     * Distinct attributes used by at least one article, for building a variant selector.
+     *
+     * @return Attribute[]
+     */
+    public function getVariantAttributes(): array
+    {
+        $seen = [];
+        foreach ($this->articles as $article) {
+            foreach ($article->getAttributeValues() as $value) {
+                $attribute = $value->getAttribute();
+                if ($attribute?->getUid() !== null) {
+                    $seen[$attribute->getUid()] = $attribute;
+                }
+            }
+        }
+        return array_values($seen);
+    }
 }

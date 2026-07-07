@@ -66,3 +66,21 @@ tier reached "from quantity" that is not above the ordered quantity wins.
 *   Leave the section empty to sell at the regular (non-graduated) price, exactly as before.
 *   The product detail page shows the full price list to shoppers, and lists it as
     "from" a starting price wherever the regular price would otherwise be shown.
+
+..  _users-manual-variants:
+
+Variant attributes (size, colour, ...)
+=======================================
+
+Manage reusable attributes (e.g. "Size", "Colour") and their values in the storage folder's record
+list, or via the :guilabel:`Products` backend module. Each article can then be tagged with a
+:guilabel:`Variant Attributes` selection (e.g. "Size: L" and "Colour: Red" together).
+
+*   Once at least one article of a product has variant attributes, the product detail page shows a
+    dropdown per attribute instead of the plain article list; shoppers pick one value per attribute
+    and the matching article is added to the basket.
+*   Articles without any variant attributes keep working exactly as before (plain title dropdown) —
+    this is optional, not a requirement for every product.
+*   Every attribute value used by a product's articles shows up in that product's dropdowns; values
+    not used by any of that product's articles are not filtered out of the list — pick a
+    combination that has a matching article, or nothing is added to the basket.
