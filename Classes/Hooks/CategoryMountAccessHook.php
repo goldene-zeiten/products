@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Hooks;
 
 use GoldeneZeiten\Products\Backend\CategoryAccessGuard;
 use GoldeneZeiten\Products\Backend\CategoryMountResolver;
+use GoldeneZeiten\Products\Backend\CategoryPermissionGuard;
 use GoldeneZeiten\Products\Backend\CategoryTreeRepository;
 use GoldeneZeiten\Products\Exception\CategoryAccessDeniedException;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -30,6 +31,7 @@ final class CategoryMountAccessHook
         private readonly CategoryAccessGuard $accessGuard,
         private readonly CategoryMountResolver $mountResolver,
         private readonly CategoryTreeRepository $treeRepository,
+        private readonly CategoryPermissionGuard $permissionGuard,
     ) {}
 
     /**
@@ -41,10 +43,13 @@ final class CategoryMountAccessHook
             return $currentAccess;
         }
         $mounts = $this->mountResolver->resolveMountUids($dataHandler->BE_USER);
-        if ($mounts === null || $this->isRecordAccessible($table, $id, $mounts)) {
-            return $currentAccess;
+        if ($mounts !== null && !$this->isRecordAccessible($table, $id, $mounts)) {
+            return false;
         }
-        return false;
+        if ($table === self::TABLE_CATEGORY && !$this->permissionGuard->isCategoryEditable($id, $dataHandler->BE_USER)) {
+            return false;
+        }
+        return $currentAccess;
     }
 
     /**

@@ -103,3 +103,25 @@ status, payment status, payment method, total, customer note) and the actions av
 
 This module only manages status; full order details (line items, addresses) remain in the record
 edit view for now — a fuller order-detail view is a good candidate for a later milestone.
+
+A :guilabel:`Refund` action also appears once an order's payment status can move to "refunded" and
+its payment method supports refunds. The invoice payment method shipped with this extension
+supports it as an acknowledgement (there is no gateway to call back — refunding an invoice payment
+just records that the money was returned outside the system); third-party payment methods can
+implement the same contract to wire up a real refund call.
+
+..  _users-manual-category-permissions:
+
+Category permissions
+======================
+
+Beyond the coarse-grained :ref:`category mounts <configuration-backend-module>` (which subtree a
+user/group can see at all), each category has an :guilabel:`Access` tab — the same owner-user/
+owner-group/everybody permission model pages use, with Show/Edit/Delete/New Subcategories
+checkboxes per owner. This is *additive* to mounts: a category outside a user's mounts is invisible
+regardless of its permissions, and a category with permissions denying "Edit" cannot be changed by
+that user even though they can see it.
+
+Leaving all :guilabel:`Access` checkboxes empty on a category means "no one but an admin can edit
+it" — set at least :guilabel:`Everybody` → :guilabel:`Edit` to keep the previous mounts-only
+behaviour where any user with mount access could also edit.

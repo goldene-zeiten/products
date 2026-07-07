@@ -8,9 +8,9 @@ Upgrading from tt_products
 ==========================
 
 If the legacy ``tt_products`` extension (and its tables) are still present in the installation,
-seven upgrade wizards under :guilabel:`Admin Tools > Upgrade` migrate its data into this
-extension's tables. They are idempotent (safe to run more than once) and skip themselves entirely
-once the legacy tables are gone.
+eight upgrade wizards under :guilabel:`Admin Tools > Upgrade` migrate its data into this
+extension's tables. The migration wizards are idempotent (safe to run more than once) and skip
+themselves entirely once the legacy tables are gone.
 
 ..  contents:: Table of contents
     :local:
@@ -32,9 +32,18 @@ Run the wizards in this order — each one links its rows back to the previous o
 #.  **Migrate orders** (``products_ttProductsOrderMigration``) — ``sys_products_orders`` and its
     line items, linked to the migrated products/articles.
 #.  **Migrate media** (``products_ttProductsMediaMigration``) — product/category/article images and
-    product datasheets, linked to the already-migrated categories/products/articles. Run this last,
-    since it needs the other wizards' :sql:`tx_products_migration_map` rows to know where each
-    legacy record ended up.
+    product datasheets, linked to the already-migrated categories/products/articles. Run this
+    before the cleanup wizard, since it needs the other wizards' :sql:`tx_products_migration_map`
+    rows to know where each legacy record ended up.
+#.  **Drop legacy tables** (``products_ttProductsLegacyCleanup``, optional) — a confirmable wizard
+    that permanently drops the migrated ``tt_products``/``tt_products_cat``/``tt_products_articles``/
+    ``sys_products_orders`` tables (and their ``_language``/``mm`` siblings) once every wizard above
+    reports nothing left to migrate. It refuses to run while any of them still has pending work, but
+    it cannot verify media migration completeness automatically (see below) - run the media wizard
+    first and confirm its output looks complete before confirming this one. Tables this extension
+    never migrates at all (gifts, vouchers, the old graduated-price mechanism, the separate
+    downloads catalog, visited products) are left untouched; remove them manually if no longer
+    needed.
 
 Known limitations
 ==================

@@ -9,6 +9,9 @@ use GoldeneZeiten\Products\Backend\OrderManagementRepository;
 use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Payment\Exception\PaymentMethodNotFoundException;
+use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
+use GoldeneZeiten\Products\Payment\RefundablePaymentMethodInterface;
 use GoldeneZeiten\Products\Service\Order\Exception\InvalidOrderStatusTransitionException;
 use GoldeneZeiten\Products\Service\Order\Exception\InvalidPaymentStatusTransitionException;
 use GoldeneZeiten\Products\Service\Order\OrderStatusManager;
@@ -34,6 +37,7 @@ final class OrderManagementModuleController
         private readonly UriBuilder $uriBuilder,
         private readonly OrderManagementRepository $orderRepository,
         private readonly OrderStatusManager $orderStatusManager,
+        private readonly PaymentMethodRegistry $paymentMethodRegistry,
     ) {}
 
     public function mainAction(ServerRequestInterface $request): ResponseInterface
@@ -76,8 +80,22 @@ final class OrderManagementModuleController
             'order' => $order,
             'availableStatusTransitions' => $order !== null ? $this->availableStatusTransitions($order['status']) : [],
             'canMarkPaid' => $order !== null && $this->canMarkPaid($order['paymentStatus']),
+            'canRefund' => $order !== null && $this->canRefund($order['paymentMethod'], $order['paymentStatus']),
             'listUrl' => (string)$this->uriBuilder->buildUriFromRequest($request, ['order']),
         ];
+    }
+
+    private function canRefund(string $paymentMethodIdentifier, string $paymentStatusValue): bool
+    {
+        $status = PaymentStatus::tryFrom($paymentStatusValue);
+        if ($status === null || !$status->canTransitionTo(PaymentStatus::REFUNDED)) {
+            return false;
+        }
+        try {
+            return $this->paymentMethodRegistry->get($paymentMethodIdentifier) instanceof RefundablePaymentMethodInterface;
+        } catch (PaymentMethodNotFoundException) {
+            return false;
+        }
     }
 
     /**
@@ -135,7 +153,7 @@ final class OrderManagementModuleController
             $this->applyAction($order, (string)($body['action'] ?? ''), $body);
             $this->orderRepository->persist($order);
             $moduleTemplate->addFlashMessage($this->translate('message.order_updated'));
-        } catch (InvalidOrderStatusTransitionException|InvalidPaymentStatusTransitionException $exception) {
+        } catch (InvalidOrderStatusTransitionException|InvalidPaymentStatusTransitionException|PaymentMethodNotFoundException $exception) {
             $moduleTemplate->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
         }
     }
@@ -149,11 +167,24 @@ final class OrderManagementModuleController
             $this->orderStatusManager->transitionPayment($order, PaymentStatus::PAID);
             return;
         }
+        if ($action === 'refund') {
+            $this->applyRefund($order);
+            return;
+        }
         if ($action === 'transition') {
             $target = OrderStatus::tryFrom((string)($body['targetStatus'] ?? ''));
             if ($target !== null) {
                 $this->orderStatusManager->transition($order, $target);
             }
+        }
+    }
+
+    private function applyRefund(Order $order): void
+    {
+        $paymentMethod = $this->paymentMethodRegistry->get($order->getPaymentMethod());
+        if ($paymentMethod instanceof RefundablePaymentMethodInterface) {
+            $paymentMethod->refund($order, $order->getTotalGross());
+            $this->orderStatusManager->transitionPayment($order, PaymentStatus::REFUNDED);
         }
     }
 

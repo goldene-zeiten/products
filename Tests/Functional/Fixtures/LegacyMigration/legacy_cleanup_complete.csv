@@ -1,0 +1,30 @@
+"tx_products_domain_model_category",,,,
+,"uid","pid","hidden","title"
+,50,1,0,"Existing Category"
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,80,1,0,"Existing Product"
+"tx_products_domain_model_article",,,,
+,"uid","pid","hidden","title"
+,60,1,0,"Existing Article"
+"tx_products_domain_model_order",,,,
+,"uid","pid","order_number"
+,90,1,"ORD-1"
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products_cat",1,"tx_products_domain_model_category",50
+,"tt_products",1,"tx_products_domain_model_product",80
+,"tt_products_articles",1,"tx_products_domain_model_article",60
+,"sys_products_orders",1,"tx_products_domain_model_order",90
+"tt_products_cat",,,
+,"uid","pid","title"
+,1,1,"Category One"
+"tt_products",,,
+,"uid","pid","title"
+,1,1,"Product One"
+"tt_products_articles",,,,
+,"uid","pid","title","uid_product"
+,1,1,"Article One",1
+"sys_products_orders",,,
+,"uid","pid","first_name"
+,1,1,"Alice"

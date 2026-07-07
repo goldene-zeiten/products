@@ -8,13 +8,19 @@ use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
 use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Event\InvoiceNumberGeneratedEvent;
 use GoldeneZeiten\Products\Service\Order\NumberRangeService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
-final class InvoicePaymentMethod implements PaymentMethodInterface
+/**
+ * Invoice has no payment gateway to call back, so `cancel()`/`refund()` (RefundablePaymentMethodInterface)
+ * just acknowledge the money movement happened outside the system and return the corresponding
+ * result; the shipped payment method still exercises the same contract third-party gateways will.
+ */
+final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePaymentMethodInterface
 {
     /**
      * @var array<string, mixed>|null
@@ -56,6 +62,16 @@ final class InvoicePaymentMethod implements PaymentMethodInterface
         $this->eventDispatcher->dispatch(new InvoiceNumberGeneratedEvent($order, $invoiceNumber));
 
         return PaymentResult::completed(PaymentStatus::PENDING, $invoiceNumber);
+    }
+
+    public function cancel(Order $order): PaymentResult
+    {
+        return PaymentResult::completed(PaymentStatus::FAILED, $order->getInvoiceNumber());
+    }
+
+    public function refund(Order $order, Money $amount): PaymentResult
+    {
+        return PaymentResult::completed(PaymentStatus::REFUNDED, $order->getInvoiceNumber());
     }
 
     /**

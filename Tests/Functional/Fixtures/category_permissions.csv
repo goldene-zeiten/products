@@ -1,0 +1,16 @@
+"be_groups",,,
+,"uid","pid","title"
+,5,0,"Editor Group"
+
+"be_users",,,,,
+,"uid","pid","username","admin","usergroup"
+,1,0,"admin","1",""
+,2,0,"owner","0",""
+,3,0,"nobody","0",""
+,4,0,"group_member","0","5"
+
+"tx_products_domain_model_category",,,,,,,,
+,"uid","pid","title","perms_userid","perms_user","perms_groupid","perms_group","perms_everybody"
+,100,2,"Owner Only",2,2,0,0,0
+,101,2,"Everybody Editable",0,0,0,0,2
+,102,2,"Group Editable",0,0,5,2,0
