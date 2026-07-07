@@ -36,6 +36,8 @@
                     </f:if>
                 </div>
 
+                <f:render partial="Product/WishlistToggle" arguments="{product: product, wishlistEnabled: wishlistEnabled, wishlistProductUids: wishlistProductUids}" />
+
                 <f:render partial="Product/AccessoryProducts" arguments="{accessoryProducts: product.accessoryProducts}" />
             </div>
         </div>

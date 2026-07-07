@@ -1,0 +1,66 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GoldeneZeiten\Products\Service\Wishlist;
+
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
+
+/**
+ * Guest (not-logged-in) wishlist storage: a plain list of product uids in the FE session, same
+ * shape discipline as BasketStorage. Only ever used for guests - an identified shopper's wishlist
+ * lives in tx_products_domain_model_wishlistitem instead, see WishlistService.
+ */
+final class WishlistStorage
+{
+    private const SESSION_KEY = 'tx_products_wishlist';
+
+    /**
+     * @return int[]
+     */
+    public function load(ServerRequestInterface $request): array
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if (!$frontendUser instanceof FrontendUserAuthentication) {
+            return [];
+        }
+
+        $data = $frontendUser->getKey('ses', self::SESSION_KEY);
+        if (empty($data)) {
+            return [];
+        }
+
+        $productUids = json_decode((string)$data, true);
+        return is_array($productUids) ? array_map('intval', $productUids) : [];
+    }
+
+    /**
+     * @param int[] $productUids
+     */
+    private function save(ServerRequestInterface $request, array $productUids): void
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if (!$frontendUser instanceof FrontendUserAuthentication) {
+            return;
+        }
+
+        $frontendUser->setKey('ses', self::SESSION_KEY, json_encode(array_values($productUids)));
+        $frontendUser->storeSessionData();
+    }
+
+    public function add(ServerRequestInterface $request, int $productUid): void
+    {
+        $productUids = $this->load($request);
+        if (!in_array($productUid, $productUids, true)) {
+            $productUids[] = $productUid;
+        }
+        $this->save($request, $productUids);
+    }
+
+    public function remove(ServerRequestInterface $request, int $productUid): void
+    {
+        $productUids = array_filter($this->load($request), static fn(int $uid): bool => $uid !== $productUid);
+        $this->save($request, $productUids);
+    }
+}

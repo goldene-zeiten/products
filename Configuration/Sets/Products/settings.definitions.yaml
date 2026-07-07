@@ -136,3 +136,8 @@ settings:
     default: 5.00
     label: Gained voucher discount value
     category: products
+  products.wishlist.enabled:
+    type: bool
+    default: false
+    label: Show the add-to-wishlist affordance on product listings
+    category: products

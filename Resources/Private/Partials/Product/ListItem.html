@@ -19,5 +19,6 @@
             </f:else>
         </f:if>
         <f:link.action action="show" arguments="{product: product}" class="btn btn-primary"><f:translate key="details" /></f:link.action>
+        <f:render partial="Product/WishlistToggle" arguments="{_all}" />
     </div>
 </div>
