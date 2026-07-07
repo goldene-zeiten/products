@@ -305,6 +305,33 @@ final class CategoryTreeRepository
         }
     }
 
+    /**
+     * @return array{perms_userid: int, perms_user: int, perms_groupid: int, perms_group: int, perms_everybody: int}|null
+     */
+    public function fetchCategoryPermissionRow(int $uid): ?array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_CATEGORY);
+        $this->applyRestrictions($queryBuilder);
+        $row = $queryBuilder->select('perms_userid', 'perms_user', 'perms_groupid', 'perms_group', 'perms_everybody')
+            ->from(self::TABLE_CATEGORY)
+            ->where($queryBuilder->expr()->eq(
+                'uid',
+                $queryBuilder->createNamedParameter($uid, ParameterType::INTEGER)
+            ))
+            ->executeQuery()
+            ->fetchAssociative();
+        if ($row === false) {
+            return null;
+        }
+        return [
+            'perms_userid' => (int)$row['perms_userid'],
+            'perms_user' => (int)$row['perms_user'],
+            'perms_groupid' => (int)$row['perms_groupid'],
+            'perms_group' => (int)$row['perms_group'],
+            'perms_everybody' => (int)$row['perms_everybody'],
+        ];
+    }
+
     public function categoryExists(int $uid): bool
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_CATEGORY);

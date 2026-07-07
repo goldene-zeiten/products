@@ -94,7 +94,7 @@ final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, Chat
     /**
      * @return LegacyMediaFieldMapping[]
      */
-    private function mappings(): array
+    public function mappings(): array
     {
         return [
             new LegacyMediaFieldMapping(self::PRODUCT_TABLE, 'image', 'tx_products_domain_model_product', 'images'),

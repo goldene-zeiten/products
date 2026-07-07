@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Category.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'title, slug, parent_category, image, description, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => 'title, slug, parent_category, image, description, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_access, perms_userid, perms_groupid, perms_user, perms_group, perms_everybody'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -103,6 +103,60 @@ return [
                     ],
                 ],
                 'default' => 0,
+            ],
+        ],
+        'perms_userid' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_userid',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'foreign_table' => 'be_users',
+                'default' => 0,
+            ],
+        ],
+        'perms_groupid' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_groupid',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'foreign_table' => 'be_groups',
+                'default' => 0,
+            ],
+        ],
+        'perms_user' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_user',
+            'config' => [
+                'type' => 'check',
+                'items' => [
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.show'],
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.edit'],
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.delete'],
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.new'],
+                ],
+            ],
+        ],
+        'perms_group' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_group',
+            'config' => [
+                'type' => 'check',
+                'items' => [
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.show'],
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.edit'],
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.delete'],
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.new'],
+                ],
+            ],
+        ],
+        'perms_everybody' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_everybody',
+            'config' => [
+                'type' => 'check',
+                'items' => [
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.show'],
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.edit'],
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.delete'],
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.new'],
+                ],
             ],
         ],
     ],

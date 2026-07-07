@@ -75,6 +75,36 @@
 			<trans-unit id="tx_products_domain_model_category.image" resname="tx_products_domain_model_category.image">
 				<source>Image</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_category.tab_access" resname="tx_products_domain_model_category.tab_access">
+				<source>Access</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_category.perms_userid" resname="tx_products_domain_model_category.perms_userid">
+				<source>Owner user</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_category.perms_groupid" resname="tx_products_domain_model_category.perms_groupid">
+				<source>Owner group</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_category.perms_user" resname="tx_products_domain_model_category.perms_user">
+				<source>Owner user permissions</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_category.perms_group" resname="tx_products_domain_model_category.perms_group">
+				<source>Owner group permissions</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_category.perms_everybody" resname="tx_products_domain_model_category.perms_everybody">
+				<source>Everybody permissions</source>
+			</trans-unit>
+			<trans-unit id="permission.show" resname="permission.show">
+				<source>Show</source>
+			</trans-unit>
+			<trans-unit id="permission.edit" resname="permission.edit">
+				<source>Edit</source>
+			</trans-unit>
+			<trans-unit id="permission.delete" resname="permission.delete">
+				<source>Delete</source>
+			</trans-unit>
+			<trans-unit id="permission.new" resname="permission.new">
+				<source>New subcategories</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_product" resname="tx_products_domain_model_product">
 				<source>Product</source>
 			</trans-unit>
