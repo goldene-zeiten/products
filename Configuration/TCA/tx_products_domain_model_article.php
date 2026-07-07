@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Article.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'product, title, item_number, ean, price, price_tiers, in_stock, weight, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => 'product, title, item_number, ean, price, price_tiers, attribute_values, in_stock, weight, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -105,6 +105,17 @@ return [
                     'collapseAll' => 1,
                     'levelLinksPosition' => 'top',
                 ],
+            ],
+        ],
+        'attribute_values' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.attribute_values',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
+                'foreign_table' => 'tx_products_domain_model_attributevalue',
+                'foreign_table_where' => 'ORDER BY tx_products_domain_model_attributevalue.sorting',
+                'MM' => 'tx_products_article_attributevalue_mm',
+                'size' => 8,
             ],
         ],
         'in_stock' => [

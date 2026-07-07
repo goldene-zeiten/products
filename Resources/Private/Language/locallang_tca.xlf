@@ -12,6 +12,21 @@
 			<trans-unit id="tx_products_domain_model_taxclass.code" resname="tx_products_domain_model_taxclass.code">
 				<source>Code</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_attribute" resname="tx_products_domain_model_attribute">
+				<source>Attribute</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_attribute.title" resname="tx_products_domain_model_attribute.title">
+				<source>Title</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_attribute.values" resname="tx_products_domain_model_attribute.values">
+				<source>Values</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_attributevalue" resname="tx_products_domain_model_attributevalue">
+				<source>Attribute Value</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_attributevalue.value" resname="tx_products_domain_model_attributevalue.value">
+				<source>Value</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_pricetier" resname="tx_products_domain_model_pricetier">
 				<source>Price Tier</source>
 			</trans-unit>
@@ -140,6 +155,9 @@
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_article.price_tiers" resname="tx_products_domain_model_article.price_tiers">
 				<source>Graduated Prices</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.attribute_values" resname="tx_products_domain_model_article.attribute_values">
+				<source>Variant Attributes</source>
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_article.in_stock" resname="tx_products_domain_model_article.in_stock">
 				<source>In Stock</source>

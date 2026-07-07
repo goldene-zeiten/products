@@ -17,7 +17,7 @@
 
                 <f:if condition="{product.articles}">
                     <f:then>
-                        <f:render partial="Product/ArticleSelector" arguments="{product: product}" />
+                        <f:render partial="Product/ArticleSelector" arguments="{product: product, variantAttributes: variantAttributes, variantMap: variantMap}" />
                     </f:then>
                     <f:else>
                         <f:render partial="Product/AddToBasketForm" arguments="{product: product}" />
