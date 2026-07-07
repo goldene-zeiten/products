@@ -5,6 +5,7 @@ use GoldeneZeiten\Products\Controller\CheckoutController;
 use GoldeneZeiten\Products\Controller\OrderController;
 use GoldeneZeiten\Products\Controller\ProductController;
 use GoldeneZeiten\Products\Controller\RecentlyViewedController;
+use GoldeneZeiten\Products\Controller\SearchController;
 use GoldeneZeiten\Products\Controller\WishlistController;
 use GoldeneZeiten\Products\Hooks\CategoryMountAccessHook;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
@@ -98,6 +99,19 @@ ExtensionUtility::configurePlugin(
     // non-cacheable actions
     [
         RecentlyViewedController::class => 'list',
+    ],
+    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+);
+
+ExtensionUtility::configurePlugin(
+    'Products',
+    'Search',
+    [
+        SearchController::class => 'search',
+    ],
+    // non-cacheable actions
+    [
+        SearchController::class => 'search',
     ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );

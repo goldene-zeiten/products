@@ -156,6 +156,24 @@
 			<trans-unit id="recently_viewed_empty" resname="recently_viewed_empty">
 				<source>You haven't viewed any products yet.</source>
 			</trans-unit>
+			<trans-unit id="search" resname="search">
+				<source>Search</source>
+			</trans-unit>
+			<trans-unit id="search_placeholder" resname="search_placeholder">
+				<source>Search products&#8230;</source>
+			</trans-unit>
+			<trans-unit id="search_no_results" resname="search_no_results">
+				<source>No products found for "%s".</source>
+			</trans-unit>
+			<trans-unit id="previous_page" resname="previous_page">
+				<source>Previous</source>
+			</trans-unit>
+			<trans-unit id="next_page" resname="next_page">
+				<source>Next</source>
+			</trans-unit>
+			<trans-unit id="page_of_pages" resname="page_of_pages">
+				<source>Page %1$d of %2$d</source>
+			</trans-unit>
 			<trans-unit id="choose_variant" resname="choose_variant">
 				<source>Choose a variant:</source>
 			</trans-unit>
