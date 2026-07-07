@@ -141,3 +141,8 @@ settings:
     default: false
     label: Show the add-to-wishlist affordance on product listings
     category: products
+  products.recentlyViewed.limit:
+    type: int
+    default: 10
+    label: Maximum number of recently-viewed products remembered per visitor
+    category: products

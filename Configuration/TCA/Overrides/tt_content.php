@@ -47,3 +47,10 @@ ExtensionUtility::registerPlugin(
     'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.wishlist',
     'EXT:products/Resources/Public/Icons/Extension.svg'
 );
+
+ExtensionUtility::registerPlugin(
+    'Products',
+    'RecentlyViewed',
+    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.recently_viewed',
+    'EXT:products/Resources/Public/Icons/Extension.svg'
+);

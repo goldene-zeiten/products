@@ -150,6 +150,12 @@
 			<trans-unit id="remove_from_wishlist" resname="remove_from_wishlist">
 				<source>Remove from wishlist</source>
 			</trans-unit>
+			<trans-unit id="recently_viewed" resname="recently_viewed">
+				<source>Recently Viewed</source>
+			</trans-unit>
+			<trans-unit id="recently_viewed_empty" resname="recently_viewed_empty">
+				<source>You haven't viewed any products yet.</source>
+			</trans-unit>
 			<trans-unit id="choose_variant" resname="choose_variant">
 				<source>Choose a variant:</source>
 			</trans-unit>
