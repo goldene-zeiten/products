@@ -71,6 +71,75 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function fetchRowMapsShippingFields(): void
+    {
+        $row = $this->subject->fetchRow(1);
+
+        self::assertNotNull($row);
+        self::assertSame(1, $row['shippingMethodUid']);
+        self::assertSame(500, $row['shippingTotalCents']);
+    }
+
+    #[Test]
+    public function fetchRowMapsAbsentShippingAsZero(): void
+    {
+        $row = $this->subject->fetchRow(2);
+
+        self::assertNotNull($row);
+        self::assertSame(0, $row['shippingMethodUid']);
+        self::assertSame(0, $row['shippingTotalCents']);
+    }
+
+    #[Test]
+    public function fetchVoucherRedemptionsReturnsRowsForThatOrder(): void
+    {
+        $redemptions = $this->subject->fetchVoucherRedemptions(1);
+
+        self::assertCount(1, $redemptions);
+        self::assertSame('SAVE10', $redemptions[0]['voucherCode']);
+        self::assertSame(199, $redemptions[0]['discountTotalCents']);
+    }
+
+    #[Test]
+    public function fetchVoucherRedemptionsIsEmptyForAnOrderWithNone(): void
+    {
+        self::assertSame([], $this->subject->fetchVoucherRedemptions(2));
+    }
+
+    #[Test]
+    public function fetchGainedVoucherReturnsTheGeneratedCode(): void
+    {
+        $gainedVoucher = $this->subject->fetchGainedVoucher(1);
+
+        self::assertNotNull($gainedVoucher);
+        self::assertSame('GAINED-ABC123', $gainedVoucher['code']);
+        self::assertFalse($gainedVoucher['used']);
+    }
+
+    #[Test]
+    public function fetchGainedVoucherIsNullWhenTheOrderGeneratedNone(): void
+    {
+        self::assertNull($this->subject->fetchGainedVoucher(2));
+    }
+
+    #[Test]
+    public function fetchCreditPointsLedgerReturnsRowsForThatOrder(): void
+    {
+        $ledger = $this->subject->fetchCreditPointsLedger(1);
+
+        self::assertCount(1, $ledger);
+        self::assertSame(5, $ledger[0]['frontendUser']);
+        self::assertSame(20, $ledger[0]['points']);
+        self::assertSame('earn', $ledger[0]['type']);
+    }
+
+    #[Test]
+    public function fetchCreditPointsLedgerIsEmptyForAnOrderWithNone(): void
+    {
+        self::assertSame([], $this->subject->fetchCreditPointsLedger(2));
+    }
+
+    #[Test]
     public function findForEditingAndPersistWritesTheTransitionToTheDatabase(): void
     {
         $order = $this->subject->findForEditing(1);
@@ -82,5 +151,26 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
         $row = $this->subject->fetchRow(1);
         self::assertNotNull($row);
         self::assertSame('paid', $row['paymentStatus']);
+    }
+
+    /**
+     * Regression test: fetching a real Extbase entity (not just the raw QueryBuilder row) for an
+     * order with a non-zero discount_total/shipping_total used to crash with "no such table:
+     * tx_products_domain_valueobject_money" - Extbase's reflection-based property typing fell back
+     * to the Money-typed setter parameter instead of the property's own native int type whenever a
+     * property lacked an explicit `@var int` docblock. Fixed by adding that docblock to
+     * Order::$discountTotal/$shippingTotal (matching the existing $totalNet/$totalTax/$totalGross
+     * pattern). This is exactly the code path the "mark paid"/"refund" backend actions exercise for
+     * any real order that has a discount or shipping cost.
+     */
+    #[Test]
+    public function findForEditingHydratesAnOrderWithNonZeroMoneyBackedFieldsWithoutCrashing(): void
+    {
+        $order = $this->subject->findForEditing(1);
+
+        self::assertInstanceOf(Order::class, $order);
+        self::assertSame(1999, $order->getTotalGross()->getCents());
+        self::assertSame(500, $order->getDiscountTotal()->getCents());
+        self::assertSame(500, $order->getShippingTotal()->getCents());
     }
 }

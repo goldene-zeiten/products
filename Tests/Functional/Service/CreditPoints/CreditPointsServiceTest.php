@@ -52,6 +52,12 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function manualAdjustmentRowsCountTowardTheBalance(): void
+    {
+        self::assertSame(20, $this->subject()->getBalance(3));
+    }
+
+    #[Test]
     public function earnedPointsSumTheProductRateAcrossBasketLinesAndQuantities(): void
     {
         self::assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel()));

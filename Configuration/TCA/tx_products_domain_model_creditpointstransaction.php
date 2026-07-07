@@ -20,22 +20,28 @@ return [
         'frontend_user' => [
             'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.frontend_user',
             'config' => [
-                'type' => 'number',
-                'readOnly' => true,
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'foreign_table' => 'fe_users',
+                'minitems' => 1,
+                'maxitems' => 1,
             ],
         ],
         'order_uid' => [
             'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.order_uid',
             'config' => [
-                'type' => 'number',
-                'readOnly' => true,
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'foreign_table' => 'tx_products_domain_model_order',
+                'default' => 0,
             ],
         ],
         'points' => [
             'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.points',
             'config' => [
                 'type' => 'number',
-                'readOnly' => true,
+                'size' => 10,
+                'required' => true,
             ],
         ],
         'type' => [
@@ -52,8 +58,11 @@ return [
                         'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.type.redeem',
                         'value' => CreditPointsTransactionType::REDEEM->value,
                     ],
+                    [
+                        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.type.adjustment',
+                        'value' => CreditPointsTransactionType::ADJUSTMENT->value,
+                    ],
                 ],
-                'readOnly' => true,
             ],
         ],
         'created' => [
@@ -62,7 +71,7 @@ return [
                 'type' => 'datetime',
                 'size' => 13,
                 'eval' => 'datetime',
-                'readOnly' => true,
+                'default' => 0,
             ],
         ],
     ],
