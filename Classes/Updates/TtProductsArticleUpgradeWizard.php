@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Updates;
 
 use GoldeneZeiten\Products\Backend\StorageFolderResolver;
+use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 // EXT:install namespaces are valid through TYPO3 v14 (deprecated there); migrate to the
@@ -17,10 +18,11 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
  * Migrates `tt_products_articles` and its `tt_products_articles_language` overlays to
- * `tx_products_domain_model_article`. Requires the product wizard to have already run: an article
- * whose product was never migrated has nothing to attach to and is permanently skipped. Legacy
- * article overlays were BE-maintained data that the old frontend never actually rendered, but are
- * migrated anyway.
+ * `tx_products_domain_model_article`. Requires the product wizard to have already fully run:
+ * executeUpdate() refuses to start otherwise (see ProductMigrationPrerequisite). Once that holds,
+ * an individual article whose product was still never migrated (a genuinely orphaned reference)
+ * has nothing to attach to and is permanently skipped instead. Legacy article overlays were
+ * BE-maintained data that the old frontend never actually rendered, but are migrated anyway.
  */
 #[UpgradeWizard('products_ttProductsArticleMigration')]
 final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, ChattyInterface, RepeatableInterface
@@ -38,6 +40,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
         private readonly LegacyMigrationHelper $migrationHelper,
         private readonly LegacyOverlayMigrator $overlayMigrator,
         private readonly StorageFolderResolver $storageFolderResolver,
+        private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -70,6 +73,13 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
         if (!$this->migrationHelper->tablesExist(self::LEGACY_TABLE)) {
             return true;
         }
+        if (!$this->productMigrationPrerequisite->isFulfilled()) {
+            $this->output->writeln(
+                '<error>tt_products still has unmigrated rows; run the product migration '
+                    . 'wizard (products_ttProductsProductMigration) first.</error>'
+            );
+            return false;
+        }
         $pid = $this->storageFolderResolver->resolve();
         while (($rows = $this->migrationHelper->fetchUnmigratedBatch(self::LEGACY_TABLE, self::LOCAL_TABLE)) !== []) {
             foreach ($rows as $row) {
@@ -85,7 +95,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
      */
     public function getPrerequisites(): array
     {
-        return [DatabaseUpdatedPrerequisite::class];
+        return [DatabaseUpdatedPrerequisite::class, ProductMigrationPrerequisite::class];
     }
 
     private function overlayConfig(): OverlayMigrationConfig

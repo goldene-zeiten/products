@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Updates;
 
 use GoldeneZeiten\Products\Backend\StorageFolderResolver;
+use GoldeneZeiten\Products\Updates\Prerequisites\CategoryMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 // EXT:install namespaces are valid through TYPO3 v14 (deprecated there); migrate to the
@@ -17,9 +18,11 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
  * Migrates `tt_products` and its `tt_products_language` overlays to
- * `tx_products_domain_model_product`. Requires the category wizard to have already run for
- * category assignments to resolve; an unresolved category is reported and left unassigned rather
- * than blocking the product itself. Product images are out of scope for this migration.
+ * `tx_products_domain_model_product`. Requires the category wizard to have already fully run:
+ * executeUpdate() refuses to start otherwise (see CategoryMigrationPrerequisite). Once that holds,
+ * an individual product referencing a genuinely orphaned category is still reported and left
+ * unassigned rather than blocking that one product. Product images are out of scope for this
+ * migration.
  */
 #[UpgradeWizard('products_ttProductsProductMigration')]
 final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, ChattyInterface, RepeatableInterface
@@ -39,6 +42,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
         private readonly LegacyMigrationHelper $migrationHelper,
         private readonly LegacyOverlayMigrator $overlayMigrator,
         private readonly StorageFolderResolver $storageFolderResolver,
+        private readonly CategoryMigrationPrerequisite $categoryMigrationPrerequisite,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -71,6 +75,13 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
         if (!$this->migrationHelper->tablesExist(self::LEGACY_TABLE)) {
             return true;
         }
+        if (!$this->categoryMigrationPrerequisite->isFulfilled()) {
+            $this->output->writeln(
+                '<error>tt_products_cat still has unmigrated rows; run the category migration '
+                    . 'wizard (products_ttProductsCategoryMigration) first.</error>'
+            );
+            return false;
+        }
         $pid = $this->storageFolderResolver->resolve();
         while (($rows = $this->migrationHelper->fetchUnmigratedBatch(self::LEGACY_TABLE, self::LOCAL_TABLE)) !== []) {
             foreach ($rows as $row) {
@@ -86,7 +97,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
      */
     public function getPrerequisites(): array
     {
-        return [DatabaseUpdatedPrerequisite::class];
+        return [DatabaseUpdatedPrerequisite::class, CategoryMigrationPrerequisite::class];
     }
 
     private function overlayConfig(): OverlayMigrationConfig
