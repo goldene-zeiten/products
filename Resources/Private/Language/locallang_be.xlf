@@ -24,6 +24,9 @@
 			<trans-unit id="plugin.wishlist" resname="plugin.wishlist">
 				<source>Wishlist</source>
 			</trans-unit>
+			<trans-unit id="plugin.recently_viewed" resname="plugin.recently_viewed">
+				<source>Recently Viewed Products</source>
+			</trans-unit>
 			<trans-unit id="module.products.title" resname="module.products.title">
 				<source>Products</source>
 			</trans-unit>

@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Controller;
 use GoldeneZeiten\Products\Domain\Model\AttributeValue;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Service\RecentlyViewed\RecentlyViewedStorage;
 use GoldeneZeiten\Products\Service\Wishlist\WishlistService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -16,7 +17,8 @@ final class ProductController extends ActionController
 {
     public function __construct(
         private readonly ProductRepository $productRepository,
-        private readonly WishlistService $wishlistService
+        private readonly WishlistService $wishlistService,
+        private readonly RecentlyViewedStorage $recentlyViewedStorage
     ) {}
 
     public function listAction(): ResponseInterface
@@ -35,6 +37,9 @@ final class ProductController extends ActionController
 
     public function showAction(Product $product): ResponseInterface
     {
+        if ($product->getUid() !== null) {
+            $this->recentlyViewedStorage->record($this->request, $product->getUid());
+        }
         $this->view->assignMultiple([
             'product' => $product,
             'variantAttributes' => $product->getVariantAttributes(),
