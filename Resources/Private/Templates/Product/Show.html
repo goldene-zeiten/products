@@ -35,9 +35,13 @@
                         </f:else>
                     </f:if>
                 </div>
+
+                <f:render partial="Product/AccessoryProducts" arguments="{accessoryProducts: product.accessoryProducts}" />
             </div>
         </div>
     </div>
 
     <f:render partial="Product/Downloads" arguments="{downloads: product.downloads}" />
+
+    <f:render partial="Product/RelatedProducts" arguments="{relatedProducts: product.relatedProducts}" />
 </div>

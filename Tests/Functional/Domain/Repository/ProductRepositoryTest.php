@@ -39,6 +39,39 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
     /**
      * @test
      */
+    public function relatedAndAccessoryProductsAreResolved(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+
+        $product = $this->productRepository->findByUid(1);
+        self::assertInstanceOf(Product::class, $product);
+
+        $relatedTitles = array_map(static fn(Product $p): string => $p->getTitle(), $product->getRelatedProducts()->toArray());
+        $accessoryTitles = array_map(static fn(Product $p): string => $p->getTitle(), $product->getAccessoryProducts()->toArray());
+
+        self::assertSame(['Product 2'], $relatedTitles);
+        self::assertSame(['Product 3'], $accessoryTitles);
+    }
+
+    /**
+     * @test
+     */
+    public function productWithoutRelationsHasEmptyCrossSellSets(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+
+        $product = $this->productRepository->findByUid(2);
+        self::assertInstanceOf(Product::class, $product);
+
+        self::assertCount(0, $product->getRelatedProducts());
+        self::assertCount(0, $product->getAccessoryProducts());
+    }
+
+    /**
+     * @test
+     */
     public function addThrowsReadOnlyException(): void
     {
         $this->expectException(RepositoryIsReadOnlyException::class);

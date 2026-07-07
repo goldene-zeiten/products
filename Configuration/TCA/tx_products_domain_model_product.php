@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Product.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'title, subtitle, slug, item_number, ean, price, price_tiers, tax_class, categories, in_stock, basket_min_quantity, basket_max_quantity, weight, is_offer, is_highlight, description, images, downloads, articles, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => 'title, subtitle, slug, item_number, ean, price, price_tiers, tax_class, categories, in_stock, basket_min_quantity, basket_max_quantity, weight, is_offer, is_highlight, description, images, downloads, articles, related_products, accessory_products, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -232,6 +232,26 @@ return [
                     'showPossibleLocalizationRecords' => 1,
                     'showAllLocalizationLink' => 1,
                 ],
+            ],
+        ],
+        'related_products' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.related_products',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
+                'foreign_table' => 'tx_products_domain_model_product',
+                'MM' => 'tx_products_product_related_mm',
+                'size' => 8,
+            ],
+        ],
+        'accessory_products' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.accessory_products',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
+                'foreign_table' => 'tx_products_domain_model_product',
+                'MM' => 'tx_products_product_accessory_mm',
+                'size' => 8,
             ],
         ],
     ],

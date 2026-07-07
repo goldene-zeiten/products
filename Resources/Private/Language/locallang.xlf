@@ -165,6 +165,12 @@
 			<trans-unit id="price_from_quantity" resname="price_from_quantity">
 				<source>From %d</source>
 			</trans-unit>
+			<trans-unit id="related_products" resname="related_products">
+				<source>You might also like</source>
+			</trans-unit>
+			<trans-unit id="accessory_products" resname="accessory_products">
+				<source>Frequently bought with</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

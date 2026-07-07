@@ -33,6 +33,23 @@ articles can only be ordered via one of its articles — the product itself is t
 catalog entry (title, description, categories); price, stock and EAN are set per article. A product
 without any articles is directly purchasable itself.
 
+..  _users-manual-cross-selling:
+
+Cross-selling: related and accessory products
+===============================================
+
+Each product has two independent, editor-curated lists on its edit form:
+
+*   :guilabel:`Related Products` — alternatives or similar items, shown as a "You might also like"
+    section near the bottom of the product detail page.
+*   :guilabel:`Accessory Products` — complementary add-ons, shown as a compact "Frequently bought
+    with" list next to the add-to-basket area.
+
+Both are picked manually (there is no automatic "customers who bought this also bought" logic) and
+are one-directional: adding product B as related to product A does not automatically show A as
+related on B's page — add the relation on both sides if you want it to show both ways. Leaving
+either list empty simply hides that section; there is no minimum.
+
 ..  _users-manual-media:
 
 Product media: images and downloads

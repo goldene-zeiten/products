@@ -165,6 +165,12 @@
 			<trans-unit id="tx_products_domain_model_product.articles" resname="tx_products_domain_model_product.articles">
 				<source>Articles / Variants</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.related_products" resname="tx_products_domain_model_product.related_products">
+				<source>Related Products</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.accessory_products" resname="tx_products_domain_model_product.accessory_products">
+				<source>Accessory Products</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_article" resname="tx_products_domain_model_article">
 				<source>Article</source>
 			</trans-unit>

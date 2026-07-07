@@ -123,4 +123,68 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         self::assertSame(200, $response->getStatusCode());
         self::assertStringContainsString('Product 1', (string)$response->getBody());
     }
+
+    /**
+     * @test
+     */
+    public function showActionRendersRelatedAndAccessoryProducts(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shop.csv');
+        $this->writeSiteConfiguration(
+            'products',
+            $this->buildSiteConfiguration(1, '/', 'Home', [
+                'routeEnhancers' => [
+                    'ProductsDetail' => [
+                        'type' => 'Extbase',
+                        'extension' => 'Products',
+                        'plugin' => 'ProductDetail',
+                        'routes' => [
+                            [
+                                'routePath' => '/{product}',
+                                '_controller' => 'Product::show',
+                                '_arguments' => [
+                                    'product' => 'product',
+                                ],
+                            ],
+                        ],
+                        'aspects' => [
+                            'product' => [
+                                'type' => 'PersistedAliasMapper',
+                                'tableName' => 'tx_products_domain_model_product',
+                                'routeFieldName' => 'slug',
+                            ],
+                        ],
+                    ],
+                ],
+            ]),
+            [
+                $this->buildDefaultLanguageConfiguration('en', '/'),
+            ]
+        );
+        $this->setUpFrontendRootPage(1, [
+            'setup' => [
+                'EXT:products/Configuration/TypoScript/setup.typoscript',
+            ],
+        ]);
+        $this->addTypoScriptToTemplateRecord(1, '
+            plugin.tx_products.persistence.storagePid = 2
+            page = PAGE
+            page.10 = USER
+            page.10 {
+                userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+                extensionName = Products
+                pluginName = ProductDetail
+                vendorName = GoldeneZeiten
+            }
+        ');
+
+        $withRelations = $this->executeFrontendSubRequest(new InternalRequest('http://localhost/shop/product-1'));
+        $withoutRelations = $this->executeFrontendSubRequest(new InternalRequest('http://localhost/shop/product-2'));
+
+        self::assertStringContainsString('Product 2', (string)$withRelations->getBody());
+        self::assertStringContainsString('Product 3', (string)$withRelations->getBody());
+        self::assertStringNotContainsString('You might also like', (string)$withoutRelations->getBody());
+        self::assertStringNotContainsString('Frequently bought with', (string)$withoutRelations->getBody());
+    }
 }
