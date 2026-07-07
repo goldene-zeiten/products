@@ -59,7 +59,7 @@ final class OrderCreationService
         $frontendUser = $this->frontendUserResolver->getUid($request);
         $voucherSummary = $this->resolveVoucherDiscount($checkoutSelections->getVoucherCodes(), $basketViewModel, $frontendUser);
         $pointsRedemption = $this->resolvePointsRedemption($checkoutSelections->getSpendPoints(), $basketViewModel, $voucherSummary, $frontendUser);
-        $shippingSelection = $this->resolveShippingSelection($checkoutSelections->getShippingMethodUid(), $basketViewModel, $address);
+        $shippingSelection = $this->resolveShippingSelection($checkoutSelections->getShippingMethodUid(), $basketViewModel, $address, $voucherSummary);
         $adjustments = new PlacementAdjustments($voucherSummary, $pointsRedemption->getDiscountAmount(), $shippingSelection);
 
         $this->decrementStock($basketViewModel);
@@ -98,13 +98,30 @@ final class OrderCreationService
         }
     }
 
+    private function resolveShippingSelection(
+        int $shippingMethodUid,
+        BasketViewModel $basketViewModel,
+        Address $address,
+        BasketDiscountSummary $voucherSummary
+    ): ShippingSelection {
+        $waived = $this->anyVoucherWaivesShipping($voucherSummary->getAppliedVouchers());
+        return $this->shippingCostService->resolveSelection($shippingMethodUid, $basketViewModel, $address->getCountry(), $waived);
+    }
+
     /**
-     * Waiving is always false for now - free-shipping vouchers (M4 phase 21) will derive it from
-     * $voucherSummary once that flag exists on Voucher.
+     * Waiving is a boolean gate: if any applied voucher grants free shipping, shipping is waived
+     * regardless of how many other (combinable) vouchers are stacked alongside it.
+     *
+     * @param Voucher[] $vouchers
      */
-    private function resolveShippingSelection(int $shippingMethodUid, BasketViewModel $basketViewModel, Address $address): ShippingSelection
+    private function anyVoucherWaivesShipping(array $vouchers): bool
     {
-        return $this->shippingCostService->resolveSelection($shippingMethodUid, $basketViewModel, $address->getCountry(), false);
+        foreach ($vouchers as $voucher) {
+            if ($voucher->isWaivingShippingCost()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function resolvePointsRedemption(

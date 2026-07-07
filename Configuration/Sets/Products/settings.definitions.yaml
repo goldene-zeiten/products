@@ -116,3 +116,23 @@ settings:
     default: false
     label: Shipping cost calculation enabled
     category: products
+  products.vouchers.gained.enabled:
+    type: bool
+    default: false
+    label: Auto-issue a reward voucher for qualifying orders
+    category: products
+  products.vouchers.gained.minimumOrderValue:
+    type: number
+    default: 0.00
+    label: Minimum order total (gross) to trigger a gained voucher
+    category: products
+  products.vouchers.gained.rewardType:
+    type: string
+    default: 'fixed'
+    label: 'Gained voucher discount type (percentage|fixed)'
+    category: products
+  products.vouchers.gained.rewardValue:
+    type: number
+    default: 5.00
+    label: Gained voucher discount value
+    category: products

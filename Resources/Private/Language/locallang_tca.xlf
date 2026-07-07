@@ -60,6 +60,9 @@
 			<trans-unit id="tx_products_domain_model_voucher.combinable" resname="tx_products_domain_model_voucher.combinable">
 				<source>Combinable with other vouchers</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.waives_shipping_cost" resname="tx_products_domain_model_voucher.waives_shipping_cost">
+				<source>Waives the shipping cost</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_voucher.usage_limit" resname="tx_products_domain_model_voucher.usage_limit">
 				<source>Usage limit (0 = unlimited)</source>
 			</trans-unit>
@@ -74,6 +77,9 @@
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_voucher.valid_until" resname="tx_products_domain_model_voucher.valid_until">
 				<source>Valid until</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.generated_from_order" resname="tx_products_domain_model_voucher.generated_from_order">
+				<source>Auto-generated reward for order (empty = manually created)</source>
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_voucherredemption" resname="tx_products_domain_model_voucherredemption">
 				<source>Voucher Redemption</source>
