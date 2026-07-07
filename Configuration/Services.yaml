@@ -29,3 +29,10 @@ services:
   GoldeneZeiten\Products\Updates\:
     resource: '../Classes/Updates/*UpgradeWizard.php'
     public: true
+
+  # PrerequisiteCollection::add() (core, called from UpgradeWizardRunCommand) fetches these via
+  # GeneralUtility::makeInstance() by class name directly, the same lookup pattern as the
+  # UpgradeWizard classes above, so they need the same public: true.
+  GoldeneZeiten\Products\Updates\Prerequisites\:
+    resource: '../Classes/Updates/Prerequisites/*'
+    public: true

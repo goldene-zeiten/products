@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Updates;
 
+use GoldeneZeiten\Products\Updates\Prerequisites\ArticleMigrationPrerequisite;
+use GoldeneZeiten\Products\Updates\Prerequisites\CategoryMigrationPrerequisite;
+use GoldeneZeiten\Products\Updates\Prerequisites\OrderMigrationPrerequisite;
+use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 // EXT:install namespaces are valid through TYPO3 v14 (deprecated there); migrate to the
@@ -19,7 +23,8 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
  * Drops the legacy `tt_products` tables this extension's entity wizards (category/product/
  * article/order) actually migrate data from, once every one of them reports nothing left to do.
  * Explicit opt-in (ConfirmableInterface), never runs unattended, and refuses to drop anything
- * while a prerequisite wizard still has pending work.
+ * while a prerequisite wizard still has pending work (see Category/Product/Article/
+ * OrderMigrationPrerequisite, shared with those wizards' own ordering guards).
  *
  * Media migration completeness is deliberately NOT part of the automated guard: a legacy row that
  * never had an image and one whose media just hasn't been migrated yet look identical (no
@@ -41,16 +46,6 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
     private const ORDER_TABLE = 'sys_products_orders';
 
     /**
-     * @var array{legacy: string, local: string}[]
-     */
-    private const ENTITY_TABLE_PAIRS = [
-        ['legacy' => self::CATEGORY_TABLE, 'local' => 'tx_products_domain_model_category'],
-        ['legacy' => self::PRODUCT_TABLE, 'local' => 'tx_products_domain_model_product'],
-        ['legacy' => self::ARTICLE_TABLE, 'local' => 'tx_products_domain_model_article'],
-        ['legacy' => self::ORDER_TABLE, 'local' => 'tx_products_domain_model_order'],
-    ];
-
-    /**
      * @var string[]
      */
     private const TABLES_TO_DROP = [
@@ -69,6 +64,10 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
     public function __construct(
         private readonly ConnectionPool $connectionPool,
         private readonly LegacyMigrationHelper $migrationHelper,
+        private readonly CategoryMigrationPrerequisite $categoryMigrationPrerequisite,
+        private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
+        private readonly ArticleMigrationPrerequisite $articleMigrationPrerequisite,
+        private readonly OrderMigrationPrerequisite $orderMigrationPrerequisite,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -112,10 +111,7 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
         if (!$this->anyLegacyTableExists()) {
             return true;
         }
-        if (!$this->allPrerequisitesComplete()) {
-            $this->output->writeln(
-                '<error>Not all tt_products data has been migrated yet; refusing to drop legacy tables.</error>'
-            );
+        if (!$this->prerequisitesFulfilled()) {
             return false;
         }
         foreach (self::TABLES_TO_DROP as $table) {
@@ -129,7 +125,13 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
      */
     public function getPrerequisites(): array
     {
-        return [DatabaseUpdatedPrerequisite::class];
+        return [
+            DatabaseUpdatedPrerequisite::class,
+            CategoryMigrationPrerequisite::class,
+            ProductMigrationPrerequisite::class,
+            ArticleMigrationPrerequisite::class,
+            OrderMigrationPrerequisite::class,
+        ];
     }
 
     private function anyLegacyTableExists(): bool
@@ -142,16 +144,18 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
         return false;
     }
 
-    private function allPrerequisitesComplete(): bool
+    private function prerequisitesFulfilled(): bool
     {
-        foreach (self::ENTITY_TABLE_PAIRS as $pair) {
-            if ($this->migrationHelper->tablesExist($pair['legacy'])
-                && $this->migrationHelper->countUnmigrated($pair['legacy'], $pair['local']) > 0
-            ) {
-                return false;
-            }
+        $fulfilled = $this->categoryMigrationPrerequisite->isFulfilled()
+            && $this->productMigrationPrerequisite->isFulfilled()
+            && $this->articleMigrationPrerequisite->isFulfilled()
+            && $this->orderMigrationPrerequisite->isFulfilled();
+        if (!$fulfilled) {
+            $this->output->writeln(
+                '<error>Not all tt_products data has been migrated yet; refusing to drop legacy tables.</error>'
+            );
         }
-        return true;
+        return $fulfilled;
     }
 
     private function dropTableIfExists(string $table): void

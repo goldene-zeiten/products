@@ -7,6 +7,8 @@ namespace GoldeneZeiten\Products\Updates;
 use GoldeneZeiten\Products\Backend\StorageFolderResolver;
 use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Updates\Prerequisites\ArticleMigrationPrerequisite;
+use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Country\Country;
 use TYPO3\CMS\Core\Country\CountryProvider;
@@ -22,13 +24,15 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 /**
  * Migrates `sys_products_orders` (+ its `sys_products_orders_mm_tt_products` line items) to
  * `tx_products_domain_model_order`/orderitem/orderaddress. Requires the product and article wizards
- * to have already run: a line item whose product was never migrated is dropped (with a warning), the
- * order itself is always created. Line item prices cannot be reliably reconstructed from the legacy
- * `orderData` blob (site-specific, version-dependent serialized structure) so they use the *current*
- * catalog price with an explanatory note, per the plan's documented fallback. Only `payment_method
- * = 'invoice'` exists in the new extension, so every order is mapped to it; a warning is emitted when
- * the legacy order actually used a different (electronic) gateway, since that history only survives
- * in `legacy_order_data`, not as a re-creatable payment method.
+ * to have already fully run: executeUpdate() refuses to start otherwise (see
+ * ProductMigrationPrerequisite/ArticleMigrationPrerequisite). Once that holds, a line item whose
+ * product was still genuinely orphaned is dropped (with a warning); the order itself is always
+ * created. Line item prices cannot be reliably reconstructed from the legacy `orderData` blob
+ * (site-specific, version-dependent serialized structure) so they use the *current* catalog price
+ * with an explanatory note, per the plan's documented fallback. Only `payment_method = 'invoice'`
+ * exists in the new extension, so every order is mapped to it; a warning is emitted when the legacy
+ * order actually used a different (electronic) gateway, since that history only survives in
+ * `legacy_order_data`, not as a re-creatable payment method.
  */
 #[UpgradeWizard('products_ttProductsOrderMigration')]
 final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, ChattyInterface, RepeatableInterface
@@ -53,6 +57,8 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
         private readonly LegacyMigrationHelper $migrationHelper,
         private readonly StorageFolderResolver $storageFolderResolver,
         private readonly CountryProvider $countryProvider,
+        private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
+        private readonly ArticleMigrationPrerequisite $articleMigrationPrerequisite,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -86,6 +92,9 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
         if (!$this->migrationHelper->tablesExist(self::LEGACY_TABLE)) {
             return true;
         }
+        if (!$this->prerequisitesFulfilled()) {
+            return false;
+        }
         $pid = $this->storageFolderResolver->resolve();
         while (($rows = $this->migrationHelper->fetchUnmigratedBatch(self::LEGACY_TABLE, self::LOCAL_TABLE)) !== []) {
             foreach ($rows as $row) {
@@ -100,7 +109,31 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
      */
     public function getPrerequisites(): array
     {
-        return [DatabaseUpdatedPrerequisite::class];
+        return [
+            DatabaseUpdatedPrerequisite::class,
+            ProductMigrationPrerequisite::class,
+            ArticleMigrationPrerequisite::class,
+        ];
+    }
+
+    private function prerequisitesFulfilled(): bool
+    {
+        $fulfilled = true;
+        if (!$this->productMigrationPrerequisite->isFulfilled()) {
+            $this->output->writeln(
+                '<error>tt_products still has unmigrated rows; run the product migration '
+                    . 'wizard (products_ttProductsProductMigration) first.</error>'
+            );
+            $fulfilled = false;
+        }
+        if (!$this->articleMigrationPrerequisite->isFulfilled()) {
+            $this->output->writeln(
+                '<error>tt_products_articles still has unmigrated rows; run the article migration '
+                    . 'wizard (products_ttProductsArticleMigration) first.</error>'
+            );
+            $fulfilled = false;
+        }
+        return $fulfilled;
     }
 
     /**

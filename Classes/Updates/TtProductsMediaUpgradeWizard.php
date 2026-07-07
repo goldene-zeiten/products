@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Updates;
 
 use Doctrine\DBAL\ParameterType;
+use GoldeneZeiten\Products\Updates\Prerequisites\ArticleMigrationPrerequisite;
+use GoldeneZeiten\Products\Updates\Prerequisites\CategoryMigrationPrerequisite;
+use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 // EXT:install namespaces are valid through TYPO3 v14 (deprecated there); migrate to the
@@ -17,8 +20,10 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
  * Migrates the `tt_products`/`tt_products_cat`/`tt_products_articles` image and datasheet fields
- * to the FAL fields added in Milestone 2. Requires the corresponding entity wizard
- * (category/product/article) to have already run, since it works off `tx_products_migration_map`.
+ * to the FAL fields added in Milestone 2. Requires the corresponding entity wizards
+ * (category/product/article) to have already fully run: executeUpdate() refuses to start
+ * otherwise (see Category/Product/ArticleMigrationPrerequisite), since it works off
+ * `tx_products_migration_map`.
  *
  * Out of scope, reported via a notice instead of migrated: `smallimage`/`sliderimage` (redundant
  * pre-generated thumbnails; FAL generates thumbnails on demand) and the separate
@@ -40,6 +45,9 @@ final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, Chat
         private readonly ConnectionPool $connectionPool,
         private readonly LegacyMigrationHelper $migrationHelper,
         private readonly LegacyMediaMigrator $mediaMigrator,
+        private readonly CategoryMigrationPrerequisite $categoryMigrationPrerequisite,
+        private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
+        private readonly ArticleMigrationPrerequisite $articleMigrationPrerequisite,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -77,6 +85,9 @@ final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, Chat
         if (!$this->migrationHelper->tablesExist(self::PRODUCT_TABLE)) {
             return true;
         }
+        if (!$this->prerequisitesFulfilled()) {
+            return false;
+        }
         foreach ($this->mappings() as $mapping) {
             $this->migrateMapping($mapping);
         }
@@ -88,7 +99,39 @@ final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, Chat
      */
     public function getPrerequisites(): array
     {
-        return [DatabaseUpdatedPrerequisite::class];
+        return [
+            DatabaseUpdatedPrerequisite::class,
+            CategoryMigrationPrerequisite::class,
+            ProductMigrationPrerequisite::class,
+            ArticleMigrationPrerequisite::class,
+        ];
+    }
+
+    private function prerequisitesFulfilled(): bool
+    {
+        $fulfilled = true;
+        if (!$this->categoryMigrationPrerequisite->isFulfilled()) {
+            $this->output->writeln(
+                '<error>tt_products_cat still has unmigrated rows; run the category migration '
+                    . 'wizard (products_ttProductsCategoryMigration) first.</error>'
+            );
+            $fulfilled = false;
+        }
+        if (!$this->productMigrationPrerequisite->isFulfilled()) {
+            $this->output->writeln(
+                '<error>tt_products still has unmigrated rows; run the product migration '
+                    . 'wizard (products_ttProductsProductMigration) first.</error>'
+            );
+            $fulfilled = false;
+        }
+        if (!$this->articleMigrationPrerequisite->isFulfilled()) {
+            $this->output->writeln(
+                '<error>tt_products_articles still has unmigrated rows; run the article migration '
+                    . 'wizard (products_ttProductsArticleMigration) first.</error>'
+            );
+            $fulfilled = false;
+        }
+        return $fulfilled;
     }
 
     /**
