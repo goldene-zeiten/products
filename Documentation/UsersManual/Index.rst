@@ -109,8 +109,9 @@ Managing orders
 
 The :guilabel:`Orders` submodule (under the :guilabel:`Products` main module) lists all orders,
 filterable by status, order number and email. Opening an order shows a summary (date, email,
-status, payment status, payment method, total, customer note — plus any applied voucher code(s)
-and the combined voucher/credit-points discount, when present) and the actions available for it:
+status, payment status, payment method, total, customer note — plus any applied voucher code(s),
+the combined voucher/credit-points discount, and the shipping cost, when present) and the actions
+available for it:
 
 *   :guilabel:`Mark paid` — sets the payment status to "paid". Shown only while the order's current
     payment status can actually move there (mirrors the invoice workflow: confirm payment once the
@@ -121,6 +122,11 @@ and the combined voucher/credit-points discount, when present) and the actions a
 
 This module only manages status; full order details (line items, addresses) remain in the record
 edit view for now — a fuller order-detail view is a good candidate for a later milestone.
+
+A :guilabel:`Discounts & rewards` section on the detail view lists every voucher redemption for
+that order, whether it generated a gained bonus voucher (and whether that code has been used yet),
+and its credit-points ledger entries (earned, redeemed, or manually adjusted) — everything that
+otherwise only lives in separate record lists, gathered in one place per order.
 
 A :guilabel:`Refund` action also appears once an order's payment status can move to "refunded" and
 its payment method supports refunds. The invoice payment method shipped with this extension
@@ -167,6 +173,10 @@ the discount shows there and carries through checkout.
     everywhere else in TYPO3; outside this window the code behaves as if it doesn't exist.
 *   A discount can never exceed the basket's total, so applying a voucher never makes the amount
     due negative.
+*   :guilabel:`Waives the shipping cost` — when checked and shipping costs are enabled (see
+    :ref:`Shipping costs <users-manual-shipping>`), applying this code zeroes the shipping total
+    regardless of which shipping method was chosen. It has no effect while shipping costs are
+    disabled sitewide.
 
 A code that becomes invalid while just viewing the basket (expired, exhausted by someone else,
 etc.) simply stops contributing to the discount shown there — remove it to add a different one.
@@ -179,6 +189,28 @@ Once an order is placed, the applied voucher code(s) and the total discount are 
 order and shown in the backend order module's detail view, alongside a redemption record per
 code (visible in the :guilabel:`Voucher redemption` record list) that keeps counting towards the
 code's usage limit even if the order is later cancelled.
+
+..  _users-manual-gained-vouchers:
+
+Gained bonus vouchers
+=======================
+
+Beyond codes you create yourself, the shop can automatically reward customers with a fresh code
+of their own. Enable it under :guilabel:`Admin Tools` → :guilabel:`Settings` → :guilabel:`Products`
+(:guilabel:`Auto-issue a reward voucher for qualifying orders`) — off by default, so existing shops
+see no change until an operator opts in.
+
+*   :guilabel:`Minimum order total (gross) to trigger a gained voucher` — an order at or above this
+    total generates one reward code once it is placed; smaller orders generate nothing.
+*   :guilabel:`Gained voucher discount type` / :guilabel:`Gained voucher discount value` — one
+    sitewide reward, e.g. a flat 5.00 off (the default) or a percentage, applied the same way any
+    other voucher discount is.
+
+A generated code is non-combinable and single-use, bound to the customer who earned it when they
+were logged in (open to anyone if the order was a guest checkout), and never expires. It shows up
+like any other voucher in the storage folder's record list, and the order that triggered it is
+recorded so the backend order module's detail view can show which code (if any) an order
+generated and whether it has been used yet.
 
 ..  _users-manual-credit-points:
 
@@ -210,3 +242,95 @@ never goes negative) — the same double-cap idea used by the legacy shop. Placi
 one ledger entry for points earned on that order and, if any were spent, one entry for the points
 redeemed; both discounts (voucher and credit points) are combined into a single discount total
 shown on the order.
+
+Manual adjustments
+--------------------
+
+For goodwill grants or corrections outside the normal earn/redeem flow, create a
+:guilabel:`Credit Points Transaction` record directly (storage folder record list) with
+:guilabel:`Type` set to :guilabel:`Manual adjustment`, the customer, and a :guilabel:`Points`
+value — positive to grant points, negative to deduct them. Leave :guilabel:`Order UID` at 0 for an
+adjustment not tied to a specific order. There is no separate approval step: any editor who can
+open that record list can adjust any customer's balance, the same trust level as editing any other
+record in this extension's storage folder.
+
+..  _users-manual-shipping:
+
+Shipping costs
+================
+
+Off by default — enable it under :guilabel:`Admin Tools` → :guilabel:`Settings` →
+:guilabel:`Products` (:guilabel:`Shipping cost calculation enabled`) before any of the below
+applies; existing shops upgrading see no change in checkout until an operator opts in.
+
+Create shipping methods as plain records (storage folder record list) with a :guilabel:`Title`,
+a :guilabel:`Country`, and a :guilabel:`Rate`:
+
+*   :guilabel:`Country` — a specific country, or the fallback option (all countries) if no
+    country-specific method is configured for the shopper's delivery country. If any
+    country-specific methods exist for a country, the fallback methods are not offered there at
+    all — configure a full set per country, or rely entirely on the fallback.
+*   :guilabel:`Minimum/maximum order value` and :guilabel:`Minimum/maximum weight in grams` — leave
+    at 0 for "no bound". A method is only offered when the basket's weight (the sum of each
+    product's :guilabel:`Weight` field times quantity — articles use their product's weight, there
+    is no per-article override) and goods total both fall inside its configured bounds.
+
+When enabled, checkout gains a shipping-method step between the address and payment steps; the
+chosen method's cost is added to the order total (shown separately from the goods total and any
+voucher discount) unless a free-shipping voucher waives it.
+
+..  _users-manual-gift-orders:
+
+Gift orders
+============
+
+On the checkout address step, a :guilabel:`Ship to a different address` checkbox reveals a second
+address for delivery, plus a free-text :guilabel:`Gift message` field — both entirely optional.
+Leaving the checkbox unchecked keeps the order billing-only, exactly as it worked before this
+feature existed. When used, the delivery address and message are stored on the order and shown
+alongside the billing address in checkout review, the thank-you page, order history, and the
+backend order module.
+
+This is one alternate delivery address for the whole order, not a per-item "send this one thing to
+someone else" mechanic — a basket with several gifts for different people is out of scope for now.
+
+..  _users-manual-wishlist:
+
+Wishlist
+=========
+
+Enable the "add to wishlist" link on product listings under :guilabel:`Admin Tools` →
+:guilabel:`Settings` → :guilabel:`Products` (:guilabel:`Show the add-to-wishlist affordance on
+product listings`) — off by default. The :rst:dir:`Wishlist` plugin itself works regardless of
+this setting; it only controls whether the link is injected into product listings, so a shop can
+link to a wishlist page manually without necessarily surfacing it everywhere.
+
+A logged-in customer's wishlist is stored against their account (visible as
+:guilabel:`Wishlist Item` records) and follows them across visits and devices. A guest's wishlist
+lives only in their browser session and is lost when it expires — logging in does **not** carry a
+guest's session wishlist over to their account; the two are entirely separate lists. If a
+wishlisted product is later deleted, it simply disappears from the list.
+
+..  _users-manual-recently-viewed:
+
+Recently-viewed products
+==========================
+
+The :rst:dir:`RecentlyViewed` plugin shows the current visitor's most recently viewed products,
+most recent first, automatically — there is nothing to configure per product. Viewing a product
+already on the list moves it back to the front rather than showing it twice. It lives entirely in
+the visitor's session (nothing is stored in the database, and nothing is tied to their account even
+when logged in), so the list is lost when the session expires and never shared across devices.
+:guilabel:`Maximum number of recently-viewed products remembered per visitor` (default 10) caps how
+many products are kept.
+
+..  _users-manual-search:
+
+Catalog search
+================
+
+The :rst:dir:`Search` plugin offers a simple search box; results match the term against a
+product's title, item number, description or EAN (case-insensitive, partial matches count — e.g.
+searching "shoe" finds "Running Shoes"). It is not a full-text search engine: there is no
+relevance ranking or fuzzy matching, which is adequate for a catalog of moderate size. Results are
+paginated at :guilabel:`Search results per page` (default 20) per page.

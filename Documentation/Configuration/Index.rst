@@ -143,6 +143,70 @@ from. Set it before creating any content.
 
         The AJAX page type used by the :rst:dir:`ProductList` plugin's cached AJAX loading mode.
 
+    ..  confval:: products.creditPoints.enabled
+        :type: bool
+        :Default: false
+
+        Whether the credit-points loyalty mechanic is active at all. See
+        :ref:`Credit points <users-manual-credit-points>`.
+
+    ..  confval:: products.creditPoints.moneyPerPoint
+        :type: number
+        :Default: 0.10
+
+        Money value of one credit point when a customer spends it at checkout.
+
+    ..  confval:: products.shipping.enabled
+        :type: bool
+        :Default: false
+
+        Whether the checkout asks for a shipping method and adds its cost to the order total. See
+        :ref:`Shipping costs <users-manual-shipping>`.
+
+    ..  confval:: products.vouchers.gained.enabled
+        :type: bool
+        :Default: false
+
+        Whether placing a qualifying order automatically issues a reward voucher. See
+        :ref:`Gained bonus vouchers <users-manual-gained-vouchers>`.
+
+    ..  confval:: products.vouchers.gained.minimumOrderValue
+        :type: number
+        :Default: 0.00
+
+        Minimum order total (gross) required to trigger a gained voucher.
+
+    ..  confval:: products.vouchers.gained.rewardType
+        :type: string
+        :Default: fixed
+
+        Either ``fixed`` or ``percentage`` — the discount type of an auto-issued gained voucher.
+
+    ..  confval:: products.vouchers.gained.rewardValue
+        :type: number
+        :Default: 5.00
+
+        The discount value of an auto-issued gained voucher, interpreted per ``rewardType``.
+
+    ..  confval:: products.wishlist.enabled
+        :type: bool
+        :Default: false
+
+        Whether product listings show an "add to wishlist" link. See
+        :ref:`Wishlist <users-manual-wishlist>`.
+
+    ..  confval:: products.recentlyViewed.limit
+        :type: int
+        :Default: 10
+
+        Maximum number of recently-viewed products remembered per visitor.
+
+    ..  confval:: products.search.resultsPerPage
+        :type: int
+        :Default: 20
+
+        Results shown per page by the :rst:dir:`Search` plugin.
+
 ..  _configuration-backend-module:
 
 Backend module
