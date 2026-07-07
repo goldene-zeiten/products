@@ -48,6 +48,14 @@ class Product extends AbstractEntity
      * @var ObjectStorage<PriceTier>
      */
     protected ObjectStorage $priceTiers;
+    /**
+     * @var ObjectStorage<Product>
+     */
+    protected ObjectStorage $relatedProducts;
+    /**
+     * @var ObjectStorage<Product>
+     */
+    protected ObjectStorage $accessoryProducts;
 
     public function __construct()
     {
@@ -61,6 +69,8 @@ class Product extends AbstractEntity
         $this->images = new ObjectStorage();
         $this->downloads = new ObjectStorage();
         $this->priceTiers = new ObjectStorage();
+        $this->relatedProducts = new ObjectStorage();
+        $this->accessoryProducts = new ObjectStorage();
     }
 
     public function getTitle(): string
@@ -322,5 +332,37 @@ class Product extends AbstractEntity
             }
         }
         return array_values($seen);
+    }
+
+    /**
+     * @return ObjectStorage<Product>
+     */
+    public function getRelatedProducts(): ObjectStorage
+    {
+        return $this->relatedProducts;
+    }
+
+    /**
+     * @param ObjectStorage<Product> $relatedProducts
+     */
+    public function setRelatedProducts(ObjectStorage $relatedProducts): void
+    {
+        $this->relatedProducts = $relatedProducts;
+    }
+
+    /**
+     * @return ObjectStorage<Product>
+     */
+    public function getAccessoryProducts(): ObjectStorage
+    {
+        return $this->accessoryProducts;
+    }
+
+    /**
+     * @param ObjectStorage<Product> $accessoryProducts
+     */
+    public function setAccessoryProducts(ObjectStorage $accessoryProducts): void
+    {
+        $this->accessoryProducts = $accessoryProducts;
     }
 }
