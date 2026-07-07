@@ -8,4 +8,5 @@ enum CreditPointsTransactionType: string
 {
     case EARN = 'earn';
     case REDEEM = 'redeem';
+    case ADJUSTMENT = 'adjustment';
 }

@@ -123,6 +123,9 @@
 			<trans-unit id="tx_products_domain_model_creditpointstransaction.type.redeem" resname="tx_products_domain_model_creditpointstransaction.type.redeem">
 				<source>Redeemed</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_creditpointstransaction.type.adjustment" resname="tx_products_domain_model_creditpointstransaction.type.adjustment">
+				<source>Manual adjustment</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_creditpointstransaction.created" resname="tx_products_domain_model_creditpointstransaction.created">
 				<source>Created</source>
 			</trans-unit>

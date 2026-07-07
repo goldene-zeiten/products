@@ -36,10 +36,13 @@ class Order extends AbstractEntity
     protected string $taxBreakdown = '[]';
     /** @var string */
     protected string $statusLog = '[]';
+    /** @var int */
     protected int $discountTotal = 0;
     /** @var string */
     protected string $voucherCodes = '[]';
+    /** @var int */
     protected int $shippingMethod = 0;
+    /** @var int */
     protected int $shippingTotal = 0;
     /**
      * @var ObjectStorage<OrderItem>

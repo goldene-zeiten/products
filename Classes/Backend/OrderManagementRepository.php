@@ -58,6 +58,95 @@ final class OrderManagementRepository
     }
 
     /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function fetchVoucherRedemptions(int $orderUid): array
+    {
+        $queryBuilder = $this->queryBuilderFor('tx_products_domain_model_voucherredemption');
+        $rows = $queryBuilder->select('*')
+            ->from('tx_products_domain_model_voucherredemption')
+            ->where($queryBuilder->expr()->eq('order_uid', $queryBuilder->createNamedParameter($orderUid, ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAllAssociative();
+        return array_map($this->mapVoucherRedemptionRow(...), $rows);
+    }
+
+    /**
+     * @return array{code: string, used: bool}|null
+     */
+    public function fetchGainedVoucher(int $orderUid): ?array
+    {
+        $queryBuilder = $this->queryBuilderFor('tx_products_domain_model_voucher');
+        $row = $queryBuilder->select('uid', 'code')
+            ->from('tx_products_domain_model_voucher')
+            ->where($queryBuilder->expr()->eq('generated_from_order', $queryBuilder->createNamedParameter($orderUid, ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAssociative();
+        if ($row === false) {
+            return null;
+        }
+        return ['code' => (string)$row['code'], 'used' => $this->countRedemptionsFor((int)$row['uid']) > 0];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function fetchCreditPointsLedger(int $orderUid): array
+    {
+        $queryBuilder = $this->queryBuilderFor('tx_products_domain_model_creditpointstransaction');
+        $rows = $queryBuilder->select('*')
+            ->from('tx_products_domain_model_creditpointstransaction')
+            ->where($queryBuilder->expr()->eq('order_uid', $queryBuilder->createNamedParameter($orderUid, ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAllAssociative();
+        return array_map($this->mapCreditPointsRow(...), $rows);
+    }
+
+    private function countRedemptionsFor(int $voucherUid): int
+    {
+        $queryBuilder = $this->queryBuilderFor('tx_products_domain_model_voucherredemption');
+        return (int)$queryBuilder->count('uid')
+            ->from('tx_products_domain_model_voucherredemption')
+            ->where($queryBuilder->expr()->eq('voucher_uid', $queryBuilder->createNamedParameter($voucherUid, ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchOne();
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     * @return array<string, mixed>
+     */
+    private function mapVoucherRedemptionRow(array $row): array
+    {
+        return [
+            'voucherCode' => (string)$row['voucher_code'],
+            'discountTotalCents' => (int)$row['discount_total'],
+            'redeemedAt' => $this->formatTimestamp((int)($row['redeemed_at'] ?? 0)),
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     * @return array<string, mixed>
+     */
+    private function mapCreditPointsRow(array $row): array
+    {
+        return [
+            'frontendUser' => (int)$row['frontend_user'],
+            'points' => (int)$row['points'],
+            'type' => (string)$row['type'],
+            'created' => $this->formatTimestamp((int)($row['created'] ?? 0)),
+        ];
+    }
+
+    private function queryBuilderFor(string $table): QueryBuilder
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        return $queryBuilder;
+    }
+
+    /**
      * `persistAll()` only flushes objects registered as aggregate roots (`add()`/`update()`), not
      * arbitrary fetched-and-mutated entities, so `update()` must be called explicitly here.
      */
@@ -101,10 +190,7 @@ final class OrderManagementRepository
 
     private function baseQueryBuilder(): QueryBuilder
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
-        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
-        $queryBuilder->select('*')->from(self::TABLE);
-        return $queryBuilder;
+        return $this->queryBuilderFor(self::TABLE)->select('*')->from(self::TABLE);
     }
 
     /**
@@ -124,6 +210,8 @@ final class OrderManagementRepository
             'totalGrossCents' => (int)$row['total_gross'],
             'discountTotalCents' => (int)($row['discount_total'] ?? 0),
             'voucherCodes' => json_decode((string)($row['voucher_codes'] ?? ''), true) ?: [],
+            'shippingMethodUid' => (int)($row['shipping_method'] ?? 0),
+            'shippingTotalCents' => (int)($row['shipping_total'] ?? 0),
             'currency' => (string)$row['currency'],
             'customerNote' => (string)($row['customer_note'] ?? ''),
         ];
