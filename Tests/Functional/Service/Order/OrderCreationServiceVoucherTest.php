@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\DiscountRequest;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Domain\Repository\VoucherRedemptionRepository;
@@ -53,7 +54,7 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
         $order = $this->subject->create(
             new ServerRequest('http://localhost/'),
             $this->basketViewModel(),
-            ['SAVE10'],
+            $this->discountRequest('SAVE10'),
             $this->address(),
             $this->paymentMethod()
         );
@@ -73,7 +74,7 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
         $order = $this->subject->create(
             new ServerRequest('http://localhost/'),
             $this->basketViewModel(),
-            ['SAVE10'],
+            $this->discountRequest('SAVE10'),
             $this->address(),
             $this->paymentMethod()
         );
@@ -87,7 +88,7 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
         $this->subject->create(
             new ServerRequest('http://localhost/'),
             $this->basketViewModel(),
-            ['ONETIME'],
+            $this->discountRequest('ONETIME'),
             $this->address(),
             $this->paymentMethod()
         );
@@ -98,7 +99,7 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
         $this->subject->create(
             new ServerRequest('http://localhost/'),
             $this->basketViewModel(),
-            ['ONETIME'],
+            $this->discountRequest('ONETIME'),
             $this->address(),
             $this->paymentMethod()
         );
@@ -114,7 +115,7 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
             $this->subject->create(
                 new ServerRequest('http://localhost/'),
                 $this->basketViewModel(),
-                ['EXHAUSTED'],
+                $this->discountRequest('EXHAUSTED'),
                 $this->address(),
                 $this->paymentMethod()
             );
@@ -143,6 +144,11 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
             $unitPriceGross->subtract($unitPriceNet)
         );
         return new BasketViewModel([$item], $unitPriceNet, $unitPriceGross, $unitPriceGross->subtract($unitPriceNet), 'EUR');
+    }
+
+    private function discountRequest(string $voucherCode): DiscountRequest
+    {
+        return new DiscountRequest([$voucherCode], 0);
     }
 
     private function address(): Address

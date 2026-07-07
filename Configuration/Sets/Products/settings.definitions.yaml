@@ -101,3 +101,13 @@ settings:
     default: 1729512000
     label: AJAX page typeNum
     category: products
+  products.creditPoints.enabled:
+    type: bool
+    default: false
+    label: Credit points enabled
+    category: products
+  products.creditPoints.moneyPerPoint:
+    type: number
+    default: 0.10
+    label: Money value of one credit point when redeemed
+    category: products

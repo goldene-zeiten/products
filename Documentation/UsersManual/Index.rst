@@ -178,3 +178,34 @@ Once an order is placed, the applied voucher code(s) and the total discount are 
 order and shown in the backend order module's detail view, alongside a redemption record per
 code (visible in the :guilabel:`Voucher redemption` record list) that keeps counting towards the
 code's usage limit even if the order is later cancelled.
+
+..  _users-manual-credit-points:
+
+Credit points
+==============
+
+Credit points are a loyalty mechanic: customers earn points for products they buy and can later
+spend points for a discount at checkout. The feature is off by default — enable it under
+:guilabel:`Admin Tools` → :guilabel:`Settings` → :guilabel:`Products`
+(:guilabel:`Credit points enabled`) before any of the below takes effect. Existing shops upgrading
+to this version see no change in behaviour until an operator opts in.
+
+*   :guilabel:`Credit points earned per unit` — a plain field on each product, 0 by default. An
+    article always earns at its product's rate; there is no separate per-article rate.
+*   :guilabel:`Money value of one credit point when redeemed` — one sitewide setting (default
+    0.10), separate from the per-product earning rate. Earning answers "how many points does
+    buying this give you"; this setting answers "what is one point worth when spent" — keeping
+    it sitewide means the discount a point is worth is predictable everywhere in the shop.
+
+A customer's points balance is never stored directly — it is always the sum of their ledger
+entries (visible in the :guilabel:`Credit Points Transaction` record list), the same
+race-free approach used for voucher usage limits. Only identified customers have a ledger; guest
+orders neither earn nor spend points, since there is no durable identity to credit.
+
+At checkout, a logged-in customer with a positive balance sees a "spend credit points" field on
+the review step. The requested amount is capped by whichever is lower: the customer's balance, or
+what the current basket total can actually absorb at the redemption rate (so the payable amount
+never goes negative) — the same double-cap idea used by the legacy shop. Placing the order records
+one ledger entry for points earned on that order and, if any were spent, one entry for the points
+redeemed; both discounts (voucher and credit points) are combined into a single discount total
+shown on the order.

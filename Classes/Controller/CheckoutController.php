@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Service\Checkout\CheckoutService;
+use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementExceptionInterface;
 use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
@@ -26,7 +27,8 @@ final class CheckoutController extends ActionController
         private readonly PaymentMethodRegistry $paymentMethodRegistry,
         private readonly PaymentContextFactory $paymentContextFactory,
         private readonly OrderPlacementService $orderPlacementService,
-        private readonly FrontendUserResolver $frontendUserResolver
+        private readonly FrontendUserResolver $frontendUserResolver,
+        private readonly CreditPointsService $creditPointsService
     ) {}
 
     public function addressAction(): ResponseInterface
@@ -62,10 +64,25 @@ final class CheckoutController extends ActionController
         $address = $this->checkoutService->getAddress($this->request);
         $paymentMethodIdentifier = $this->checkoutService->getPaymentMethod($this->request);
 
-        $this->view->assign('basket', $basket);
-        $this->view->assign('address', $address);
-        $this->view->assign('paymentMethod', $this->findPaymentMethod($paymentMethodIdentifier));
+        $this->view->assignMultiple([
+            'basket' => $basket,
+            'address' => $address,
+            'paymentMethod' => $this->findPaymentMethod($paymentMethodIdentifier),
+            'creditPointsBalance' => $this->creditPointsBalance(),
+        ]);
         return $this->htmlResponse();
+    }
+
+    /**
+     * 0 both hides the "spend points" input (feature disabled or guest) and doubles as "nothing
+     * to spend" - the template only needs a single number to decide whether to render it.
+     */
+    private function creditPointsBalance(): int
+    {
+        if (!$this->creditPointsService->isEnabled()) {
+            return 0;
+        }
+        return $this->creditPointsService->getBalance($this->frontendUserResolver->getUid($this->request));
     }
 
     private function findPaymentMethod(string $identifier): ?PaymentMethodInterface
@@ -81,13 +98,13 @@ final class CheckoutController extends ActionController
         }
     }
 
-    public function finalizeAction(): ResponseInterface
+    public function finalizeAction(int $spendPoints = 0): ResponseInterface
     {
         $address = $this->checkoutService->getAddress($this->request);
         $paymentMethodIdentifier = $this->checkoutService->getPaymentMethod($this->request);
 
         try {
-            $result = $this->orderPlacementService->place($this->request, $address, $paymentMethodIdentifier);
+            $result = $this->orderPlacementService->place($this->request, $address, $paymentMethodIdentifier, $spendPoints);
         } catch (OrderPlacementExceptionInterface $exception) {
             $this->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
             return $this->redirect('review');

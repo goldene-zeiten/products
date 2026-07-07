@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Service\Order;
 
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\DiscountRequest;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\OrderPlacementResult;
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
 use GoldeneZeiten\Products\Domain\Enum\PaymentResultState;
@@ -15,6 +16,8 @@ use GoldeneZeiten\Products\Event\PaymentInitiatedEvent;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
+use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Order\Exception\EmptyBasketException;
 use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementVetoedException;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -27,18 +30,23 @@ final class OrderPlacementService
         private readonly PaymentMethodRegistry $paymentMethodRegistry,
         private readonly OrderPlacementTransaction $orderPlacementTransaction,
         private readonly OrderFinalizationService $orderFinalizationService,
-        private readonly EventDispatcherInterface $eventDispatcher
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly CreditPointsService $creditPointsService,
+        private readonly FrontendUserResolver $frontendUserResolver
     ) {}
 
-    public function place(ServerRequestInterface $request, Address $address, string $paymentMethodIdentifier): OrderPlacementResult
+    public function place(ServerRequestInterface $request, Address $address, string $paymentMethodIdentifier, int $spendPoints = 0): OrderPlacementResult
     {
         $basketViewModel = $this->basketService->getBasketViewModel($request);
         $this->assertBasketNotEmpty($basketViewModel);
-        $voucherCodes = $this->basketService->getAppliedVoucherCodes($request);
+        if ($spendPoints > 0) {
+            $this->creditPointsService->assertSpendable($this->frontendUserResolver->getUid($request), $spendPoints);
+        }
+        $discountRequest = new DiscountRequest($this->basketService->getAppliedVoucherCodes($request), $spendPoints);
         $paymentMethod = $this->paymentMethodRegistry->get($paymentMethodIdentifier);
         $this->dispatchBeforeOrderPlaced($request, $basketViewModel, $address, $paymentMethod);
 
-        [$order, $paymentResult] = $this->orderPlacementTransaction->run($request, $basketViewModel, $voucherCodes, $address, $paymentMethod);
+        [$order, $paymentResult] = $this->orderPlacementTransaction->run($request, $basketViewModel, $discountRequest, $address, $paymentMethod);
         $this->eventDispatcher->dispatch(new PaymentInitiatedEvent($order, $paymentResult));
 
         return $this->buildPlacementResult($order, $paymentResult, $request);
