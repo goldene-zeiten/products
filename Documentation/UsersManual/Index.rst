@@ -109,7 +109,8 @@ Managing orders
 
 The :guilabel:`Orders` submodule (under the :guilabel:`Products` main module) lists all orders,
 filterable by status, order number and email. Opening an order shows a summary (date, email,
-status, payment status, payment method, total, customer note) and the actions available for it:
+status, payment status, payment method, total, customer note — plus any applied voucher code(s)
+and the combined voucher/credit-points discount, when present) and the actions available for it:
 
 *   :guilabel:`Mark paid` — sets the payment status to "paid". Shown only while the order's current
     payment status can actually move there (mirrors the invoice workflow: confirm payment once the
