@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Service\Order;
 
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\DiscountRequest;
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
@@ -21,20 +22,19 @@ final class OrderPlacementTransaction
     ) {}
 
     /**
-     * @param string[] $voucherCodes
      * @return array{0: Order, 1: PaymentResult}
      */
     public function run(
         ServerRequestInterface $request,
         BasketViewModel $basketViewModel,
-        array $voucherCodes,
+        DiscountRequest $discountRequest,
         Address $address,
         PaymentMethodInterface $paymentMethod
     ): array {
         $connection = $this->connectionPool->getConnectionForTable('tx_products_domain_model_order');
         $connection->beginTransaction();
         try {
-            $order = $this->orderCreationService->create($request, $basketViewModel, $voucherCodes, $address, $paymentMethod);
+            $order = $this->orderCreationService->create($request, $basketViewModel, $discountRequest, $address, $paymentMethod);
             $paymentResult = $this->paymentInitiationService->initiate($order, $paymentMethod);
             $connection->commit();
             return [$order, $paymentResult];

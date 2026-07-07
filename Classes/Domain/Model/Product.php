@@ -30,6 +30,7 @@ class Product extends AbstractEntity
     protected int $basketMinQuantity = 0;
     protected int $basketMaxQuantity = 0;
     protected int $weight = 0;
+    protected int $creditPoints = 0;
     protected bool $isOffer = false;
     protected bool $isHighlight = false;
     /**
@@ -207,6 +208,16 @@ class Product extends AbstractEntity
     public function setWeight(int $weight): void
     {
         $this->weight = $weight;
+    }
+
+    public function getCreditPoints(): int
+    {
+        return $this->creditPoints;
+    }
+
+    public function setCreditPoints(int $creditPoints): void
+    {
+        $this->creditPoints = $creditPoints;
     }
 
     public function isOffer(): bool

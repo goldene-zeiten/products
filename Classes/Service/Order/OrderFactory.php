@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Service\Order;
 
 use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\BasketDiscountSummary;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementDiscount;
 use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Model\OrderAddress;
 use GoldeneZeiten\Products\Domain\Model\OrderItem;
-use GoldeneZeiten\Products\Domain\Model\Voucher;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
@@ -44,7 +43,7 @@ final class OrderFactory
         BasketViewModel $basketViewModel,
         Address $address,
         string $paymentMethodIdentifier,
-        BasketDiscountSummary $discountSummary
+        PlacementDiscount $discount
     ): Order {
         $order = new Order();
         $order->setFrontendUser($this->frontendUserResolver->getUid($request));
@@ -58,7 +57,7 @@ final class OrderFactory
         $order->setCurrency($basketViewModel->getCurrency());
         $order->setTotalNet($basketViewModel->getTotalNet());
         $order->setTotalTax($basketViewModel->getTotalTax());
-        $this->applyDiscount($order, $basketViewModel->getTotalGross(), $discountSummary);
+        $this->applyDiscount($order, $basketViewModel->getTotalGross(), $discount);
         $order->setTaxCountry($address->getCountry());
         $order->setBillingAddress($this->buildBillingAddress($address));
         $order->setItems($this->buildOrderItems($basketViewModel, $order));
@@ -66,18 +65,15 @@ final class OrderFactory
     }
 
     /**
-     * total_gross is reduced by the voucher discount; total_net/total_tax stay pre-discount since
-     * tax was legitimately due on the goods and the voucher is a payment-reducing rebate, not a
-     * retroactive price change.
+     * total_gross is reduced by the combined voucher/points discount; total_net/total_tax stay
+     * pre-discount since tax was legitimately due on the goods and both discount sources are a
+     * payment-reducing rebate, not a retroactive price change.
      */
-    private function applyDiscount(Order $order, Money $basketGrossTotal, BasketDiscountSummary $discountSummary): void
+    private function applyDiscount(Order $order, Money $basketGrossTotal, PlacementDiscount $discount): void
     {
-        $order->setTotalGross($basketGrossTotal->subtract($discountSummary->getDiscountTotal()));
-        $order->setDiscountTotal($discountSummary->getDiscountTotal());
-        $order->setVoucherCodes(array_map(
-            static fn(Voucher $voucher): string => $voucher->getCode(),
-            $discountSummary->getAppliedVouchers()
-        ));
+        $order->setTotalGross($basketGrossTotal->subtract($discount->getTotalDiscount()));
+        $order->setDiscountTotal($discount->getTotalDiscount());
+        $order->setVoucherCodes($discount->getVoucherCodes());
     }
 
     private function resolveSiteIdentifier(ServerRequestInterface $request): string

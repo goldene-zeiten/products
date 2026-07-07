@@ -105,6 +105,12 @@
 			<trans-unit id="place_order" resname="place_order">
 				<source>Place Order</source>
 			</trans-unit>
+			<trans-unit id="credit_points_balance" resname="credit_points_balance">
+				<source>You have %d credit points available.</source>
+			</trans-unit>
+			<trans-unit id="credit_points_spend_label" resname="credit_points_spend_label">
+				<source>Spend credit points</source>
+			</trans-unit>
 			<trans-unit id="thank_you_order" resname="thank_you_order">
 				<source>Thank you for your order!</source>
 			</trans-unit>
