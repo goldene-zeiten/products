@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Controller;
 use GoldeneZeiten\Products\Domain\Model\AttributeValue;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Service\Wishlist\WishlistService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
@@ -14,20 +15,21 @@ use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 final class ProductController extends ActionController
 {
     public function __construct(
-        private readonly ProductRepository $productRepository
+        private readonly ProductRepository $productRepository,
+        private readonly WishlistService $wishlistService
     ) {}
 
     public function listAction(): ResponseInterface
     {
         $products = $this->productRepository->findAll();
-        $this->view->assign('products', $products);
+        $this->view->assignMultiple(['products' => $products] + $this->wishlistViewVariables());
         return $this->htmlResponse();
     }
 
     public function listByAjaxAction(): ResponseInterface
     {
         $products = $this->productRepository->findAll();
-        $this->view->assign('products', $products);
+        $this->view->assignMultiple(['products' => $products] + $this->wishlistViewVariables());
         return $this->htmlResponse();
     }
 
@@ -37,8 +39,20 @@ final class ProductController extends ActionController
             'product' => $product,
             'variantAttributes' => $product->getVariantAttributes(),
             'variantMap' => $this->buildVariantMap($product),
-        ]);
+        ] + $this->wishlistViewVariables());
         return $this->htmlResponse();
+    }
+
+    /**
+     * @return array{wishlistEnabled: bool, wishlistProductUids: int[]}
+     */
+    private function wishlistViewVariables(): array
+    {
+        $enabled = $this->wishlistService->isEnabled();
+        $productUids = $enabled
+            ? array_map(static fn(Product $product): int => $product->getUid() ?? 0, $this->wishlistService->getItems($this->request))
+            : [];
+        return ['wishlistEnabled' => $enabled, 'wishlistProductUids' => $productUids];
     }
 
     /**

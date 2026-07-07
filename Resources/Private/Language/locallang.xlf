@@ -138,6 +138,18 @@
 			<trans-unit id="details" resname="details">
 				<source>Details</source>
 			</trans-unit>
+			<trans-unit id="wishlist" resname="wishlist">
+				<source>Wishlist</source>
+			</trans-unit>
+			<trans-unit id="wishlist_empty" resname="wishlist_empty">
+				<source>Your wishlist is empty.</source>
+			</trans-unit>
+			<trans-unit id="add_to_wishlist" resname="add_to_wishlist">
+				<source>Add to wishlist</source>
+			</trans-unit>
+			<trans-unit id="remove_from_wishlist" resname="remove_from_wishlist">
+				<source>Remove from wishlist</source>
+			</trans-unit>
 			<trans-unit id="choose_variant" resname="choose_variant">
 				<source>Choose a variant:</source>
 			</trans-unit>
