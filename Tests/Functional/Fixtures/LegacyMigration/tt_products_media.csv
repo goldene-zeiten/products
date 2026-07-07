@@ -1,0 +1,41 @@
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,80,1,0,"Existing Product"
+,81,1,0,"Existing Product Two"
+"tx_products_domain_model_category",,,,
+,"uid","pid","hidden","title"
+,50,1,0,"Existing Category"
+"tx_products_domain_model_article",,,,
+,"uid","pid","hidden","title"
+,60,1,0,"Existing Article"
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",1,"tx_products_domain_model_product",80
+,"tt_products",2,"tx_products_domain_model_product",81
+,"tt_products_cat",1,"tx_products_domain_model_category",50
+,"tt_products_articles",1,"tx_products_domain_model_article",60
+"tt_products",,,,,,,,,,,,,,,,,,,,,,
+,"uid","pid","deleted","hidden","title","subtitle","slug","itemnumber","ean","price","description","category","inStock","basketminquantity","basketmaxquantity","taxcat_id","weight","offer","highlight","image","smallimage","datasheet"
+,1,1,0,0,"Product One","","/p1","IN1","EAN1","19.99","",0,5,"0.00","0.00",0,"0.000000",0,0,"","legacy-small.jpg",""
+,2,1,0,0,"Product Two","","/p2","IN2","EAN2","29.99","",0,3,"0.00","0.00",0,"0.000000",0,0,"missing.jpg","",""
+"tt_products_cat",,,,,,,
+,"uid","pid","deleted","hidden","title","parent_category","image","sliderimage"
+,1,1,0,0,"Category One",0,"","legacy-slider.jpg"
+"tt_products_articles",,,,,,,,,,
+,"uid","pid","deleted","hidden","title","itemnumber","price","inStock","weight","uid_product"
+,1,1,0,0,"Article One","A1","9.99",10,"0.000000",1
+"tt_products_products_mm_downloads",,,,
+,"uid","pid","deleted","uid_local","uid_foreign"
+,1,1,0,1,999
+"sys_file",,,,,
+,"uid","storage","identifier","name","missing"
+,500,1,"/product-one.jpg","product-one.jpg",0
+,501,1,"/product-one-datasheet.pdf","product-one-datasheet.pdf",0
+,502,1,"/category-one.jpg","category-one.jpg",0
+,503,1,"/article-one.jpg","article-one.jpg",0
+"sys_file_reference",,,,,,,,
+,"uid","pid","deleted","uid_local","uid_foreign","tablenames","fieldname","sorting_foreign"
+,900,1,0,500,1,"tt_products","image_uid",1
+,901,1,0,501,1,"tt_products","datasheet_uid",1
+,902,1,0,502,1,"tt_products_cat","image_uid",1
+,903,1,0,503,1,"tt_products_articles","image_uid",1

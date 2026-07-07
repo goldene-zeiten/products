@@ -8,9 +8,9 @@ Upgrading from tt_products
 ==========================
 
 If the legacy ``tt_products`` extension (and its tables) are still present in the installation,
-six upgrade wizards under :guilabel:`Admin Tools > Upgrade` migrate its data into this extension's
-tables. They are idempotent (safe to run more than once) and skip themselves entirely once the
-legacy tables are gone.
+seven upgrade wizards under :guilabel:`Admin Tools > Upgrade` migrate its data into this
+extension's tables. They are idempotent (safe to run more than once) and skip themselves entirely
+once the legacy tables are gone.
 
 ..  contents:: Table of contents
     :local:
@@ -31,12 +31,22 @@ Run the wizards in this order — each one links its rows back to the previous o
     its ``tt_products_articles_language`` translations, linked to the migrated products.
 #.  **Migrate orders** (``products_ttProductsOrderMigration``) — ``sys_products_orders`` and its
     line items, linked to the migrated products/articles.
+#.  **Migrate media** (``products_ttProductsMediaMigration``) — product/category/article images and
+    product datasheets, linked to the already-migrated categories/products/articles. Run this last,
+    since it needs the other wizards' :sql:`tx_products_migration_map` rows to know where each
+    legacy record ended up.
 
 Known limitations
 ==================
 
-*   **Product images are not migrated.** They are out of scope for this migration; the wizard logs
-    a notice for every legacy product that had one, so they can be re-uploaded manually.
+*   **Secondary thumbnails and slider images are not migrated.** Legacy ``smallimage`` (products,
+    articles) and ``sliderimage`` (categories) are redundant pre-generated thumbnails of the main
+    image; FAL generates thumbnails on demand, so only the main ``image`` (and, for products, the
+    ``datasheet``) is migrated. The media wizard logs a notice for every legacy record that had one.
+*   **The separate downloads catalog is not migrated.** Legacy ``tt_products_downloads`` (a
+    many-to-many "download library" linked via ``tt_products_products_mm_downloads``) has no
+    equivalent in this extension's plain FAL downloads field. The media wizard logs a notice for
+    every product with linked catalog downloads so they can be re-attached manually.
 *   **Duplicate translations are resolved deterministically.** Legacy ``*_language`` tables have no
     uniqueness constraint on (parent, language). When duplicates exist, a non-hidden row always wins
     over a hidden one, and the highest uid wins among equally-visible candidates; the losing rows are
