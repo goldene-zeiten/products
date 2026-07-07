@@ -14,6 +14,7 @@ return [
             'disabled' => 'hidden',
         ],
         'hideTable' => true,
+        'versioningWS' => true,
     ],
     'types' => [
         '1' => ['showitem' => 'min_quantity, price'],
