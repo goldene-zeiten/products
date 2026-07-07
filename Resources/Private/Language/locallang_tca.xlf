@@ -312,6 +312,12 @@
 			<trans-unit id="tx_products_domain_model_order.total_gross" resname="tx_products_domain_model_order.total_gross">
 				<source>Total Gross</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.discount_total" resname="tx_products_domain_model_order.discount_total">
+				<source>Discount Total</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.voucher_codes" resname="tx_products_domain_model_order.voucher_codes">
+				<source>Applied Voucher Codes</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_order.tax_country" resname="tx_products_domain_model_order.tax_country">
 				<source>Tax Country</source>
 			</trans-unit>

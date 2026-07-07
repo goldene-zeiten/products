@@ -32,6 +32,16 @@
                             <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.total" /></th>
                             <td><p:format.money value="{order.totalGrossCents}" currency="{order.currency}" /></td>
                         </tr>
+                        <f:if condition="{order.voucherCodes}">
+                            <tr>
+                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.vouchers" /></th>
+                                <td><f:for each="{order.voucherCodes}" as="voucherCode" iteration="iterator">{voucherCode}<f:if condition="{iterator.isLast} == 0">, </f:if></f:for></td>
+                            </tr>
+                            <tr>
+                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.discount" /></th>
+                                <td><p:format.money value="{order.discountTotalCents}" currency="{order.currency}" /></td>
+                            </tr>
+                        </f:if>
                         <f:if condition="{order.customerNote}">
                             <tr>
                                 <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.note" /></th>
