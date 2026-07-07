@@ -29,6 +29,8 @@ class Voucher extends AbstractEntity
     /** @var string */
     protected string $minBasketValue = '0.00';
     protected int $boundFrontendUser = 0;
+    protected bool $waivesShippingCost = false;
+    protected int $generatedFromOrder = 0;
 
     public function getCode(): string
     {
@@ -128,6 +130,26 @@ class Voucher extends AbstractEntity
     public function setBoundFrontendUser(int $boundFrontendUser): void
     {
         $this->boundFrontendUser = $boundFrontendUser;
+    }
+
+    public function isWaivingShippingCost(): bool
+    {
+        return $this->waivesShippingCost;
+    }
+
+    public function setWaivesShippingCost(bool $waivesShippingCost): void
+    {
+        $this->waivesShippingCost = $waivesShippingCost;
+    }
+
+    public function getGeneratedFromOrder(): int
+    {
+        return $this->generatedFromOrder;
+    }
+
+    public function setGeneratedFromOrder(int $generatedFromOrder): void
+    {
+        $this->generatedFromOrder = $generatedFromOrder;
     }
 
     public function isAvailableToFrontendUser(int $frontendUser): bool

@@ -73,6 +73,31 @@ final class VoucherTest extends UnitTestCase
         self::assertFalse($voucher->isAvailableToFrontendUser(1));
     }
 
+    #[Test]
+    public function waivesShippingCostDefaultsToFalse(): void
+    {
+        $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
+
+        self::assertFalse($voucher->isWaivingShippingCost());
+    }
+
+    #[Test]
+    public function waivesShippingCostCanBeSet(): void
+    {
+        $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
+        $voucher->setWaivesShippingCost(true);
+
+        self::assertTrue($voucher->isWaivingShippingCost());
+    }
+
+    #[Test]
+    public function generatedFromOrderDefaultsToZero(): void
+    {
+        $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
+
+        self::assertSame(0, $voucher->getGeneratedFromOrder());
+    }
+
     private function voucher(VoucherDiscountType $type, string $discountValue): Voucher
     {
         $voucher = new Voucher();

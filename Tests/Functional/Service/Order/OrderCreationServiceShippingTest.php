@@ -72,6 +72,35 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function aFreeShippingVoucherZeroesTheShippingCost(): void
+    {
+        $order = $this->subject(shippingEnabled: true)->create(
+            new ServerRequest('http://localhost/'),
+            $this->basketViewModel(),
+            new CheckoutSelections(['FREESHIP'], 0, 1),
+            $this->address(),
+            $this->paymentMethod()
+        );
+
+        self::assertSame(1, $order->getShippingMethod());
+        self::assertSame(0, $order->getShippingTotal()->getCents());
+    }
+
+    #[Test]
+    public function aRegularVoucherDoesNotWaiveTheShippingCost(): void
+    {
+        $order = $this->subject(shippingEnabled: true)->create(
+            new ServerRequest('http://localhost/'),
+            $this->basketViewModel(),
+            new CheckoutSelections(['REGULAR'], 0, 1),
+            $this->address(),
+            $this->paymentMethod()
+        );
+
+        self::assertSame(500, $order->getShippingTotal()->getCents());
+    }
+
+    #[Test]
     public function shippingIsANoOpWhileTheFeatureIsDisabledEvenWithAMethodChosen(): void
     {
         $order = $this->subject(shippingEnabled: false)->create(

@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'code, title, discount_type, discount_value, combinable, usage_limit, min_basket_value, bound_frontend_user, valid_from, valid_until'],
+        '1' => ['showitem' => 'code, title, discount_type, discount_value, combinable, waives_shipping_cost, usage_limit, min_basket_value, bound_frontend_user, valid_from, valid_until, generated_from_order'],
     ],
     'columns' => [
         'code' => [
@@ -74,6 +74,14 @@ return [
                 'default' => 0,
             ],
         ],
+        'waives_shipping_cost' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_voucher.waives_shipping_cost',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'default' => 0,
+            ],
+        ],
         'usage_limit' => [
             'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_voucher.usage_limit',
             'config' => [
@@ -119,6 +127,16 @@ return [
                 'range' => [
                     'upper' => mktime(0, 0, 0, 1, 1, 2038),
                 ],
+            ],
+        ],
+        'generated_from_order' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_voucher.generated_from_order',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'foreign_table' => 'tx_products_domain_model_order',
+                'default' => 0,
+                'readOnly' => true,
             ],
         ],
     ],
