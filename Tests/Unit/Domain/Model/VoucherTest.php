@@ -7,13 +7,12 @@ namespace GoldeneZeiten\Products\Tests\Unit\Domain\Model;
 use GoldeneZeiten\Products\Domain\Enum\VoucherDiscountType;
 use GoldeneZeiten\Products\Domain\Model\Voucher;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 final class VoucherTest extends UnitTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function percentageDiscountIsCalculatedFromTheBasketTotal(): void
     {
         $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
@@ -21,9 +20,7 @@ final class VoucherTest extends UnitTestCase
         self::assertSame(1000, $voucher->calculateDiscount(Money::fromDecimalString('100.00'))->getCents());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fixedDiscountIgnoresTheBasketTotal(): void
     {
         $voucher = $this->voucher(VoucherDiscountType::FIXED, '5.00');
@@ -31,9 +28,7 @@ final class VoucherTest extends UnitTestCase
         self::assertSame(500, $voucher->calculateDiscount(Money::fromDecimalString('100.00'))->getCents());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fixedDiscountIsCappedAtTheBasketTotal(): void
     {
         $voucher = $this->voucher(VoucherDiscountType::FIXED, '50.00');
@@ -41,9 +36,7 @@ final class VoucherTest extends UnitTestCase
         self::assertSame(2000, $voucher->calculateDiscount(Money::fromDecimalString('20.00'))->getCents());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function meetsMinimumBasketValueIsTrueWhenNoMinimumSet(): void
     {
         $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
@@ -51,9 +44,7 @@ final class VoucherTest extends UnitTestCase
         self::assertTrue($voucher->meetsMinimumBasketValue(Money::fromDecimalString('0.01')));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function meetsMinimumBasketValueFailsBelowTheConfiguredMinimum(): void
     {
         $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
@@ -63,9 +54,7 @@ final class VoucherTest extends UnitTestCase
         self::assertTrue($voucher->meetsMinimumBasketValue(Money::fromDecimalString('50.00')));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function unboundVoucherIsAvailableToAnyone(): void
     {
         $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
@@ -74,9 +63,7 @@ final class VoucherTest extends UnitTestCase
         self::assertTrue($voucher->isAvailableToFrontendUser(42));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function boundVoucherIsOnlyAvailableToThatCustomer(): void
     {
         $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');

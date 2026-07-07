@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Article;
 use GoldeneZeiten\Products\Domain\Model\AttributeValue;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Service\Variant\ArticleVariantResolver;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
@@ -21,9 +22,7 @@ final class ArticleVariantResolverTest extends UnitTestCase
         $this->subject = new ArticleVariantResolver();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function resolvesTheArticleMatchingTheExactCombination(): void
     {
         $small = $this->attributeValue(1);
@@ -38,9 +37,7 @@ final class ArticleVariantResolverTest extends UnitTestCase
         self::assertSame($smallRed, $resolved);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsNullWhenNoArticleMatches(): void
     {
         $product = $this->productWithArticles([$this->articleWithValues([$this->attributeValue(1)])]);
@@ -48,9 +45,7 @@ final class ArticleVariantResolverTest extends UnitTestCase
         self::assertNull($this->subject->resolve($product, [999]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function partialSelectionDoesNotMatch(): void
     {
         $article = $this->articleWithValues([$this->attributeValue(1), $this->attributeValue(2)]);

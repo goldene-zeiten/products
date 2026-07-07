@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Updates;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Updates\LegacyMigrationHelper;
 use GoldeneZeiten\Products\Updates\TtProductsCategoryUpgradeWizard;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 final class TtProductsCategoryUpgradeWizardTest extends AbstractFunctionalTestCase
@@ -34,17 +35,13 @@ final class TtProductsCategoryUpgradeWizardTest extends AbstractFunctionalTestCa
         $this->subject->setOutput($this->output);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function updateIsNecessaryInitially(): void
     {
         self::assertTrue($this->subject->updateNecessary());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function executeUpdateMigratesVisibleCategoriesExcludingDeleted(): void
     {
         self::assertTrue($this->subject->executeUpdate());
@@ -53,9 +50,7 @@ final class TtProductsCategoryUpgradeWizardTest extends AbstractFunctionalTestCa
         self::assertNull($this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 4, self::LOCAL_TABLE));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function parentCategoryIsReLinkedViaTheMigrationMap(): void
     {
         $this->subject->executeUpdate();
@@ -66,9 +61,7 @@ final class TtProductsCategoryUpgradeWizardTest extends AbstractFunctionalTestCa
         self::assertSame($rootLocalUid, (int)$this->fetchField((int)$childLocalUid, 'parent_category'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function orphanParentIsLinkedToRootAndWarns(): void
     {
         $this->subject->executeUpdate();
@@ -78,9 +71,7 @@ final class TtProductsCategoryUpgradeWizardTest extends AbstractFunctionalTestCa
         self::assertStringContainsString('referenced missing parent uid 999', $this->output->fetch());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function overlaysAreDeduplicatedPreferringVisibleThenHighestUid(): void
     {
         $this->subject->executeUpdate();
@@ -98,9 +89,7 @@ final class TtProductsCategoryUpgradeWizardTest extends AbstractFunctionalTestCa
         self::assertStringContainsString('Skipped duplicate tt_products_cat_language uid 30', $output);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function overlayWithOrphanParentIsSkippedAndWarns(): void
     {
         $this->subject->executeUpdate();
@@ -109,9 +98,7 @@ final class TtProductsCategoryUpgradeWizardTest extends AbstractFunctionalTestCa
         self::assertStringContainsString('parent uid 4 was never migrated', $this->output->fetch());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function executeUpdateIsIdempotent(): void
     {
         $this->subject->executeUpdate();

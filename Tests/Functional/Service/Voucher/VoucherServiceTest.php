@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherNotApplicableExcepti
 use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherNotFoundException;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 final class VoucherServiceTest extends AbstractFunctionalTestCase
 {
@@ -25,9 +26,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         $this->subject = $this->get(VoucherService::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function resolvesAValidVoucher(): void
     {
         $voucher = $this->subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1);
@@ -35,9 +34,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         self::assertSame('SAVE10', $voucher->getCode());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function throwsForAnUnknownCode(): void
     {
         $this->expectException(VoucherNotFoundException::class);
@@ -46,9 +43,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         $this->subject->resolve('DOES-NOT-EXIST', Money::fromDecimalString('100.00'), 1);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anExpiredVoucherIsTreatedAsNotFound(): void
     {
         $this->expectException(VoucherNotFoundException::class);
@@ -56,9 +51,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         $this->subject->resolve('EXPIRED', Money::fromDecimalString('100.00'), 1);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function throwsWhenBoundToADifferentCustomer(): void
     {
         $this->expectException(VoucherNotApplicableException::class);
@@ -67,9 +60,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         $this->subject->resolve('VIPONLY', Money::fromDecimalString('100.00'), 1);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function resolvesForTheBoundCustomer(): void
     {
         $voucher = $this->subject->resolve('VIPONLY', Money::fromDecimalString('100.00'), 42);
@@ -77,9 +68,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         self::assertSame('VIPONLY', $voucher->getCode());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function throwsWhenBelowTheMinimumBasketValue(): void
     {
         $this->expectException(VoucherNotApplicableException::class);
@@ -88,9 +77,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         $this->subject->resolve('BIGORDER', Money::fromDecimalString('100.00'), 1);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function throwsWhenUsageLimitIsAlreadyReached(): void
     {
         $this->expectException(VoucherNotApplicableException::class);
@@ -99,9 +86,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         $this->subject->resolve('LIMITED', Money::fromDecimalString('100.00'), 1);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function calculatesCombinedDiscountCappedAtBasketTotal(): void
     {
         $save10 = $this->subject->resolve('SAVE10', Money::fromDecimalString('20.00'), 1);
@@ -113,9 +98,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         self::assertSame(700, $discount->getCents());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function combinedDiscountNeverExceedsBasketTotal(): void
     {
         $save10 = $this->subject->resolve('SAVE10', Money::fromDecimalString('4.00'), 1);
@@ -126,9 +109,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         self::assertSame(400, $discount->getCents());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function combinableVouchersCanCoexist(): void
     {
         $save10 = $this->subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1);
@@ -136,9 +117,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         self::assertTrue($this->subject->canCoexist([$save10], $save10));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function nonCombinableVoucherCannotJoinExistingOnes(): void
     {
         $save10 = $this->subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1);
@@ -147,9 +126,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         self::assertFalse($this->subject->canCoexist([$save10], $flat5));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function anythingCoexistsWithAnEmptyList(): void
     {
         $flat5 = $this->subject->resolve('FLAT5', Money::fromDecimalString('100.00'), 1);

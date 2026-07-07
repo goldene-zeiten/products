@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Tests\Unit\Updates;
 
 use GoldeneZeiten\Products\Updates\LegacyOverlayDeduplicator;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 final class LegacyOverlayDeduplicatorTest extends UnitTestCase
@@ -17,9 +18,7 @@ final class LegacyOverlayDeduplicatorTest extends UnitTestCase
         $this->subject = new LegacyOverlayDeduplicator();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function distinctParentsAndLanguagesAllWin(): void
     {
         $rows = [
@@ -34,9 +33,7 @@ final class LegacyOverlayDeduplicatorTest extends UnitTestCase
         self::assertSame([], $result['losers']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function deletedRowsAreExcludedEntirely(): void
     {
         $rows = [
@@ -49,9 +46,7 @@ final class LegacyOverlayDeduplicatorTest extends UnitTestCase
         self::assertSame([], $result['losers']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function visibleCandidateWinsOverHiddenRegardlessOfUid(): void
     {
         $rows = [
@@ -67,9 +62,7 @@ final class LegacyOverlayDeduplicatorTest extends UnitTestCase
         self::assertSame(9, $result['losers'][0]['uid']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function highestUidWinsAmongEquallyVisibleCandidates(): void
     {
         $rows = [
@@ -85,9 +78,7 @@ final class LegacyOverlayDeduplicatorTest extends UnitTestCase
         self::assertCount(2, $result['losers']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function highestUidHiddenRowWinsWhenAllCandidatesAreHidden(): void
     {
         $rows = [

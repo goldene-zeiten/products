@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Backend\CategoryAccessGuard;
 use GoldeneZeiten\Products\Backend\CategoryMountResolver;
 use GoldeneZeiten\Products\Backend\CategoryTreeRepository;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
 {
@@ -30,9 +31,7 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
         $this->setUpBackendUser(1);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fetchRootCategoriesReturnsOnlyTopLevelCategories(): void
     {
         $uids = array_column($this->treeRepository->fetchRootCategories(), 'uid');
@@ -40,9 +39,7 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
         self::assertSame([10, 13], $uids);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fetchChildCategoriesIncludesHiddenButExcludesDeleted(): void
     {
         $uids = array_column($this->treeRepository->fetchChildCategories(10), 'uid');
@@ -50,18 +47,14 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
         self::assertSame([11, 12], $uids);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function categoryHasChildrenIsFalseForALeafCategory(): void
     {
         self::assertFalse($this->treeRepository->categoryHasChildren(11));
         self::assertTrue($this->treeRepository->categoryHasChildren(10));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fetchProductsByCategoryReturnsProductsLinkedViaMm(): void
     {
         $uids = array_column($this->treeRepository->fetchProductsByCategory(11), 'uid');
@@ -70,9 +63,7 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
         self::assertSame([], array_column($this->treeRepository->fetchProductsByCategory(10), 'uid'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fetchArticlesByProductReturnsArticlesOfThatProduct(): void
     {
         $uids = array_column($this->treeRepository->fetchArticlesByProduct(20), 'uid');
@@ -81,26 +72,20 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
         self::assertTrue($this->treeRepository->productHasArticles(20));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fetchCategoryUidsOfProductReturnsLinkedCategories(): void
     {
         self::assertSame([11], $this->treeRepository->fetchCategoryUidsOfProduct(20));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fetchParentCategoryUidWalksTheParentChain(): void
     {
         self::assertSame(10, $this->treeRepository->fetchParentCategoryUid(11));
         self::assertSame(0, $this->treeRepository->fetchParentCategoryUid(10));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function categoryExistsIsFalseForDeletedOrMissingRecords(): void
     {
         self::assertTrue($this->treeRepository->categoryExists(10));
@@ -108,9 +93,7 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
         self::assertFalse($this->treeRepository->categoryExists(999999));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function adminUserIsUnrestricted(): void
     {
         $backendUser = $this->setUpBackendUser(1);
@@ -119,9 +102,7 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
         self::assertTrue($this->accessGuard->isCategoryAccessible(13, null));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function ownMountRestrictsAccessToItsSubtree(): void
     {
         $backendUser = $this->setUpBackendUser(2);
@@ -134,9 +115,7 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
         self::assertTrue($this->accessGuard->isProductAccessible(20, $mounts));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function groupMountIsMergedIntoEffectiveMounts(): void
     {
         $backendUser = $this->setUpBackendUser(3);
@@ -147,9 +126,7 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
         self::assertFalse($this->accessGuard->isCategoryAccessible(10, $mounts));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function userWithoutAnyMountSeesNothing(): void
     {
         $backendUser = $this->setUpBackendUser(4);

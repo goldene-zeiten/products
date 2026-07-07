@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Pricing\GraduatedPriceProvider;
 use GoldeneZeiten\Products\Pricing\ProductPriceProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
@@ -23,9 +24,7 @@ final class GraduatedPriceProviderTest extends UnitTestCase
         $this->subject = new GraduatedPriceProvider(new ProductPriceProvider());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fallsBackToBasePriceWithoutTiers(): void
     {
         $product = new Product();
@@ -34,9 +33,7 @@ final class GraduatedPriceProviderTest extends UnitTestCase
         self::assertSame(1999, $this->subject->getUnitPrice($product, null, 5)->getCents());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function belowFirstTierUsesBasePrice(): void
     {
         $product = $this->productWithTiers();
@@ -44,9 +41,7 @@ final class GraduatedPriceProviderTest extends UnitTestCase
         self::assertSame(1999, $this->subject->getUnitPrice($product, null, 1)->getCents());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function exactTierBoundaryUsesThatTier(): void
     {
         $product = $this->productWithTiers();
@@ -54,9 +49,7 @@ final class GraduatedPriceProviderTest extends UnitTestCase
         self::assertSame(1500, $this->subject->getUnitPrice($product, null, 10)->getCents());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function aboveLastTierUsesHighestTier(): void
     {
         $product = $this->productWithTiers();
@@ -64,9 +57,7 @@ final class GraduatedPriceProviderTest extends UnitTestCase
         self::assertSame(1200, $this->subject->getUnitPrice($product, null, 1000)->getCents());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function articleTiersTakePrecedenceOverProductTiers(): void
     {
         $product = $this->productWithTiers();
@@ -80,9 +71,7 @@ final class GraduatedPriceProviderTest extends UnitTestCase
         self::assertSame(900, $this->subject->getUnitPrice($product, $article, 10)->getCents());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function productTiersApplyWhenArticleHasNone(): void
     {
         $product = $this->productWithTiers();

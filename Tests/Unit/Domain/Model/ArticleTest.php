@@ -6,15 +6,14 @@ namespace GoldeneZeiten\Products\Tests\Unit\Domain\Model;
 
 use GoldeneZeiten\Products\Domain\Model\Article;
 use GoldeneZeiten\Products\Domain\Model\Product;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 final class ArticleTest extends UnitTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function effectiveImagesFallsBackToProductGalleryWhenEmpty(): void
     {
         $product = new Product();
@@ -29,9 +28,7 @@ final class ArticleTest extends UnitTestCase
         self::assertSame($productImages, $article->getEffectiveImages());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function effectiveImagesUsesOwnImagesWhenSet(): void
     {
         $product = new Product();
@@ -50,9 +47,7 @@ final class ArticleTest extends UnitTestCase
         self::assertSame($ownImages, $article->getEffectiveImages());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function effectiveImagesIsEmptyWithoutProductOrOwnImages(): void
     {
         $article = new Article();

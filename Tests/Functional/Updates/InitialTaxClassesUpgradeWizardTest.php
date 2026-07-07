@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Updates;
 
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Updates\InitialTaxClassesUpgradeWizard;
+use PHPUnit\Framework\Attributes\Test;
 
 final class InitialTaxClassesUpgradeWizardTest extends AbstractFunctionalTestCase
 {
@@ -23,17 +24,13 @@ final class InitialTaxClassesUpgradeWizardTest extends AbstractFunctionalTestCas
         $this->subject = $this->get(InitialTaxClassesUpgradeWizard::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function updateIsNecessaryWhenNoTaxClassesExistYet(): void
     {
         self::assertTrue($this->subject->updateNecessary());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function executeUpdateSeedsAllThreeTaxClasses(): void
     {
         self::assertTrue($this->subject->executeUpdate());
@@ -41,9 +38,7 @@ final class InitialTaxClassesUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertFalse($this->subject->updateNecessary());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function executeUpdateIsIdempotent(): void
     {
         self::assertTrue($this->subject->executeUpdate());
@@ -51,9 +46,7 @@ final class InitialTaxClassesUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertSame(['reduced', 'standard', 'zero'], $this->fetchCodes());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function updateIsNotNecessaryWhenACodeAlreadyExists(): void
     {
         $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable(self::TABLE);

@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\Exception\RepositoryIsReadOnlyException;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 final class ProductRepositoryTest extends AbstractFunctionalTestCase
 {
@@ -23,9 +24,7 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
         $this->productRepository = $this->get(ProductRepository::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function productCanBeRetrieved(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
@@ -36,9 +35,7 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
         self::assertSame('Product 1', $product->getTitle());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function relatedAndAccessoryProductsAreResolved(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
@@ -54,9 +51,7 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
         self::assertSame(['Product 3'], $accessoryTitles);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function productWithoutRelationsHasEmptyCrossSellSets(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
@@ -69,9 +64,7 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
         self::assertCount(0, $product->getAccessoryProducts());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function addThrowsReadOnlyException(): void
     {
         $this->expectException(RepositoryIsReadOnlyException::class);
@@ -80,9 +73,7 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
         $this->productRepository->add(new Product());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function updateThrowsReadOnlyException(): void
     {
         $this->expectException(RepositoryIsReadOnlyException::class);
@@ -91,9 +82,7 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
         $this->productRepository->update(new Product());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function removeThrowsReadOnlyException(): void
     {
         $this->expectException(RepositoryIsReadOnlyException::class);
@@ -102,9 +91,7 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
         $this->productRepository->remove(new Product());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function removeAllThrowsReadOnlyException(): void
     {
         $this->expectException(RepositoryIsReadOnlyException::class);

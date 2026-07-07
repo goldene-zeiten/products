@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Tests\Functional\Controller;
 
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 
@@ -24,9 +25,7 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    /**
-     * @test
-     */
+    #[Test]
     public function listActionWorks(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
@@ -62,9 +61,7 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         self::assertStringContainsString('Product 1', (string)$response->getBody());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function showActionWorksWithSlug(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
@@ -124,9 +121,7 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         self::assertStringContainsString('Product 1', (string)$response->getBody());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function showActionRendersRelatedAndAccessoryProducts(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');

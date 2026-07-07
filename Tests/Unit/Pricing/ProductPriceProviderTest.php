@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Article;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Pricing\ProductPriceProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 final class ProductPriceProviderTest extends UnitTestCase
@@ -20,9 +21,7 @@ final class ProductPriceProviderTest extends UnitTestCase
         $this->subject = new ProductPriceProvider();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function productPriceIsUsedWithoutArticle(): void
     {
         $product = new Product();
@@ -31,9 +30,7 @@ final class ProductPriceProviderTest extends UnitTestCase
         self::assertSame(1999, $this->subject->getUnitPrice($product, null, 1)->getCents());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function articlePriceOverridesProductPriceWhenNonZero(): void
     {
         $product = new Product();
@@ -44,9 +41,7 @@ final class ProductPriceProviderTest extends UnitTestCase
         self::assertSame(2499, $this->subject->getUnitPrice($product, $article, 1)->getCents());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function zeroArticlePriceInheritsProductPrice(): void
     {
         $product = new Product();

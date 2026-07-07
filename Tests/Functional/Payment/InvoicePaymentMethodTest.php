@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Payment\InvoicePaymentMethod;
 use GoldeneZeiten\Products\Payment\RefundablePaymentMethodInterface;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 final class InvoicePaymentMethodTest extends AbstractFunctionalTestCase
 {
@@ -26,17 +27,13 @@ final class InvoicePaymentMethodTest extends AbstractFunctionalTestCase
         $this->subject = $this->get(InvoicePaymentMethod::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function implementsTheRefundableInterface(): void
     {
         self::assertInstanceOf(RefundablePaymentMethodInterface::class, $this->subject);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function refundCompletesWithTheRefundedPaymentStatus(): void
     {
         $order = new Order();
@@ -49,9 +46,7 @@ final class InvoicePaymentMethodTest extends AbstractFunctionalTestCase
         self::assertSame('INV-1', $result->getExternalId());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function cancelCompletesWithTheFailedPaymentStatus(): void
     {
         $order = new Order();

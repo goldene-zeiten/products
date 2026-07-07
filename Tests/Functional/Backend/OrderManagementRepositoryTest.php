@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Service\Order\OrderStatusManager;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
 {
@@ -26,9 +27,7 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
         $this->subject = $this->get(OrderManagementRepository::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fetchFilteredExcludesDeletedOrders(): void
     {
         $orders = $this->subject->fetchFiltered(new OrderListFilter());
@@ -36,9 +35,7 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
         self::assertCount(2, $orders);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fetchFilteredByStatus(): void
     {
         $orders = $this->subject->fetchFiltered(new OrderListFilter(status: 'confirmed'));
@@ -47,9 +44,7 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
         self::assertSame('ORD-2', $orders[0]['orderNumber']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fetchFilteredByEmail(): void
     {
         $orders = $this->subject->fetchFiltered(new OrderListFilter(email: 'alice'));
@@ -58,9 +53,7 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
         self::assertSame('ORD-1', $orders[0]['orderNumber']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fetchRowMapsFields(): void
     {
         $row = $this->subject->fetchRow(1);
@@ -71,17 +64,13 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
         self::assertSame(1999, $row['totalGrossCents']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fetchRowReturnsNullForDeletedOrder(): void
     {
         self::assertNull($this->subject->fetchRow(3));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function findForEditingAndPersistWritesTheTransitionToTheDatabase(): void
     {
         $order = $this->subject->findForEditing(1);

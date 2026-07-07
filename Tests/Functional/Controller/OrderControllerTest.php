@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Tests\Functional\Controller;
 
 use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Session\SessionManager;
 use TYPO3\CMS\Core\Session\UserSession;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
@@ -19,9 +20,7 @@ final class OrderControllerTest extends AbstractFrontendTestCase
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_history_content.csv');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function listActionShowsOwnOrdersForLoggedInFrontendUser(): void
     {
         $request = (new InternalRequest('http://localhost/shop'))
@@ -32,9 +31,7 @@ final class OrderControllerTest extends AbstractFrontendTestCase
         self::assertStringContainsString('ORD-1', (string)$response->getBody());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function listActionIsEmptyForAnonymousVisitor(): void
     {
         $request = new InternalRequest('http://localhost/shop');
@@ -45,9 +42,7 @@ final class OrderControllerTest extends AbstractFrontendTestCase
         self::assertStringContainsString('No orders found.', (string)$response->getBody());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function showActionRedirectsWhenOrderBelongsToAnotherFrontendUser(): void
     {
         $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(

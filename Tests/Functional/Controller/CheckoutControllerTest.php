@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Tests\Functional\Controller;
 
 use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 
 final class CheckoutControllerTest extends AbstractFrontendTestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function paymentActionListsInvoicePaymentMethod(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/checkout_content.csv');
