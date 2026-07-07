@@ -1,4 +1,7 @@
 <div class="product-list-item card mb-4">
+    <f:if condition="{product.primaryImage}">
+        <f:image image="{product.primaryImage}" width="300c" height="200c" alt="{product.title}" class="card-img-top" />
+    </f:if>
     <div class="card-body">
         <h5 class="card-title">{product.title}</h5>
         <h6 class="card-subtitle mb-2 text-muted">{product.subtitle}</h6>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Domain\Model;
 
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
@@ -19,6 +20,10 @@ class Category extends AbstractEntity
      * @var ObjectStorage<Category>
      */
     protected ObjectStorage $subCategories;
+    /**
+     * @var ObjectStorage<FileReference>
+     */
+    protected ObjectStorage $image;
 
     public function __construct()
     {
@@ -28,6 +33,7 @@ class Category extends AbstractEntity
     public function initializeObject(): void
     {
         $this->subCategories = new ObjectStorage();
+        $this->image = new ObjectStorage();
     }
 
     public function getTitle(): string
@@ -84,5 +90,21 @@ class Category extends AbstractEntity
     public function setSubCategories(ObjectStorage $subCategories): void
     {
         $this->subCategories = $subCategories;
+    }
+
+    public function getImage(): ?FileReference
+    {
+        foreach ($this->image as $image) {
+            return $image;
+        }
+        return null;
+    }
+
+    /**
+     * @param ObjectStorage<FileReference> $image
+     */
+    public function setImage(ObjectStorage $image): void
+    {
+        $this->image = $image;
     }
 }

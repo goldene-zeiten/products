@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Product.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'title, subtitle, slug, item_number, ean, price, tax_class, categories, in_stock, basket_min_quantity, basket_max_quantity, weight, is_offer, is_highlight, description, articles, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => 'title, subtitle, slug, item_number, ean, price, tax_class, categories, in_stock, basket_min_quantity, basket_max_quantity, weight, is_offer, is_highlight, description, images, downloads, articles, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -185,6 +185,22 @@ return [
             'config' => [
                 'type' => 'text',
                 'enableRichtext' => true,
+            ],
+        ],
+        'images' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.images',
+            'config' => [
+                'type' => 'file',
+                'allowed' => 'common-image-types',
+                'maxitems' => 50,
+            ],
+        ],
+        'downloads' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.downloads',
+            'config' => [
+                'type' => 'file',
+                'allowed' => 'pdf,doc,docx,xls,xlsx,zip,txt',
+                'maxitems' => 20,
             ],
         ],
         'articles' => [

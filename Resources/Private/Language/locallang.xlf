@@ -156,6 +156,9 @@
 			<trans-unit id="back_to_list" resname="back_to_list">
 				<source>Back to List</source>
 			</trans-unit>
+			<trans-unit id="downloads" resname="downloads">
+				<source>Downloads</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

@@ -6,7 +6,9 @@ namespace GoldeneZeiten\Products\Domain\Model;
 
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 #[Exclude]
 class Article extends AbstractEntity
@@ -19,6 +21,25 @@ class Article extends AbstractEntity
     protected string $price = '0.00';
     protected int $inStock = 0;
     protected int $weight = 0;
+    /**
+     * @var ObjectStorage<FileReference>
+     */
+    protected ObjectStorage $images;
+    /**
+     * @var ObjectStorage<FileReference>
+     */
+    protected ObjectStorage $downloads;
+
+    public function __construct()
+    {
+        $this->initializeObject();
+    }
+
+    public function initializeObject(): void
+    {
+        $this->images = new ObjectStorage();
+        $this->downloads = new ObjectStorage();
+    }
 
     public function getProduct(): ?Product
     {
@@ -88,5 +109,56 @@ class Article extends AbstractEntity
     public function setWeight(int $weight): void
     {
         $this->weight = $weight;
+    }
+
+    /**
+     * @return ObjectStorage<FileReference>
+     */
+    public function getImages(): ObjectStorage
+    {
+        return $this->images;
+    }
+
+    /**
+     * @param ObjectStorage<FileReference> $images
+     */
+    public function setImages(ObjectStorage $images): void
+    {
+        $this->images = $images;
+    }
+
+    /**
+     * Own images override the product's gallery; an empty set means "inherit",
+     * the same 0.00-inherits convention already used for the article price.
+     *
+     * @return ObjectStorage<FileReference>
+     */
+    public function getEffectiveImages(): ObjectStorage
+    {
+        if ($this->images->count() > 0) {
+            return $this->images;
+        }
+        if ($this->product !== null) {
+            return $this->product->getImages();
+        }
+        /** @var ObjectStorage<FileReference> $empty */
+        $empty = new ObjectStorage();
+        return $empty;
+    }
+
+    /**
+     * @return ObjectStorage<FileReference>
+     */
+    public function getDownloads(): ObjectStorage
+    {
+        return $this->downloads;
+    }
+
+    /**
+     * @param ObjectStorage<FileReference> $downloads
+     */
+    public function setDownloads(ObjectStorage $downloads): void
+    {
+        $this->downloads = $downloads;
     }
 }
