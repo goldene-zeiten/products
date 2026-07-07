@@ -102,6 +102,15 @@
 			<trans-unit id="billing_address" resname="billing_address">
 				<source>Billing Address</source>
 			</trans-unit>
+			<trans-unit id="ship_to_different_address" resname="ship_to_different_address">
+				<source>Ship to a different address</source>
+			</trans-unit>
+			<trans-unit id="delivery_address" resname="delivery_address">
+				<source>Delivery Address</source>
+			</trans-unit>
+			<trans-unit id="gift_message" resname="gift_message">
+				<source>Gift Message</source>
+			</trans-unit>
 			<trans-unit id="payment_method" resname="payment_method">
 				<source>Payment Method</source>
 			</trans-unit>

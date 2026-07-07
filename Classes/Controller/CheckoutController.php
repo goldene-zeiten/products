@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Controller;
 
 use GoldeneZeiten\Products\Domain\Dto\Address;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Payment\Exception\PaymentMethodNotFoundException;
 use GoldeneZeiten\Products\Payment\PaymentContextFactory;
@@ -35,14 +36,21 @@ final class CheckoutController extends ActionController
 
     public function addressAction(): ResponseInterface
     {
-        $address = $this->checkoutService->getAddress($this->request);
-        $this->view->assign('address', $address);
+        $deliveryAddress = $this->checkoutService->getDeliveryAddress($this->request);
+        $this->view->assignMultiple([
+            'address' => $this->checkoutService->getAddress($this->request),
+            'deliveryAddress' => $deliveryAddress ?? new Address(),
+            'shipToDifferentAddress' => $deliveryAddress !== null,
+            'giftMessage' => $this->checkoutService->getGiftMessage($this->request),
+        ]);
         return $this->htmlResponse();
     }
 
-    public function submitAddressAction(Address $address): ResponseInterface
+    public function submitAddressAction(Address $address, bool $shipToDifferentAddress = false, ?Address $deliveryAddress = null, string $giftMessage = ''): ResponseInterface
     {
         $this->checkoutService->setAddress($this->request, $address);
+        $this->checkoutService->setDeliveryAddress($this->request, $shipToDifferentAddress ? $deliveryAddress : null);
+        $this->checkoutService->setGiftMessage($this->request, $giftMessage);
         return $this->redirect($this->shippingCostService->isEnabled() ? 'shippingMethod' : 'payment');
     }
 
@@ -92,6 +100,8 @@ final class CheckoutController extends ActionController
             'paymentMethod' => $this->findPaymentMethod($paymentMethodIdentifier),
             'creditPointsBalance' => $this->creditPointsBalance(),
             'shippingMethod' => $this->shippingCostService->findMethod($shippingMethodUid),
+            'deliveryAddress' => $this->checkoutService->getDeliveryAddress($this->request),
+            'giftMessage' => $this->checkoutService->getGiftMessage($this->request),
         ]);
         return $this->htmlResponse();
     }
@@ -125,10 +135,15 @@ final class CheckoutController extends ActionController
     {
         $address = $this->checkoutService->getAddress($this->request);
         $paymentMethodIdentifier = $this->checkoutService->getPaymentMethod($this->request);
-        $shippingMethodUid = $this->checkoutService->getShippingMethod($this->request);
+        $choices = new CheckoutChoices(
+            $spendPoints,
+            $this->checkoutService->getShippingMethod($this->request),
+            $this->checkoutService->getDeliveryAddress($this->request),
+            $this->checkoutService->getGiftMessage($this->request)
+        );
 
         try {
-            $result = $this->orderPlacementService->place($this->request, $address, $paymentMethodIdentifier, $spendPoints, $shippingMethodUid);
+            $result = $this->orderPlacementService->place($this->request, $address, $paymentMethodIdentifier, $choices);
         } catch (OrderPlacementExceptionInterface $exception) {
             $this->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
             return $this->redirect('review');

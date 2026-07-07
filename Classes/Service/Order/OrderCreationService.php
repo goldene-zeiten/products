@@ -8,7 +8,7 @@ use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketDiscountSummary;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementAdjustments;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementDetails;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelection;
 use GoldeneZeiten\Products\Domain\Dto\CreditPointsRedemption;
 use GoldeneZeiten\Products\Domain\Enum\CreditPointsTransactionType;
@@ -60,11 +60,17 @@ final class OrderCreationService
         $voucherSummary = $this->resolveVoucherDiscount($checkoutSelections->getVoucherCodes(), $basketViewModel, $frontendUser);
         $pointsRedemption = $this->resolvePointsRedemption($checkoutSelections->getSpendPoints(), $basketViewModel, $voucherSummary, $frontendUser);
         $shippingSelection = $this->resolveShippingSelection($checkoutSelections->getShippingMethodUid(), $basketViewModel, $address, $voucherSummary);
-        $adjustments = new PlacementAdjustments($voucherSummary, $pointsRedemption->getDiscountAmount(), $shippingSelection);
+        $details = new PlacementDetails(
+            $voucherSummary,
+            $pointsRedemption->getDiscountAmount(),
+            $shippingSelection,
+            $checkoutSelections->getDeliveryAddress(),
+            $checkoutSelections->getGiftMessage()
+        );
 
         $this->decrementStock($basketViewModel);
 
-        $order = $this->orderFactory->create($request, $basketViewModel, $address, $paymentMethod->getIdentifier(), $adjustments);
+        $order = $this->orderFactory->create($request, $basketViewModel, $address, $paymentMethod->getIdentifier(), $details);
         $this->orderRepository->add($order);
         $this->persistenceManager->persistAll();
 

@@ -13,7 +13,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'order_number, order_date, frontend_user, email, billing_address, delivery_address, payment_method, payment_status, status, invoice_number, currency, total_net, total_tax, total_gross, discount_total, voucher_codes, shipping_method, shipping_total, tax_country, tax_breakdown, status_log, items, customer_note, terms_accepted_at, site_identifier, legacy_order_data, legacy_country_name'],
+        '1' => ['showitem' => 'order_number, order_date, frontend_user, email, billing_address, delivery_address, payment_method, payment_status, status, invoice_number, currency, total_net, total_tax, total_gross, discount_total, voucher_codes, shipping_method, shipping_total, tax_country, tax_breakdown, status_log, items, customer_note, gift_message, terms_accepted_at, site_identifier, legacy_order_data, legacy_country_name'],
     ],
     'columns' => [
         'order_number' => [
@@ -202,6 +202,13 @@ return [
         ],
         'customer_note' => [
             'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.customer_note',
+            'config' => [
+                'type' => 'text',
+                'readOnly' => true,
+            ],
+        ],
+        'gift_message' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.gift_message',
             'config' => [
                 'type' => 'text',
                 'readOnly' => true,
