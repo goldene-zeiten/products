@@ -171,6 +171,21 @@
 			<trans-unit id="accessory_products" resname="accessory_products">
 				<source>Frequently bought with</source>
 			</trans-unit>
+			<trans-unit id="voucher_code" resname="voucher_code">
+				<source>Voucher code</source>
+			</trans-unit>
+			<trans-unit id="apply_voucher" resname="apply_voucher">
+				<source>Apply</source>
+			</trans-unit>
+			<trans-unit id="voucher_applied" resname="voucher_applied">
+				<source>Voucher applied: %s</source>
+			</trans-unit>
+			<trans-unit id="voucher_discount" resname="voucher_discount">
+				<source>Voucher discount</source>
+			</trans-unit>
+			<trans-unit id="final_total" resname="final_total">
+				<source>Total to pay</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

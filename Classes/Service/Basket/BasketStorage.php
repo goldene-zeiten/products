@@ -25,21 +25,22 @@ final class BasketStorage
             return new Basket();
         }
 
-        $itemsData = json_decode((string)$data, true);
-        if (!is_array($itemsData)) {
+        $sessionData = json_decode((string)$data, true);
+        if (!is_array($sessionData)) {
             return new Basket();
         }
 
         $items = [];
-        foreach ($itemsData as $itemData) {
+        foreach ($sessionData['items'] ?? [] as $itemData) {
             $items[] = new BasketItem(
                 (int)($itemData['productUid'] ?? 0),
                 isset($itemData['articleUid']) ? (int)$itemData['articleUid'] : null,
                 (int)($itemData['quantity'] ?? 0)
             );
         }
+        $voucherCodes = array_map('strval', $sessionData['voucherCodes'] ?? []);
 
-        return new Basket($items);
+        return new Basket($items, $voucherCodes);
     }
 
     public function save(ServerRequestInterface $request, Basket $basket): void
@@ -57,8 +58,9 @@ final class BasketStorage
                 'quantity' => $item->getQuantity(),
             ];
         }
+        $sessionData = ['items' => $itemsData, 'voucherCodes' => $basket->getVoucherCodes()];
 
-        $frontendUser->setKey('ses', self::SESSION_KEY, json_encode($itemsData));
+        $frontendUser->setKey('ses', self::SESSION_KEY, json_encode($sessionData));
         $frontendUser->storeSessionData();
     }
 }

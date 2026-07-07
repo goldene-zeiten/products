@@ -58,8 +58,38 @@
                         <td><strong>{basket.totalGross.decimalString} {basket.currency}</strong></td>
                         <td></td>
                     </tr>
+                    <f:if condition="!{discountSummary.empty}">
+                        <tr>
+                            <th colspan="3"><f:translate key="voucher_discount" /></th>
+                            <td>&minus;{discountSummary.discountTotal.decimalString} {basket.currency}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th colspan="3"><f:translate key="final_total" /></th>
+                            <td><strong>{finalTotal.decimalString} {basket.currency}</strong></td>
+                            <td></td>
+                        </tr>
+                    </f:if>
                 </tfoot>
             </table>
+
+            <div class="basket-vouchers mb-3">
+                <f:if condition="{discountSummary.appliedVouchers}">
+                    <ul class="list-unstyled">
+                        <f:for each="{discountSummary.appliedVouchers}" as="voucher">
+                            <li>
+                                <f:translate key="voucher_applied" arguments="{0: voucher.code}" />
+                                <f:link.action action="removeVoucher" controller="Basket" arguments="{voucherCode: voucher.code}" class="btn btn-link btn-sm"><f:translate key="remove" /></f:link.action>
+                            </li>
+                        </f:for>
+                    </ul>
+                </f:if>
+                <f:form action="applyVoucher" controller="Basket" class="d-flex gap-2">
+                    <f:form.textfield name="voucherCode" class="form-control" placeholder="{f:translate(key: 'voucher_code')}" />
+                    <f:form.submit value="{f:translate(key: 'apply_voucher')}" class="btn btn-default" />
+                </f:form>
+            </div>
+
             <div class="actions">
                 <f:link.action action="address" controller="Checkout" class="btn btn-primary"><f:translate key="proceed_to_checkout" /></f:link.action>
             </div>

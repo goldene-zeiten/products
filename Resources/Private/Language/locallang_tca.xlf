@@ -36,6 +36,66 @@
 			<trans-unit id="tx_products_domain_model_pricetier.price" resname="tx_products_domain_model_pricetier.price">
 				<source>Unit price</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher" resname="tx_products_domain_model_voucher">
+				<source>Voucher</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.code" resname="tx_products_domain_model_voucher.code">
+				<source>Code</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.title" resname="tx_products_domain_model_voucher.title">
+				<source>Internal title</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.discount_type" resname="tx_products_domain_model_voucher.discount_type">
+				<source>Discount type</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.discount_type.percentage" resname="tx_products_domain_model_voucher.discount_type.percentage">
+				<source>Percentage</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.discount_type.fixed" resname="tx_products_domain_model_voucher.discount_type.fixed">
+				<source>Fixed amount</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.discount_value" resname="tx_products_domain_model_voucher.discount_value">
+				<source>Discount value</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.combinable" resname="tx_products_domain_model_voucher.combinable">
+				<source>Combinable with other vouchers</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.usage_limit" resname="tx_products_domain_model_voucher.usage_limit">
+				<source>Usage limit (0 = unlimited)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.min_basket_value" resname="tx_products_domain_model_voucher.min_basket_value">
+				<source>Minimum basket value</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.bound_frontend_user" resname="tx_products_domain_model_voucher.bound_frontend_user">
+				<source>Bound to customer (empty = anyone)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.valid_from" resname="tx_products_domain_model_voucher.valid_from">
+				<source>Valid from</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.valid_until" resname="tx_products_domain_model_voucher.valid_until">
+				<source>Valid until</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption" resname="tx_products_domain_model_voucherredemption">
+				<source>Voucher Redemption</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.voucher_uid" resname="tx_products_domain_model_voucherredemption.voucher_uid">
+				<source>Voucher UID</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.voucher_code" resname="tx_products_domain_model_voucherredemption.voucher_code">
+				<source>Voucher Code</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.order_uid" resname="tx_products_domain_model_voucherredemption.order_uid">
+				<source>Order UID</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.frontend_user" resname="tx_products_domain_model_voucherredemption.frontend_user">
+				<source>Frontend User</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.discount_total" resname="tx_products_domain_model_voucherredemption.discount_total">
+				<source>Discount Total</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.redeemed_at" resname="tx_products_domain_model_voucherredemption.redeemed_at">
+				<source>Redeemed At</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_taxrate" resname="tx_products_domain_model_taxrate">
 				<source>Tax Rate</source>
 			</trans-unit>
