@@ -8,6 +8,12 @@ services:
     resource: '../Classes/*'
     exclude: '../Classes/Exception/*'
 
+  # GraduatedPriceProvider composes ProductPriceProvider as its own fallback (constructor
+  # injection of the concrete class, not the interface), so this alias is the only place the
+  # quantity-based pricing binding is decided.
+  GoldeneZeiten\Products\Pricing\PriceProviderInterface:
+    alias: GoldeneZeiten\Products\Pricing\GraduatedPriceProvider
+
   # DataHandler's classic hooks (registered in ext_localconf.php via
   # $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']) are fetched with
   # GeneralUtility::makeInstance() from code that isn't itself a DI-resolved

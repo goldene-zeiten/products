@@ -44,4 +44,14 @@ final class TaxService
 
         return $taxRate !== null ? $taxRate->getRate() : 0.0;
     }
+
+    public function getPricingMode(): string
+    {
+        return (string)($this->settings['pricing']['mode'] ?? 'gross');
+    }
+
+    public function getCurrency(): string
+    {
+        return (string)($this->settings['pricing']['currency'] ?? 'EUR');
+    }
 }

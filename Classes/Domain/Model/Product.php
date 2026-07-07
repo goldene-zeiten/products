@@ -44,6 +44,10 @@ class Product extends AbstractEntity
      * @var ObjectStorage<FileReference>
      */
     protected ObjectStorage $downloads;
+    /**
+     * @var ObjectStorage<PriceTier>
+     */
+    protected ObjectStorage $priceTiers;
 
     public function __construct()
     {
@@ -56,6 +60,7 @@ class Product extends AbstractEntity
         $this->articles = new ObjectStorage();
         $this->images = new ObjectStorage();
         $this->downloads = new ObjectStorage();
+        $this->priceTiers = new ObjectStorage();
     }
 
     public function getTitle(): string
@@ -268,5 +273,35 @@ class Product extends AbstractEntity
     public function setDownloads(ObjectStorage $downloads): void
     {
         $this->downloads = $downloads;
+    }
+
+    /**
+     * @return ObjectStorage<PriceTier>
+     */
+    public function getPriceTiers(): ObjectStorage
+    {
+        return $this->priceTiers;
+    }
+
+    /**
+     * @param ObjectStorage<PriceTier> $priceTiers
+     */
+    public function setPriceTiers(ObjectStorage $priceTiers): void
+    {
+        $this->priceTiers = $priceTiers;
+    }
+
+    /**
+     * The cheapest configured tier, used for "from X" list-view pricing.
+     */
+    public function getLowestPriceTier(): ?PriceTier
+    {
+        $lowest = null;
+        foreach ($this->priceTiers as $tier) {
+            if ($lowest === null || $tier->getPrice()->getCents() < $lowest->getPrice()->getCents()) {
+                $lowest = $tier;
+            }
+        }
+        return $lowest;
     }
 }

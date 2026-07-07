@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Article.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'product, title, item_number, ean, price, in_stock, weight, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => 'product, title, item_number, ean, price, price_tiers, in_stock, weight, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -91,6 +91,20 @@ return [
                 'format' => 'decimal',
                 'size' => 10,
                 'eval' => 'trim',
+            ],
+        ],
+        'price_tiers' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_tiers',
+            'config' => [
+                'type' => 'inline',
+                'foreign_table' => 'tx_products_domain_model_pricetier',
+                'foreign_field' => 'article',
+                'foreign_sortby' => 'sorting',
+                'maxitems' => 9999,
+                'appearance' => [
+                    'collapseAll' => 1,
+                    'levelLinksPosition' => 'top',
+                ],
             ],
         ],
         'in_stock' => [

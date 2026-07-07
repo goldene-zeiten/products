@@ -13,7 +13,8 @@
         <div class="col-md-6">
             <div class="card p-3">
                 <f:render partial="Product/Price" arguments="{price: product.price}" />
-                
+                <f:render partial="Product/PriceTiers" arguments="{priceTiers: product.priceTiers}" />
+
                 <f:if condition="{product.articles}">
                     <f:then>
                         <f:render partial="Product/ArticleSelector" arguments="{product: product}" />

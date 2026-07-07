@@ -1,0 +1,18 @@
+<f:if condition="{priceTiers}">
+    <table class="table table-sm product-price-tiers mt-2">
+        <thead>
+            <tr>
+                <th><f:translate key="quantity" /></th>
+                <th><f:translate key="price" /></th>
+            </tr>
+        </thead>
+        <tbody>
+            <f:for each="{priceTiers}" as="tier">
+                <tr>
+                    <td><f:translate key="price_from_quantity" arguments="{0: tier.minQuantity}" /></td>
+                    <td><f:render partial="Product/Price" arguments="{price: tier.price}" /></td>
+                </tr>
+            </f:for>
+        </tbody>
+    </table>
+</f:if>
