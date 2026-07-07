@@ -159,6 +159,12 @@
 			<trans-unit id="downloads" resname="downloads">
 				<source>Downloads</source>
 			</trans-unit>
+			<trans-unit id="price_from" resname="price_from">
+				<source>From</source>
+			</trans-unit>
+			<trans-unit id="price_from_quantity" resname="price_from_quantity">
+				<source>From %d</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

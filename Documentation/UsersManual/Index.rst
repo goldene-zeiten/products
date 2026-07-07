@@ -50,3 +50,19 @@ backend (drag & drop, or the file browser).
     fill it in when a specific variant (e.g. a colour) needs its own pictures.
 *   Downloads are shown as a plain file list on the product detail page; they carry no access
     restriction beyond the record's own visibility (hidden/start-end time).
+
+..  _users-manual-pricing:
+
+Graduated (quantity-based) pricing
+===================================
+
+Both products and articles have a :guilabel:`Graduated Prices` section where you can add rows of
+"from quantity" / "unit price" — a classic bulk-discount price list. When a customer's basket line
+reaches a tier's quantity, that tier's price is used instead of the regular price; the highest
+tier reached "from quantity" that is not above the ordered quantity wins.
+
+*   An article's own graduated prices override the product's for that article; if the article has
+    none configured, the product's graduated prices still apply to it.
+*   Leave the section empty to sell at the regular (non-graduated) price, exactly as before.
+*   The product detail page shows the full price list to shoppers, and lists it as
+    "from" a starting price wherever the regular price would otherwise be shown.

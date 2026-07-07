@@ -5,9 +5,19 @@
     <div class="card-body">
         <h5 class="card-title">{product.title}</h5>
         <h6 class="card-subtitle mb-2 text-muted">{product.subtitle}</h6>
-        <p class="card-text">
-            <f:render partial="Product/Price" arguments="{price: product.price}" />
-        </p>
+        <f:if condition="{product.lowestPriceTier}">
+            <f:then>
+                <p class="card-text">
+                    <f:translate key="price_from" />
+                    <f:render partial="Product/Price" arguments="{price: product.lowestPriceTier.price}" />
+                </p>
+            </f:then>
+            <f:else>
+                <p class="card-text">
+                    <f:render partial="Product/Price" arguments="{price: product.price}" />
+                </p>
+            </f:else>
+        </f:if>
         <f:link.action action="show" arguments="{product: product}" class="btn btn-primary"><f:translate key="details" /></f:link.action>
     </div>
 </div>

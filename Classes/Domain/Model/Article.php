@@ -29,6 +29,10 @@ class Article extends AbstractEntity
      * @var ObjectStorage<FileReference>
      */
     protected ObjectStorage $downloads;
+    /**
+     * @var ObjectStorage<PriceTier>
+     */
+    protected ObjectStorage $priceTiers;
 
     public function __construct()
     {
@@ -39,6 +43,7 @@ class Article extends AbstractEntity
     {
         $this->images = new ObjectStorage();
         $this->downloads = new ObjectStorage();
+        $this->priceTiers = new ObjectStorage();
     }
 
     public function getProduct(): ?Product
@@ -160,5 +165,21 @@ class Article extends AbstractEntity
     public function setDownloads(ObjectStorage $downloads): void
     {
         $this->downloads = $downloads;
+    }
+
+    /**
+     * @return ObjectStorage<PriceTier>
+     */
+    public function getPriceTiers(): ObjectStorage
+    {
+        return $this->priceTiers;
+    }
+
+    /**
+     * @param ObjectStorage<PriceTier> $priceTiers
+     */
+    public function setPriceTiers(ObjectStorage $priceTiers): void
+    {
+        $this->priceTiers = $priceTiers;
     }
 }

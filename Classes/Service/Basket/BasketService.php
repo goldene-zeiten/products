@@ -12,29 +12,19 @@ use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ArticleRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Pricing\PriceProviderInterface;
 use GoldeneZeiten\Products\Service\TaxService;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 final class BasketService
 {
-    /**
-     * @var array<string, mixed>
-     */
-    private array $settings;
-
     public function __construct(
         private readonly ProductRepository $productRepository,
         private readonly ArticleRepository $articleRepository,
         private readonly TaxService $taxService,
         private readonly BasketStorage $basketStorage,
-        private readonly ConfigurationManagerInterface $configurationManager
-    ) {
-        $this->settings = $this->configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
-        );
-    }
+        private readonly PriceProviderInterface $priceProvider
+    ) {}
 
     public function add(ServerRequestInterface $request, int $productUid, ?int $articleUid, int $quantity): void
     {
@@ -80,8 +70,8 @@ final class BasketService
         $totalGrossCents = 0;
         $totalTaxCents = 0;
 
-        $pricingMode = (string)($this->settings['pricing']['mode'] ?? 'gross');
-        $currency = (string)($this->settings['pricing']['currency'] ?? 'EUR');
+        $pricingMode = $this->taxService->getPricingMode();
+        $currency = $this->taxService->getCurrency();
 
         foreach ($basket->getItems() as $item) {
             $product = $this->productRepository->findByUid($item->getProductUid());
@@ -94,12 +84,7 @@ final class BasketService
                 $article = $this->articleRepository->findByUid($item->getArticleUid());
             }
 
-            // Price resolution
-            $basePrice = $product->getPrice();
-            if ($article !== null && $article->getPrice()->getCents() > 0) {
-                $basePrice = $article->getPrice();
-            }
-
+            $basePrice = $this->priceProvider->getUnitPrice($product, $article, $item->getQuantity());
             $taxRate = $this->taxService->getTaxRate($product->getTaxClass());
 
             if ($pricingMode === 'gross') {
