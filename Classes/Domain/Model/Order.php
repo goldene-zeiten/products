@@ -39,6 +39,8 @@ class Order extends AbstractEntity
     protected int $discountTotal = 0;
     /** @var string */
     protected string $voucherCodes = '[]';
+    protected int $shippingMethod = 0;
+    protected int $shippingTotal = 0;
     /**
      * @var ObjectStorage<OrderItem>
      */
@@ -266,6 +268,26 @@ class Order extends AbstractEntity
     public function setVoucherCodes(array $voucherCodes): void
     {
         $this->voucherCodes = (string)json_encode($voucherCodes);
+    }
+
+    public function getShippingMethod(): int
+    {
+        return $this->shippingMethod;
+    }
+
+    public function setShippingMethod(int $shippingMethod): void
+    {
+        $this->shippingMethod = $shippingMethod;
+    }
+
+    public function getShippingTotal(): Money
+    {
+        return Money::fromCents($this->shippingTotal);
+    }
+
+    public function setShippingTotal(Money $shippingTotal): void
+    {
+        $this->shippingTotal = $shippingTotal->getCents();
     }
 
     /**

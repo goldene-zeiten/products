@@ -15,6 +15,7 @@ use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementExceptionInterface;
 use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
+use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
@@ -28,7 +29,8 @@ final class CheckoutController extends ActionController
         private readonly PaymentContextFactory $paymentContextFactory,
         private readonly OrderPlacementService $orderPlacementService,
         private readonly FrontendUserResolver $frontendUserResolver,
-        private readonly CreditPointsService $creditPointsService
+        private readonly CreditPointsService $creditPointsService,
+        private readonly ShippingCostService $shippingCostService
     ) {}
 
     public function addressAction(): ResponseInterface
@@ -41,6 +43,25 @@ final class CheckoutController extends ActionController
     public function submitAddressAction(Address $address): ResponseInterface
     {
         $this->checkoutService->setAddress($this->request, $address);
+        return $this->redirect($this->shippingCostService->isEnabled() ? 'shippingMethod' : 'payment');
+    }
+
+    public function shippingMethodAction(): ResponseInterface
+    {
+        if (!$this->shippingCostService->isEnabled()) {
+            return $this->redirect('payment');
+        }
+        $address = $this->checkoutService->getAddress($this->request);
+        $this->view->assignMultiple([
+            'shippingMethods' => $this->shippingCostService->resolveAvailable($this->checkoutService->getBasketViewModel($this->request), $address->getCountry()),
+            'selectedShippingMethod' => $this->checkoutService->getShippingMethod($this->request),
+        ]);
+        return $this->htmlResponse();
+    }
+
+    public function submitShippingMethodAction(int $shippingMethod): ResponseInterface
+    {
+        $this->checkoutService->setShippingMethod($this->request, $shippingMethod);
         return $this->redirect('payment');
     }
 
@@ -63,12 +84,14 @@ final class CheckoutController extends ActionController
         $basket = $this->checkoutService->getBasketViewModel($this->request);
         $address = $this->checkoutService->getAddress($this->request);
         $paymentMethodIdentifier = $this->checkoutService->getPaymentMethod($this->request);
+        $shippingMethodUid = $this->checkoutService->getShippingMethod($this->request);
 
         $this->view->assignMultiple([
             'basket' => $basket,
             'address' => $address,
             'paymentMethod' => $this->findPaymentMethod($paymentMethodIdentifier),
             'creditPointsBalance' => $this->creditPointsBalance(),
+            'shippingMethod' => $this->shippingCostService->findMethod($shippingMethodUid),
         ]);
         return $this->htmlResponse();
     }
@@ -102,9 +125,10 @@ final class CheckoutController extends ActionController
     {
         $address = $this->checkoutService->getAddress($this->request);
         $paymentMethodIdentifier = $this->checkoutService->getPaymentMethod($this->request);
+        $shippingMethodUid = $this->checkoutService->getShippingMethod($this->request);
 
         try {
-            $result = $this->orderPlacementService->place($this->request, $address, $paymentMethodIdentifier, $spendPoints);
+            $result = $this->orderPlacementService->place($this->request, $address, $paymentMethodIdentifier, $spendPoints, $shippingMethodUid);
         } catch (OrderPlacementExceptionInterface $exception) {
             $this->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
             return $this->redirect('review');

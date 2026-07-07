@@ -7,18 +7,20 @@ namespace GoldeneZeiten\Products\Domain\Dto\Checkout;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**
- * Bundles the two independent discount inputs a shopper can bring into checkout, so they travel
- * as a single argument through OrderPlacementTransaction/OrderCreationService.
+ * Bundles the raw, unresolved checkout-step choices a shopper brings into checkout - voucher
+ * codes, spent points, and the selected shipping method - so they travel as a single argument
+ * through OrderPlacementTransaction/OrderCreationService instead of one positional parameter each.
  */
 #[Exclude]
-final readonly class DiscountRequest
+final readonly class CheckoutSelections
 {
     /**
      * @param string[] $voucherCodes
      */
     public function __construct(
         private array $voucherCodes,
-        private int $spendPoints
+        private int $spendPoints,
+        private int $shippingMethodUid = 0
     ) {}
 
     /**
@@ -32,5 +34,10 @@ final readonly class DiscountRequest
     public function getSpendPoints(): int
     {
         return $this->spendPoints;
+    }
+
+    public function getShippingMethodUid(): int
+    {
+        return $this->shippingMethodUid;
     }
 }

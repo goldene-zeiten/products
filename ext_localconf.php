@@ -52,11 +52,11 @@ ExtensionUtility::configurePlugin(
     'Products',
     'Checkout',
     [
-        CheckoutController::class => 'address, submitAddress, payment, submitPayment, review, finalize, paymentReturn, paymentCancel, thankYou',
+        CheckoutController::class => 'address, submitAddress, shippingMethod, submitShippingMethod, payment, submitPayment, review, finalize, paymentReturn, paymentCancel, thankYou',
     ],
     // non-cacheable actions
     [
-        CheckoutController::class => 'address, submitAddress, payment, submitPayment, review, finalize, paymentReturn, paymentCancel, thankYou',
+        CheckoutController::class => 'address, submitAddress, shippingMethod, submitShippingMethod, payment, submitPayment, review, finalize, paymentReturn, paymentCancel, thankYou',
     ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );

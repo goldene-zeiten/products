@@ -23,6 +23,7 @@ use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
 use GoldeneZeiten\Products\Service\Order\OrderPlacementTransaction;
 use GoldeneZeiten\Products\Service\Order\PaymentInitiationService;
 use GoldeneZeiten\Products\Service\Order\StockService;
+use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -157,7 +158,8 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
             $this->get(VoucherRedemptionRepository::class),
             $creditPointsService,
             $this->get(CreditPointsTransactionRepository::class),
-            $this->get(FrontendUserResolver::class)
+            $this->get(FrontendUserResolver::class),
+            $this->get(ShippingCostService::class)
         );
         $orderPlacementTransaction = new OrderPlacementTransaction(
             $this->get(ConnectionPool::class),

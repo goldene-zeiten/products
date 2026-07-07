@@ -141,6 +141,30 @@
 			<trans-unit id="tx_products_domain_model_taxrate.valid_until" resname="tx_products_domain_model_taxrate.valid_until">
 				<source>Valid until</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingmethod" resname="tx_products_domain_model_shippingmethod">
+				<source>Shipping Method</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingmethod.title" resname="tx_products_domain_model_shippingmethod.title">
+				<source>Title</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingmethod.country" resname="tx_products_domain_model_shippingmethod.country">
+				<source>Country</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingmethod.min_order_value" resname="tx_products_domain_model_shippingmethod.min_order_value">
+				<source>Minimum order value (0 = no minimum)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingmethod.max_order_value" resname="tx_products_domain_model_shippingmethod.max_order_value">
+				<source>Maximum order value (0 = no maximum)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingmethod.min_weight" resname="tx_products_domain_model_shippingmethod.min_weight">
+				<source>Minimum weight in grams (0 = no minimum)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingmethod.max_weight" resname="tx_products_domain_model_shippingmethod.max_weight">
+				<source>Maximum weight in grams (0 = no maximum)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingmethod.rate" resname="tx_products_domain_model_shippingmethod.rate">
+				<source>Rate</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_category" resname="tx_products_domain_model_category">
 				<source>Category</source>
 			</trans-unit>
@@ -344,6 +368,12 @@
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_order.voucher_codes" resname="tx_products_domain_model_order.voucher_codes">
 				<source>Applied Voucher Codes</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.shipping_method" resname="tx_products_domain_model_order.shipping_method">
+				<source>Shipping Method</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.shipping_total" resname="tx_products_domain_model_order.shipping_total">
+				<source>Shipping Total</source>
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_order.tax_country" resname="tx_products_domain_model_order.tax_country">
 				<source>Tax Country</source>

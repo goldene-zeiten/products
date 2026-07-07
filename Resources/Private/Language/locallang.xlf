@@ -87,6 +87,9 @@
 			<trans-unit id="continue_to_payment" resname="continue_to_payment">
 				<source>Continue to Payment</source>
 			</trans-unit>
+			<trans-unit id="checkout_shipping_method" resname="checkout_shipping_method">
+				<source>Checkout: Shipping Method</source>
+			</trans-unit>
 			<trans-unit id="checkout_payment" resname="checkout_payment">
 				<source>Checkout: Payment Method</source>
 			</trans-unit>

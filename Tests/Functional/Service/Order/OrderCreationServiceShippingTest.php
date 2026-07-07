@@ -12,6 +12,7 @@ use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\CreditPointsTransactionRepository;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Domain\Repository\ShippingMethodRepository;
 use GoldeneZeiten\Products\Domain\Repository\VoucherRedemptionRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
@@ -21,6 +22,7 @@ use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Order\OrderCreationService;
 use GoldeneZeiten\Products\Service\Order\OrderFactory;
 use GoldeneZeiten\Products\Service\Order\StockService;
+use GoldeneZeiten\Products\Service\Shipping\Exception\NoShippingMethodAvailableException;
 use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
@@ -28,13 +30,11 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
-use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
-final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestCase
+final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products',
@@ -45,7 +45,7 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_placement_with_credit_points.csv');
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_placement_with_shipping.csv');
         // OrderFactory reads Extbase settings eagerly in its constructor, which requires a request
         // to be resolvable via $GLOBALS['TYPO3_REQUEST'] outside of a real controller dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
@@ -56,56 +56,78 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
     }
 
     #[Test]
-    public function identifiedCustomerEarnsAndRedeemsPointsOnPlacement(): void
+    public function aChosenAvailableMethodAddsItsRateToTheOrderTotal(): void
     {
-        $order = $this->subject(enabled: true)->create(
-            $this->requestFor(5),
+        $order = $this->subject(shippingEnabled: true)->create(
+            new ServerRequest('http://localhost/'),
             $this->basketViewModel(),
-            new CheckoutSelections([], 20),
+            new CheckoutSelections([], 0, 1),
             $this->address(),
             $this->paymentMethod()
         );
 
-        $rows = $this->ledgerRows($order->getUid() ?? 0);
-        self::assertCount(2, $rows);
-        self::assertContainsEquals(['frontend_user' => 5, 'points' => 20, 'type' => 'earn'], $rows);
-        self::assertContainsEquals(['frontend_user' => 5, 'points' => -20, 'type' => 'redeem'], $rows);
-        self::assertSame(19800, $order->getTotalGross()->getCents());
-        self::assertSame(200, $order->getDiscountTotal()->getCents());
+        self::assertSame(1, $order->getShippingMethod());
+        self::assertSame(500, $order->getShippingTotal()->getCents());
+        self::assertSame(10500, $order->getTotalGross()->getCents());
     }
 
     #[Test]
-    public function guestOrdersNeverTouchTheLedgerEvenThoughTheProductEarnsPoints(): void
+    public function shippingIsANoOpWhileTheFeatureIsDisabledEvenWithAMethodChosen(): void
     {
-        $order = $this->subject(enabled: true)->create(
-            $this->requestFor(0),
+        $order = $this->subject(shippingEnabled: false)->create(
+            new ServerRequest('http://localhost/'),
             $this->basketViewModel(),
-            new CheckoutSelections([], 0),
+            new CheckoutSelections([], 0, 1),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame([], $this->ledgerRows($order->getUid() ?? 0));
+        self::assertSame(0, $order->getShippingMethod());
+        self::assertSame(0, $order->getShippingTotal()->getCents());
+        self::assertSame(10000, $order->getTotalGross()->getCents());
     }
 
     #[Test]
-    public function nothingIsRecordedOrDiscountedWhileTheFeatureIsDisabled(): void
+    public function shippingIsANoOpWhenNoMethodWasChosen(): void
     {
-        $order = $this->subject(enabled: false)->create(
-            $this->requestFor(5),
+        $order = $this->subject(shippingEnabled: true)->create(
+            new ServerRequest('http://localhost/'),
             $this->basketViewModel(),
-            new CheckoutSelections([], 20),
+            new CheckoutSelections([], 0, 0),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame([], $this->ledgerRows($order->getUid() ?? 0));
-        self::assertSame(0, $order->getDiscountTotal()->getCents());
+        self::assertSame(0, $order->getShippingMethod());
+        self::assertSame(0, $order->getShippingTotal()->getCents());
     }
 
-    private function subject(bool $enabled): OrderCreationService
+    #[Test]
+    public function placementFailsWithoutSideEffectsWhenTheChosenMethodIsNoLongerAvailable(): void
     {
-        $creditPointsService = new CreditPointsService($this->get(ConnectionPool::class), $this->fakeConfigurationManager($enabled));
+        $orderCountBefore = $this->countOrders();
+        $stockBefore = $this->currentStock();
+
+        try {
+            $this->subject(shippingEnabled: true)->create(
+                new ServerRequest('http://localhost/'),
+                $this->basketViewModel(),
+                new CheckoutSelections([], 0, 999),
+                $this->address(),
+                $this->paymentMethod()
+            );
+            self::fail('Expected NoShippingMethodAvailableException was not thrown.');
+        } catch (NoShippingMethodAvailableException) {
+            // expected
+        }
+
+        self::assertSame($orderCountBefore, $this->countOrders());
+        self::assertSame($stockBefore, $this->currentStock());
+    }
+
+    private function subject(bool $shippingEnabled): OrderCreationService
+    {
+        $shippingCostService = new ShippingCostService($this->get(ShippingMethodRepository::class), $this->fakeConfigurationManager($shippingEnabled));
         return new OrderCreationService(
             $this->get(StockService::class),
             $this->get(OrderRepository::class),
@@ -114,10 +136,10 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
             $this->get(EventDispatcherInterface::class),
             $this->get(VoucherService::class),
             $this->get(VoucherRedemptionRepository::class),
-            $creditPointsService,
+            $this->get(CreditPointsService::class),
             $this->get(CreditPointsTransactionRepository::class),
             $this->get(FrontendUserResolver::class),
-            $this->get(ShippingCostService::class)
+            $shippingCostService
         );
     }
 
@@ -131,7 +153,7 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
              */
             public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
             {
-                return ['creditPoints' => ['enabled' => $this->enabled, 'moneyPerPoint' => '0.10']];
+                return ['shipping' => ['enabled' => $this->enabled]];
             }
 
             /**
@@ -143,34 +165,22 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
         };
     }
 
-    private function requestFor(int $frontendUserUid): ServerRequestInterface
-    {
-        $request = new ServerRequest('http://localhost/');
-        if ($frontendUserUid === 0) {
-            return $request;
-        }
-        $frontendUser = new FrontendUserAuthentication();
-        $frontendUser->user = ['uid' => $frontendUserUid];
-        return $request->withAttribute('frontend.user', $frontendUser);
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function ledgerRows(int $orderUid): array
-    {
-        return $this->getConnectionPool()
-            ->getConnectionForTable('tx_products_domain_model_creditpointstransaction')
-            ->select(['frontend_user', 'points', 'type'], 'tx_products_domain_model_creditpointstransaction', ['order_uid' => $orderUid])
-            ->fetchAllAssociative();
-    }
-
     private function basketViewModel(): BasketViewModel
     {
-        $unitPrice = Money::fromDecimalString('100.00');
-        $lineTotal = Money::fromDecimalString('200.00');
-        $item = new BasketViewItem($this->product, null, 2, $unitPrice, $unitPrice, 0.0, $lineTotal, $lineTotal, Money::fromCents(0));
-        return new BasketViewModel([$item], $lineTotal, $lineTotal, Money::fromCents(0), 'EUR');
+        $unitPriceNet = Money::fromDecimalString('84.03');
+        $unitPriceGross = Money::fromDecimalString('100.00');
+        $item = new BasketViewItem(
+            $this->product,
+            null,
+            1,
+            $unitPriceNet,
+            $unitPriceGross,
+            0.19,
+            $unitPriceNet,
+            $unitPriceGross,
+            $unitPriceGross->subtract($unitPriceNet)
+        );
+        return new BasketViewModel([$item], $unitPriceNet, $unitPriceGross, $unitPriceGross->subtract($unitPriceNet), 'EUR');
     }
 
     private function address(): Address
@@ -181,5 +191,21 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
     private function paymentMethod(): PaymentMethodInterface
     {
         return $this->get(PaymentMethodRegistry::class)->get('invoice');
+    }
+
+    private function countOrders(): int
+    {
+        return (int)$this->getConnectionPool()
+            ->getConnectionForTable('tx_products_domain_model_order')
+            ->executeQuery('SELECT COUNT(*) FROM tx_products_domain_model_order')
+            ->fetchOne();
+    }
+
+    private function currentStock(): int
+    {
+        $this->get(PersistenceManagerInterface::class)->clearState();
+        $product = $this->get(ProductRepository::class)->findByUid(1);
+        self::assertInstanceOf(Product::class, $product);
+        return $product->getInStock();
     }
 }

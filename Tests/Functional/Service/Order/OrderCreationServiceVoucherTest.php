@@ -7,7 +7,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\DiscountRequest;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Domain\Repository\VoucherRedemptionRepository;
@@ -146,9 +146,9 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
         return new BasketViewModel([$item], $unitPriceNet, $unitPriceGross, $unitPriceGross->subtract($unitPriceNet), 'EUR');
     }
 
-    private function discountRequest(string $voucherCode): DiscountRequest
+    private function discountRequest(string $voucherCode): CheckoutSelections
     {
-        return new DiscountRequest([$voucherCode], 0);
+        return new CheckoutSelections([$voucherCode], 0);
     }
 
     private function address(): Address

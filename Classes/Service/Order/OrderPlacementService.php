@@ -6,7 +6,7 @@ namespace GoldeneZeiten\Products\Service\Order;
 
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\DiscountRequest;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\OrderPlacementResult;
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
 use GoldeneZeiten\Products\Domain\Enum\PaymentResultState;
@@ -35,18 +35,23 @@ final class OrderPlacementService
         private readonly FrontendUserResolver $frontendUserResolver
     ) {}
 
-    public function place(ServerRequestInterface $request, Address $address, string $paymentMethodIdentifier, int $spendPoints = 0): OrderPlacementResult
-    {
+    public function place(
+        ServerRequestInterface $request,
+        Address $address,
+        string $paymentMethodIdentifier,
+        int $spendPoints = 0,
+        int $shippingMethodUid = 0
+    ): OrderPlacementResult {
         $basketViewModel = $this->basketService->getBasketViewModel($request);
         $this->assertBasketNotEmpty($basketViewModel);
         if ($spendPoints > 0) {
             $this->creditPointsService->assertSpendable($this->frontendUserResolver->getUid($request), $spendPoints);
         }
-        $discountRequest = new DiscountRequest($this->basketService->getAppliedVoucherCodes($request), $spendPoints);
+        $checkoutSelections = new CheckoutSelections($this->basketService->getAppliedVoucherCodes($request), $spendPoints, $shippingMethodUid);
         $paymentMethod = $this->paymentMethodRegistry->get($paymentMethodIdentifier);
         $this->dispatchBeforeOrderPlaced($request, $basketViewModel, $address, $paymentMethod);
 
-        [$order, $paymentResult] = $this->orderPlacementTransaction->run($request, $basketViewModel, $discountRequest, $address, $paymentMethod);
+        [$order, $paymentResult] = $this->orderPlacementTransaction->run($request, $basketViewModel, $checkoutSelections, $address, $paymentMethod);
         $this->eventDispatcher->dispatch(new PaymentInitiatedEvent($order, $paymentResult));
 
         return $this->buildPlacementResult($order, $paymentResult, $request);

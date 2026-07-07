@@ -111,3 +111,8 @@ settings:
     default: 0.10
     label: Money value of one credit point when redeemed
     category: products
+  products.shipping.enabled:
+    type: bool
+    default: false
+    label: Shipping cost calculation enabled
+    category: products
