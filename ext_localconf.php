@@ -39,11 +39,11 @@ ExtensionUtility::configurePlugin(
     'Products',
     'Basket',
     [
-        BasketController::class => 'show, add, update, remove',
+        BasketController::class => 'show, add, update, remove, applyVoucher, removeVoucher',
     ],
     // non-cacheable actions
     [
-        BasketController::class => 'show, add, update, remove',
+        BasketController::class => 'show, add, update, remove, applyVoucher, removeVoucher',
     ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );
