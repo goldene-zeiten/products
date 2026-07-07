@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\ViewHelpers\Format;
 
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception as ViewHelperException;
@@ -14,6 +15,10 @@ final class MoneyViewHelper extends AbstractViewHelper
     private const POSITION_AUTO = 'auto';
     private const POSITION_BEFORE = 'before';
     private const POSITION_AFTER = 'after';
+
+    public function __construct(
+        private readonly RenderingContextRequestResolverInterface $requestResolver,
+    ) {}
 
     public function initializeArguments(): void
     {
@@ -74,9 +79,8 @@ final class MoneyViewHelper extends AbstractViewHelper
             return $locale;
         }
 
-        $renderingContext = $this->renderingContext;
-        if ($renderingContext !== null && $renderingContext->hasAttribute(\Psr\Http\Message\ServerRequestInterface::class)) {
-            $request = $renderingContext->getAttribute(\Psr\Http\Message\ServerRequestInterface::class);
+        $request = $this->requestResolver->resolveRequest($this->renderingContext);
+        if ($request instanceof ServerRequestInterface) {
             $siteLanguage = $request->getAttribute('language');
             if ($siteLanguage instanceof SiteLanguage) {
                 return (string)$siteLanguage->getLocale();

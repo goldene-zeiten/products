@@ -12,6 +12,7 @@ parameters:
   paths:
     - ../../../Classes
     - ../../../Configuration
+    - ../../../Core13
     - ../../../Tests
     - ../../../ext_emconf.php
     - ../../../ext_localconf.php
