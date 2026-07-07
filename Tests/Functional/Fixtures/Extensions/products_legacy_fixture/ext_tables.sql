@@ -22,6 +22,18 @@ CREATE TABLE tt_products (
 	offer int(11) DEFAULT '0' NOT NULL,
 	highlight int(11) DEFAULT '0' NOT NULL,
 	image text,
+	smallimage text,
+	datasheet text,
+
+	PRIMARY KEY (uid)
+);
+
+CREATE TABLE tt_products_products_mm_downloads (
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	deleted tinyint(4) DEFAULT '0' NOT NULL,
+	uid_local int(11) DEFAULT '0' NOT NULL,
+	uid_foreign int(11) DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid)
 );
@@ -57,6 +69,8 @@ CREATE TABLE tt_products_cat (
 	note text,
 	note2 text,
 	parent_category int(11) DEFAULT '0' NOT NULL,
+	image text,
+	sliderimage text,
 
 	PRIMARY KEY (uid)
 );
@@ -93,6 +107,8 @@ CREATE TABLE tt_products_articles (
 	inStock int(11) DEFAULT '1' NOT NULL,
 	weight decimal(19,6) DEFAULT '0.000000' NOT NULL,
 	uid_product int(11) DEFAULT '0' NOT NULL,
+	image text,
+	smallimage text,
 
 	PRIMARY KEY (uid)
 );
