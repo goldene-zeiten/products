@@ -30,6 +30,54 @@
 			<trans-unit id="module.products_management.shortDescription" resname="module.products_management.shortDescription">
 				<source>Manage the category tree, products and articles</source>
 			</trans-unit>
+			<trans-unit id="module.products_order.title" resname="module.products_order.title">
+				<source>Orders</source>
+			</trans-unit>
+			<trans-unit id="module.products_order.shortDescription" resname="module.products_order.shortDescription">
+				<source>Search orders and update their status</source>
+			</trans-unit>
+			<trans-unit id="order.back_to_list" resname="order.back_to_list">
+				<source>Back to list</source>
+			</trans-unit>
+			<trans-unit id="order.detail_title" resname="order.detail_title">
+				<source>Order %s</source>
+			</trans-unit>
+			<trans-unit id="order.column.order_number" resname="order.column.order_number">
+				<source>Order number</source>
+			</trans-unit>
+			<trans-unit id="order.column.date" resname="order.column.date">
+				<source>Date</source>
+			</trans-unit>
+			<trans-unit id="order.column.email" resname="order.column.email">
+				<source>Email</source>
+			</trans-unit>
+			<trans-unit id="order.column.status" resname="order.column.status">
+				<source>Status</source>
+			</trans-unit>
+			<trans-unit id="order.column.payment_status" resname="order.column.payment_status">
+				<source>Payment status</source>
+			</trans-unit>
+			<trans-unit id="order.column.payment_method" resname="order.column.payment_method">
+				<source>Payment method</source>
+			</trans-unit>
+			<trans-unit id="order.column.total" resname="order.column.total">
+				<source>Total</source>
+			</trans-unit>
+			<trans-unit id="order.column.note" resname="order.column.note">
+				<source>Customer note</source>
+			</trans-unit>
+			<trans-unit id="order.action.filter" resname="order.action.filter">
+				<source>Filter</source>
+			</trans-unit>
+			<trans-unit id="order.action.mark_paid" resname="order.action.mark_paid">
+				<source>Mark paid</source>
+			</trans-unit>
+			<trans-unit id="order.action.transition_to" resname="order.action.transition_to">
+				<source>Set status: %s</source>
+			</trans-unit>
+			<trans-unit id="message.order_updated" resname="message.order_updated">
+				<source>Order updated.</source>
+			</trans-unit>
 			<trans-unit id="actions.new_category" resname="actions.new_category">
 				<source>New category</source>
 			</trans-unit>
