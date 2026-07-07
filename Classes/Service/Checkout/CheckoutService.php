@@ -16,6 +16,7 @@ final class CheckoutService
 {
     private const SESSION_KEY_ADDRESS = 'tx_products_checkout_address';
     private const SESSION_KEY_PAYMENT = 'tx_products_checkout_payment';
+    private const SESSION_KEY_SHIPPING_METHOD = 'tx_products_checkout_shipping_method';
 
     public function __construct(
         private readonly BasketService $basketService,
@@ -64,6 +65,24 @@ final class CheckoutService
         return '';
     }
 
+    public function setShippingMethod(ServerRequestInterface $request, int $shippingMethodUid): void
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if ($frontendUser instanceof FrontendUserAuthentication) {
+            $frontendUser->setKey('ses', self::SESSION_KEY_SHIPPING_METHOD, $shippingMethodUid);
+            $frontendUser->storeSessionData();
+        }
+    }
+
+    public function getShippingMethod(ServerRequestInterface $request): int
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if ($frontendUser instanceof FrontendUserAuthentication) {
+            return (int)$frontendUser->getKey('ses', self::SESSION_KEY_SHIPPING_METHOD);
+        }
+        return 0;
+    }
+
     public function getBasketViewModel(ServerRequestInterface $request): BasketViewModel
     {
         return $this->basketService->getBasketViewModel($request);
@@ -80,6 +99,7 @@ final class CheckoutService
         if ($frontendUser instanceof FrontendUserAuthentication) {
             $frontendUser->setKey('ses', self::SESSION_KEY_ADDRESS, null);
             $frontendUser->setKey('ses', self::SESSION_KEY_PAYMENT, null);
+            $frontendUser->setKey('ses', self::SESSION_KEY_SHIPPING_METHOD, null);
             $frontendUser->storeSessionData();
         }
     }

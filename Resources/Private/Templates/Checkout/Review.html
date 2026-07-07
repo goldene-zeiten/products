@@ -14,13 +14,17 @@
         <div class="col-md-6">
             <h4><f:translate key="payment_method" /></h4>
             <p>{paymentMethod.label}</p>
+            <f:if condition="{shippingMethod}">
+                <h4><f:translate key="checkout_shipping_method" /></h4>
+                <p>{shippingMethod.title} - {shippingMethod.rate.decimalString}</p>
+            </f:if>
         </div>
     </div>
 
     <div class="mt-4">
         <f:render partial="Order/Summary" arguments="{summary: basket}" />
     </div>
-    
+
     <div class="mt-4">
         <f:form action="finalize">
             <f:if condition="{creditPointsBalance} > 0">

@@ -7,8 +7,9 @@ namespace GoldeneZeiten\Products\Service\Order;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketDiscountSummary;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\DiscountRequest;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementDiscount;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementAdjustments;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelection;
 use GoldeneZeiten\Products\Domain\Dto\CreditPointsRedemption;
 use GoldeneZeiten\Products\Domain\Enum\CreditPointsTransactionType;
 use GoldeneZeiten\Products\Domain\Model\CreditPointsTransaction;
@@ -25,6 +26,7 @@ use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Order\Exception\VoucherRedemptionFailedException;
+use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
 use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherExceptionInterface;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -43,24 +45,26 @@ final class OrderCreationService
         private readonly VoucherRedemptionRepository $voucherRedemptionRepository,
         private readonly CreditPointsService $creditPointsService,
         private readonly CreditPointsTransactionRepository $creditPointsTransactionRepository,
-        private readonly FrontendUserResolver $frontendUserResolver
+        private readonly FrontendUserResolver $frontendUserResolver,
+        private readonly ShippingCostService $shippingCostService
     ) {}
 
     public function create(
         ServerRequestInterface $request,
         BasketViewModel $basketViewModel,
-        DiscountRequest $discountRequest,
+        CheckoutSelections $checkoutSelections,
         Address $address,
         PaymentMethodInterface $paymentMethod
     ): Order {
         $frontendUser = $this->frontendUserResolver->getUid($request);
-        $voucherSummary = $this->resolveVoucherDiscount($discountRequest->getVoucherCodes(), $basketViewModel, $frontendUser);
-        $pointsRedemption = $this->resolvePointsRedemption($discountRequest->getSpendPoints(), $basketViewModel, $voucherSummary, $frontendUser);
-        $discount = new PlacementDiscount($voucherSummary, $pointsRedemption->getDiscountAmount());
+        $voucherSummary = $this->resolveVoucherDiscount($checkoutSelections->getVoucherCodes(), $basketViewModel, $frontendUser);
+        $pointsRedemption = $this->resolvePointsRedemption($checkoutSelections->getSpendPoints(), $basketViewModel, $voucherSummary, $frontendUser);
+        $shippingSelection = $this->resolveShippingSelection($checkoutSelections->getShippingMethodUid(), $basketViewModel, $address);
+        $adjustments = new PlacementAdjustments($voucherSummary, $pointsRedemption->getDiscountAmount(), $shippingSelection);
 
         $this->decrementStock($basketViewModel);
 
-        $order = $this->orderFactory->create($request, $basketViewModel, $address, $paymentMethod->getIdentifier(), $discount);
+        $order = $this->orderFactory->create($request, $basketViewModel, $address, $paymentMethod->getIdentifier(), $adjustments);
         $this->orderRepository->add($order);
         $this->persistenceManager->persistAll();
 
@@ -92,6 +96,15 @@ final class OrderCreationService
         } catch (VoucherExceptionInterface $exception) {
             throw new VoucherRedemptionFailedException($exception->getMessage(), 1783426407, $exception);
         }
+    }
+
+    /**
+     * Waiving is always false for now - free-shipping vouchers (M4 phase 21) will derive it from
+     * $voucherSummary once that flag exists on Voucher.
+     */
+    private function resolveShippingSelection(int $shippingMethodUid, BasketViewModel $basketViewModel, Address $address): ShippingSelection
+    {
+        return $this->shippingCostService->resolveSelection($shippingMethodUid, $basketViewModel, $address->getCountry(), false);
     }
 
     private function resolvePointsRedemption(
