@@ -17,7 +17,7 @@ order history for logged-in customers.
 Frontend plugins
 =================
 
-The extension registers five content element plugins:
+The extension registers eight content element plugins:
 
 ..  confval:: ProductList
 
@@ -33,12 +33,26 @@ The extension registers five content element plugins:
 
 ..  confval:: Checkout
 
-    The address, payment, review and thank-you steps of the checkout flow. Guest checkout is the
-    default; a logged-in frontend user is optional.
+    The address, shipping method (when enabled), payment, review and thank-you steps of the
+    checkout flow. Guest checkout is the default; a logged-in frontend user is optional.
 
 ..  confval:: OrderHistory
 
     Lists and shows past orders for the currently logged-in frontend user.
+
+..  confval:: Wishlist
+
+    Shows and manages the current visitor's saved products. See
+    :ref:`Wishlist <users-manual-wishlist>`.
+
+..  confval:: RecentlyViewed
+
+    Shows the products the current visitor looked at most recently, independent of the
+    :rst:dir:`ProductDetail` page — place it anywhere, e.g. a sidebar.
+
+..  confval:: Search
+
+    A simple catalog search across title, item number, description and EAN.
 
 Payment
 =======
