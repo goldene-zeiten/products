@@ -1,0 +1,65 @@
+rootPageId: 1
+base: /
+websiteTitle: 'Products Acceptance'
+languages:
+  -
+    title: English
+    enabled: true
+    languageId: 0
+    base: /
+    typo3Language: default
+    locale: en_US.UTF-8
+    iso-639-1: en
+    navigationTitle: English
+    hreflang: en-US
+    direction: ltr
+    flag: us
+routeEnhancers:
+  ProductsDetail:
+    type: Extbase
+    extension: Products
+    plugin: ProductDetail
+    routes:
+      -
+        routePath: '/{product}'
+        _controller: 'Product::show'
+        _arguments:
+          product: product
+    aspects:
+      product:
+        type: PersistedAliasMapper
+        tableName: tx_products_domain_model_product
+        routeFieldName: slug
+  ProductsCategoryList:
+    type: Extbase
+    extension: Products
+    plugin: CategoryList
+    routes:
+      -
+        routePath: '/{category1}'
+        _controller: 'Category::list'
+        _arguments:
+          category1: category
+      -
+        routePath: '/{category1}/{category2}'
+        _controller: 'Category::list'
+        _arguments:
+          category2: category
+      -
+        routePath: '/{category1}/{category2}/{category3}'
+        _controller: 'Category::list'
+        _arguments:
+          category3: category
+    aspects:
+      category1:
+        type: PersistedAliasMapper
+        tableName: tx_products_domain_model_category
+        routeFieldName: slug
+      category2:
+        type: PersistedAliasMapper
+        tableName: tx_products_domain_model_category
+        routeFieldName: slug
+      category3:
+        type: PersistedAliasMapper
+        tableName: tx_products_domain_model_category
+        routeFieldName: slug
