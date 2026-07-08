@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service\Wishlist;
 
+use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Model\WishlistItem;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
@@ -68,6 +69,34 @@ final class WishlistService
         $this->removePersisted($frontendUser, $productUid);
     }
 
+    /**
+     * Swaps a product's position with its predecessor in the shopper's own arrangement - a no-op
+     * if it is already first.
+     */
+    public function moveUp(ServerRequestInterface $request, int $productUid): void
+    {
+        $frontendUser = $this->frontendUserResolver->getUid($request);
+        if ($frontendUser === 0) {
+            $this->wishlistStorage->moveUp($request, $productUid);
+            return;
+        }
+        $this->swapPersisted($frontendUser, $productUid, -1);
+    }
+
+    /**
+     * Swaps a product's position with its successor in the shopper's own arrangement - a no-op
+     * if it is already last.
+     */
+    public function moveDown(ServerRequestInterface $request, int $productUid): void
+    {
+        $frontendUser = $this->frontendUserResolver->getUid($request);
+        if ($frontendUser === 0) {
+            $this->wishlistStorage->moveDown($request, $productUid);
+            return;
+        }
+        $this->swapPersisted($frontendUser, $productUid, 1);
+    }
+
     public function contains(ServerRequestInterface $request, int $productUid): bool
     {
         $frontendUser = $this->frontendUserResolver->getUid($request);
@@ -89,6 +118,22 @@ final class WishlistService
         return $this->persistedProducts($frontendUser);
     }
 
+    /**
+     * A guest checkout has no persisted wishlist to purge - a guest's wishlist lives in the FE
+     * session instead, keyed to the browser, not to any identity an order could be matched
+     * against, so it is deliberately left untouched here.
+     */
+    public function removeOrderedItems(Order $order): void
+    {
+        $frontendUser = $order->getFrontendUser();
+        if ($frontendUser === 0) {
+            return;
+        }
+        foreach ($order->getItems() as $orderItem) {
+            $this->removePersisted($frontendUser, $orderItem->getProduct());
+        }
+    }
+
     private function addPersisted(int $frontendUser, int $productUid): void
     {
         if ($this->wishlistItemRepository->findOneByFrontendUserAndProduct($frontendUser, $productUid) !== null) {
@@ -102,6 +147,7 @@ final class WishlistService
         $item->setFrontendUser($frontendUser);
         $item->setProduct($product);
         $item->setCreated(new \DateTime());
+        $item->setSorting($this->wishlistItemRepository->findByFrontendUser($frontendUser)->count());
         $this->wishlistItemRepository->add($item);
         $this->persistenceManager->persistAll();
     }
@@ -113,6 +159,28 @@ final class WishlistService
             return;
         }
         $this->wishlistItemRepository->remove($item);
+        $this->persistenceManager->persistAll();
+    }
+
+    private function swapPersisted(int $frontendUser, int $productUid, int $direction): void
+    {
+        $items = array_values(iterator_to_array($this->wishlistItemRepository->findByFrontendUser($frontendUser)));
+        $index = null;
+        foreach ($items as $key => $item) {
+            if ($item->getProduct() instanceof Product && $item->getProduct()->getUid() === $productUid) {
+                $index = $key;
+                break;
+            }
+        }
+        $swapIndex = $index === null ? null : $index + $direction;
+        if ($index === null || $swapIndex === null || !isset($items[$swapIndex])) {
+            return;
+        }
+        $sorting = $items[$index]->getSorting();
+        $items[$index]->setSorting($items[$swapIndex]->getSorting());
+        $items[$swapIndex]->setSorting($sorting);
+        $this->wishlistItemRepository->update($items[$index]);
+        $this->wishlistItemRepository->update($items[$swapIndex]);
         $this->persistenceManager->persistAll();
     }
 

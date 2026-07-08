@@ -31,4 +31,16 @@ final class WishlistController extends ActionController
         $this->wishlistService->remove($this->request, $product);
         return $this->redirect('show');
     }
+
+    public function moveUpAction(int $product): ResponseInterface
+    {
+        $this->wishlistService->moveUp($this->request, $product);
+        return $this->redirect('show');
+    }
+
+    public function moveDownAction(int $product): ResponseInterface
+    {
+        $this->wishlistService->moveDown($this->request, $product);
+        return $this->redirect('show');
+    }
 }

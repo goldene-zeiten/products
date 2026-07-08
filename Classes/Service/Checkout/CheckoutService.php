@@ -7,8 +7,10 @@ namespace GoldeneZeiten\Products\Service\Checkout;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Domain\Model\OrderAddress;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
@@ -22,7 +24,8 @@ final class CheckoutService
 
     public function __construct(
         private readonly BasketService $basketService,
-        private readonly OrderRepository $orderRepository
+        private readonly OrderRepository $orderRepository,
+        private readonly FrontendUserResolver $frontendUserResolver
     ) {}
 
     public function setAddress(ServerRequestInterface $request, Address $address): void
@@ -46,7 +49,39 @@ final class CheckoutService
                 }
             }
         }
-        return new Address();
+        return $this->addressFromLastOrder($request) ?? new Address();
+    }
+
+    /**
+     * Prefills the checkout with a returning customer's most recent billing address, so they
+     * don't have to retype it on every order - only relevant before anything has been entered
+     * into the current checkout session yet.
+     */
+    private function addressFromLastOrder(ServerRequestInterface $request): ?Address
+    {
+        $frontendUserUid = $this->frontendUserResolver->getUid($request);
+        if ($frontendUserUid === 0) {
+            return null;
+        }
+        $lastOrder = $this->orderRepository->findByFrontendUser($frontendUserUid)->getFirst();
+        if (!$lastOrder instanceof Order) {
+            return null;
+        }
+        $billingAddress = $lastOrder->getBillingAddress();
+        if (!$billingAddress instanceof OrderAddress) {
+            return null;
+        }
+        return new Address(
+            email: $lastOrder->getEmail(),
+            salutation: $billingAddress->getSalutation(),
+            firstName: $billingAddress->getFirstName(),
+            lastName: $billingAddress->getLastName(),
+            company: $billingAddress->getCompany(),
+            street: $billingAddress->getStreet(),
+            zip: $billingAddress->getZip(),
+            city: $billingAddress->getCity(),
+            country: $billingAddress->getCountry()
+        );
     }
 
     public function setPaymentMethod(ServerRequestInterface $request, string $paymentMethod): void
