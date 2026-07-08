@@ -1,0 +1,10 @@
+<div class="add-to-basket mt-3">
+    <f:form action="add" controller="Basket" extensionName="Products" pluginName="Basket" pageUid="{settings.pids.basketPage}">
+        <f:form.hidden name="product" value="{product.uid}" />
+        <f:form.hidden name="article" value="{article.uid}" />
+        <div class="mb-3">
+            <f:form.textfield name="quantity" value="1" type="number" class="form-control" additionalAttributes="{min: 1}" />
+        </div>
+        <f:form.submit value="{f:translate(key: 'add_to_basket')}" class="btn btn-primary" />
+    </f:form>
+</div>

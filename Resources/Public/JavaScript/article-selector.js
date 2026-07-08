@@ -1,10 +1,12 @@
 /**
  * Article Variant Selector
  *
- * Progressively enhances the per-attribute dropdowns on a product detail page: resolves the
- * selected attribute-value combination to an article uid client-side via the page's own variant
- * map and writes it into the hidden "article" field before submit. Without JavaScript, the form
- * still submits the raw attribute-value selections, resolved server-side (ArticleVariantResolver).
+ * Progressively enhances the variant-chooser form on a product detail page: without JavaScript,
+ * changing a dropdown does nothing until the visible "Update" button is clicked, which reloads the
+ * whole page (server resolves the article via ArticleVariantResolver either way - see
+ * ProductController::showAction()). With JavaScript, a change auto-submits that same reload by
+ * default, or - in "ajax" switch mode - fetches the same URL and swaps in just the price/stock
+ * fragment instead of navigating, falling back to a real submit if the fetch itself fails.
  */
 export default class ArticleSelector {
   constructor() {
@@ -12,37 +14,41 @@ export default class ArticleSelector {
   }
 
   init() {
-    document.querySelectorAll('[data-product-variant-selector]').forEach((container) => {
-      this.bind(container);
-    });
+    document.querySelectorAll('[data-product-variant-selector]').forEach((container) => this.bind(container));
   }
 
   bind(container) {
-    const map = this.parseMap(container);
-    const selects = container.querySelectorAll('.variant-attribute-select');
-    const hiddenArticleField = container.querySelector('[data-selected-article]');
-    if (!hiddenArticleField || selects.length === 0) return;
+    const form = container.querySelector('form');
+    const selects = container.querySelectorAll('.variant-attribute-select, .variant-article-select');
+    if (!form || selects.length === 0) return;
 
-    const update = () => this.updateSelectedArticle(selects, map, hiddenArticleField);
-    selects.forEach((select) => select.addEventListener('change', update));
-    update();
+    const ajaxMode = container.getAttribute('data-switch-mode') === 'ajax';
+    selects.forEach((select) => {
+      select.addEventListener('change', () => {
+        if (ajaxMode) {
+          this.loadFragmentViaAjax(form);
+        } else {
+          form.submit();
+        }
+      });
+    });
   }
 
-  parseMap(container) {
+  async loadFragmentViaAjax(form) {
+    const url = `${form.action}?${new URLSearchParams(new FormData(form)).toString()}`;
     try {
-      return JSON.parse(container.getAttribute('data-variant-map') || '{}');
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const parsed = new DOMParser().parseFromString(await response.text(), 'text/html');
+      const fragment = parsed.querySelector('[data-product-price-and-stock]');
+      const target = document.querySelector('[data-product-price-and-stock]');
+      if (!fragment || !target) throw new Error('Price/stock fragment not found in response');
+      target.innerHTML = fragment.innerHTML;
+      target.dispatchEvent(new CustomEvent('products:article-updated', { bubbles: true }));
     } catch (error) {
-      console.error('Invalid variant map', error);
-      return {};
+      console.error('Error loading article price/stock via AJAX:', error);
+      form.submit();
     }
-  }
-
-  updateSelectedArticle(selects, map, hiddenArticleField) {
-    const key = Array.from(selects)
-      .map((select) => parseInt(select.value, 10))
-      .sort((a, b) => a - b)
-      .join(',');
-    hiddenArticleField.value = map[key] || '';
   }
 }
 
