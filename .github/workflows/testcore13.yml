@@ -55,8 +55,8 @@ jobs:
       - name: "Build JavaScript/TypeScript assets"
         run: "Build/Scripts/runTests.sh -b podman -s buildJs"
 
-  testsuite:
-    name: all tests with core v13
+  unit:
+    name: unit tests with core v13
     runs-on: ubuntu-22.04
     needs: code-quality
     strategy:
@@ -73,20 +73,42 @@ jobs:
       - name: "Unit"
         run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s unit"
 
-      - name: "Functional SQLite"
-        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional -d sqlite"
+  functional:
+    name: functional tests with core v13
+    runs-on: ubuntu-22.04
+    needs: unit
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '8.2', '8.4' ]
+        db:
+          - { name: 'SQLite', options: '-d sqlite' }
+          - { name: 'MariaDB 10.5 mysqli', options: '-d mariadb -a mysqli' }
+          - { name: 'MariaDB 10.5 pdo_mysql', options: '-d mariadb -a pdo_mysql' }
+          - { name: 'MySQL 8.0 mysqli', options: '-d mysql -a mysqli' }
+          - { name: 'MySQL 8.0 pdo_mysql', options: '-d mysql -a pdo_mysql' }
+          - { name: 'PostgreSQL 10', options: '-d postgres' }
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
 
-      - name: "Functional MariaDB 10.5 mysqli"
-        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
+      - name: "Prepare dependencies for TYPO3 v13"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s composerUpdate"
 
-      - name: "Functional MariaDB 10.5 pdo_mysql"
-        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
+      - name: "Functional ${{ matrix.db.name }}"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional ${{ matrix.db.options }}"
 
-      - name: "Functional MySQL 8.0 mysqli"
-        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional -d mysql -a mysqli"
+  acceptance:
+    name: acceptance tests with core v13
+    runs-on: ubuntu-22.04
+    needs: code-quality
+    strategy:
+      fail-fast: false
+      matrix:
+        sql-version: [ 'sqlite', 'mariadb' ]
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
 
-      - name: "Functional MySQL 8.0 pdo_mysql"
-        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional -d mysql -a pdo_mysql"
-
-      - name: "Functional PostgreSQL 10"
-        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional -d postgres"
+      - name: "Acceptance SQLite"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -s acceptance -d ${{ matrix.sql-version }}"
