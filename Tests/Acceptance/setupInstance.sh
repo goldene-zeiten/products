@@ -74,6 +74,10 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['displayErrors'] = 1;
 // per-run container) - TYPO3's default cookieSecure=1 silently refuses to ever send the FE
 // session cookie over a non-HTTPS connection, which breaks basket/login state entirely.
 $GLOBALS['TYPO3_CONF_VARS']['FE']['cookieSecure'] = 0;
+// checkFeUserPid defaults to true, restricting FE authentication to fe_users rows living under a
+// configured storage pid this disposable instance's site config never sets up - without this,
+// the demo shopper's login is silently rejected regardless of a correct password.
+$GLOBALS['TYPO3_CONF_VARS']['FE']['checkFeUserPid'] = false;
 EOF
 
 if [ "${DB_DRIVER}" = "sqlite" ]; then
