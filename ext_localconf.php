@@ -18,6 +18,14 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['chec
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = CategoryMountAccessHook::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = CategoryMountAccessHook::class;
 
+// The variant chooser's GET form resubmits with a combination unknown at render time (no
+// pre-computable cHash is possible for it), and ProductController::showAction is already
+// re-rendered fresh on every request (registered as a non-cacheable action) regardless of the
+// surrounding page's own cache state - so requiring a cHash proof for these two parameters
+// specifically would only ever break the feature, never protect anything real.
+$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '^tx_products_productdetail[attributeValues]';
+$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '=tx_products_productdetail[selectedArticle]';
+
 ExtensionUtility::configurePlugin(
     'Products',
     'ProductList',
@@ -35,8 +43,12 @@ ExtensionUtility::configurePlugin(
     [
         ProductController::class => 'show',
     ],
-    // non-cacheable actions
-    [],
+    // "show" now accepts a dynamic attributeValues/selectedArticle combination the variant
+    // chooser's GET form resubmits with - a cacheable action can't validate a cHash for a
+    // combination unknown at render time, so this can no longer be cacheable.
+    [
+        ProductController::class => 'show',
+    ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );
 
