@@ -129,6 +129,11 @@ settings:
     default: 1729512001
     label: Invoice download page typeNum
     category: products
+  products.catalog.articleSwitchMode:
+    type: string
+    default: reload
+    label: 'Article variant switch mode (reload|ajax)'
+    category: products
   products.creditPoints.enabled:
     type: bool
     default: false

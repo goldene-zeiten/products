@@ -1,7 +1,7 @@
 <f:asset.script identifier="products-article-selector" src="EXT:products/Resources/Public/JavaScript/article-selector.js" type="module" />
-<div class="article-selector mt-3" data-product-variant-selector data-variant-map="{variantMap}">
+<div class="article-selector mt-3" data-product-variant-selector data-switch-mode="{settings.catalog.articleSwitchMode}">
     <h6><f:translate key="choose_variant" /></h6>
-    <f:form action="add" controller="Basket" extensionName="Products" pluginName="Basket" pageUid="{settings.pids.basketPage}">
+    <f:form method="get" action="show" controller="Product" pageUid="{settings.pids.detailPage}">
         <f:form.hidden name="product" value="{product.uid}" />
 
         <f:if condition="{variantAttributes}">
@@ -19,18 +19,14 @@
                         />
                     </div>
                 </f:for>
-                <f:form.hidden name="article" value="" additionalAttributes="{data-selected-article: 1}" />
             </f:then>
             <f:else>
                 <div class="mb-3">
-                    <f:form.select name="article" options="{product.articles}" optionLabelField="title" class="form-select" />
+                    <f:form.select name="selectedArticle" options="{product.articles}" optionLabelField="title" class="form-select variant-article-select" />
                 </div>
             </f:else>
         </f:if>
 
-        <div class="mb-3">
-            <f:form.textfield name="quantity" value="1" type="number" class="form-control" additionalAttributes="{min: 1}" />
-        </div>
-        <f:form.submit value="{f:translate(key: 'add_to_basket')}" class="btn btn-primary" />
+        <f:form.submit value="{f:translate(key: 'update_price')}" class="btn btn-secondary mb-3" />
     </f:form>
 </div>

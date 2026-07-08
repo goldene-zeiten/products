@@ -183,6 +183,12 @@
 			<trans-unit id="choose_variant" resname="choose_variant">
 				<source>Choose a variant:</source>
 			</trans-unit>
+			<trans-unit id="update_price" resname="update_price">
+				<source>Update</source>
+			</trans-unit>
+			<trans-unit id="choose_variant_prompt" resname="choose_variant_prompt">
+				<source>Please choose a variant to see its price and availability.</source>
+			</trans-unit>
 			<trans-unit id="add_to_basket" resname="add_to_basket">
 				<source>Add to Basket</source>
 			</trans-unit>

@@ -31,6 +31,9 @@ plugin.tx_products {
         invoice {
             pageType = {$plugin.tx_products.settings.invoice.pageType}
         }
+        catalog {
+            articleSwitchMode = {$plugin.tx_products.settings.catalog.articleSwitchMode}
+        }
     }
 }
 
