@@ -96,6 +96,16 @@ settings:
     default: ''
     label: 'Merchant notification recipient (empty disables the notification)'
     category: products
+  products.email.orderStatusChanged.enabled:
+    type: bool
+    default: true
+    label: Send an email to the customer when an order's status changes
+    category: products
+  products.stock.lowStockThreshold:
+    type: int
+    default: 5
+    label: 'Stock level at/below which a low-stock warning email is sent to the merchant'
+    category: products
   products.invoice.templateRootPaths:
     type: stringlist
     default:

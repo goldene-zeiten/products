@@ -34,6 +34,9 @@ plugin.tx_products {
         catalog {
             articleSwitchMode = {$plugin.tx_products.settings.catalog.articleSwitchMode}
         }
+        stock {
+            lowStockThreshold = {$plugin.tx_products.settings.stock.lowStockThreshold}
+        }
     }
 }
 

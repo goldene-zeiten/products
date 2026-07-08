@@ -160,7 +160,8 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
             $creditPointsService,
             $this->get(CreditPointsTransactionRepository::class),
             $this->get(FrontendUserResolver::class),
-            $this->get(ShippingCostService::class)
+            $this->get(ShippingCostService::class),
+            $this->get(ConfigurationManagerInterface::class)
         );
         $orderPlacementTransaction = new OrderPlacementTransaction(
             $this->get(ConnectionPool::class),

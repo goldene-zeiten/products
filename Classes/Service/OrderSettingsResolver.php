@@ -25,8 +25,20 @@ final class OrderSettingsResolver
         try {
             return $this->siteFinder->getSiteByIdentifier($order->getSiteIdentifier())->getSettings();
         } catch (SiteNotFoundException) {
-            return $this->fallbackSettings();
+            return $this->getDefaultSettings();
         }
+    }
+
+    /**
+     * For notifications with no order/site context of their own (e.g. a low-stock warning) -
+     * the first configured site's settings, same fallback `getSettings()` uses internally.
+     */
+    public function getDefaultSettings(): SettingsInterface
+    {
+        $sites = $this->siteFinder->getAllSites();
+        $site = reset($sites);
+
+        return $site !== false ? $site->getSettings() : SiteSettings::createFromSettingsTree([]);
     }
 
     /**
@@ -36,13 +48,5 @@ final class OrderSettingsResolver
     public function getPathsSetting(SettingsInterface $settings, string $path, array $default): array
     {
         return $settings->has($path) ? $settings->get($path) : $default;
-    }
-
-    private function fallbackSettings(): SettingsInterface
-    {
-        $sites = $this->siteFinder->getAllSites();
-        $site = reset($sites);
-
-        return $site !== false ? $site->getSettings() : SiteSettings::createFromSettingsTree([]);
     }
 }

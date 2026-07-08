@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Service;
 
+use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\OrderMailService;
@@ -103,6 +104,80 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $sentEmails = TestMailer::getSentEmails();
         self::assertCount(1, $sentEmails);
         self::assertStringContainsString('FIXTURE-OVERRIDDEN-SIGNATURE', (string)$sentEmails[0]->getHtmlBody());
+    }
+
+    #[Test]
+    public function sendOrderStatusChangedSendsMailToCustomerByDefault(): void
+    {
+        $this->subject->sendOrderStatusChanged($this->buildOrder(), OrderStatus::NEW, OrderStatus::CONFIRMED);
+
+        $sentEmails = TestMailer::getSentEmails();
+        self::assertCount(1, $sentEmails);
+        self::assertSame('shopper@example.com', $sentEmails[0]->getTo()[0]->getAddress());
+        self::assertStringContainsString('ORD-1', (string)$sentEmails[0]->getSubject());
+        self::assertStringContainsString('new', (string)$sentEmails[0]->getTextBody());
+        self::assertStringContainsString('confirmed', (string)$sentEmails[0]->getTextBody());
+    }
+
+    #[Test]
+    public function sendOrderStatusChangedIsSkippedWhenDisabled(): void
+    {
+        $this->writeSiteConfiguration(
+            'products-with-status-changed-disabled',
+            $this->buildSiteConfiguration(2, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'settings' => [
+                    'products' => [
+                        'email' => ['orderStatusChanged' => ['enabled' => false]],
+                    ],
+                ],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+
+        $order = $this->buildOrder();
+        $order->setSiteIdentifier('products-with-status-changed-disabled');
+
+        $this->subject->sendOrderStatusChanged($order, OrderStatus::NEW, OrderStatus::CONFIRMED);
+
+        self::assertCount(0, TestMailer::getSentEmails());
+    }
+
+    #[Test]
+    public function sendLowStockWarningIsSkippedWithoutConfiguredRecipient(): void
+    {
+        $this->subject->sendLowStockWarning('Red Shoes', 2);
+
+        self::assertCount(0, TestMailer::getSentEmails());
+    }
+
+    #[Test]
+    public function sendLowStockWarningSendsMailWhenRecipientIsConfigured(): void
+    {
+        // sendLowStockWarning() has no order/site context of its own, so it always resolves
+        // settings from the first configured site - overwrite the base "products" site (written
+        // by AbstractFrontendTestCase::setUp()) rather than adding a second site that might not
+        // be the one getDefaultSettings() picks.
+        $this->writeSiteConfiguration(
+            'products',
+            $this->buildSiteConfiguration(2, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'settings' => [
+                    'products' => [
+                        'email' => ['merchantRecipient' => 'merchant@example.com'],
+                    ],
+                ],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+
+        $this->subject->sendLowStockWarning('Red Shoes', 2);
+
+        $sentEmails = TestMailer::getSentEmails();
+        self::assertCount(1, $sentEmails);
+        self::assertSame('merchant@example.com', $sentEmails[0]->getTo()[0]->getAddress());
+        self::assertStringContainsString('Red Shoes', (string)$sentEmails[0]->getSubject());
+        self::assertStringContainsString('2', (string)$sentEmails[0]->getTextBody());
     }
 
     private function buildOrder(): Order
