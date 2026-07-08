@@ -28,6 +28,9 @@ plugin.tx_products {
         ajax {
             pageType = {$plugin.tx_products.settings.ajax.pageType}
         }
+        invoice {
+            pageType = {$plugin.tx_products.settings.invoice.pageType}
+        }
     }
 }
 
@@ -52,6 +55,35 @@ products_ajax {
         switchableControllerActions {
             ProductController {
                 1 = listByAjax
+            }
+        }
+    }
+}
+
+# A PDF download must return exactly the invoice bytes, not the shop page's own HTML shell that
+# every normal PLUGIN_TYPE_CONTENT_ELEMENT dispatch gets wrapped in - same disableAllHeaderCode
+# trick as products_ajax, on its own typeNum so it never collides with normal page rendering.
+products_invoice = PAGE
+products_invoice {
+    typeNum = {$plugin.tx_products.settings.invoice.pageType}
+    config {
+        disableAllHeaderCode = 1
+        xhtml_cleaning = 0
+        admPanel = 0
+        debug = 0
+        no_cache = 1
+    }
+    10 = USER
+    10 {
+        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+        extensionName = Products
+        pluginName = Invoice
+        vendorName = GoldeneZeiten
+        controller = InvoiceController
+        action = download
+        switchableControllerActions {
+            InvoiceController {
+                1 = download
             }
         }
     }

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products/Resources/Private/Language/locallang_invoice.xlf" date="2026-07-08T18:00:00Z" product-name="products">
+		<header/>
+		<body>
+			<trans-unit id="invoice_title" resname="invoice_title">
+				<source>Invoice</source>
+			</trans-unit>
+			<trans-unit id="invoice_number" resname="invoice_number">
+				<source>Invoice Number</source>
+			</trans-unit>
+			<trans-unit id="order_number" resname="order_number">
+				<source>Order Number</source>
+			</trans-unit>
+			<trans-unit id="order_date" resname="order_date">
+				<source>Order Date</source>
+			</trans-unit>
+			<trans-unit id="billing_address" resname="billing_address">
+				<source>Billing Address</source>
+			</trans-unit>
+			<trans-unit id="delivery_address" resname="delivery_address">
+				<source>Delivery Address</source>
+			</trans-unit>
+			<trans-unit id="item_title" resname="item_title">
+				<source>Item</source>
+			</trans-unit>
+			<trans-unit id="item_number" resname="item_number">
+				<source>Item Number</source>
+			</trans-unit>
+			<trans-unit id="quantity" resname="quantity">
+				<source>Qty</source>
+			</trans-unit>
+			<trans-unit id="unit_price" resname="unit_price">
+				<source>Unit Price</source>
+			</trans-unit>
+			<trans-unit id="line_total" resname="line_total">
+				<source>Total</source>
+			</trans-unit>
+			<trans-unit id="subtotal_net" resname="subtotal_net">
+				<source>Subtotal (net)</source>
+			</trans-unit>
+			<trans-unit id="tax" resname="tax">
+				<source>Tax</source>
+			</trans-unit>
+			<trans-unit id="shipping" resname="shipping">
+				<source>Shipping</source>
+			</trans-unit>
+			<trans-unit id="total_gross" resname="total_gross">
+				<source>Total</source>
+			</trans-unit>
+			<trans-unit id="footer_note" resname="footer_note">
+				<source>Thank you for your order.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

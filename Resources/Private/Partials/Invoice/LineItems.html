@@ -1,0 +1,27 @@
+<table style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th style="text-align: left; border-bottom: 1px solid #000; padding: 4px;"><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_invoice.xlf:item_title" /></th>
+            <th style="text-align: left; border-bottom: 1px solid #000; padding: 4px;"><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_invoice.xlf:item_number" /></th>
+            <th style="text-align: right; border-bottom: 1px solid #000; padding: 4px;"><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_invoice.xlf:quantity" /></th>
+            <th style="text-align: right; border-bottom: 1px solid #000; padding: 4px;"><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_invoice.xlf:unit_price" /></th>
+            <th style="text-align: right; border-bottom: 1px solid #000; padding: 4px;"><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_invoice.xlf:line_total" /></th>
+        </tr>
+    </thead>
+    <tbody>
+        <f:for each="{order.items}" as="item">
+            <tr>
+                <td style="padding: 4px; border-bottom: 1px solid #ddd;">
+                    {item.title}
+                    <f:if condition="{item.articleTitle}">
+                        <br><small>{item.articleTitle}</small>
+                    </f:if>
+                </td>
+                <td style="padding: 4px; border-bottom: 1px solid #ddd;">{item.itemNumber}</td>
+                <td style="text-align: right; padding: 4px; border-bottom: 1px solid #ddd;">{item.quantity}</td>
+                <td style="text-align: right; padding: 4px; border-bottom: 1px solid #ddd;">{item.unitPriceGross.decimalString} {order.currency}</td>
+                <td style="text-align: right; padding: 4px; border-bottom: 1px solid #ddd;">{item.lineTotalGross.decimalString} {order.currency}</td>
+            </tr>
+        </f:for>
+    </tbody>
+</table>

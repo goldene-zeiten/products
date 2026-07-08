@@ -44,5 +44,9 @@ plugin.tx_products {
             # cat=plugin.tx_products.ajax; type=int; label=AJAX page typeNum
             pageType = 1729512000
         }
+        invoice {
+            # cat=plugin.tx_products.invoice; type=int; label=Invoice download page typeNum
+            pageType = 1729512001
+        }
     }
 }

@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Controller;
 
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Service\Invoice\InvoiceTokenService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
@@ -13,7 +14,8 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class OrderController extends ActionController
 {
     public function __construct(
-        private readonly OrderRepository $orderRepository
+        private readonly OrderRepository $orderRepository,
+        private readonly InvoiceTokenService $invoiceTokenService
     ) {}
 
     public function listAction(): ResponseInterface
@@ -35,7 +37,10 @@ final class OrderController extends ActionController
             return $this->redirect('list');
         }
 
-        $this->view->assign('order', $order);
+        $this->view->assignMultiple([
+            'order' => $order,
+            'invoiceHash' => $this->invoiceTokenService->generateToken($order),
+        ]);
         return $this->htmlResponse();
     }
 }

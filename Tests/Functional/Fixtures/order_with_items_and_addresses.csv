@@ -1,0 +1,11 @@
+"tx_products_domain_model_orderaddress",,,,,,,,,,,
+,"uid","pid","address_type","company","salutation","first_name","last_name","street","house_number","zip","city","country"
+,1,2,"billing","","Mr","Jane","Shopper","Main Street","1","12345","Sampletown","DE"
+
+"tx_products_domain_model_order",,,,,,,,,,,,,,
+,"uid","pid","order_number","invoice_number","email","currency","total_net","total_tax","total_gross","billing_address","site_identifier","status","payment_status"
+,1,2,"ORD-1","INV-1","shopper@example.com","EUR",8403,1597,10000,1,"products","confirmed","paid"
+
+"tx_products_domain_model_orderitem",,,,,,,,
+,"uid","pid","parent_order","title","item_number","quantity","unit_price_gross","line_total_gross"
+,1,2,1,"Red Shoes","SHOE-RED",1,10000,10000

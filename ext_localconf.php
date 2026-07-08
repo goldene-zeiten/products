@@ -3,6 +3,7 @@
 use GoldeneZeiten\Products\Controller\BasketController;
 use GoldeneZeiten\Products\Controller\CategoryController;
 use GoldeneZeiten\Products\Controller\CheckoutController;
+use GoldeneZeiten\Products\Controller\InvoiceController;
 use GoldeneZeiten\Products\Controller\OrderController;
 use GoldeneZeiten\Products\Controller\ProductController;
 use GoldeneZeiten\Products\Controller\RecentlyViewedController;
@@ -136,5 +137,18 @@ ExtensionUtility::configurePlugin(
     ],
     // non-cacheable actions - none, the listing has no session/user dependency
     [],
+    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+);
+
+ExtensionUtility::configurePlugin(
+    'Products',
+    'Invoice',
+    [
+        InvoiceController::class => 'download',
+    ],
+    // non-cacheable actions
+    [
+        InvoiceController::class => 'download',
+    ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );
