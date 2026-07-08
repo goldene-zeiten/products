@@ -17,6 +17,7 @@ class WishlistItem extends AbstractEntity
     protected int $frontendUser = 0;
     protected ?Product $product = null;
     protected ?\DateTime $created = null;
+    protected int $sorting = 0;
 
     public function getFrontendUser(): int
     {
@@ -46,5 +47,15 @@ class WishlistItem extends AbstractEntity
     public function setCreated(?\DateTime $created): void
     {
         $this->created = $created;
+    }
+
+    public function getSorting(): int
+    {
+        return $this->sorting;
+    }
+
+    public function setSorting(int $sorting): void
+    {
+        $this->sorting = $sorting;
     }
 }

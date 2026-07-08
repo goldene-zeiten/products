@@ -1,0 +1,26 @@
+"pages",,,,,,
+,"uid","pid","sorting","deleted","title","slug"
+,1,0,256,0,"Root","/"
+,2,1,256,0,"Shop","/shop"
+
+"fe_users",,,,,
+,"uid","pid","disable","deleted","username"
+,5,2,0,0,"returning-customer"
+
+"tx_products_domain_model_taxclass",,,
+,"uid","title","code"
+,1,"Standard Tax","STANDARD"
+
+"tx_products_domain_model_taxrate",,,,,
+,"uid","tax_class","country","rate"
+,1,1,"","19.0000"
+
+"tx_products_domain_model_product",,,,,,,
+,"uid","pid","title","slug","price","tax_class","in_stock","weight"
+,1,2,"Product 1","product-1","100.00",1,50,500
+,2,2,"Product 2","product-2","50.00",1,50,500
+
+"tx_products_domain_model_wishlistitem",,,,,
+,"uid","pid","frontend_user","product","sorting"
+,1,2,5,1,0
+,2,2,5,2,1

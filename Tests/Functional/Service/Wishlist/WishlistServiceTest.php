@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Service\Wishlist;
 
+use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Domain\Model\OrderItem;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Domain\Repository\WishlistItemRepository;
@@ -132,6 +134,83 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function moveUpAndMoveDownReorderAGuestsSessionWishlist(): void
+    {
+        $request = $this->requestFor(0);
+        $this->subject->add($request, 1);
+        $this->subject->add($request, 2);
+        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+
+        $this->subject->moveUp($request, 2);
+        self::assertSame(['Product 2', 'Product 1'], $this->titlesOf($this->subject->getItems($request)));
+
+        $this->subject->moveDown($request, 2);
+        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+    }
+
+    #[Test]
+    public function movingTheFirstItemUpIsANoOpForGuests(): void
+    {
+        $request = $this->requestFor(0);
+        $this->subject->add($request, 1);
+        $this->subject->add($request, 2);
+
+        $this->subject->moveUp($request, 1);
+
+        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+    }
+
+    #[Test]
+    public function moveUpAndMoveDownReorderAnIdentifiedCustomersPersistedWishlist(): void
+    {
+        $request = $this->requestFor(5);
+        $this->subject->add($request, 1);
+        $this->subject->add($request, 2);
+        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+
+        $this->subject->moveUp($request, 2);
+        self::assertSame(['Product 2', 'Product 1'], $this->titlesOf($this->subject->getItems($request)));
+
+        $this->subject->moveDown($request, 2);
+        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+    }
+
+    #[Test]
+    public function movingTheLastItemDownIsANoOpForIdentifiedCustomers(): void
+    {
+        $request = $this->requestFor(5);
+        $this->subject->add($request, 1);
+        $this->subject->add($request, 2);
+
+        $this->subject->moveDown($request, 2);
+
+        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+    }
+
+    #[Test]
+    public function removeOrderedItemsPurgesOrderedProductsFromThePersistedWishlist(): void
+    {
+        $request = $this->requestFor(5);
+        $this->subject->add($request, 1);
+        $this->subject->add($request, 2);
+
+        $this->subject->removeOrderedItems($this->orderFor(5, [1]));
+
+        self::assertSame(['Product 2'], $this->titlesOf($this->subject->getItems($request)));
+    }
+
+    #[Test]
+    public function removeOrderedItemsIsANoOpForGuestOrders(): void
+    {
+        $request = $this->requestFor(5);
+        $this->subject->add($request, 1);
+
+        $this->subject->removeOrderedItems($this->orderFor(0, [1]));
+
+        self::assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
+    }
+
+    #[Test]
     public function isEnabledReflectsTheSiteSetting(): void
     {
         self::assertTrue($this->subject->isEnabled());
@@ -188,5 +267,20 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
             $frontendUser->user = ['uid' => $frontendUserUid];
         }
         return (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+    }
+
+    /**
+     * @param int[] $productUids
+     */
+    private function orderFor(int $frontendUserUid, array $productUids): Order
+    {
+        $order = new Order();
+        $order->setFrontendUser($frontendUserUid);
+        foreach ($productUids as $productUid) {
+            $item = new OrderItem();
+            $item->setProduct($productUid);
+            $order->getItems()->attach($item);
+        }
+        return $order;
     }
 }

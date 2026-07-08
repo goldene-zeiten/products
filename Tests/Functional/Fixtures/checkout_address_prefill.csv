@@ -1,0 +1,11 @@
+"fe_users",,,,,
+,"uid","pid","disable","deleted","username"
+,1,2,0,0,"returning-customer"
+
+"tx_products_domain_model_orderaddress",,,,,,,,,,,
+,"uid","pid","address_type","company","salutation","first_name","last_name","street","house_number","zip","city","country"
+,1,2,"billing","","Mr","Jane","Returning","Loop Street 42","","54321","Repeatville","AT"
+
+"tx_products_domain_model_order",,,,,,,,,,,,
+,"uid","pid","order_number","frontend_user","email","currency","total_gross","billing_address","status","payment_status"
+,1,2,"ORD-1",1,"returning@example.com","EUR",1999,1,"confirmed","paid"

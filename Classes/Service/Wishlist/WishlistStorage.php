@@ -63,4 +63,30 @@ final class WishlistStorage
         $productUids = array_filter($this->load($request), static fn(int $uid): bool => $uid !== $productUid);
         $this->save($request, $productUids);
     }
+
+    public function moveUp(ServerRequestInterface $request, int $productUid): void
+    {
+        $this->swap($request, $productUid, -1);
+    }
+
+    public function moveDown(ServerRequestInterface $request, int $productUid): void
+    {
+        $this->swap($request, $productUid, 1);
+    }
+
+    private function swap(ServerRequestInterface $request, int $productUid, int $direction): void
+    {
+        $productUids = $this->load($request);
+        $index = array_search($productUid, $productUids, true);
+        if ($index === false) {
+            return;
+        }
+        $swapIndex = (int)$index + $direction;
+        $index = (int)$index;
+        if (!isset($productUids[$swapIndex])) {
+            return;
+        }
+        [$productUids[$index], $productUids[$swapIndex]] = [$productUids[$swapIndex], $productUids[$index]];
+        $this->save($request, $productUids);
+    }
 }

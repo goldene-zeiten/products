@@ -95,11 +95,11 @@ ExtensionUtility::configurePlugin(
     'Products',
     'Wishlist',
     [
-        WishlistController::class => 'show, add, remove',
+        WishlistController::class => 'show, add, remove, moveUp, moveDown',
     ],
     // non-cacheable actions
     [
-        WishlistController::class => 'show, add, remove',
+        WishlistController::class => 'show, add, remove, moveUp, moveDown',
     ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );
