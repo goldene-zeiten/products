@@ -129,6 +129,9 @@
 			<trans-unit id="order_uid_is" resname="order_uid_is">
 				<source>Your order UID is %d.</source>
 			</trans-unit>
+			<trans-unit id="order_number_is" resname="order_number_is">
+				<source>Your order number is %s.</source>
+			</trans-unit>
 			<trans-unit id="confirmation_email_sent" resname="confirmation_email_sent">
 				<source>We will send you a confirmation email shortly.</source>
 			</trans-unit>

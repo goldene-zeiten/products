@@ -15,7 +15,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">{product.title}</h5>
                                 <f:render partial="Product/Price" arguments="{price: product.price}" />
-                                <f:link.action controller="Product" action="show" arguments="{product: product}" class="btn btn-primary"><f:translate key="details" /></f:link.action>
+                                <f:link.action controller="Product" action="show" pageUid="{settings.pids.detailPage}" arguments="{product: product}" class="btn btn-primary"><f:translate key="details" /></f:link.action>
                             </div>
                         </div>
                     </div>

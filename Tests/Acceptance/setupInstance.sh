@@ -5,14 +5,27 @@
 # INSIDE a container (see Build/Scripts/runTests.sh's "acceptance" suite) - never on the host,
 # same rule as every other composer/php invocation in this repository.
 #
-# Usage: setupInstance.sh <core-version:13|14> [instance-path]
+# IMPORTANT: Tests/Acceptance/Instance/vendor/goldene-zeiten/products is a symlink back to this
+# repository root (composer path-repo). If left on disk while running -s functional/cgl/phpstan/
+# lintPhp, TYPO3's own recursive directory scans (autoload generation, extension copying) walk
+# straight into that symlink and loop infinitely. Always `rm -rf Tests/Acceptance/Instance/`
+# (or `Build/Scripts/runTests.sh -s cleanTests`) before running any other suite - this script
+# already does that at the top of every run, but manual poking around after a debugging session
+# must clean up the same way.
+#
+# Usage: setupInstance.sh <core-version:13|14> <db-driver:sqlite|mysqli> [db-host] [db-name] [db-user] [db-password]
 #
 set -e
 
 CORE_VERSION="${1:-13}"
+DB_DRIVER="${2:-sqlite}"
+DB_HOST="${3:-}"
+DB_NAME="${4:-}"
+DB_USER="${5:-}"
+DB_PASSWORD="${6:-}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-INSTANCE_PATH="${2:-${ROOT_DIR}/Tests/Acceptance/Instance}"
+INSTANCE_PATH="${ROOT_DIR}/Tests/Acceptance/Instance"
 
 rm -rf "${INSTANCE_PATH}"
 mkdir -p "${INSTANCE_PATH}"
@@ -57,15 +70,33 @@ cat > config/system/additional.php <<'EOF'
 // to see *why* a spec failed rather than a blank production error page.
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['trustedHostsPattern'] = '.*';
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['displayErrors'] = 1;
+// This instance is deliberately served over plain HTTP (no TLS cert to manage for a disposable
+// per-run container) - TYPO3's default cookieSecure=1 silently refuses to ever send the FE
+// session cookie over a non-HTTPS connection, which breaks basket/login state entirely.
+$GLOBALS['TYPO3_CONF_VARS']['FE']['cookieSecure'] = 0;
 EOF
 
-vendor/bin/typo3 setup --force --no-interaction \
-    --driver=sqlite \
-    --admin-username=admin \
-    --admin-user-password='AcceptanceTest123!' \
-    --admin-email=admin@example.com \
-    --project-name="Products Acceptance" \
-    --server-type=apache
+if [ "${DB_DRIVER}" = "sqlite" ]; then
+    vendor/bin/typo3 setup --force --no-interaction \
+        --driver=sqlite \
+        --admin-username=admin \
+        --admin-user-password='AcceptanceTest123!' \
+        --admin-email=admin@example.com \
+        --project-name="Products Acceptance" \
+        --server-type=apache
+else
+    vendor/bin/typo3 setup --force --no-interaction \
+        --driver="${DB_DRIVER}" \
+        --host="${DB_HOST}" \
+        --dbname="${DB_NAME}" \
+        --username="${DB_USER}" \
+        --password="${DB_PASSWORD}" \
+        --admin-username=admin \
+        --admin-user-password='AcceptanceTest123!' \
+        --admin-email=admin@example.com \
+        --project-name="Products Acceptance" \
+        --server-type=apache
+fi
 
 mkdir -p config/sites/products-acceptance
 cp "${ROOT_DIR}/Tests/Acceptance/Fixtures/site-config.yaml" config/sites/products-acceptance/config.yaml
