@@ -36,3 +36,9 @@ services:
   GoldeneZeiten\Products\Updates\Prerequisites\:
     resource: '../Classes/Updates/Prerequisites/*'
     public: true
+
+  # OrderExportRegistry is an extension point with no bundled consumer in EXT:products itself
+  # (real exporters ship in separate, format-specific extensions) - without public: true, Symfony's
+  # dead-code elimination would strip the unreferenced service before compilation finishes.
+  GoldeneZeiten\Products\Export\OrderExportRegistry:
+    public: true
