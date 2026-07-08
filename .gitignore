@@ -11,3 +11,6 @@ Resources/Public/JavaScript/backend/*.js.map
 /.playwright-mcp/
 /.idea
 /.vscode
+
+# Disposable acceptance-test instance - rebuilt fresh by Tests/Acceptance/setupInstance.sh
+/Tests/Acceptance/Instance/

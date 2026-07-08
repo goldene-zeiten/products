@@ -1,0 +1,108 @@
+"pages",,,,,,
+,"uid","pid","sorting","deleted","title","slug"
+,1,0,256,0,"Home","/"
+,2,1,256,0,"Shop","/shop"
+,4,1,768,0,"Categories","/categories"
+,5,1,1024,0,"Product","/product"
+,6,1,1280,0,"Basket","/basket"
+,7,1,1536,0,"Checkout","/checkout"
+,8,1,1792,0,"Order History","/order-history"
+,9,1,2048,0,"Login","/login"
+
+"sys_template",,,,,,,
+,"uid","pid","title","root","clear","include_static_file","config"
+,1,1,"Products Acceptance","1",3,"EXT:fluid_styled_content/Configuration/TypoScript,EXT:products/Configuration/TypoScript","page = PAGE
+page.10 < styles.content.get
+plugin.tx_products.persistence.storagePid = 2
+plugin.tx_products.settings.pids.storageFolder = 2
+plugin.tx_products.settings.pids.detailPage = 5
+plugin.tx_products.settings.pids.basketPage = 6
+plugin.tx_products.settings.pids.checkoutPage = 7
+plugin.tx_products.settings.pids.orderHistoryPage = 8
+plugin.tx_products.settings.pids.categoryPage = 4
+plugin.tx_products.settings.shipping.enabled = 1"
+
+"tx_products_domain_model_taxclass",,,
+,"uid","title","code"
+,1,"Standard Tax","STANDARD"
+
+"tx_products_domain_model_taxrate",,,,
+,"uid","tax_class","country","rate"
+,1,1,"",19.00
+
+"tx_products_domain_model_shippingmethod",,,,,,,,
+,"uid","pid","title","country","min_order_value","max_order_value","min_weight","max_weight","rate"
+,1,2,"Standard Shipping","","0.00","0.00",0,0,"4.99"
+,2,2,"Express Shipping","","0.00","0.00",0,0,"9.99"
+
+"fe_users",,,,,,
+,"uid","pid","username","password","email","name"
+,1,2,"shopper1","$argon2i$v=19$m=65536,t=16,p=1$UWQyb0NjZkgyOHRuTXVrZA$+iS7LsM8MXrkyYFwKqVyJzl6YlCHrsLm9j1KIngrF2I","shopper1@example.com","Shopper One"
+
+"tx_products_domain_model_category",,,,,
+,"uid","pid","title","slug","parent_category"
+,1,2,"Clothing","clothing",0
+,2,2,"Men","men",1
+,3,2,"Women","women",1
+,4,2,"Kids","kids",1
+,20,2,"Shirts","mens-shirts",2
+,21,2,"Trousers","mens-trousers",2
+,22,2,"Shirts","womens-shirts",3
+,23,2,"Dresses","womens-dresses",3
+,24,2,"Shirts","kids-shirts",4
+,25,2,"Shoes","kids-shoes",4
+,5,2,"Electronics","electronics",0
+,6,2,"Phones","phones",5
+,7,2,"Laptops","laptops",5
+,8,2,"Audio","audio",5
+,26,2,"Smartphones","smartphones",6
+,27,2,"Accessories","phone-accessories",6
+,28,2,"Ultrabooks","ultrabooks",7
+,29,2,"Gaming Laptops","gaming-laptops",7
+,30,2,"Headphones","headphones",8
+,31,2,"Speakers","speakers",8
+
+"tx_products_domain_model_product",,,,,,,
+,"uid","pid","title","slug","price","tax_class","in_stock","weight"
+,101,2,"Blue Cotton Shirt","blue-cotton-shirt","29.99",1,100,300
+,102,2,"Red Cotton Shirt","red-cotton-shirt","29.99",1,100,300
+,103,2,"Black Denim Jeans","black-denim-jeans","49.99",1,100,600
+,104,2,"Blue Denim Jeans","blue-denim-jeans","49.99",1,100,600
+,105,2,"White Silk Blouse","white-silk-blouse","39.99",1,100,200
+,106,2,"Photon X100 Smartphone","photon-x100-smartphone","499.00",1,50,180
+,107,2,"Photon X200 Smartphone","photon-x200-smartphone","699.00",1,50,180
+,108,2,"Photon Phone Case","photon-phone-case","19.99",1,200,50
+,109,2,"UltraBook Air 13","ultrabook-air-13","999.00",1,30,1200
+,110,2,"UltraBook Air 15","ultrabook-air-15","1199.00",1,30,1500
+,111,2,"SoundMax Headphones","soundmax-headphones","89.99",1,80,250
+
+"tx_products_product_category_mm",,,
+,"uid_local","uid_foreign","sorting"
+,101,20,1
+,102,20,1
+,103,21,1
+,104,21,1
+,105,22,1
+,106,26,1
+,107,26,1
+,108,27,1
+,109,28,1
+,110,28,1
+,111,30,1
+
+"tx_products_product_accessory_mm",,,
+,"uid_local","uid_foreign","sorting"
+,106,108,1
+
+"tt_content",,,,,,,
+,"uid","pid","sorting","deleted","colPos","CType","header"
+,1,1,256,0,0,"products_productlist","Products"
+,2,1,512,0,0,"products_categorynavigation","Categories"
+,3,1,768,0,0,"products_search","Search"
+,4,4,256,0,0,"products_categorynavigation","Categories"
+,5,4,512,0,0,"products_categorylist","Category products"
+,6,5,256,0,0,"products_productdetail","Product"
+,7,6,256,0,0,"products_basket","Basket"
+,8,7,256,0,0,"products_checkout","Checkout"
+,9,8,256,0,0,"products_orderhistory","Order History"
+,10,9,256,0,0,"felogin_login","Login"

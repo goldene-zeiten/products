@@ -1,0 +1,24 @@
+{
+    "name": "goldene-zeiten/products-dataset-import",
+    "version": "1.0.0",
+    "description": "CLI command wrapping typo3/testing-framework's DataSet::import() to seed a live disposable instance from a functional-test-style CSV fixture. Dev-only, never required by the production extension.",
+    "type": "typo3-cms-extension",
+    "license": [
+        "GPL-2.0-or-later"
+    ],
+    "require": {
+        "php": "^8.2 || ^8.3 || ^8.4 || ^8.5",
+        "typo3/cms-core": "^13.4 || ^14.3",
+        "typo3/testing-framework": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "GoldeneZeiten\\ProductsDatasetImport\\": "Classes/"
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "products_dataset_import"
+        }
+    }
+}
