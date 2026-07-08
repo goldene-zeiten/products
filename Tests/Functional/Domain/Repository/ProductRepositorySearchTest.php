@@ -49,6 +49,12 @@ final class ProductRepositorySearchTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function matchesBySubtitle(): void
+    {
+        self::assertSame(['Yellow Hat'], $this->titles($this->subject->search('Autumn Collection', null, 0, 10)));
+    }
+
+    #[Test]
     public function noMatchReturnsNoResults(): void
     {
         self::assertSame([], $this->titles($this->subject->search('doesnotexist', null, 0, 10)));

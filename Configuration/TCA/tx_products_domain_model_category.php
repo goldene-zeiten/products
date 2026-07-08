@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Category.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'title, slug, parent_category, image, description, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_access, perms_userid, perms_groupid, perms_user, perms_group, perms_everybody'],
+        '1' => ['showitem' => 'title, slug, parent_category, image, description, notification_email, notification_recipient_name, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_access, perms_userid, perms_groupid, perms_user, perms_group, perms_everybody'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -87,6 +87,22 @@ return [
             'config' => [
                 'type' => 'text',
                 'enableRichtext' => true,
+            ],
+        ],
+        'notification_email' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.notification_email',
+            'config' => [
+                'type' => 'email',
+                'size' => 30,
+                'eval' => 'trim',
+            ],
+        ],
+        'notification_recipient_name' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.notification_recipient_name',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim',
             ],
         ],
         'parent_category' => [

@@ -38,6 +38,12 @@
                 <th colspan="3"><f:translate key="total_gross" /></th>
                 <td><strong>{summary.totalGross.decimalString} {summary.currency}</strong></td>
             </tr>
+            <f:if condition="{summary.depositTotal.cents} > 0">
+                <tr>
+                    <th colspan="3"><f:translate key="deposit_total" /></th>
+                    <td>{summary.depositTotal.decimalString} {summary.currency}</td>
+                </tr>
+            </f:if>
         </tfoot>
     </table>
 </div>

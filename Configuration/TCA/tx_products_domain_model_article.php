@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Article.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'product, title, item_number, ean, price, price_tiers, attribute_values, in_stock, weight, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => 'product, title, item_number, ean, price, direct_cost, deposit, price_tiers, attribute_values, in_stock, weight, bulky, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -93,6 +93,24 @@ return [
                 'eval' => 'trim',
             ],
         ],
+        'direct_cost' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.direct_cost',
+            'config' => [
+                'type' => 'number',
+                'format' => 'decimal',
+                'size' => 10,
+                'eval' => 'trim',
+            ],
+        ],
+        'deposit' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.deposit',
+            'config' => [
+                'type' => 'number',
+                'format' => 'decimal',
+                'size' => 10,
+                'eval' => 'trim',
+            ],
+        ],
         'price_tiers' => [
             'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_tiers',
             'config' => [
@@ -130,6 +148,14 @@ return [
             'config' => [
                 'type' => 'number',
                 'size' => 10,
+                'default' => 0,
+            ],
+        ],
+        'bulky' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.bulky',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
                 'default' => 0,
             ],
         ],

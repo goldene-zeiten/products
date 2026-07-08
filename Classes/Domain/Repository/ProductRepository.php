@@ -18,7 +18,7 @@ final class ProductRepository extends AbstractReadOnlyRepository
     /**
      * @var string[]
      */
-    private const SEARCHABLE_PROPERTIES = ['title', 'itemNumber', 'description', 'ean'];
+    private const SEARCHABLE_PROPERTIES = ['title', 'subtitle', 'itemNumber', 'description', 'ean'];
 
     /**
      * Without an explicit ORDER BY, row order is undefined and differs across DBMS/versions

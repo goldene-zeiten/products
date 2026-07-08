@@ -19,8 +19,13 @@ class Article extends AbstractEntity
     protected string $ean = '';
     /** @var string */
     protected string $price = '0.00';
+    /** @var string */
+    protected string $directCost = '0.00';
+    /** @var string */
+    protected string $deposit = '0.00';
     protected int $inStock = 0;
     protected int $weight = 0;
+    protected bool $bulky = false;
     /**
      * @var ObjectStorage<FileReference>
      */
@@ -101,6 +106,26 @@ class Article extends AbstractEntity
         $this->price = $price->getDecimalString();
     }
 
+    public function getDirectCost(): Money
+    {
+        return Money::fromDecimalString($this->directCost);
+    }
+
+    public function setDirectCost(Money $directCost): void
+    {
+        $this->directCost = $directCost->getDecimalString();
+    }
+
+    public function getDeposit(): Money
+    {
+        return Money::fromDecimalString($this->deposit);
+    }
+
+    public function setDeposit(Money $deposit): void
+    {
+        $this->deposit = $deposit->getDecimalString();
+    }
+
     public function getInStock(): int
     {
         return $this->inStock;
@@ -119,6 +144,16 @@ class Article extends AbstractEntity
     public function setWeight(int $weight): void
     {
         $this->weight = $weight;
+    }
+
+    public function isBulky(): bool
+    {
+        return $this->bulky;
+    }
+
+    public function setBulky(bool $bulky): void
+    {
+        $this->bulky = $bulky;
     }
 
     /**

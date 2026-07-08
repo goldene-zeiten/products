@@ -15,6 +15,8 @@ class Category extends AbstractEntity
     protected string $title = '';
     protected string $slug = '';
     protected string $description = '';
+    protected string $notificationEmail = '';
+    protected string $notificationRecipientName = '';
     protected ?Category $parentCategory = null;
     /**
      * @var ObjectStorage<Category>
@@ -64,6 +66,26 @@ class Category extends AbstractEntity
     public function setDescription(string $description): void
     {
         $this->description = $description;
+    }
+
+    public function getNotificationEmail(): string
+    {
+        return $this->notificationEmail;
+    }
+
+    public function setNotificationEmail(string $notificationEmail): void
+    {
+        $this->notificationEmail = $notificationEmail;
+    }
+
+    public function getNotificationRecipientName(): string
+    {
+        return $this->notificationRecipientName;
+    }
+
+    public function setNotificationRecipientName(string $notificationRecipientName): void
+    {
+        $this->notificationRecipientName = $notificationRecipientName;
     }
 
     public function getParentCategory(): ?Category

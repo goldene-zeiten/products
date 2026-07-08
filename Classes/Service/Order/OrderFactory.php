@@ -13,7 +13,6 @@ use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Model\OrderAddress;
 use GoldeneZeiten\Products\Domain\Model\OrderItem;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\SiteInterface;
@@ -57,7 +56,7 @@ final class OrderFactory
         $order->setCurrency($basketViewModel->getCurrency());
         $order->setTotalNet($basketViewModel->getTotalNet());
         $order->setTotalTax($basketViewModel->getTotalTax());
-        $this->applyAdjustments($order, $basketViewModel->getTotalGross(), $details);
+        $this->applyAdjustments($order, $basketViewModel, $details);
         $order->setTaxCountry($address->getCountry());
         $order->setBillingAddress($this->buildBillingAddress($address));
         $this->applyGiftOrderDetails($order, $details);
@@ -66,17 +65,26 @@ final class OrderFactory
     }
 
     /**
-     * total_gross is reduced by the combined voucher/points discount and increased by the
-     * shipping cost; total_net/total_tax stay pre-discount since tax was legitimately due on the
-     * goods and neither adjustment is a retroactive price change.
+     * total_gross is reduced by the combined voucher/points discount and increased by
+     * shipping/handling/deposit; total_net/total_tax stay pre-discount since tax was legitimately
+     * due on the goods and none of these adjustments are a retroactive price change.
      */
-    private function applyAdjustments(Order $order, Money $basketGrossTotal, PlacementDetails $details): void
+    private function applyAdjustments(Order $order, BasketViewModel $basketViewModel, PlacementDetails $details): void
     {
-        $order->setTotalGross($basketGrossTotal->subtract($details->getTotalDiscount())->add($details->getShippingCost()));
+        $depositTotal = $basketViewModel->getDepositTotal();
+        $order->setTotalGross(
+            $basketViewModel->getTotalGross()
+                ->subtract($details->getTotalDiscount())
+                ->add($details->getShippingCost())
+                ->add($details->getHandlingFeeCost())
+                ->add($depositTotal)
+        );
         $order->setDiscountTotal($details->getTotalDiscount());
         $order->setVoucherCodes($details->getVoucherCodes());
         $order->setShippingMethod($details->getShippingMethodUid());
         $order->setShippingTotal($details->getShippingCost());
+        $order->setHandlingFeeTotal($details->getHandlingFeeCost());
+        $order->setDepositTotal($depositTotal);
     }
 
     /**
@@ -160,6 +168,7 @@ final class OrderFactory
         $orderItem->setLineTotalNet($viewItem->getLineTotalNet());
         $orderItem->setLineTotalTax($viewItem->getLineTotalTax());
         $orderItem->setLineTotalGross($viewItem->getLineTotalGross());
+        $orderItem->setDepositTotal($viewItem->getDepositTotal());
         $orderItem->setParentOrder($order);
         return $orderItem;
     }

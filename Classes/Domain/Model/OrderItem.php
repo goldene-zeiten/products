@@ -29,6 +29,8 @@ class OrderItem extends AbstractEntity
     protected int $lineTotalTax = 0;
     /** @var int */
     protected int $lineTotalGross = 0;
+    /** @var int */
+    protected int $depositTotal = 0;
     /** @var string */
     protected string $options = '[]';
 
@@ -160,6 +162,16 @@ class OrderItem extends AbstractEntity
     public function setLineTotalGross(Money $lineTotalGross): void
     {
         $this->lineTotalGross = $lineTotalGross->getCents();
+    }
+
+    public function getDepositTotal(): Money
+    {
+        return Money::fromCents($this->depositTotal);
+    }
+
+    public function setDepositTotal(Money $depositTotal): void
+    {
+        $this->depositTotal = $depositTotal->getCents();
     }
 
     /**

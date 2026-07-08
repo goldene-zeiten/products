@@ -62,4 +62,13 @@ final readonly class BasketViewModel
         }
         return $count;
     }
+
+    public function getDepositTotal(): Money
+    {
+        $total = Money::fromCents(0);
+        foreach ($this->items as $item) {
+            $total = $total->add($item->getDepositTotal());
+        }
+        return $total;
+    }
 }

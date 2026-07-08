@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Product.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'title, subtitle, slug, item_number, ean, price, price_tiers, tax_class, categories, in_stock, basket_min_quantity, basket_max_quantity, weight, credit_points, is_offer, is_highlight, description, images, downloads, articles, related_products, accessory_products, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => 'title, subtitle, slug, item_number, ean, price, direct_cost, deposit, price_tiers, tax_class, categories, in_stock, basket_min_quantity, basket_max_quantity, weight, bulky, credit_points, is_offer, is_highlight, description, images, downloads, articles, related_products, accessory_products, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -107,6 +107,24 @@ return [
                 'eval' => 'trim',
             ],
         ],
+        'direct_cost' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.direct_cost',
+            'config' => [
+                'type' => 'number',
+                'format' => 'decimal',
+                'size' => 10,
+                'eval' => 'trim',
+            ],
+        ],
+        'deposit' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.deposit',
+            'config' => [
+                'type' => 'number',
+                'format' => 'decimal',
+                'size' => 10,
+                'eval' => 'trim',
+            ],
+        ],
         'price_tiers' => [
             'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.price_tiers',
             'config' => [
@@ -175,6 +193,14 @@ return [
             'config' => [
                 'type' => 'number',
                 'size' => 10,
+                'default' => 0,
+            ],
+        ],
+        'bulky' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.bulky',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
                 'default' => 0,
             ],
         ],

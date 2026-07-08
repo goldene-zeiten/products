@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service\Shipping;
 
+use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelection;
 use GoldeneZeiten\Products\Domain\Model\ShippingMethod;
@@ -74,8 +75,33 @@ final class ShippingCostService
             return ShippingSelection::none();
         }
         $method = $this->findSelectedMethod($shippingMethodUid, $basketViewModel, $countryCode);
-        $cost = $waived ? Money::fromCents(0) : $method->getRate();
+        $rate = $waived ? Money::fromCents(0) : $method->getRate();
+        $cost = $rate->add($this->calculateBulkySurcharge($basketViewModel));
         return new ShippingSelection($method, $cost);
+    }
+
+    /**
+     * A free-shipping voucher waives the method's own rate, not the bulky surcharge - an
+     * oversized item still costs extra to handle regardless of who pays the base shipping rate.
+     */
+    private function calculateBulkySurcharge(BasketViewModel $basketViewModel): Money
+    {
+        $surchargePerUnit = Money::fromDecimalString((string)($this->settings['shipping']['bulkySurcharge'] ?? '0.00'));
+        if ($surchargePerUnit->getCents() === 0) {
+            return Money::fromCents(0);
+        }
+        $bulkyUnits = 0;
+        foreach ($basketViewModel->getItems() as $item) {
+            if ($this->isBulky($item)) {
+                $bulkyUnits += $item->getQuantity();
+            }
+        }
+        return $surchargePerUnit->multiply((float)$bulkyUnits);
+    }
+
+    private function isBulky(BasketViewItem $item): bool
+    {
+        return $item->getProduct()->isBulky() || ($item->getArticle()?->isBulky() ?? false);
     }
 
     private function findSelectedMethod(int $shippingMethodUid, BasketViewModel $basketViewModel, string $countryCode): ShippingMethod

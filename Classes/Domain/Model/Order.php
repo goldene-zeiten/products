@@ -44,6 +44,10 @@ class Order extends AbstractEntity
     protected int $shippingMethod = 0;
     /** @var int */
     protected int $shippingTotal = 0;
+    /** @var int */
+    protected int $handlingFeeTotal = 0;
+    /** @var int */
+    protected int $depositTotal = 0;
     /**
      * @var ObjectStorage<OrderItem>
      */
@@ -292,6 +296,26 @@ class Order extends AbstractEntity
     public function setShippingTotal(Money $shippingTotal): void
     {
         $this->shippingTotal = $shippingTotal->getCents();
+    }
+
+    public function getHandlingFeeTotal(): Money
+    {
+        return Money::fromCents($this->handlingFeeTotal);
+    }
+
+    public function setHandlingFeeTotal(Money $handlingFeeTotal): void
+    {
+        $this->handlingFeeTotal = $handlingFeeTotal->getCents();
+    }
+
+    public function getDepositTotal(): Money
+    {
+        return Money::fromCents($this->depositTotal);
+    }
+
+    public function setDepositTotal(Money $depositTotal): void
+    {
+        $this->depositTotal = $depositTotal->getCents();
     }
 
     /**

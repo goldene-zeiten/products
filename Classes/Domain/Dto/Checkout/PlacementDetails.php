@@ -22,6 +22,7 @@ final readonly class PlacementDetails
         private BasketDiscountSummary $voucherSummary,
         private Money $pointsDiscountAmount,
         private ShippingSelection $shippingSelection,
+        private Money $handlingFeeCost,
         private ?Address $deliveryAddress = null,
         private string $giftMessage = ''
     ) {}
@@ -50,6 +51,11 @@ final readonly class PlacementDetails
     public function getShippingMethodUid(): int
     {
         return $this->shippingSelection->getShippingMethodUid();
+    }
+
+    public function getHandlingFeeCost(): Money
+    {
+        return $this->handlingFeeCost;
     }
 
     public function getDeliveryAddress(): ?Address

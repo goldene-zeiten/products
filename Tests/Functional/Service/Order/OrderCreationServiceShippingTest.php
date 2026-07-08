@@ -23,6 +23,7 @@ use GoldeneZeiten\Products\Service\Order\OrderCreationService;
 use GoldeneZeiten\Products\Service\Order\OrderFactory;
 use GoldeneZeiten\Products\Service\Order\StockService;
 use GoldeneZeiten\Products\Service\Shipping\Exception\NoShippingMethodAvailableException;
+use GoldeneZeiten\Products\Service\Shipping\HandlingFeeService;
 use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
@@ -169,6 +170,7 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
             $this->get(CreditPointsTransactionRepository::class),
             $this->get(FrontendUserResolver::class),
             $shippingCostService,
+            $this->get(HandlingFeeService::class),
             $this->get(ConfigurationManagerInterface::class)
         );
     }

@@ -129,22 +129,54 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $this->subject(true)->resolveSelection(1, $this->basketViewModel($this->heavyProduct, 1), 'DE', false);
     }
 
-    private function subject(bool $enabled): ShippingCostService
+    #[Test]
+    public function resolveSelectionAddsTheBulkySurchargeOncePerBulkyUnit(): void
     {
-        return new ShippingCostService($this->get(ShippingMethodRepository::class), $this->fakeConfigurationManager($enabled));
+        $this->lightProduct->setBulky(true);
+
+        // Quantity 2 keeps the basket at exactly method 1's 1000g cap (500g each).
+        $selection = $this->subject(true, '2.50')->resolveSelection(1, $this->basketViewModel($this->lightProduct, 2), 'DE', false);
+
+        self::assertSame(500 + 500, $selection->getCost()->getCents());
     }
 
-    private function fakeConfigurationManager(bool $enabled): ConfigurationManagerInterface
+    #[Test]
+    public function resolveSelectionBulkySurchargeStillAppliesWhenShippingIsWaived(): void
     {
-        return new class ($enabled) implements ConfigurationManagerInterface {
-            public function __construct(private readonly bool $enabled) {}
+        $this->lightProduct->setBulky(true);
+
+        $selection = $this->subject(true, '2.50')->resolveSelection(1, $this->basketViewModel($this->lightProduct, 1), 'DE', true);
+
+        self::assertSame(250, $selection->getCost()->getCents());
+    }
+
+    #[Test]
+    public function resolveSelectionHasNoSurchargeForNonBulkyItems(): void
+    {
+        $selection = $this->subject(true, '2.50')->resolveSelection(1, $this->basketViewModel($this->lightProduct, 2), 'DE', false);
+
+        self::assertSame(500, $selection->getCost()->getCents());
+    }
+
+    private function subject(bool $enabled, string $bulkySurcharge = '0.00'): ShippingCostService
+    {
+        return new ShippingCostService($this->get(ShippingMethodRepository::class), $this->fakeConfigurationManager($enabled, $bulkySurcharge));
+    }
+
+    private function fakeConfigurationManager(bool $enabled, string $bulkySurcharge = '0.00'): ConfigurationManagerInterface
+    {
+        return new class ($enabled, $bulkySurcharge) implements ConfigurationManagerInterface {
+            public function __construct(
+                private readonly bool $enabled,
+                private readonly string $bulkySurcharge
+            ) {}
 
             /**
              * @return array<string, mixed>
              */
             public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
             {
-                return ['shipping' => ['enabled' => $this->enabled]];
+                return ['shipping' => ['enabled' => $this->enabled, 'bulkySurcharge' => $this->bulkySurcharge]];
             }
 
             /**
