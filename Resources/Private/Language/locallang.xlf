@@ -138,6 +138,9 @@
 			<trans-unit id="back_to_shop" resname="back_to_shop">
 				<source>Back to Shop</source>
 			</trans-unit>
+			<trans-unit id="download_invoice" resname="download_invoice">
+				<source>Download Invoice</source>
+			</trans-unit>
 			<trans-unit id="details" resname="details">
 				<source>Details</source>
 			</trans-unit>

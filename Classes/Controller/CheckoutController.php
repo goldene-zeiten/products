@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Service\Checkout\CheckoutService;
 use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Service\Invoice\InvoiceTokenService;
 use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementExceptionInterface;
 use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
 use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
@@ -31,7 +32,8 @@ final class CheckoutController extends ActionController
         private readonly OrderPlacementService $orderPlacementService,
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly CreditPointsService $creditPointsService,
-        private readonly ShippingCostService $shippingCostService
+        private readonly ShippingCostService $shippingCostService,
+        private readonly InvoiceTokenService $invoiceTokenService
     ) {}
 
     public function addressAction(): ResponseInterface
@@ -172,7 +174,10 @@ final class CheckoutController extends ActionController
         if ($orderObject === null) {
             return $this->redirect('list', 'Product');
         }
-        $this->view->assign('order', $orderObject);
+        $this->view->assignMultiple([
+            'order' => $orderObject,
+            'invoiceHash' => $this->invoiceTokenService->generateToken($orderObject),
+        ]);
         return $this->htmlResponse();
     }
 

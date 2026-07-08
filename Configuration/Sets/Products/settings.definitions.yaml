@@ -96,6 +96,24 @@ settings:
     default: ''
     label: 'Merchant notification recipient (empty disables the notification)'
     category: products
+  products.invoice.templateRootPaths:
+    type: stringlist
+    default:
+      - 'EXT:products/Resources/Private/Templates/Invoice/'
+    label: Invoice template root paths
+    category: products
+  products.invoice.partialRootPaths:
+    type: stringlist
+    default:
+      - 'EXT:products/Resources/Private/Partials/'
+    label: Invoice partial root paths
+    category: products
+  products.invoice.layoutRootPaths:
+    type: stringlist
+    default:
+      - 'EXT:products/Resources/Private/Layouts/'
+    label: Invoice layout root paths
+    category: products
   products.payment.invoice.enabled:
     type: bool
     default: true
@@ -105,6 +123,11 @@ settings:
     type: int
     default: 1729512000
     label: AJAX page typeNum
+    category: products
+  products.invoice.pageType:
+    type: int
+    default: 1729512001
+    label: Invoice download page typeNum
     category: products
   products.creditPoints.enabled:
     type: bool
