@@ -1,8 +1,8 @@
 <f:asset.script identifier="products-article-selector" src="EXT:products/Resources/Public/JavaScript/article-selector.js" type="module" />
 <div class="article-selector mt-3" data-product-variant-selector data-variant-map="{variantMap}">
     <h6><f:translate key="choose_variant" /></h6>
-    <f:form action="add" controller="Basket" extensionName="Products" pluginName="Basket">
-        <f:form.hidden name="product" value="{product}" />
+    <f:form action="add" controller="Basket" extensionName="Products" pluginName="Basket" pageUid="{settings.pids.basketPage}">
+        <f:form.hidden name="product" value="{product.uid}" />
 
         <f:if condition="{variantAttributes}">
             <f:then>

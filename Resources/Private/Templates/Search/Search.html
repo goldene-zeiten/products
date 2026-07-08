@@ -5,8 +5,8 @@
         <f:form.submit value="{f:translate(key: 'search')}" class="btn btn-primary" />
     </f:form>
 
-    <f:if condition="{result.hasSearched}">
-        <f:if condition="{result.hasResults}">
+    <f:if condition="{result.searched}">
+        <f:if condition="{result.results}">
             <f:then>
                 <div class="row">
                     <f:for each="{result.products}" as="product">

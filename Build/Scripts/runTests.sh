@@ -120,7 +120,8 @@ cleanTestFiles() {
     # test related
     echo -n "Clean test related files ... "
     rm -rf \
-        .Build/Web/typo3temp/var/tests/
+        .Build/Web/typo3temp/var/tests/ \
+        Tests/Acceptance/Instance/
     echo "done"
 }
 
@@ -143,6 +144,7 @@ Usage: $0 [options] [file]
 Options:
     -s <...>
         Specifies which test suite to run
+            - acceptance: Playwright acceptance tests against a disposable TYPO3 instance
             - buildJs: build javascript/typescript assets
             - cgl: cgl test and fix all php files
             - checkBom: check UTF-8 files do not contain BOM
@@ -160,6 +162,7 @@ Options:
             - lintJs: javascript/typescript linting
             - lintPhp: PHP linting
             - lintTypoScript: TypoScript linting
+            - npm: "npm" with all remaining arguments dispatched.
             - npmInstall: "npm ci", use after initial clone or when package.json changed
             - renderDocumentation: This uses the official rendering container to render the extension documentation.
             - phpstan: phpstan analyze
@@ -184,7 +187,8 @@ Options:
                 - pdo_mysql
 
     -d <sqlite|mariadb|mysql|postgres>
-        Only with -s functional|functionalDeprecated|acceptance|acceptanceInstall
+        Only with -s functional|functionalDeprecated
+        Only sqlite and mariadb are supported with -s acceptance
         Specifies on which DBMS tests are performed
             - sqlite: (default): use sqlite
             - mariadb: use mariadb
@@ -220,7 +224,7 @@ Options:
             - 16    maintained until 2028-11-09
 
     -t <13|14>
-        Only with -s composerUpdate|phpstan|phpstanGenerateBaseline
+        Only with -s acceptance|composerUpdate|phpstan|phpstanGenerateBaseline
         Specifies the TYPO3 CORE Version to be used
             - 13: (default) use TYPO3 v13
             - 14: use TYPO3 v14
@@ -232,7 +236,7 @@ Options:
             - 8.4: use PHP 8.4
 
     -x
-        Only with -s functional|functionalDeprecated|unit|unitDeprecated|unitRandom|acceptance|acceptanceInstall
+        Only with -s functional|functionalDeprecated|unit|unitDeprecated|unitRandom
         Send information to host instance for test or system under test break points. This is especially
         useful if a local PhpStorm instance is listening on default xdebug port 9003. A different port
         can be selected with -y
@@ -280,11 +284,11 @@ Examples:
     # Run functional tests on postgres 11
     ./Build/Scripts/runTests.sh -s functional -d postgres -k 11
 
-    # Run restricted set of application acceptance tests
-    ./Build/Scripts/runTests.sh -s acceptance typo3/sysext/core/Tests/Acceptance/Application/Login/BackendLoginCest.php:loginButtonMouseOver
+    # Run the Playwright acceptance suite against a disposable TYPO3 v13 instance on sqlite
+    ./Build/Scripts/runTests.sh -s acceptance -t 13 -d sqlite
 
-    # Run installer tests of a new instance on sqlite
-    ./Build/Scripts/runTests.sh -s acceptanceInstall -d sqlite
+    # Run the acceptance suite against TYPO3 v14 on mariadb
+    ./Build/Scripts/runTests.sh -s acceptance -t 14 -d mariadb
 EOF
 }
 
@@ -430,6 +434,9 @@ IMAGE_ALPINE="docker.io/alpine:3.8"
 IMAGE_DOCS="ghcr.io/typo3-documentation/render-guides:latest"
 IMAGE_SELENIUM="docker.io/selenium/standalone-chrome:4.0.0-20211102"
 IMAGE_NODEJS="ghcr.io/typo3/core-testing-nodejs24:1.1"
+# Version must match package.json's "@playwright/test" exactly - the image only bundles browser
+# binaries for that one Playwright version.
+IMAGE_PLAYWRIGHT="mcr.microsoft.com/playwright:v1.61.1-noble"
 IMAGE_MARIADB="docker.io/mariadb:${DBMS_VERSION}"
 IMAGE_MYSQL="docker.io/mysql:${DBMS_VERSION}"
 IMAGE_POSTGRES="docker.io/postgres:${DBMS_VERSION}-alpine"
@@ -474,6 +481,25 @@ fi
 
 # Suite execution
 case ${TEST_SUITE} in
+    acceptance)
+        NPM_COMMAND=(npm ci)
+        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-npm-${SUFFIX} -e npm_config_cache=.Build/.cache/npm ${IMAGE_NODEJS} "${NPM_COMMAND[@]}"
+        case ${DBMS} in
+            mariadb)
+                echo "Using driver: ${DATABASE_DRIVER}"
+                ${CONTAINER_BIN} run --name mariadb-acceptance-${SUFFIX} --network ${NETWORK} -d -e MYSQL_ROOT_PASSWORD=funcp --tmpfs /var/lib/mysql/:rw,noexec,nosuid ${IMAGE_MARIADB} >/dev/null
+                waitFor mariadb-acceptance-${SUFFIX} 3306
+                ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-setup-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} sh Tests/Acceptance/setupInstance.sh ${CORE_VERSION} ${DATABASE_DRIVER} mariadb-acceptance-${SUFFIX} func_test root funcp
+                ;;
+            sqlite)
+                ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-setup-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} sh Tests/Acceptance/setupInstance.sh ${CORE_VERSION} sqlite
+                ;;
+        esac
+        ${CONTAINER_BIN} run -d --name acceptance-web-${SUFFIX} --network ${NETWORK} -v ${ROOT_DIR}:${ROOT_DIR} -w ${ROOT_DIR} ${IMAGE_PHP} php -S 0.0.0.0:8080 -t Tests/Acceptance/Instance/public Tests/Acceptance/Instance/public/index.php >/dev/null
+        waitFor acceptance-web-${SUFFIX} 8080
+        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name playwright-${SUFFIX} -e PLAYWRIGHT_BASE_URL="http://acceptance-web-${SUFFIX}:8080/" -e CI=1 ${IMAGE_PLAYWRIGHT} npx playwright test --config=Tests/Acceptance/playwright.config.js
+        SUITE_EXIT_CODE=$?
+        ;;
     buildJs)
         COMMAND=(npm run build)
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name buildJs-${SUFFIX} -e npm_config_cache=.Build/.cache/npm ${IMAGE_NODEJS} "${COMMAND[@]}"
@@ -609,6 +635,11 @@ case ${TEST_SUITE} in
         fi
         COMMAND="php -dxdebug.mode=off .Build/bin/typoscript-lint --ansi --config=./Build/typoscript-lint/typoscript-lint.yml"
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name lint-php-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} /bin/sh -c "${COMMAND}"
+        SUITE_EXIT_CODE=$?
+        ;;
+    npm)
+        COMMAND=(npm "$@")
+        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name npm-command-${SUFFIX} -e npm_config_cache=.Build/.cache/npm ${IMAGE_NODEJS} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
         ;;
     npmInstall)

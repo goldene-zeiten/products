@@ -26,6 +26,14 @@ export default tseslint.config(
     },
   },
   {
+    files: ['Tests/Acceptance/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+  {
     ignores: [
       '**/node_modules/**',
       '**/.Build/**',
