@@ -6,6 +6,7 @@ plugin.tx_products {
             basketPage = {$plugin.tx_products.settings.pids.basketPage}
             checkoutPage = {$plugin.tx_products.settings.pids.checkoutPage}
             orderHistoryPage = {$plugin.tx_products.settings.pids.orderHistoryPage}
+            categoryPage = {$plugin.tx_products.settings.pids.categoryPage}
         }
         pricing {
             mode = {$plugin.tx_products.settings.pricing.mode}

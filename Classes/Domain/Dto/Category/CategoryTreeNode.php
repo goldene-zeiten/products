@@ -16,7 +16,8 @@ final readonly class CategoryTreeNode
     public function __construct(
         private Category $category,
         private array $children,
-        private int $depth
+        private int $depth,
+        private string $slugPath
     ) {}
 
     public function getCategory(): Category
@@ -35,5 +36,15 @@ final readonly class CategoryTreeNode
     public function getDepth(): int
     {
         return $this->depth;
+    }
+
+    /**
+     * Nested slug path from the tree root down to and including this node
+     * (e.g. "main-category-1/sub-category-5/last-category-3"), precomputed once while the tree
+     * is built rather than re-walking ancestors per node.
+     */
+    public function getSlugPath(): string
+    {
+        return $this->slugPath;
     }
 }

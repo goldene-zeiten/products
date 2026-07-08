@@ -1,0 +1,10 @@
+<ul>
+    <f:for each="{nodes}" as="node">
+        <li>
+            <a href="{f:uri.page(pageUid: '{settings.pids.categoryPage}')}/{node.slugPath}">{node.category.title}</a>
+            <f:if condition="{node.children}">
+                <f:render partial="Category/TreeBranch" arguments="{nodes: node.children, settings: settings}" />
+            </f:if>
+        </li>
+    </f:for>
+</ul>

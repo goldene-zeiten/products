@@ -1,6 +1,7 @@
 <?php
 
 use GoldeneZeiten\Products\Controller\BasketController;
+use GoldeneZeiten\Products\Controller\CategoryController;
 use GoldeneZeiten\Products\Controller\CheckoutController;
 use GoldeneZeiten\Products\Controller\OrderController;
 use GoldeneZeiten\Products\Controller\ProductController;
@@ -113,5 +114,27 @@ ExtensionUtility::configurePlugin(
     [
         SearchController::class => 'search',
     ],
+    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+);
+
+ExtensionUtility::configurePlugin(
+    'Products',
+    'CategoryNavigation',
+    [
+        CategoryController::class => 'navigation',
+    ],
+    // non-cacheable actions - none, the tree has no session/user dependency
+    [],
+    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+);
+
+ExtensionUtility::configurePlugin(
+    'Products',
+    'CategoryList',
+    [
+        CategoryController::class => 'list',
+    ],
+    // non-cacheable actions - none, the listing has no session/user dependency
+    [],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );
