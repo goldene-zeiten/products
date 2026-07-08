@@ -28,6 +28,7 @@ use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Order\Exception\VoucherRedemptionFailedException;
+use GoldeneZeiten\Products\Service\Shipping\HandlingFeeService;
 use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
 use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherExceptionInterface;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
@@ -52,6 +53,7 @@ final class OrderCreationService
         private readonly CreditPointsTransactionRepository $creditPointsTransactionRepository,
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly ShippingCostService $shippingCostService,
+        private readonly HandlingFeeService $handlingFeeService,
         private readonly ConfigurationManagerInterface $configurationManager
     ) {}
 
@@ -66,10 +68,12 @@ final class OrderCreationService
         $voucherSummary = $this->resolveVoucherDiscount($checkoutSelections->getVoucherCodes(), $basketViewModel, $frontendUser);
         $pointsRedemption = $this->resolvePointsRedemption($checkoutSelections->getSpendPoints(), $basketViewModel, $voucherSummary, $frontendUser);
         $shippingSelection = $this->resolveShippingSelection($checkoutSelections->getShippingMethodUid(), $basketViewModel, $address, $voucherSummary);
+        $handlingFeeCost = $this->handlingFeeService->resolveCost($basketViewModel, $address->getCountry());
         $details = new PlacementDetails(
             $voucherSummary,
             $pointsRedemption->getDiscountAmount(),
             $shippingSelection,
+            $handlingFeeCost,
             $checkoutSelections->getDeliveryAddress(),
             $checkoutSelections->getGiftMessage()
         );

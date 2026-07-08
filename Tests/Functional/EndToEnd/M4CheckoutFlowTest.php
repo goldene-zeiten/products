@@ -28,6 +28,7 @@ use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
 use GoldeneZeiten\Products\Service\Order\OrderPlacementTransaction;
 use GoldeneZeiten\Products\Service\Order\PaymentInitiationService;
 use GoldeneZeiten\Products\Service\Order\StockService;
+use GoldeneZeiten\Products\Service\Shipping\HandlingFeeService;
 use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
 use GoldeneZeiten\Products\Service\Voucher\GainedVoucherService;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
@@ -155,6 +156,7 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
             $this->get(CreditPointsTransactionRepository::class),
             $this->get(FrontendUserResolver::class),
             $shippingCostService,
+            $this->get(HandlingFeeService::class),
             $this->get(ConfigurationManagerInterface::class)
         );
         $orderPlacementTransaction = new OrderPlacementTransaction(

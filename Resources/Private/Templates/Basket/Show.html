@@ -58,6 +58,13 @@
                         <td><strong>{basket.totalGross.decimalString} {basket.currency}</strong></td>
                         <td></td>
                     </tr>
+                    <f:if condition="{basket.depositTotal.cents} > 0">
+                        <tr>
+                            <th colspan="3"><f:translate key="deposit_total" /></th>
+                            <td>{basket.depositTotal.decimalString} {basket.currency}</td>
+                            <td></td>
+                        </tr>
+                    </f:if>
                     <f:if condition="!{discountSummary.empty}">
                         <tr>
                             <th colspan="3"><f:translate key="voucher_discount" /></th>

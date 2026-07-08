@@ -21,6 +21,10 @@ class Product extends AbstractEntity
     protected string $ean = '';
     /** @var string */
     protected string $price = '0.00';
+    /** @var string */
+    protected string $directCost = '0.00';
+    /** @var string */
+    protected string $deposit = '0.00';
     protected ?TaxClass $taxClass = null;
     /**
      * @var ObjectStorage<Category>
@@ -30,6 +34,7 @@ class Product extends AbstractEntity
     protected int $basketMinQuantity = 0;
     protected int $basketMaxQuantity = 0;
     protected int $weight = 0;
+    protected bool $bulky = false;
     protected int $creditPoints = 0;
     protected bool $isOffer = false;
     protected bool $isHighlight = false;
@@ -144,6 +149,26 @@ class Product extends AbstractEntity
         $this->price = $price->getDecimalString();
     }
 
+    public function getDirectCost(): Money
+    {
+        return Money::fromDecimalString($this->directCost);
+    }
+
+    public function setDirectCost(Money $directCost): void
+    {
+        $this->directCost = $directCost->getDecimalString();
+    }
+
+    public function getDeposit(): Money
+    {
+        return Money::fromDecimalString($this->deposit);
+    }
+
+    public function setDeposit(Money $deposit): void
+    {
+        $this->deposit = $deposit->getDecimalString();
+    }
+
     public function getTaxClass(): ?TaxClass
     {
         return $this->taxClass;
@@ -208,6 +233,16 @@ class Product extends AbstractEntity
     public function setWeight(int $weight): void
     {
         $this->weight = $weight;
+    }
+
+    public function isBulky(): bool
+    {
+        return $this->bulky;
+    }
+
+    public function setBulky(bool $bulky): void
+    {
+        $this->bulky = $bulky;
     }
 
     public function getCreditPoints(): int

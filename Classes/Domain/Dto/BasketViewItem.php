@@ -68,4 +68,15 @@ final readonly class BasketViewItem
     {
         return $this->lineTotalTax;
     }
+
+    /**
+     * Deposit (e.g. a bottle deposit) is a per-unit amount on top of the price, computed on
+     * demand rather than threaded through the constructor since it only depends on data the
+     * product/article already carry.
+     */
+    public function getDepositTotal(): Money
+    {
+        $deposit = $this->article?->getDeposit() ?? $this->product->getDeposit();
+        return $deposit->multiply((float)$this->quantity);
+    }
 }

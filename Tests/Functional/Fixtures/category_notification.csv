@@ -1,0 +1,15 @@
+"tx_products_domain_model_taxclass",,,
+,"uid","title","code"
+,1,"Standard Tax","STANDARD"
+
+"tx_products_domain_model_category",,,,
+,"uid","pid","title","notification_email"
+,1,2,"Footwear","category@example.com"
+
+"tx_products_domain_model_product",,,,,,
+,"uid","pid","title","price","tax_class"
+,1,2,"Red Shoes","29.99",1
+
+"tx_products_product_category_mm",,,
+,"uid_local","uid_foreign","sorting"
+,1,1,1

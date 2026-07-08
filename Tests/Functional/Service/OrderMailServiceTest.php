@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Service;
 
 use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Domain\Model\OrderItem;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\OrderMailService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
@@ -178,6 +179,66 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         self::assertSame('merchant@example.com', $sentEmails[0]->getTo()[0]->getAddress());
         self::assertStringContainsString('Red Shoes', (string)$sentEmails[0]->getSubject());
         self::assertStringContainsString('2', (string)$sentEmails[0]->getTextBody());
+    }
+
+    #[Test]
+    public function sendMerchantNotificationRoutesToCategoryRecipientInAdditionToTheGlobalOne(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/category_notification.csv');
+        $this->writeSiteConfiguration(
+            'products-with-category-notification',
+            $this->buildSiteConfiguration(2, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'settings' => [
+                    'products' => [
+                        'email' => ['merchantRecipient' => 'shop@example.com'],
+                    ],
+                ],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+
+        $order = $this->buildOrder();
+        $order->setSiteIdentifier('products-with-category-notification');
+        $item = new OrderItem();
+        $item->setProduct(1);
+        $order->getItems()->attach($item);
+
+        $this->subject->sendMerchantNotification($order);
+
+        $sentEmails = TestMailer::getSentEmails();
+        $recipients = array_map(static fn($email): string => $email->getTo()[0]->getAddress(), $sentEmails);
+        self::assertCount(2, $sentEmails);
+        self::assertContains('shop@example.com', $recipients);
+        self::assertContains('category@example.com', $recipients);
+    }
+
+    #[Test]
+    public function sendMerchantNotificationSendsOnlyOnceWhenCategoryRecipientMatchesTheGlobalOne(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/category_notification.csv');
+        $this->writeSiteConfiguration(
+            'products-with-matching-category-notification',
+            $this->buildSiteConfiguration(2, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'settings' => [
+                    'products' => [
+                        'email' => ['merchantRecipient' => 'category@example.com'],
+                    ],
+                ],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+
+        $order = $this->buildOrder();
+        $order->setSiteIdentifier('products-with-matching-category-notification');
+        $item = new OrderItem();
+        $item->setProduct(1);
+        $order->getItems()->attach($item);
+
+        $this->subject->sendMerchantNotification($order);
+
+        self::assertCount(1, TestMailer::getSentEmails());
     }
 
     private function buildOrder(): Order

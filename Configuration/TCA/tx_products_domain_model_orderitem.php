@@ -13,7 +13,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'parent_order, product, article, title, article_title, item_number, quantity, unit_price_net, unit_price_gross, tax_rate, line_total_net, line_total_tax, line_total_gross, options'],
+        '1' => ['showitem' => 'parent_order, product, article, title, article_title, item_number, quantity, unit_price_net, unit_price_gross, tax_rate, line_total_net, line_total_tax, line_total_gross, deposit_total, options'],
     ],
     'columns' => [
         'parent_order' => [
@@ -112,6 +112,13 @@ return [
         ],
         'line_total_gross' => [
             'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderitem.line_total_gross',
+            'config' => [
+                'type' => 'number',
+                'readOnly' => true,
+            ],
+        ],
+        'deposit_total' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderitem.deposit_total',
             'config' => [
                 'type' => 'number',
                 'readOnly' => true,

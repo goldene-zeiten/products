@@ -159,6 +159,16 @@ settings:
     default: false
     label: Shipping cost calculation enabled
     category: products
+  products.shipping.bulkySurcharge:
+    type: string
+    default: '0.00'
+    label: 'Flat surcharge added once per bulky-flagged item unit (0.00 disables it)'
+    category: products
+  products.handling.enabled:
+    type: bool
+    default: false
+    label: Handling fee calculation enabled
+    category: products
   products.vouchers.gained.enabled:
     type: bool
     default: false

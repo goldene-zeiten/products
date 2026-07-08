@@ -21,6 +21,7 @@ use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Order\OrderCreationService;
 use GoldeneZeiten\Products\Service\Order\OrderFactory;
 use GoldeneZeiten\Products\Service\Order\StockService;
+use GoldeneZeiten\Products\Service\Shipping\HandlingFeeService;
 use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
@@ -118,6 +119,7 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
             $this->get(CreditPointsTransactionRepository::class),
             $this->get(FrontendUserResolver::class),
             $this->get(ShippingCostService::class),
+            $this->get(HandlingFeeService::class),
             $this->get(ConfigurationManagerInterface::class)
         );
     }

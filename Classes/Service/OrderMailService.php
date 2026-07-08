@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Service;
 
 use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Domain\Model\Category;
 use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Domain\Model\OrderItem;
+use GoldeneZeiten\Products\Domain\Model\Product;
+use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Service\Invoice\InvoicePdfService;
 use GoldeneZeiten\Products\Service\Invoice\InvoiceRenderer;
 use Psr\Log\LoggerInterface;
@@ -28,6 +32,7 @@ final class OrderMailService
         private readonly OrderSettingsResolver $settingsResolver,
         private readonly InvoiceRenderer $invoiceRenderer,
         private readonly InvoicePdfService $invoicePdfService,
+        private readonly ProductRepository $productRepository,
         private readonly LoggerInterface $logger
     ) {}
 
@@ -38,14 +43,63 @@ final class OrderMailService
         $this->mailer->send($email);
     }
 
+    /**
+     * The global recipient (if configured) always gets notified; each category-specific
+     * recipient resolved from the order's line items is notified in addition, not instead of it -
+     * a simplification of legacy's per-suffix template-bucket system, one recipient per address.
+     */
     public function sendMerchantNotification(Order $order): void
     {
-        $recipient = $this->getSetting($this->settingsResolver->getSettings($order), 'products.email.merchantRecipient', '');
-        if ($recipient === '') {
-            return;
+        $recipients = $this->resolveMerchantRecipients($order);
+        foreach ($recipients as $recipient) {
+            $this->mailer->send($this->buildEmail($order, 'MerchantNotification', self::LANGUAGE_FILE . 'merchant_notification_subject', $recipient));
         }
+    }
 
-        $this->mailer->send($this->buildEmail($order, 'MerchantNotification', self::LANGUAGE_FILE . 'merchant_notification_subject', $recipient));
+    /**
+     * @return string[]
+     */
+    private function resolveMerchantRecipients(Order $order): array
+    {
+        $globalRecipient = $this->getSetting($this->settingsResolver->getSettings($order), 'products.email.merchantRecipient', '');
+        $recipients = $globalRecipient !== '' ? [$globalRecipient] : [];
+        return array_values(array_unique(array_merge($recipients, $this->resolveCategoryNotificationRecipients($order))));
+    }
+
+    /**
+     * Each category is resolved at most once per order (mirrors legacy's per-category dedup
+     * cache), then each distinct email address at most once regardless of how many categories
+     * share it.
+     *
+     * @return string[]
+     */
+    private function resolveCategoryNotificationRecipients(Order $order): array
+    {
+        $seenCategories = [];
+        $recipients = [];
+        foreach ($order->getItems() as $item) {
+            foreach ($this->categoriesForItem($item) as $category) {
+                $categoryUid = $category->getUid();
+                if ($categoryUid === null || isset($seenCategories[$categoryUid])) {
+                    continue;
+                }
+                $seenCategories[$categoryUid] = true;
+                $email = $category->getNotificationEmail();
+                if ($email !== '') {
+                    $recipients[$email] = $email;
+                }
+            }
+        }
+        return array_values($recipients);
+    }
+
+    /**
+     * @return Category[]
+     */
+    private function categoriesForItem(OrderItem $item): array
+    {
+        $product = $this->productRepository->findByUid($item->getProduct());
+        return $product instanceof Product ? $product->getCategories()->toArray() : [];
     }
 
     public function sendOrderStatusChanged(Order $order, OrderStatus $previousStatus, OrderStatus $newStatus): void

@@ -48,6 +48,9 @@
 			<trans-unit id="total_gross" resname="total_gross">
 				<source>Total Gross</source>
 			</trans-unit>
+			<trans-unit id="deposit_total" resname="deposit_total">
+				<source>Deposit</source>
+			</trans-unit>
 			<trans-unit id="proceed_to_checkout" resname="proceed_to_checkout">
 				<source>Proceed to Checkout</source>
 			</trans-unit>
