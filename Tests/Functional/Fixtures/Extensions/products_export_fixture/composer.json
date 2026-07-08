@@ -1,0 +1,23 @@
+{
+  "name": "goldene-zeiten/products-export-fixture",
+  "type": "typo3-cms-extension",
+  "description": "A dummy OrderExportInterface implementation proving the tagged_iterator wiring functionally.",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "typo3/cms-core": "^13.4 || ^14.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\ExportFixture\\": "Classes/"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "products_export_fixture",
+      "version": "1.0.0",
+      "Package": {
+        "providesPackages": {}
+      }
+    }
+  }
+}
