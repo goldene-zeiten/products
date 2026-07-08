@@ -21,17 +21,19 @@ final class StockService
         private readonly ConnectionPool $connectionPool
     ) {}
 
-    public function decrementForItem(int $productUid, ?int $articleUid, int $quantity): void
+    /**
+     * @return int the stock level after decrementing, for low-stock threshold checks at the call site
+     */
+    public function decrementForItem(int $productUid, ?int $articleUid, int $quantity): int
     {
         if ($articleUid !== null) {
-            $this->decrement(self::ARTICLE_TABLE, $articleUid, $quantity);
-            return;
+            return $this->decrement(self::ARTICLE_TABLE, $articleUid, $quantity);
         }
 
-        $this->decrement(self::PRODUCT_TABLE, $productUid, $quantity);
+        return $this->decrement(self::PRODUCT_TABLE, $productUid, $quantity);
     }
 
-    private function decrement(string $table, int $uid, int $quantity): void
+    private function decrement(string $table, int $uid, int $quantity): int
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
         $affectedRows = $queryBuilder
@@ -49,5 +51,18 @@ final class StockService
                 1751751020
             );
         }
+
+        return $this->currentStock($table, $uid);
+    }
+
+    private function currentStock(string $table, int $uid): int
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
+        return (int)$queryBuilder
+            ->select('in_stock')
+            ->from($table)
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchOne();
     }
 }

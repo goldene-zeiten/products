@@ -36,6 +36,24 @@
 			<trans-unit id="customer_email" resname="customer_email">
 				<source>Customer Email</source>
 			</trans-unit>
+			<trans-unit id="order_status_changed_subject" resname="order_status_changed_subject">
+				<source>Order Status Updated: %s</source>
+			</trans-unit>
+			<trans-unit id="order_status_changed" resname="order_status_changed">
+				<source>Order Status Updated</source>
+			</trans-unit>
+			<trans-unit id="status_changed_from_to" resname="status_changed_from_to">
+				<source>The status of your order %s changed from "%s" to "%s".</source>
+			</trans-unit>
+			<trans-unit id="low_stock_warning_subject" resname="low_stock_warning_subject">
+				<source>Low Stock Warning: %s</source>
+			</trans-unit>
+			<trans-unit id="low_stock_warning_intro" resname="low_stock_warning_intro">
+				<source>A product/article has reached the low-stock threshold.</source>
+			</trans-unit>
+			<trans-unit id="remaining_stock" resname="remaining_stock">
+				<source>Remaining stock: %d</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Service\Order;
 
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketDiscountSummary;
+use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementDetails;
@@ -21,6 +22,7 @@ use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Domain\Repository\VoucherRedemptionRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Event\AfterOrderPlacedEvent;
+use GoldeneZeiten\Products\Event\LowStockThresholdReachedEvent;
 use GoldeneZeiten\Products\Event\VoucherRedeemedEvent;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
@@ -31,10 +33,13 @@ use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherExceptionInterface;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 final class OrderCreationService
 {
+    private const DEFAULT_LOW_STOCK_THRESHOLD = 5;
+
     public function __construct(
         private readonly StockService $stockService,
         private readonly OrderRepository $orderRepository,
@@ -46,7 +51,8 @@ final class OrderCreationService
         private readonly CreditPointsService $creditPointsService,
         private readonly CreditPointsTransactionRepository $creditPointsTransactionRepository,
         private readonly FrontendUserResolver $frontendUserResolver,
-        private readonly ShippingCostService $shippingCostService
+        private readonly ShippingCostService $shippingCostService,
+        private readonly ConfigurationManagerInterface $configurationManager
     ) {}
 
     public function create(
@@ -83,13 +89,38 @@ final class OrderCreationService
 
     private function decrementStock(BasketViewModel $basketViewModel): void
     {
+        $threshold = $this->lowStockThreshold();
         foreach ($basketViewModel->getItems() as $viewItem) {
-            $this->stockService->decrementForItem(
+            $newStock = $this->stockService->decrementForItem(
                 $viewItem->getProduct()->getUid() ?? 0,
                 $viewItem->getArticle()?->getUid(),
                 $viewItem->getQuantity()
             );
+            if ($newStock <= $threshold) {
+                $this->dispatchLowStockEvent($viewItem, $newStock);
+            }
         }
+    }
+
+    private function dispatchLowStockEvent(BasketViewItem $viewItem, int $newStock): void
+    {
+        $article = $viewItem->getArticle();
+        $this->eventDispatcher->dispatch(new LowStockThresholdReachedEvent(
+            $viewItem->getProduct()->getUid() ?? 0,
+            $article?->getUid(),
+            $article?->getTitle() ?? $viewItem->getProduct()->getTitle(),
+            $newStock
+        ));
+    }
+
+    /**
+     * Read via classic Extbase settings (not Site Settings) since this threshold is a per-plugin
+     * operational tuning knob, same access pattern as RecentlyViewedStorage's own limit setting.
+     */
+    private function lowStockThreshold(): int
+    {
+        $settings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, 'Products');
+        return (int)($settings['stock']['lowStockThreshold'] ?? self::DEFAULT_LOW_STOCK_THRESHOLD);
     }
 
     /**

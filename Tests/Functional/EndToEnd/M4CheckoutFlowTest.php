@@ -154,7 +154,8 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
             $this->get(CreditPointsService::class),
             $this->get(CreditPointsTransactionRepository::class),
             $this->get(FrontendUserResolver::class),
-            $shippingCostService
+            $shippingCostService,
+            $this->get(ConfigurationManagerInterface::class)
         );
         $orderPlacementTransaction = new OrderPlacementTransaction(
             $this->get(ConnectionPool::class),

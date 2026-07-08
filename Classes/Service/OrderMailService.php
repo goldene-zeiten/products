@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service;
 
+use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Service\Invoice\InvoicePdfService;
 use GoldeneZeiten\Products\Service\Invoice\InvoiceRenderer;
@@ -47,15 +48,42 @@ final class OrderMailService
         $this->mailer->send($this->buildEmail($order, 'MerchantNotification', self::LANGUAGE_FILE . 'merchant_notification_subject', $recipient));
     }
 
+    public function sendOrderStatusChanged(Order $order, OrderStatus $previousStatus, OrderStatus $newStatus): void
+    {
+        $settings = $this->settingsResolver->getSettings($order);
+        if (!$this->getBoolSetting($settings, 'products.email.orderStatusChanged.enabled', true)) {
+            return;
+        }
+
+        $email = $this->buildEmail($order, 'OrderStatusChanged', self::LANGUAGE_FILE . 'order_status_changed_subject', $order->getEmail());
+        $email->assignMultiple(['previousStatus' => $previousStatus, 'newStatus' => $newStatus]);
+        $this->mailer->send($email);
+    }
+
+    public function sendLowStockWarning(string $title, int $newStock): void
+    {
+        $settings = $this->settingsResolver->getDefaultSettings();
+        $recipient = $this->getSetting($settings, 'products.email.merchantRecipient', '');
+        if ($recipient === '') {
+            return;
+        }
+
+        $email = new FluidEmail($this->buildTemplatePaths($settings));
+        $this->applySender($email, $settings);
+        $email
+            ->to($recipient)
+            ->subject((string)LocalizationUtility::translate(self::LANGUAGE_FILE . 'low_stock_warning_subject', 'Products', [$title]))
+            ->format(FluidEmail::FORMAT_BOTH)
+            ->setTemplate('LowStockWarning')
+            ->assignMultiple(['title' => $title, 'newStock' => $newStock]);
+        $this->mailer->send($email);
+    }
+
     private function buildEmail(Order $order, string $template, string $subjectKey, string $recipient): FluidEmail
     {
         $settings = $this->settingsResolver->getSettings($order);
         $email = new FluidEmail($this->buildTemplatePaths($settings));
-
-        $senderEmail = $this->getSetting($settings, 'products.email.senderEmail', '');
-        if ($senderEmail !== '') {
-            $email->from(new Address($senderEmail, $this->getSetting($settings, 'products.email.senderName', '')));
-        }
+        $this->applySender($email, $settings);
 
         $email
             ->to($recipient)
@@ -65,6 +93,14 @@ final class OrderMailService
             ->assign('order', $order);
 
         return $email;
+    }
+
+    private function applySender(FluidEmail $email, SettingsInterface $settings): void
+    {
+        $senderEmail = $this->getSetting($settings, 'products.email.senderEmail', '');
+        if ($senderEmail !== '') {
+            $email->from(new Address($senderEmail, $this->getSetting($settings, 'products.email.senderName', '')));
+        }
     }
 
     /**
@@ -103,5 +139,10 @@ final class OrderMailService
     private function getSetting(SettingsInterface $settings, string $path, string $default): string
     {
         return $settings->has($path) ? (string)$settings->get($path) : $default;
+    }
+
+    private function getBoolSetting(SettingsInterface $settings, string $path, bool $default): bool
+    {
+        return $settings->has($path) ? (bool)$settings->get($path) : $default;
     }
 }

@@ -168,7 +168,8 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
             $this->get(CreditPointsService::class),
             $this->get(CreditPointsTransactionRepository::class),
             $this->get(FrontendUserResolver::class),
-            $shippingCostService
+            $shippingCostService,
+            $this->get(ConfigurationManagerInterface::class)
         );
     }
 
