@@ -48,3 +48,20 @@ Build/Scripts/runTests.sh -s functional
 Build/Scripts/runTests.sh -s cgl
 Build/Scripts/runTests.sh -s phpstan
 ```
+
+### Acceptance tests
+
+A Playwright suite drives a real demo shop (nested categories, search, basket, checkout, FE
+login) end to end in a browser. It runs against a disposable TYPO3 instance that
+`Tests/Acceptance/setupInstance.sh` builds fresh every time - nothing under
+`Tests/Acceptance/Instance/` is ever committed.
+
+```bash
+Build/Scripts/runTests.sh -s acceptance -t 13 -d sqlite
+Build/Scripts/runTests.sh -s acceptance -t 14 -d mariadb
+```
+
+The demo shop's page tree, category tree and products are hand-maintained CSV fixtures under
+`Tests/Acceptance/Fixtures/` (the same multi-table format as `Tests/Functional/Fixtures/*.csv`),
+imported via a small dev-only console command
+(`Tests/Acceptance/Packages/dataset_import/`) that never ships as part of the extension itself.
