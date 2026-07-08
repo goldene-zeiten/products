@@ -489,16 +489,27 @@ case ${TEST_SUITE} in
                 echo "Using driver: ${DATABASE_DRIVER}"
                 ${CONTAINER_BIN} run --name mariadb-acceptance-${SUFFIX} --network ${NETWORK} -d -e MYSQL_ROOT_PASSWORD=funcp --tmpfs /var/lib/mysql/:rw,noexec,nosuid ${IMAGE_MARIADB} >/dev/null
                 waitFor mariadb-acceptance-${SUFFIX} 3306
+                # Unlike the functional suite (whose testing-framework bootstrap creates its own
+                # scratch database), `typo3 setup --dbname=...` expects the target database to
+                # already exist - it does not create one itself.
+                ${CONTAINER_BIN} run --rm --network ${NETWORK} ${IMAGE_MARIADB} mysql -h mariadb-acceptance-${SUFFIX} -uroot -pfuncp -e "CREATE DATABASE IF NOT EXISTS func_test;"
                 ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-setup-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} sh Tests/Acceptance/setupInstance.sh ${CORE_VERSION} ${DATABASE_DRIVER} mariadb-acceptance-${SUFFIX} func_test root funcp
+                SETUP_EXIT_CODE=$?
                 ;;
             sqlite)
                 ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-setup-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} sh Tests/Acceptance/setupInstance.sh ${CORE_VERSION} sqlite
+                SETUP_EXIT_CODE=$?
                 ;;
         esac
-        ${CONTAINER_BIN} run -d --name acceptance-web-${SUFFIX} --network ${NETWORK} -v ${ROOT_DIR}:${ROOT_DIR} -w ${ROOT_DIR} ${IMAGE_PHP} php -S 0.0.0.0:8080 -t Tests/Acceptance/Instance/public Tests/Acceptance/Instance/public/index.php >/dev/null
-        waitFor acceptance-web-${SUFFIX} 8080
-        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name playwright-${SUFFIX} -e PLAYWRIGHT_BASE_URL="http://acceptance-web-${SUFFIX}:8080/" -e CI=1 ${IMAGE_PLAYWRIGHT} npx playwright test --config=Tests/Acceptance/playwright.config.js
-        SUITE_EXIT_CODE=$?
+        if [ "${SETUP_EXIT_CODE}" -ne 0 ]; then
+            echo "Acceptance instance setup failed, aborting before starting the web server/Playwright." >&2
+            SUITE_EXIT_CODE=${SETUP_EXIT_CODE}
+        else
+            ${CONTAINER_BIN} run -d --name acceptance-web-${SUFFIX} --network ${NETWORK} -v ${ROOT_DIR}:${ROOT_DIR} -w ${ROOT_DIR} ${IMAGE_PHP} php -S 0.0.0.0:8080 -t Tests/Acceptance/Instance/public Tests/Acceptance/Instance/public/index.php >/dev/null
+            waitFor acceptance-web-${SUFFIX} 8080
+            ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name playwright-${SUFFIX} -e PLAYWRIGHT_BASE_URL="http://acceptance-web-${SUFFIX}:8080/" -e CI=1 ${IMAGE_PLAYWRIGHT} npx playwright test --config=Tests/Acceptance/playwright.config.js
+            SUITE_EXIT_CODE=$?
+        fi
         ;;
     buildJs)
         COMMAND=(npm run build)
