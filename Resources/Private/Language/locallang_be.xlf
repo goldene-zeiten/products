@@ -30,6 +30,12 @@
 			<trans-unit id="plugin.search" resname="plugin.search">
 				<source>Search</source>
 			</trans-unit>
+			<trans-unit id="plugin.category_navigation" resname="plugin.category_navigation">
+				<source>Category Navigation</source>
+			</trans-unit>
+			<trans-unit id="plugin.category_list" resname="plugin.category_list">
+				<source>Category Product List</source>
+			</trans-unit>
 			<trans-unit id="module.products.title" resname="module.products.title">
 				<source>Products</source>
 			</trans-unit>

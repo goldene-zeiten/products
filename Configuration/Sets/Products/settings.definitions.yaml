@@ -28,6 +28,11 @@ settings:
     default: 0
     label: Order history page UID
     category: products
+  products.pids.categoryPage:
+    type: int
+    default: 0
+    label: Category navigation/listing page UID
+    category: products
   products.pricing.mode:
     type: string
     default: 'gross'

@@ -61,3 +61,17 @@ ExtensionUtility::registerPlugin(
     'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.search',
     'EXT:products/Resources/Public/Icons/Extension.svg'
 );
+
+ExtensionUtility::registerPlugin(
+    'Products',
+    'CategoryNavigation',
+    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.category_navigation',
+    'EXT:products/Resources/Public/Icons/Extension.svg'
+);
+
+ExtensionUtility::registerPlugin(
+    'Products',
+    'CategoryList',
+    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.category_list',
+    'EXT:products/Resources/Public/Icons/Extension.svg'
+);

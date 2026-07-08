@@ -26,7 +26,7 @@ final class CategoryTreeService
      */
     public function getTree(): array
     {
-        return $this->buildLevel(0, $this->groupByParentUid(), 0);
+        return $this->buildLevel(0, $this->groupByParentUid(), 0, '');
     }
 
     /**
@@ -80,17 +80,24 @@ final class CategoryTreeService
      * @param array<int, Category[]> $groupedByParentUid
      * @return CategoryTreeNode[]
      */
-    private function buildLevel(int $parentUid, array $groupedByParentUid, int $depth): array
+    private function buildLevel(int $parentUid, array $groupedByParentUid, int $depth, string $parentSlugPath): array
     {
         $nodes = [];
         foreach ($groupedByParentUid[$parentUid] ?? [] as $category) {
+            $slugPath = $this->appendSegment($parentSlugPath, $this->ownSlugSegment($category->getSlug()));
             $nodes[] = new CategoryTreeNode(
                 $category,
-                $this->buildLevel((int)$category->getUid(), $groupedByParentUid, $depth + 1),
-                $depth
+                $this->buildLevel((int)$category->getUid(), $groupedByParentUid, $depth + 1, $slugPath),
+                $depth,
+                $slugPath
             );
         }
         return $nodes;
+    }
+
+    private function appendSegment(string $path, string $segment): string
+    {
+        return $path === '' ? $segment : $path . '/' . $segment;
     }
 
     private function ownSlugSegment(string $storedSlug): string

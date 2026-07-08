@@ -11,6 +11,8 @@ plugin.tx_products {
             checkoutPage = 0
             # cat=plugin.tx_products.pids; type=int; label=Order history page UID
             orderHistoryPage = 0
+            # cat=plugin.tx_products.pids; type=int; label=Category navigation/listing page UID
+            categoryPage = 0
         }
         pricing {
             # cat=plugin.tx_products.pricing; type=string; label=Pricing mode (gross|net)
