@@ -11,6 +11,8 @@ use GoldeneZeiten\Products\Controller\SearchController;
 use GoldeneZeiten\Products\Controller\WishlistController;
 use GoldeneZeiten\Products\Controller\WithdrawalController;
 use GoldeneZeiten\Products\Hooks\CategoryMountAccessHook;
+use GoldeneZeiten\Products\PageTitle\ProductPageTitleProvider;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
 defined('TYPO3') or die();
@@ -18,6 +20,14 @@ defined('TYPO3') or die();
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['checkRecordUpdateAccess'][] = CategoryMountAccessHook::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = CategoryMountAccessHook::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = CategoryMountAccessHook::class;
+
+// Page-title providers are registered via `config.pageTitleProviders` TypoScript, not a DI tag -
+// this mirrors exactly how EXT:core itself registers its own default `record` provider. "before"
+// ensures ours is tried first; returning '' (no current product) correctly falls through to it.
+ExtensionManagementUtility::addTypoScriptSetup(
+    'config.pageTitleProviders.products.provider = ' . ProductPageTitleProvider::class . '
+config.pageTitleProviders.products.before = record'
+);
 
 // The variant chooser's GET form resubmits with a combination unknown at render time (no
 // pre-computable cHash is possible for it), and ProductController::showAction is already

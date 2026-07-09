@@ -46,3 +46,10 @@ services:
   # dead-code elimination would strip the unreferenced service before compilation finishes.
   GoldeneZeiten\Products\Export\OrderExportRegistry:
     public: true
+
+  # TYPO3\CMS\Core\PageTitle\PageTitleProviderManager resolves this by FQCN read from TypoScript
+  # (config.pageTitleProviders, see ext_localconf.php), not through any compile-time-visible
+  # constructor injection - same "no static reference in the DI graph" situation as
+  # OrderExportRegistry above, so it needs the same public: true or it gets stripped as dead code.
+  GoldeneZeiten\Products\PageTitle\ProductPageTitleProvider:
+    public: true
