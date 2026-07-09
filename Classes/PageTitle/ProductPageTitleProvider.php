@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\PageTitle;
 
 use GoldeneZeiten\Products\Domain\Model\Product;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\PageTitle\PageTitleProviderInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
@@ -33,6 +34,13 @@ final class ProductPageTitleProvider implements PageTitleProviderInterface
             'Products'
         );
     }
+
+    /**
+     * Part of PageTitleProviderInterface since TYPO3 14 (optional/dead code in v13, called via a
+     * method_exists() check either way) - unused here since the current product is bridged via
+     * CurrentProductHolder instead (see class docblock), not a request attribute.
+     */
+    public function setRequest(ServerRequestInterface $request): void {}
 
     public function getTitle(): string
     {

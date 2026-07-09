@@ -96,7 +96,7 @@ final class ShippingCostService
                 $bulkyUnits += $item->getQuantity();
             }
         }
-        return $surchargePerUnit->multiply((float)$bulkyUnits);
+        return $surchargePerUnit->multiply($bulkyUnits);
     }
 
     private function isBulky(BasketViewItem $item): bool
