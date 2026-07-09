@@ -219,3 +219,8 @@ settings:
     default: 14
     label: 'Days after order placement a customer may self-service withdraw/cancel (0 disables it)'
     category: products
+  products.seo.pageTitleMode:
+    type: string
+    default: 'title'
+    label: 'Product single-view page-title substitution (none|title|subtitleOrTitle|titleAndSubtitle|subtitleAndTitle)'
+    category: products

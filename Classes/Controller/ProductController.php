@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Controller;
 use GoldeneZeiten\Products\Domain\Model\Article;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\PageTitle\CurrentProductHolder;
 use GoldeneZeiten\Products\Service\RecentlyViewed\RecentlyViewedStorage;
 use GoldeneZeiten\Products\Service\Variant\ArticleVariantResolver;
 use GoldeneZeiten\Products\Service\Wishlist\WishlistService;
@@ -19,7 +20,8 @@ final class ProductController extends ActionController
         private readonly ProductRepository $productRepository,
         private readonly WishlistService $wishlistService,
         private readonly RecentlyViewedStorage $recentlyViewedStorage,
-        private readonly ArticleVariantResolver $articleVariantResolver
+        private readonly ArticleVariantResolver $articleVariantResolver,
+        private readonly CurrentProductHolder $currentProductHolder
     ) {}
 
     public function listAction(): ResponseInterface
@@ -46,6 +48,7 @@ final class ProductController extends ActionController
      */
     public function showAction(Product $product, ?Article $selectedArticle = null, array $attributeValues = []): ResponseInterface
     {
+        $this->currentProductHolder->setProduct($product);
         if ($product->getUid() !== null) {
             $this->recentlyViewedStorage->record($this->request, $product->getUid());
         }
