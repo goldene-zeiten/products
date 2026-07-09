@@ -75,7 +75,7 @@ final class CreditPointsService
 
     public function calculateRedemptionValue(int $points): Money
     {
-        return $this->getMoneyPerPoint()->multiply((float)$points);
+        return $this->getMoneyPerPoint()->multiply($points);
     }
 
     /**

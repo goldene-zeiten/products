@@ -77,6 +77,6 @@ final readonly class BasketViewItem
     public function getDepositTotal(): Money
     {
         $deposit = $this->article?->getDeposit() ?? $this->product->getDeposit();
-        return $deposit->multiply((float)$this->quantity);
+        return $deposit->multiply($this->quantity);
     }
 }
