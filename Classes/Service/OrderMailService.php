@@ -114,6 +114,22 @@ final class OrderMailService
         $this->mailer->send($email);
     }
 
+    /**
+     * Fired directly from WithdrawalService on a successful self-service cancellation - not
+     * routed through OrderStatusChangedEvent/sendOrderStatusChanged() (which only notifies the
+     * customer) because the merchant specifically needs to know a *customer-initiated*
+     * cancellation happened, mirroring legacy's WithdrawalController sending to both shop and
+     * customer. Reuses the same recipient resolution as a new order (global + per-category).
+     */
+    public function sendWithdrawalNotification(Order $order, string $reason): void
+    {
+        foreach ($this->resolveMerchantRecipients($order) as $recipient) {
+            $email = $this->buildEmail($order, 'Withdrawal', self::LANGUAGE_FILE . 'withdrawal_subject', $recipient);
+            $email->assign('reason', $reason);
+            $this->mailer->send($email);
+        }
+    }
+
     public function sendLowStockWarning(string $title, int $newStock): void
     {
         $settings = $this->settingsResolver->getDefaultSettings();

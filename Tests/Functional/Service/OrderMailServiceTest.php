@@ -145,6 +145,42 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     }
 
     #[Test]
+    public function sendWithdrawalNotificationIsSkippedWithoutConfiguredRecipient(): void
+    {
+        $this->subject->sendWithdrawalNotification($this->buildOrder(), 'Changed my mind');
+
+        self::assertCount(0, TestMailer::getSentEmails());
+    }
+
+    #[Test]
+    public function sendWithdrawalNotificationSendsMailWithTheReasonWhenRecipientIsConfigured(): void
+    {
+        $this->writeSiteConfiguration(
+            'products-with-withdrawal-notification',
+            $this->buildSiteConfiguration(2, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'settings' => [
+                    'products' => [
+                        'email' => ['merchantRecipient' => 'merchant@example.com'],
+                    ],
+                ],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+
+        $order = $this->buildOrder();
+        $order->setSiteIdentifier('products-with-withdrawal-notification');
+
+        $this->subject->sendWithdrawalNotification($order, 'Changed my mind');
+
+        $sentEmails = TestMailer::getSentEmails();
+        self::assertCount(1, $sentEmails);
+        self::assertSame('merchant@example.com', $sentEmails[0]->getTo()[0]->getAddress());
+        self::assertStringContainsString('ORD-1', (string)$sentEmails[0]->getSubject());
+        self::assertStringContainsString('Changed my mind', (string)$sentEmails[0]->getTextBody());
+    }
+
+    #[Test]
     public function sendLowStockWarningIsSkippedWithoutConfiguredRecipient(): void
     {
         $this->subject->sendLowStockWarning('Red Shoes', 2);

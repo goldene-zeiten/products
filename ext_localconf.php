@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Controller\ProductController;
 use GoldeneZeiten\Products\Controller\RecentlyViewedController;
 use GoldeneZeiten\Products\Controller\SearchController;
 use GoldeneZeiten\Products\Controller\WishlistController;
+use GoldeneZeiten\Products\Controller\WithdrawalController;
 use GoldeneZeiten\Products\Hooks\CategoryMountAccessHook;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
@@ -161,6 +162,19 @@ ExtensionUtility::configurePlugin(
     // non-cacheable actions
     [
         InvoiceController::class => 'download',
+    ],
+    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+);
+
+ExtensionUtility::configurePlugin(
+    'Products',
+    'Withdrawal',
+    [
+        WithdrawalController::class => 'form, confirm',
+    ],
+    // non-cacheable actions
+    [
+        WithdrawalController::class => 'form, confirm',
     ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );

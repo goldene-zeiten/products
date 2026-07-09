@@ -54,6 +54,15 @@
 			<trans-unit id="remaining_stock" resname="remaining_stock">
 				<source>Remaining stock: %d</source>
 			</trans-unit>
+			<trans-unit id="withdrawal_subject" resname="withdrawal_subject">
+				<source>Order Cancelled by Customer: %s</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_intro" resname="withdrawal_intro">
+				<source>The customer has withdrawn from (cancelled) this order.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_reason" resname="withdrawal_reason">
+				<source>Reason given</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
