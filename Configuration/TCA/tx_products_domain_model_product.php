@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Product.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'title, subtitle, slug, item_number, ean, price, direct_cost, deposit, discount_percent, discount_disabled, price_tiers, tax_class, categories, in_stock, basket_min_quantity, basket_max_quantity, weight, bulky, credit_points, is_offer, is_highlight, description, images, downloads, articles, related_products, accessory_products, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => 'title, subtitle, slug, item_number, ean, price, direct_cost, deposit, discount_percent, discount_disabled, price_tiers, tax_class, categories, in_stock, unlimited_stock, basket_min_quantity, basket_max_quantity, weight, bulky, credit_points, is_offer, is_highlight, description, images, downloads, articles, related_products, accessory_products, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -187,6 +187,14 @@ return [
             'config' => [
                 'type' => 'number',
                 'size' => 10,
+            ],
+        ],
+        'unlimited_stock' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.unlimited_stock',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'default' => 0,
             ],
         ],
         'basket_min_quantity' => [

@@ -24,6 +24,7 @@ class Article extends AbstractEntity
     /** @var string */
     protected string $deposit = '0.00';
     protected int $inStock = 0;
+    protected bool $unlimitedStock = false;
     protected int $weight = 0;
     protected bool $bulky = false;
     /**
@@ -134,6 +135,16 @@ class Article extends AbstractEntity
     public function setInStock(int $inStock): void
     {
         $this->inStock = $inStock;
+    }
+
+    public function isUnlimitedStock(): bool
+    {
+        return $this->unlimitedStock;
+    }
+
+    public function setUnlimitedStock(bool $unlimitedStock): void
+    {
+        $this->unlimitedStock = $unlimitedStock;
     }
 
     public function getWeight(): int

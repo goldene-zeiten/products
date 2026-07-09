@@ -315,6 +315,9 @@
 			<trans-unit id="tx_products_domain_model_product.in_stock" resname="tx_products_domain_model_product.in_stock">
 				<source>In Stock</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.unlimited_stock" resname="tx_products_domain_model_product.unlimited_stock">
+				<source>Always in stock (exempt from stock tracking/decrement, e.g. made-to-order or digital goods)</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_product.basket_min_quantity" resname="tx_products_domain_model_product.basket_min_quantity">
 				<source>Min Quantity in Basket</source>
 			</trans-unit>
@@ -386,6 +389,9 @@
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_article.in_stock" resname="tx_products_domain_model_article.in_stock">
 				<source>In Stock</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.unlimited_stock" resname="tx_products_domain_model_article.unlimited_stock">
+				<source>Always in stock (exempt from stock tracking/decrement; overrides the product's own setting)</source>
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_article.weight" resname="tx_products_domain_model_article.weight">
 				<source>Weight (g)</source>
