@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Category.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'title, slug, parent_category, image, description, notification_email, notification_recipient_name, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_access, perms_userid, perms_groupid, perms_user, perms_group, perms_everybody'],
+        '1' => ['showitem' => 'title, slug, parent_category, image, description, notification_email, notification_recipient_name, discount_percent, discount_disabled, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_access, perms_userid, perms_groupid, perms_user, perms_group, perms_everybody'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -103,6 +103,23 @@ return [
                 'type' => 'input',
                 'size' => 30,
                 'eval' => 'trim',
+            ],
+        ],
+        'discount_percent' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.discount_percent',
+            'config' => [
+                'type' => 'number',
+                'format' => 'decimal',
+                'size' => 10,
+                'default' => 0,
+            ],
+        ],
+        'discount_disabled' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.discount_disabled',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'default' => 0,
             ],
         ],
         'parent_category' => [

@@ -18,7 +18,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
  * Proves the DI-wired pricing chain end-to-end: PriceProviderInterface is aliased to
- * UserGroupDiscountPriceProvider (see Services.yaml), which must actually be reached via
+ * CategoryDiscountPriceProvider (see Services.yaml), which must actually be reached via
  * BasketService::getBasketViewModel() for a real FE-usergroup discount to show up in the basket.
  */
 final class BasketServiceDiscountTest extends AbstractFunctionalTestCase

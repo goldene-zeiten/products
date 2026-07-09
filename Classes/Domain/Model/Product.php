@@ -36,6 +36,8 @@ class Product extends AbstractEntity
     protected int $weight = 0;
     protected bool $bulky = false;
     protected int $creditPoints = 0;
+    protected float $discountPercent = 0.0;
+    protected bool $discountDisabled = false;
     protected bool $isOffer = false;
     protected bool $isHighlight = false;
     /**
@@ -253,6 +255,26 @@ class Product extends AbstractEntity
     public function setCreditPoints(int $creditPoints): void
     {
         $this->creditPoints = $creditPoints;
+    }
+
+    public function getDiscountPercent(): float
+    {
+        return $this->discountPercent;
+    }
+
+    public function setDiscountPercent(float $discountPercent): void
+    {
+        $this->discountPercent = $discountPercent;
+    }
+
+    public function isDiscountDisabled(): bool
+    {
+        return $this->discountDisabled;
+    }
+
+    public function setDiscountDisabled(bool $discountDisabled): void
+    {
+        $this->discountDisabled = $discountDisabled;
     }
 
     public function isOffer(): bool

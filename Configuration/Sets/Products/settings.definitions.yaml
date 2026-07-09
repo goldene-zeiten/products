@@ -43,6 +43,11 @@ settings:
     default: 'EUR'
     label: Currency
     category: products
+  products.pricing.discountFieldMode:
+    type: string
+    default: 'maxAcrossTree'
+    label: 'Category-cascading discount resolution mode (maxAcrossTree|nearestCategory)'
+    category: products
   products.tax.defaultCountry:
     type: string
     default: 'DE'
