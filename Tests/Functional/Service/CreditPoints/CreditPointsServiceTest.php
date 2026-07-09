@@ -64,6 +64,47 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function perProductModeIgnoresConfiguredTiers(): void
+    {
+        $subject = $this->subject(earningMode: 'perProduct', earningTiers: ['0.00:999']);
+
+        self::assertSame(10 * 2 + 5 * 3, $subject->calculateEarnedPoints($this->basketViewModel()));
+    }
+
+    #[Test]
+    public function basketTieredModeAwardsTheHighestQualifyingTiersPoints(): void
+    {
+        $subject = $this->subject(earningMode: 'basketTiered', earningTiers: ['50.00:10', '100.00:25']);
+
+        self::assertSame(10, $subject->calculateEarnedPoints($this->basketWithTotal('75.00')));
+        self::assertSame(25, $subject->calculateEarnedPoints($this->basketWithTotal('150.00')));
+    }
+
+    #[Test]
+    public function basketTieredModeAwardsNoPointsBelowTheLowestTier(): void
+    {
+        $subject = $this->subject(earningMode: 'basketTiered', earningTiers: ['50.00:10']);
+
+        self::assertSame(0, $subject->calculateEarnedPoints($this->basketWithTotal('49.99')));
+    }
+
+    #[Test]
+    public function basketTieredModeAtExactlyTheThresholdQualifies(): void
+    {
+        $subject = $this->subject(earningMode: 'basketTiered', earningTiers: ['50.00:10']);
+
+        self::assertSame(10, $subject->calculateEarnedPoints($this->basketWithTotal('50.00')));
+    }
+
+    #[Test]
+    public function basketTieredModeIgnoresMalformedTierEntries(): void
+    {
+        $subject = $this->subject(earningMode: 'basketTiered', earningTiers: ['not-a-tier', '50.00:10']);
+
+        self::assertSame(10, $subject->calculateEarnedPoints($this->basketWithTotal('75.00')));
+    }
+
+    #[Test]
     public function redeemClampsToBalanceWhenMoreIsRequestedThanAvailable(): void
     {
         $redemption = $this->subject()->redeem(1, 1000, Money::fromDecimalString('1000.00'));
@@ -109,20 +150,31 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
         $this->addToAssertionCount(1);
     }
 
-    private function subject(bool $enabled = true, string $moneyPerPoint = '0.10'): CreditPointsService
+    /**
+     * @param string[] $earningTiers
+     */
+    private function subject(bool $enabled = true, string $moneyPerPoint = '0.10', string $earningMode = 'perProduct', array $earningTiers = []): CreditPointsService
     {
         return new CreditPointsService(
             $this->get(ConnectionPool::class),
-            $this->fakeConfigurationManager($enabled, $moneyPerPoint)
+            $this->fakeConfigurationManager($enabled, $moneyPerPoint, $earningMode, $earningTiers)
         );
     }
 
-    private function fakeConfigurationManager(bool $enabled, string $moneyPerPoint): ConfigurationManagerInterface
+    /**
+     * @param string[] $earningTiers
+     */
+    private function fakeConfigurationManager(bool $enabled, string $moneyPerPoint, string $earningMode, array $earningTiers): ConfigurationManagerInterface
     {
-        return new class ($enabled, $moneyPerPoint) implements ConfigurationManagerInterface {
+        return new class ($enabled, $moneyPerPoint, $earningMode, $earningTiers) implements ConfigurationManagerInterface {
+            /**
+             * @param string[] $earningTiers
+             */
             public function __construct(
                 private readonly bool $enabled,
-                private readonly string $moneyPerPoint
+                private readonly string $moneyPerPoint,
+                private readonly string $earningMode,
+                private readonly array $earningTiers
             ) {}
 
             /**
@@ -130,7 +182,12 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
              */
             public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
             {
-                return ['creditPoints' => ['enabled' => $this->enabled, 'moneyPerPoint' => $this->moneyPerPoint]];
+                return ['creditPoints' => [
+                    'enabled' => $this->enabled,
+                    'moneyPerPoint' => $this->moneyPerPoint,
+                    'earningMode' => $this->earningMode,
+                    'earningTiers' => $this->earningTiers,
+                ]];
             }
 
             /**
@@ -156,5 +213,12 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
             new BasketViewItem($product2, null, 3, $price, $price, 0.0, $price, $price, $noTax),
         ];
         return new BasketViewModel($items, $price, $price, $noTax, 'EUR');
+    }
+
+    private function basketWithTotal(string $total): BasketViewModel
+    {
+        $money = Money::fromDecimalString($total);
+        $noTax = Money::fromCents(0);
+        return new BasketViewModel([], $money, $money, $noTax, 'EUR');
     }
 }

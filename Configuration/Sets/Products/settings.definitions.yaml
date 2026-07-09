@@ -164,6 +164,16 @@ settings:
     default: 0.10
     label: Money value of one credit point when redeemed
     category: products
+  products.creditPoints.earningMode:
+    type: string
+    default: 'perProduct'
+    label: 'Credit-point earning mode (perProduct|basketTiered)'
+    category: products
+  products.creditPoints.earningTiers:
+    type: stringlist
+    default: []
+    label: 'basketTiered mode thresholds as "amount:points" pairs, e.g. "50.00:10" (highest qualifying threshold wins, not summed)'
+    category: products
   products.shipping.enabled:
     type: bool
     default: false
