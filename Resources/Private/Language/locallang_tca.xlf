@@ -228,6 +228,12 @@
 			<trans-unit id="tx_products_domain_model_category.notification_recipient_name" resname="tx_products_domain_model_category.notification_recipient_name">
 				<source>Order notification recipient name</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_category.discount_percent" resname="tx_products_domain_model_category.discount_percent">
+				<source>Discount (%, cascades to products in this category and its subcategories)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_category.discount_disabled" resname="tx_products_domain_model_category.discount_disabled">
+				<source>Disable discount cascading (blocks any discount from this category or its ancestors reaching products below it)</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_category.parent_category" resname="tx_products_domain_model_category.parent_category">
 				<source>Parent Category</source>
 			</trans-unit>
@@ -290,6 +296,12 @@
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_product.deposit" resname="tx_products_domain_model_product.deposit">
 				<source>Deposit (per unit, e.g. bottle deposit)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.discount_percent" resname="tx_products_domain_model_product.discount_percent">
+				<source>Discount (%, overrides any category discount when set)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.discount_disabled" resname="tx_products_domain_model_product.discount_disabled">
+				<source>Disable category discount cascading for this product</source>
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_product.price_tiers" resname="tx_products_domain_model_product.price_tiers">
 				<source>Graduated Prices</source>

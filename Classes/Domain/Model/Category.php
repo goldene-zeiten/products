@@ -17,6 +17,8 @@ class Category extends AbstractEntity
     protected string $description = '';
     protected string $notificationEmail = '';
     protected string $notificationRecipientName = '';
+    protected float $discountPercent = 0.0;
+    protected bool $discountDisabled = false;
     protected ?Category $parentCategory = null;
     /**
      * @var ObjectStorage<Category>
@@ -86,6 +88,26 @@ class Category extends AbstractEntity
     public function setNotificationRecipientName(string $notificationRecipientName): void
     {
         $this->notificationRecipientName = $notificationRecipientName;
+    }
+
+    public function getDiscountPercent(): float
+    {
+        return $this->discountPercent;
+    }
+
+    public function setDiscountPercent(float $discountPercent): void
+    {
+        $this->discountPercent = $discountPercent;
+    }
+
+    public function isDiscountDisabled(): bool
+    {
+        return $this->discountDisabled;
+    }
+
+    public function setDiscountDisabled(bool $discountDisabled): void
+    {
+        $this->discountDisabled = $discountDisabled;
     }
 
     public function getParentCategory(): ?Category

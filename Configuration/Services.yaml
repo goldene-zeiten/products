@@ -8,12 +8,15 @@ services:
     resource: '../Classes/*'
     exclude: '../Classes/Exception/*'
 
-  # UserGroupDiscountPriceProvider composes GraduatedPriceProvider as its own fallback
+  # CategoryDiscountPriceProvider composes GraduatedPriceProvider as its own fallback
   # (constructor injection of the concrete class, not the interface), which in turn composes
   # ProductPriceProvider the same way - so this alias is the only place the full pricing chain
-  # (quantity tiers, then per-shopper discount) is decided.
+  # (quantity tiers, then whichever of the category-cascading or per-shopper discount is bigger)
+  # is decided. Replaces the former UserGroupDiscountPriceProvider binding (M7): the FE-usergroup
+  # discount lookup now lives inline here so both discount sources can be compared - taking the
+  # single best rate, not stacking them - before either is applied.
   GoldeneZeiten\Products\Pricing\PriceProviderInterface:
-    alias: GoldeneZeiten\Products\Pricing\UserGroupDiscountPriceProvider
+    alias: GoldeneZeiten\Products\Pricing\CategoryDiscountPriceProvider
 
   # DataHandler's classic hooks (registered in ext_localconf.php via
   # $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']) are fetched with
