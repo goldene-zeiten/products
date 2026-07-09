@@ -6,6 +6,9 @@
 			<trans-unit id="be_users.tx_products_category_mounts" resname="be_users.tx_products_category_mounts">
 				<source>Product Category Mounts</source>
 			</trans-unit>
+			<trans-unit id="fe_users.tx_products_discount_percent" resname="fe_users.tx_products_discount_percent">
+				<source>Discount Percent</source>
+			</trans-unit>
 			<trans-unit id="plugin.product_list" resname="plugin.product_list">
 				<source>Product List</source>
 			</trans-unit>
