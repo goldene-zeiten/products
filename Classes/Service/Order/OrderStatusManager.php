@@ -19,7 +19,7 @@ final class OrderStatusManager
         private readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
-    public function transition(Order $order, OrderStatus $target): void
+    public function transition(Order $order, OrderStatus $target, ?string $note = null): void
     {
         $current = $order->getStatus();
         if ($current === $target) {
@@ -33,7 +33,7 @@ final class OrderStatusManager
         }
 
         $order->setStatus($target);
-        $this->appendStatusLog($order, $current, $target);
+        $this->appendStatusLog($order, $current, $target, $note);
         $this->eventDispatcher->dispatch(new OrderStatusChangedEvent($order, $current, $target));
     }
 
@@ -54,14 +54,18 @@ final class OrderStatusManager
         $this->eventDispatcher->dispatch(new PaymentStatusChangedEvent($order, $current, $target));
     }
 
-    private function appendStatusLog(Order $order, OrderStatus $from, OrderStatus $to): void
+    private function appendStatusLog(Order $order, OrderStatus $from, OrderStatus $to, ?string $note): void
     {
         $log = $order->getStatusLog();
-        $log[] = [
+        $entry = [
             'from' => $from->value,
             'to' => $to->value,
             'at' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
         ];
+        if ($note !== null && $note !== '') {
+            $entry['note'] = $note;
+        }
+        $log[] = $entry;
         $order->setStatusLog($log);
     }
 }

@@ -7,6 +7,7 @@ plugin.tx_products {
             checkoutPage = {$plugin.tx_products.settings.pids.checkoutPage}
             orderHistoryPage = {$plugin.tx_products.settings.pids.orderHistoryPage}
             categoryPage = {$plugin.tx_products.settings.pids.categoryPage}
+            withdrawalPage = {$plugin.tx_products.settings.pids.withdrawalPage}
         }
         pricing {
             mode = {$plugin.tx_products.settings.pricing.mode}

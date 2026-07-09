@@ -41,6 +41,26 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function transitionWithANoteAppendsItToTheLogEntry(): void
+    {
+        $order = new Order();
+
+        $this->subject->transition($order, OrderStatus::CANCELLED, 'Customer withdrew from the order.');
+
+        self::assertSame('Customer withdrew from the order.', $order->getStatusLog()[0]['note']);
+    }
+
+    #[Test]
+    public function transitionWithoutANoteOmitsItFromTheLogEntry(): void
+    {
+        $order = new Order();
+
+        $this->subject->transition($order, OrderStatus::PENDING);
+
+        self::assertArrayNotHasKey('note', $order->getStatusLog()[0]);
+    }
+
+    #[Test]
     public function transitionToSameStatusIsNoop(): void
     {
         $order = new Order();

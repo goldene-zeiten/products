@@ -261,6 +261,39 @@
 			<trans-unit id="final_total" resname="final_total">
 				<source>Total to pay</source>
 			</trans-unit>
+			<trans-unit id="cancel_order" resname="cancel_order">
+				<source>Cancel order</source>
+			</trans-unit>
+			<trans-unit id="confirm_email" resname="confirm_email">
+				<source>Confirm your email address</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_reason_label" resname="withdrawal_reason_label">
+				<source>Reason (optional)</source>
+			</trans-unit>
+			<trans-unit id="submit_withdrawal" resname="submit_withdrawal">
+				<source>Cancel this order</source>
+			</trans-unit>
+			<trans-unit id="order_no_longer_withdrawable" resname="order_no_longer_withdrawable">
+				<source>This order can no longer be cancelled online. Please contact us directly.</source>
+			</trans-unit>
+			<trans-unit id="invalid_or_expired_link" resname="invalid_or_expired_link">
+				<source>This cancellation link is invalid or has expired.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_confirmed" resname="withdrawal_confirmed">
+				<source>Order cancelled</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_confirmed_text" resname="withdrawal_confirmed_text">
+				<source>Your order %s has been cancelled. We will be in touch about next steps.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_email_mismatch" resname="withdrawal_email_mismatch">
+				<source>The email address does not match this order.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_period_expired" resname="withdrawal_period_expired">
+				<source>The cancellation period for this order has expired.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_not_allowed" resname="withdrawal_not_allowed">
+				<source>This order can no longer be cancelled.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

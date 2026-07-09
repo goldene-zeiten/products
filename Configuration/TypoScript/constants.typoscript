@@ -13,6 +13,8 @@ plugin.tx_products {
             orderHistoryPage = 0
             # cat=plugin.tx_products.pids; type=int; label=Category navigation/listing page UID
             categoryPage = 0
+            # cat=plugin.tx_products.pids; type=int; label=Order withdrawal/cancellation page UID
+            withdrawalPage = 0
         }
         pricing {
             # cat=plugin.tx_products.pricing; type=string; label=Pricing mode (gross|net)

@@ -38,6 +38,7 @@
     
     <div class="mt-3">
         <f:link.action action="download" controller="Invoice" pageType="{settings.invoice.pageType}" arguments="{order: order.uid, hash: invoiceHash}" class="btn btn-secondary"><f:translate key="download_invoice" /></f:link.action>
+        <f:link.action action="form" controller="Withdrawal" pageUid="{settings.pids.withdrawalPage}" arguments="{order: order.uid, hash: withdrawalHash}" class="btn btn-outline-danger"><f:translate key="cancel_order" /></f:link.action>
         <f:link.action action="list" class="btn btn-secondary"><f:translate key="back_to_list" /></f:link.action>
     </div>
 </div>

@@ -1,0 +1,31 @@
+<div class="withdrawal-form">
+    <f:flashMessages />
+    <f:if condition="{order}">
+        <f:then>
+            <h2><f:translate key="cancel_order" />: {order.orderNumber}</h2>
+            <f:if condition="{withdrawable}">
+                <f:then>
+                    <f:form action="confirm" name="withdrawal">
+                        <f:form.hidden name="order" value="{order.uid}" />
+                        <f:form.hidden name="hash" value="{hash}" />
+                        <div class="mb-3">
+                            <label for="email" class="form-label"><f:translate key="confirm_email" /></label>
+                            <f:form.textfield name="email" type="email" class="form-control" required="required" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="reason" class="form-label"><f:translate key="withdrawal_reason_label" /></label>
+                            <f:form.textarea name="reason" class="form-control" />
+                        </div>
+                        <f:form.submit value="{f:translate(key: 'submit_withdrawal')}" class="btn btn-danger" />
+                    </f:form>
+                </f:then>
+                <f:else>
+                    <p>{f:translate(key: 'order_no_longer_withdrawable')}</p>
+                </f:else>
+            </f:if>
+        </f:then>
+        <f:else>
+            <p>{f:translate(key: 'invalid_or_expired_link')}</p>
+        </f:else>
+    </f:if>
+</div>

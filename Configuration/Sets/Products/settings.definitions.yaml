@@ -33,6 +33,11 @@ settings:
     default: 0
     label: Category navigation/listing page UID
     category: products
+  products.pids.withdrawalPage:
+    type: int
+    default: 0
+    label: Order withdrawal/cancellation page UID
+    category: products
   products.pricing.mode:
     type: string
     default: 'gross'
@@ -208,4 +213,9 @@ settings:
     type: int
     default: 20
     label: Search results per page
+    category: products
+  products.checkout.withdrawalPeriodDays:
+    type: int
+    default: 14
+    label: 'Days after order placement a customer may self-service withdraw/cancel (0 disables it)'
     category: products

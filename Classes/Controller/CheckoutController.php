@@ -18,6 +18,7 @@ use GoldeneZeiten\Products\Service\Invoice\InvoiceTokenService;
 use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementExceptionInterface;
 use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
 use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
+use GoldeneZeiten\Products\Service\Withdrawal\WithdrawalTokenService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
@@ -33,7 +34,8 @@ final class CheckoutController extends ActionController
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly CreditPointsService $creditPointsService,
         private readonly ShippingCostService $shippingCostService,
-        private readonly InvoiceTokenService $invoiceTokenService
+        private readonly InvoiceTokenService $invoiceTokenService,
+        private readonly WithdrawalTokenService $withdrawalTokenService
     ) {}
 
     public function addressAction(): ResponseInterface
@@ -177,6 +179,7 @@ final class CheckoutController extends ActionController
         $this->view->assignMultiple([
             'order' => $orderObject,
             'invoiceHash' => $this->invoiceTokenService->generateToken($orderObject),
+            'withdrawalHash' => $this->withdrawalTokenService->generateToken($orderObject),
         ]);
         return $this->htmlResponse();
     }
