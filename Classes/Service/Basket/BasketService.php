@@ -113,7 +113,7 @@ final class BasketService
                 $article = $this->articleRepository->findByUid($item->getArticleUid());
             }
 
-            $basePrice = $this->priceProvider->getUnitPrice($product, $article, $item->getQuantity());
+            $basePrice = $this->priceProvider->getUnitPrice($product, $article, $item->getQuantity(), $request);
             $taxRate = $this->taxService->getTaxRate($product->getTaxClass());
 
             if ($pricingMode === 'gross') {

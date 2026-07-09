@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Article;
 use GoldeneZeiten\Products\Domain\Model\PriceTier;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
@@ -19,7 +20,7 @@ final class GraduatedPriceProvider implements PriceProviderInterface
 {
     public function __construct(private readonly ProductPriceProvider $fallbackPriceProvider) {}
 
-    public function getUnitPrice(Product $product, ?Article $article, int $quantity): Money
+    public function getUnitPrice(Product $product, ?Article $article, int $quantity, ?ServerRequestInterface $request = null): Money
     {
         $tiers = $article !== null && $article->getPriceTiers()->count() > 0
             ? $article->getPriceTiers()
@@ -28,7 +29,7 @@ final class GraduatedPriceProvider implements PriceProviderInterface
         if ($bestTier !== null) {
             return $bestTier->getPrice();
         }
-        return $this->fallbackPriceProvider->getUnitPrice($product, $article, $quantity);
+        return $this->fallbackPriceProvider->getUnitPrice($product, $article, $quantity, $request);
     }
 
     /**

@@ -35,9 +35,13 @@ plugin.tx_products.settings.shipping.enabled = 1"
 ,1,2,"Standard Shipping","","0.00","0.00",0,0,"4.99"
 ,2,2,"Express Shipping","","0.00","0.00",0,0,"9.99"
 
-"fe_users",,,,,,
-,"uid","pid","username","password","email","name"
-,1,2,"shopper1","$argon2i$v=19$m=65536,t=16,p=1$UWQyb0NjZkgyOHRuTXVrZA$+iS7LsM8MXrkyYFwKqVyJzl6YlCHrsLm9j1KIngrF2I","shopper1@example.com","Shopper One"
+"fe_groups",,,
+,"uid","pid","title","tx_products_discount_percent"
+,1,2,"Wholesale","10.00"
+
+"fe_users",,,,,,,
+,"uid","pid","username","password","email","name","usergroup"
+,1,2,"shopper1","$argon2i$v=19$m=65536,t=16,p=1$UWQyb0NjZkgyOHRuTXVrZA$+iS7LsM8MXrkyYFwKqVyJzl6YlCHrsLm9j1KIngrF2I","shopper1@example.com","Shopper One","1"
 
 "tx_products_domain_model_category",,,,,
 ,"uid","pid","title","slug","parent_category"
