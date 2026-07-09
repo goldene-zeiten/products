@@ -1,0 +1,24 @@
+"pages",,,,,,
+,"uid","pid","sorting","deleted","title","slug"
+,1,0,256,0,"Root","/"
+,2,1,256,0,"Shop","/shop"
+
+"tx_products_domain_model_taxclass",,,
+,"uid","title","code"
+,1,"Standard Tax","STANDARD"
+
+"tx_products_domain_model_taxrate",,,,
+,"uid","tax_class","country","rate"
+,1,1,"",19.00
+
+"tx_products_domain_model_product",,,,,,,
+,"uid","pid","title","slug","price","tax_class","in_stock","unlimited_stock"
+,1,2,"Unlimited Product","unlimited-product","100.00",1,0,1
+,2,2,"Limited Product","limited-product","100.00",1,0,0
+,3,2,"Product With Unlimited Article","product-with-article","100.00",1,0,0
+,4,2,"Unlimited Product With Normal Article","unlimited-product-article","100.00",1,0,1
+
+"tx_products_domain_model_article",,,,,,,
+,"uid","pid","product","title","item_number","price","in_stock","unlimited_stock"
+,1,2,3,"Unlimited Article","ART-1","100.00",0,1
+,2,2,4,"Normal Article On Unlimited Product","ART-2","100.00",0,0

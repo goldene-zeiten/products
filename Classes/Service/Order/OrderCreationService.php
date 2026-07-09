@@ -95,6 +95,9 @@ final class OrderCreationService
     {
         $threshold = $this->lowStockThreshold();
         foreach ($basketViewModel->getItems() as $viewItem) {
+            if ($this->hasUnlimitedStock($viewItem)) {
+                continue;
+            }
             $newStock = $this->stockService->decrementForItem(
                 $viewItem->getProduct()->getUid() ?? 0,
                 $viewItem->getArticle()?->getUid(),
@@ -104,6 +107,18 @@ final class OrderCreationService
                 $this->dispatchLowStockEvent($viewItem, $newStock);
             }
         }
+    }
+
+    /**
+     * Unlike the price/images "article overrides product when set" convention, a boolean flag has
+     * no "unset" state distinct from false, so a strict override would let an unflagged article
+     * silently ignore its own always-in-stock product (the common case: a merchant flags the whole
+     * product, expecting every variant to inherit it). Either the product or the specific article
+     * being unlimited is enough to exempt the line from stock tracking.
+     */
+    private function hasUnlimitedStock(BasketViewItem $viewItem): bool
+    {
+        return $viewItem->getProduct()->isUnlimitedStock() || ($viewItem->getArticle()?->isUnlimitedStock() ?? false);
     }
 
     private function dispatchLowStockEvent(BasketViewItem $viewItem, int $newStock): void

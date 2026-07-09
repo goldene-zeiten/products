@@ -31,6 +31,7 @@ class Product extends AbstractEntity
      */
     protected ObjectStorage $categories;
     protected int $inStock = 0;
+    protected bool $unlimitedStock = false;
     protected int $basketMinQuantity = 0;
     protected int $basketMaxQuantity = 0;
     protected int $weight = 0;
@@ -205,6 +206,16 @@ class Product extends AbstractEntity
     public function setInStock(int $inStock): void
     {
         $this->inStock = $inStock;
+    }
+
+    public function isUnlimitedStock(): bool
+    {
+        return $this->unlimitedStock;
+    }
+
+    public function setUnlimitedStock(bool $unlimitedStock): void
+    {
+        $this->unlimitedStock = $unlimitedStock;
     }
 
     public function getBasketMinQuantity(): int
