@@ -17,7 +17,7 @@ order history for logged-in customers.
 Frontend plugins
 =================
 
-The extension registers eight content element plugins:
+The extension registers nine content element plugins:
 
 ..  confval:: ProductList
 
@@ -52,7 +52,13 @@ The extension registers eight content element plugins:
 
 ..  confval:: Search
 
-    A simple catalog search across title, item number, description and EAN.
+    A simple catalog search across title, subtitle, item number, description and EAN.
+
+..  confval:: Invoice
+
+    Not meant to be placed by an editor - registered so the secured invoice PDF download link
+    (see :ref:`Invoice PDF <users-manual-invoice>`) sent in order confirmation emails and shown in
+    order history resolves to a real page.
 
 Payment
 =======
@@ -61,6 +67,32 @@ Payment methods are registered against :php:`GoldeneZeiten\Products\Payment\Paym
 by implementing :php:`PaymentMethodInterface` and tagging the service, so third-party extensions can
 add further payment methods without modifying this extension. Only invoice payment
 (:php:`InvoicePaymentMethod`) ships out of the box.
+
+Pricing
+=======
+
+The unit price for a basket line is resolved by a small decorator chain behind
+:php:`GoldeneZeiten\Products\Pricing\PriceProviderInterface`:
+:php:`ProductPriceProvider` (the base article/product price) is wrapped by
+:php:`GraduatedPriceProvider` (quantity-based tiers), which is in turn wrapped by
+:php:`UserGroupDiscountPriceProvider` (a shopper's personal or FE-usergroup discount, see
+:ref:`FE-usergroup discounts <users-manual-usergroup-discounts>`) — the actual DI alias for
+:php:`PriceProviderInterface`. Each step decorates the concrete class beneath it (not the
+interface), so the order is fixed at this one binding in ``Services.yaml`` rather than
+discoverable/pluggable; a shop needing a genuinely different pricing strategy overrides that
+alias.
+
+..  _introduction-order-export:
+
+Order export
+============
+
+Third-party extensions can offer shop operators an export format (CSV, a specific ERP's import
+format, a marketplace feed, ...) by implementing
+:php:`GoldeneZeiten\Products\Export\OrderExportInterface` and tagging the service - the same
+tagged-service pattern payment methods use. :php:`OrderExportRegistry` collects every registered
+exporter; this extension ships no exporter of its own, since the format an operator actually
+needs depends entirely on what they integrate with.
 
 Backend module
 ==============

@@ -33,6 +33,10 @@ articles can only be ordered via one of its articles — the product itself is t
 catalog entry (title, description, categories); price, stock and EAN are set per article. A product
 without any articles is directly purchasable itself.
 
+A :guilabel:`Direct Cost` field on both products and articles records what the item costs the
+merchant — purely an internal reference for margin calculation, never shown to shoppers or on any
+frontend page.
+
 ..  _users-manual-cross-selling:
 
 Cross-selling: related and accessory products
@@ -84,6 +88,26 @@ tier reached "from quantity" that is not above the ordered quantity wins.
 *   The product detail page shows the full price list to shoppers, and lists it as
     "from" a starting price wherever the regular price would otherwise be shown.
 
+..  _users-manual-usergroup-discounts:
+
+FE-usergroup discounts
+=========================
+
+Beyond graduated pricing, a shopper's basket price can be reduced by a personal or group discount
+— useful for wholesale customers, staff, or any other segment that should pay less than the
+regular price without a voucher code:
+
+*   :guilabel:`Discount Percent` on a frontend user group applies to every member of that group.
+*   :guilabel:`Discount Percent` on a frontend user's own record applies to that one customer.
+*   A shopper in more than one discounted group, or with both a personal and a group discount,
+    gets the single best (highest) rate rather than the sum of all of them — never stacked, the
+    same "highest one wins" behaviour legacy had.
+
+Both fields default to ``0.00`` (no discount) and are found on the group/user's edit form. The
+discount is applied on top of any graduated-pricing tier already reached, and only affects the
+basket/checkout price shown to that shopper — it has no effect for guests or non-discounted
+customers.
+
 ..  _users-manual-variants:
 
 Variant attributes (size, colour, ...)
@@ -101,6 +125,9 @@ list, or via the :guilabel:`Products` backend module. Each article can then be t
 *   Every attribute value used by a product's articles shows up in that product's dropdowns; values
     not used by any of that product's articles are not filtered out of the list — pick a
     combination that has a matching article, or nothing is added to the basket.
+*   Picking a combination updates the shown price and stock for the matching article. By default
+    this reloads the page (`products.catalog.articleSwitchMode`); switch that setting to ``ajax``
+    to swap the price/stock in place instead, without a full page reload.
 
 ..  _users-manual-orders:
 
@@ -133,6 +160,25 @@ its payment method supports refunds. The invoice payment method shipped with thi
 supports it as an acknowledgement (there is no gateway to call back — refunding an invoice payment
 just records that the money was returned outside the system); third-party payment methods can
 implement the same contract to wire up a real refund call.
+
+Order status and low-stock notifications
+-------------------------------------------
+
+The customer gets an email whenever an order's status changes (e.g. "confirmed" → "shipped"),
+controlled by `products.email.orderStatusChanged.enabled` (on by default). Separately, placing an
+order that brings an article's or a stock-tracked product's stock at or below
+`products.stock.lowStockThreshold` (default 5) sends a warning to `products.email.merchantRecipient`
+so the merchant can restock in time — this is independent of the status-change email and needs no
+extra opt-in beyond having a merchant recipient configured at all.
+
+Exporting orders
+-------------------
+
+This extension does not ship an order export format itself; third-party extensions can add one
+(CSV, a specific ERP's import format, a marketplace feed, ...) by registering against
+:php:`GoldeneZeiten\Products\Export\OrderExportRegistry`. See
+:ref:`Order export <introduction-order-export>` in the introduction for the technical extension
+point.
 
 ..  _users-manual-category-permissions:
 
@@ -279,6 +325,32 @@ When enabled, checkout gains a shipping-method step between the address and paym
 chosen method's cost is added to the order total (shown separately from the goods total and any
 voucher discount) unless a free-shipping voucher waives it.
 
+Bulky surcharge
+-----------------
+
+A product or article can be flagged :guilabel:`Bulky` (e.g. furniture, anything oversized). When
+`products.shipping.bulkySurcharge` is set above ``0.00``, that flat amount is added once per bulky
+item unit in the basket, on top of the chosen shipping method's rate — and survives a
+free-shipping voucher, since an oversized item still costs extra to handle regardless of who pays
+the base shipping rate.
+
+Handling fees
+---------------
+
+Separately from shipping, enable `products.handling.enabled` and create :guilabel:`Handling Fee`
+records (storage folder record list) the same shape as shipping methods (:guilabel:`Country`,
+:guilabel:`Rate`, min/max order value and weight bounds). Unlike shipping, a handling fee is never
+shopper-chosen — the applicable one (if any) is resolved automatically and added to the order
+total.
+
+Deposits
+----------
+
+A product or article can carry a :guilabel:`Deposit` (e.g. a bottle/container deposit) — leaving
+an article's deposit at ``0.00`` inherits the product's, the same "own value overrides, else fall
+back" convention used for price and images. The deposit is shown as its own line in the basket and
+added to the order total, separate from the goods total, shipping and any handling fee.
+
 ..  _users-manual-gift-orders:
 
 Gift orders
@@ -293,6 +365,11 @@ backend order module.
 
 This is one alternate delivery address for the whole order, not a per-item "send this one thing to
 someone else" mechanic — a basket with several gifts for different people is out of scope for now.
+
+A returning, logged-in customer who has not yet entered anything into the current checkout session
+sees the address step pre-filled from their most recent order's billing address, so they don't have
+to retype it every visit — this only ever pre-fills the initial, empty state, never overwrites an
+address already entered in the current session.
 
 ..  _users-manual-wishlist:
 
@@ -310,6 +387,15 @@ A logged-in customer's wishlist is stored against their account (visible as
 lives only in their browser session and is lost when it expires — logging in does **not** carry a
 guest's session wishlist over to their account; the two are entirely separate lists. If a
 wishlisted product is later deleted, it simply disappears from the list.
+
+Shoppers can reorder their own wishlist with move-up/move-down links next to each item — there is
+no drag-and-drop, just swapping a product's position with its neighbour, one step at a time. This
+works the same way for both a guest's session-based list and a logged-in customer's persisted one.
+
+Placing an order automatically removes any of its items from the placing customer's wishlist
+(guest orders are skipped, since a guest's wishlist is not tied to any identity an order could be
+matched against) — a convenience cleanup that never blocks or fails the order itself if it runs
+into trouble.
 
 ..  _users-manual-recently-viewed:
 
@@ -330,7 +416,34 @@ Catalog search
 ================
 
 The :rst:dir:`Search` plugin offers a simple search box; results match the term against a
-product's title, item number, description or EAN (case-insensitive, partial matches count — e.g.
-searching "shoe" finds "Running Shoes"). It is not a full-text search engine: there is no
-relevance ranking or fuzzy matching, which is adequate for a catalog of moderate size. Results are
-paginated at :guilabel:`Search results per page` (default 20) per page.
+product's title, subtitle, item number, description or EAN (case-insensitive, partial matches
+count — e.g. searching "shoe" finds "Running Shoes"). It is not a full-text search engine: there is
+no relevance ranking or fuzzy matching, which is adequate for a catalog of moderate size. Results
+are paginated at :guilabel:`Search results per page` (default 20) per page.
+
+..  _users-manual-invoice:
+
+Invoice PDF
+=============
+
+Every order confirmation email carries a PDF invoice attachment, generated at send time from the
+order's stored line items and addresses (no external program involved — pure-PHP rendering, so
+there is nothing extra to install on the server). If attaching the PDF fails for any reason, the
+confirmation email is still sent without it rather than being blocked entirely.
+
+The same invoice is also reachable as a secured download link (shown in order history and usable
+on its own, e.g. for a customer who deleted the original email) — the link embeds a signed token
+tied to that specific order, so it cannot be guessed or reused for a different order.
+
+..  _users-manual-category-notifications:
+
+Category-level order notifications
+=====================================
+
+Beyond the sitewide `products.email.merchantRecipient`, a category can have its own
+:guilabel:`Notification email` (and optional :guilabel:`Recipient name`) set on its edit form. When
+an order contains a product from that category, the category's recipient gets the merchant
+notification email in addition to the sitewide one — useful when different departments handle
+different parts of the catalog (e.g. electronics vs. clothing). An order touching several such
+categories notifies every one of them, deduplicated so the same address is never emailed twice for
+the same order.

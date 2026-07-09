@@ -5,8 +5,8 @@
 
 "fe_users",,,,,,
 ,"uid","pid","username","usergroup","tx_products_discount_percent"
-,1,2,"no-discount","",""
-,2,2,"group-discount","1",""
+,1,2,"no-discount","","0.00"
+,2,2,"group-discount","1","0.00"
 ,3,2,"personal-discount","","15.00"
 ,4,2,"personal-beats-lower-group","1","20.00"
-,5,2,"highest-group-wins","1,2",""
+,5,2,"highest-group-wins","1,2","0.00"

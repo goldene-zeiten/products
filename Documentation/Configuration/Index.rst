@@ -115,6 +115,23 @@ from. Set it before creating any content.
         :Default: (empty)
 
         Recipient for the merchant order notification. Leave empty to disable that email entirely.
+        A category with its own :guilabel:`Notification email` set (see
+        :ref:`Category-level order notifications <users-manual-category-notifications>`) is routed
+        there in addition to this sitewide recipient, not instead of it.
+
+    ..  confval:: products.email.orderStatusChanged.enabled
+        :type: bool
+        :Default: true
+
+        Whether the customer gets an email when an order's status changes (see
+        :ref:`Managing orders <users-manual-orders>`).
+
+    ..  confval:: products.stock.lowStockThreshold
+        :type: int
+        :Default: 5
+
+        Stock level at or below which placing an order sends a low-stock warning email to
+        `products.email.merchantRecipient`; 0 means only a stock-out (0 or below) triggers it.
 
     ..  confval:: products.email.templateRootPaths
         :type: stringlist
@@ -137,11 +154,41 @@ from. Set it before creating any content.
 
         Whether the invoice payment method is offered at checkout.
 
+    ..  confval:: products.invoice.templateRootPaths
+        :type: stringlist
+        :Default: EXT:products/Resources/Private/Templates/Invoice/
+
+    ..  confval:: products.invoice.partialRootPaths
+        :type: stringlist
+        :Default: EXT:products/Resources/Private/Partials/
+
+    ..  confval:: products.invoice.layoutRootPaths
+        :type: stringlist
+        :Default: EXT:products/Resources/Private/Layouts/
+
+        Override any of the three invoice path settings from your own extension to replace the
+        shipped invoice PDF template. See :ref:`Invoice PDF <users-manual-invoice>`.
+
+    ..  confval:: products.invoice.pageType
+        :type: int
+        :Default: 1729512001
+
+        The page type used to render the invoice PDF download outside the page's normal HTML
+        shell, the same trick `products.ajax.pageType` uses for AJAX responses.
+
     ..  confval:: products.ajax.pageType
         :type: int
         :Default: 1729512000
 
         The AJAX page type used by the :rst:dir:`ProductList` plugin's cached AJAX loading mode.
+
+    ..  confval:: products.catalog.articleSwitchMode
+        :type: string
+        :Default: reload
+
+        Either ``reload`` (submitting the variant selector reloads the page) or ``ajax`` (the
+        price/stock fragment is swapped in place without a full reload). See
+        :ref:`Variant attributes <users-manual-variants>`.
 
     ..  confval:: products.creditPoints.enabled
         :type: bool
@@ -162,6 +209,22 @@ from. Set it before creating any content.
 
         Whether the checkout asks for a shipping method and adds its cost to the order total. See
         :ref:`Shipping costs <users-manual-shipping>`.
+
+    ..  confval:: products.shipping.bulkySurcharge
+        :type: string
+        :Default: 0.00
+
+        Flat surcharge added once per bulky-flagged basket item unit, on top of the chosen
+        shipping method's rate - survives a free-shipping voucher, since an oversized item still
+        costs extra to handle regardless of who pays the base rate. ``0.00`` disables it.
+
+    ..  confval:: products.handling.enabled
+        :type: bool
+        :Default: false
+
+        Whether a handling fee is calculated automatically from the configured
+        :guilabel:`Handling Fee` records, added to the order total the same way shipping cost is.
+        Unlike shipping, this is never shopper-chosen.
 
     ..  confval:: products.vouchers.gained.enabled
         :type: bool
