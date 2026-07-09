@@ -49,7 +49,7 @@ final class CheckoutService
                 }
             }
         }
-        return $this->addressFromLastOrder($request) ?? new Address();
+        return $this->addressFromLastOrder($request) ?? $this->addressFromProfile($request) ?? new Address();
     }
 
     /**
@@ -81,6 +81,32 @@ final class CheckoutService
             zip: $billingAddress->getZip(),
             city: $billingAddress->getCity(),
             country: $billingAddress->getCountry()
+        );
+    }
+
+    /**
+     * Falls back to the logged-in fe_user's own profile fields when there is no prior order to
+     * prefill from (a first-time logged-in buyer) - lower priority than the last order's address,
+     * since a returning customer's most recent shipping choice is more likely correct than a
+     * possibly-stale profile field. fe_users has no structured street/house-number split, so its
+     * free-text `address` field maps onto Address's `street`.
+     */
+    private function addressFromProfile(ServerRequestInterface $request): ?Address
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if (!$frontendUser instanceof FrontendUserAuthentication || ($frontendUser->user['uid'] ?? 0) <= 0) {
+            return null;
+        }
+        $user = $frontendUser->user;
+        return new Address(
+            email: (string)($user['email'] ?? ''),
+            firstName: (string)($user['first_name'] ?? ''),
+            lastName: (string)($user['last_name'] ?? ''),
+            company: (string)($user['company'] ?? ''),
+            street: (string)($user['address'] ?? ''),
+            zip: (string)($user['zip'] ?? ''),
+            city: (string)($user['city'] ?? ''),
+            country: (string)($user['country'] ?? '')
         );
     }
 

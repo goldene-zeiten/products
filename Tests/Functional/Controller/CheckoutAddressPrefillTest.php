@@ -42,6 +42,27 @@ final class CheckoutAddressPrefillTest extends AbstractFrontendTestCase
     }
 
     #[Test]
+    public function addressActionPrefillsFromProfileWhenThereIsNoPriorOrder(): void
+    {
+        $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
+            '&id=2&tx_products_checkout[action]=address'
+        );
+        $request = (new InternalRequest('http://localhost/shop'))
+            ->withCookieParams(['fe_typo_user' => $this->loginFrontendUser(2)])
+            ->withQueryParameters([
+                'tx_products_checkout[action]' => 'address',
+                'cHash' => $cHash,
+            ]);
+        $response = $this->executeFrontendSubRequest($request);
+        $body = (string)$response->getBody();
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertStringContainsString('Profile Street 7', $body);
+        self::assertStringContainsString('Berlin', $body);
+        self::assertStringContainsString('new@example.com', $body);
+    }
+
+    #[Test]
     public function addressActionIsBlankForAnonymousVisitor(): void
     {
         $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
