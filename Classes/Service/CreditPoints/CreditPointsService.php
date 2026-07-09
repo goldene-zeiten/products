@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Service\CreditPoints;
 
 use Doctrine\DBAL\ParameterType;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Domain\Dto\CreditPointsEarningTier;
 use GoldeneZeiten\Products\Domain\Dto\CreditPointsRedemption;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\CreditPoints\Exception\InsufficientCreditPointsException;
@@ -62,15 +63,57 @@ final class CreditPointsService
     }
 
     /**
-     * Article inherits the product's earning rate, there is no per-article override.
+     * Article inherits the product's earning rate, there is no per-article override. In
+     * "basketTiered" mode the whole order earns a single highest-qualifying tier's points
+     * instead, mirroring legacy tx_ttproducts_creditpoints_div::getCreditPoints() (krsort by
+     * threshold, first match at or below the basket total wins - not summed across tiers).
      */
     public function calculateEarnedPoints(BasketViewModel $basket): int
     {
+        if ($this->earningMode() === 'basketTiered') {
+            return $this->calculateTieredPoints($basket->getTotalGross());
+        }
+
         $points = 0;
         foreach ($basket->getItems() as $item) {
             $points += $item->getProduct()->getCreditPoints() * $item->getQuantity();
         }
         return $points;
+    }
+
+    private function earningMode(): string
+    {
+        return (string)($this->settings['creditPoints']['earningMode'] ?? 'perProduct');
+    }
+
+    private function calculateTieredPoints(Money $basketTotal): int
+    {
+        $points = 0;
+        $bestThresholdCents = -1;
+        foreach ($this->earningTiers() as $tier) {
+            $thresholdCents = $tier->getThreshold()->getCents();
+            if ($basketTotal->getCents() >= $thresholdCents && $thresholdCents > $bestThresholdCents) {
+                $bestThresholdCents = $thresholdCents;
+                $points = $tier->getPoints();
+            }
+        }
+        return $points;
+    }
+
+    /**
+     * @return CreditPointsEarningTier[]
+     */
+    private function earningTiers(): array
+    {
+        $tiers = [];
+        foreach ((array)($this->settings['creditPoints']['earningTiers'] ?? []) as $entry) {
+            $parts = explode(':', (string)$entry, 2);
+            if (count($parts) !== 2) {
+                continue;
+            }
+            $tiers[] = new CreditPointsEarningTier(Money::fromDecimalString(trim($parts[0])), (int)trim($parts[1]));
+        }
+        return $tiers;
     }
 
     public function calculateRedemptionValue(int $points): Money
