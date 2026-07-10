@@ -17,7 +17,7 @@ order history for logged-in customers.
 Frontend plugins
 =================
 
-The extension registers nine content element plugins:
+The extension registers ten content element plugins:
 
 ..  confval:: ProductList
 
@@ -60,6 +60,14 @@ The extension registers nine content element plugins:
     (see :ref:`Invoice PDF <users-manual-invoice>`) sent in order confirmation emails and shown in
     order history resolves to a real page.
 
+..  confval:: Withdrawal
+
+    Renders the self-service order cancellation form and confirmation reached from the "Cancel
+    this order" link on the thank-you and order-detail pages. See
+    :ref:`Order withdrawal <users-manual-withdrawal>`. Needs `products.pids.withdrawalPage`
+    configured, the same way :rst:dir:`Checkout`/:rst:dir:`OrderHistory` need their own page
+    settings.
+
 Payment
 =======
 
@@ -75,12 +83,13 @@ The unit price for a basket line is resolved by a small decorator chain behind
 :php:`GoldeneZeiten\Products\Pricing\PriceProviderInterface`:
 :php:`ProductPriceProvider` (the base article/product price) is wrapped by
 :php:`GraduatedPriceProvider` (quantity-based tiers), which is in turn wrapped by
-:php:`UserGroupDiscountPriceProvider` (a shopper's personal or FE-usergroup discount, see
-:ref:`FE-usergroup discounts <users-manual-usergroup-discounts>`) — the actual DI alias for
-:php:`PriceProviderInterface`. Each step decorates the concrete class beneath it (not the
-interface), so the order is fixed at this one binding in ``Services.yaml`` rather than
-discoverable/pluggable; a shop needing a genuinely different pricing strategy overrides that
-alias.
+:php:`CategoryDiscountPriceProvider` — the actual DI alias for :php:`PriceProviderInterface`. That
+outermost step compares the shopper's :ref:`FE-usergroup discount
+<users-manual-usergroup-discounts>` against the product's own
+:ref:`category-cascading discount <users-manual-category-discounts>` and applies whichever rate is
+higher, never both. Each step decorates the concrete class beneath it (not the interface), so the
+order is fixed at this one binding in ``Services.yaml`` rather than discoverable/pluggable; a shop
+needing a genuinely different pricing strategy overrides that alias.
 
 ..  _introduction-order-export:
 

@@ -14,7 +14,7 @@ use GoldeneZeiten\Products\Tests\Functional\Fixtures\TestMailer;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Mime\Part\DataPart;
 use TYPO3\CMS\Core\Resource\File;
-use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 
 final class OrderMailServiceTest extends AbstractFrontendTestCase
@@ -386,12 +386,15 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
 
     private function createFileInNewLocalStorage(string $fileName, string $contents): File
     {
-        $storageUid = $this->get(StorageRepository::class)->createLocalStorage(
+        $storageRepository = $this->get(StorageRepository::class);
+        $storageUid = $storageRepository->createLocalStorage(
             'agb-test-storage',
             'fileadmin',
             'relative'
         );
-        $folder = $this->get(ResourceFactory::class)->getStorageObject($storageUid)->getRootLevelFolder();
+        $storage = $storageRepository->findByUid($storageUid);
+        self::assertInstanceOf(ResourceStorage::class, $storage);
+        $folder = $storage->getRootLevelFolder();
         $file = $folder->createFile($fileName);
         $file->setContents($contents);
         return $file;

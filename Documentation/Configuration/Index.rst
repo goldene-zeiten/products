@@ -64,6 +64,20 @@ from. Set it before creating any content.
 
         Page uid the :rst:dir:`OrderHistory` plugin lives on.
 
+    ..  confval:: products.pids.categoryPage
+        :type: int
+        :Default: 0
+
+        Page uid the category navigation/listing links resolve against.
+
+    ..  confval:: products.pids.withdrawalPage
+        :type: int
+        :Default: 0
+
+        Page uid the self-service order withdrawal/cancellation link (sent in the order
+        confirmation and shown on the thank-you/order-detail pages) points to. See
+        :ref:`Order withdrawal <users-manual-withdrawal>`.
+
     ..  confval:: products.pricing.mode
         :type: string
         :Default: gross
@@ -75,6 +89,23 @@ from. Set it before creating any content.
         :Default: EUR
 
         ISO 4217 currency code orders are placed in.
+
+    ..  confval:: products.pricing.discountFieldMode
+        :type: string
+        :Default: maxAcrossTree
+
+        Either ``maxAcrossTree`` (the highest non-disabled category discount anywhere in the
+        product's ancestor chain wins) or ``nearestCategory`` (the first non-disabled discount
+        found walking up from the product's own category wins, stopping at the first hit). See
+        :ref:`Category-cascading discounts <users-manual-category-discounts>`.
+
+    ..  confval:: products.pricing.roundingMode
+        :type: string
+        :Default: none
+
+        Rounds the basket/order gross total only (never per-line unit prices) to either
+        ``nearestInteger`` or a ``psychological99`` charm price (e.g. 23.45 becomes 23.99).
+        ``none`` keeps the exact computed total.
 
     ..  confval:: products.tax.defaultCountry
         :type: string
@@ -118,6 +149,15 @@ from. Set it before creating any content.
         A category with its own :guilabel:`Notification email` set (see
         :ref:`Category-level order notifications <users-manual-category-notifications>`) is routed
         there in addition to this sitewide recipient, not instead of it.
+
+    ..  confval:: products.email.agbAttachment
+        :type: string
+        :Default: (empty)
+
+        FAL combined file identifier (e.g. ``1:/legal/agb.pdf``) of a terms/AGB PDF attached to
+        every order confirmation email, alongside the invoice PDF. Empty disables the attachment.
+        There is no file-picker UI for this setting (TYPO3's Site Settings have no file-reference
+        type) — the identifier must be typed in directly.
 
     ..  confval:: products.email.orderStatusChanged.enabled
         :type: bool
@@ -203,6 +243,21 @@ from. Set it before creating any content.
 
         Money value of one credit point when a customer spends it at checkout.
 
+    ..  confval:: products.creditPoints.earningMode
+        :type: string
+        :Default: perProduct
+
+        Either ``perProduct`` (each line's own credit-point value, summed across the basket) or
+        ``basketTiered`` (the single highest-qualifying tier from `products.creditPoints.earningTiers`
+        wins, not summed).
+
+    ..  confval:: products.creditPoints.earningTiers
+        :type: stringlist
+        :Default: (empty)
+
+        ``basketTiered`` mode thresholds as ``amount:points`` pairs, e.g. ``50.00:10``. The highest
+        threshold at or below the basket total wins; malformed entries are silently skipped.
+
     ..  confval:: products.shipping.enabled
         :type: bool
         :Default: false
@@ -217,6 +272,27 @@ from. Set it before creating any content.
         Flat surcharge added once per bulky-flagged basket item unit, on top of the chosen
         shipping method's rate - survives a free-shipping voucher, since an oversized item still
         costs extra to handle regardless of who pays the base rate. ``0.00`` disables it.
+
+    ..  confval:: products.shipping.bulkyNoticeText
+        :type: string
+        :Default: (empty)
+
+        Notice shown in the basket/checkout when it contains a bulky-flagged item. Empty disables
+        the notice entirely (regardless of `products.shipping.bulkySurcharge`).
+
+    ..  confval:: products.shipping.weightNoticeThreshold
+        :type: int
+        :Default: 0
+
+        Basket weight in grams above which `products.shipping.weightNoticeText` is shown. ``0``
+        disables it.
+
+    ..  confval:: products.shipping.weightNoticeText
+        :type: string
+        :Default: (empty)
+
+        Notice shown in the basket/checkout once `products.shipping.weightNoticeThreshold` is
+        exceeded. Empty disables it even if the threshold is set.
 
     ..  confval:: products.handling.enabled
         :type: bool
@@ -269,6 +345,32 @@ from. Set it before creating any content.
         :Default: 20
 
         Results shown per page by the :rst:dir:`Search` plugin.
+
+    ..  confval:: products.checkout.withdrawalPeriodDays
+        :type: int
+        :Default: 14
+
+        Days after order placement a customer may self-service withdraw/cancel their order via the
+        link on `products.pids.withdrawalPage`. ``0`` disables the feature entirely. See
+        :ref:`Order withdrawal <users-manual-withdrawal>`.
+
+    ..  confval:: products.seo.pageTitleMode
+        :type: string
+        :Default: title
+
+        Controls how a product's :rst:dir:`ProductDetail` page ``<title>`` is built: ``none``
+        (page title only), ``title`` (product title replaces the page title), ``subtitleOrTitle``
+        (subtitle if set, else title), ``titleAndSubtitle`` or ``subtitleAndTitle`` (both, in the
+        given order).
+
+    ..  confval:: products.session.requireCookieConsent
+        :type: bool
+        :Default: false
+
+        When enabled, the guest wishlist and recently-viewed session storages only write to the FE
+        session once the visitor's browser already carries a confirmed FE-session cookie from an
+        earlier request — never on the request that would be the first to set it. Off by default,
+        preserving the previous unconditional-write behaviour.
 
 ..  _configuration-backend-module:
 

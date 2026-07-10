@@ -75,3 +75,10 @@ ExtensionUtility::registerPlugin(
     'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.category_list',
     'EXT:products/Resources/Public/Icons/Extension.svg'
 );
+
+ExtensionUtility::registerPlugin(
+    'Products',
+    'Withdrawal',
+    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.withdrawal',
+    'EXT:products/Resources/Public/Icons/Extension.svg'
+);

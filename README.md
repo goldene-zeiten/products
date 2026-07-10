@@ -4,8 +4,8 @@ A modern shop system for TYPO3, rewriting the legacy `tt_products` extension on 
 Extbase/Fluid: a category/product/article catalog, basket, guest-checkout-first payment flow,
 PDF invoices, and order history, plus upgrade wizards that migrate an existing `tt_products`
 installation in place. See [`Documentation/`](Documentation/Index.rst) for the full feature list
-(graduated and FE-usergroup pricing, vouchers, credit points, shipping/handling/deposits,
-wishlists and more).
+(graduated, FE-usergroup and category-cascading pricing, vouchers, credit points,
+shipping/handling/deposits, self-service order withdrawal, wishlists and more).
 
 ## Requirements
 
