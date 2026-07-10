@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Service\Shipping;
 
+use GoldeneZeiten\Products\Configuration\ProductsConfiguration;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelectionCriteria;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Domain\Repository\ShippingMethodRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\Shipping\Exception\NoShippingMethodAvailableException;
 use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class ShippingCostServiceTest extends AbstractFunctionalTestCase
 {
@@ -42,7 +45,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function countrySpecificMethodsTakePrecedenceOverTheFallback(): void
     {
-        $methods = $this->subject(true)->resolveAvailable($this->basketViewModel($this->lightProduct, 1), 'DE');
+        $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(true), $this->basketViewModel($this->lightProduct, 1), 'DE');
 
         $titles = array_map(static fn($method): string => $method->getTitle(), $methods);
         self::assertContains('Standard DE', $titles);
@@ -52,7 +55,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function theFallbackIsUsedWhenNoCountrySpecificMethodExists(): void
     {
-        $methods = $this->subject(true)->resolveAvailable($this->basketViewModel($this->lightProduct, 1), 'AT');
+        $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(true), $this->basketViewModel($this->lightProduct, 1), 'AT');
 
         self::assertCount(1, $methods);
         self::assertSame('Fallback', $methods[0]->getTitle());
@@ -61,7 +64,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function aBasketAboveTheWeightTierGetsOnlyTheHeavyMethod(): void
     {
-        $methods = $this->subject(true)->resolveAvailable($this->basketViewModel($this->heavyProduct, 1), 'DE');
+        $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(true), $this->basketViewModel($this->heavyProduct, 1), 'DE');
 
         $titles = array_map(static fn($method): string => $method->getTitle(), $methods);
         self::assertContains('Heavy DE', $titles);
@@ -71,7 +74,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function aBasketBelowTheMinimumOrderValueExcludesThatMethod(): void
     {
-        $methods = $this->subject(true)->resolveAvailable($this->basketViewModel($this->lightProduct, 1), 'DE');
+        $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(true), $this->basketViewModel($this->lightProduct, 1), 'DE');
 
         $titles = array_map(static fn($method): string => $method->getTitle(), $methods);
         self::assertNotContains('Big Orders Only DE', $titles);
@@ -80,7 +83,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function nothingIsAvailableWhenTheFeatureIsDisabled(): void
     {
-        $methods = $this->subject(false)->resolveAvailable($this->basketViewModel($this->lightProduct, 1), 'DE');
+        $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(false), $this->basketViewModel($this->lightProduct, 1), 'DE');
 
         self::assertSame([], $methods);
     }
@@ -88,7 +91,9 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function resolveSelectionReturnsNoneWhenTheFeatureIsDisabled(): void
     {
-        $selection = $this->subject(false)->resolveSelection(1, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
+
+        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(false), $criteria);
 
         self::assertSame(0, $selection->getShippingMethodUid());
         self::assertSame(0, $selection->getCost()->getCents());
@@ -97,7 +102,9 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function resolveSelectionReturnsNoneWhenNoMethodWasChosen(): void
     {
-        $selection = $this->subject(true)->resolveSelection(0, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
+        $criteria = new ShippingSelectionCriteria(0, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
+
+        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
 
         self::assertSame(0, $selection->getShippingMethodUid());
     }
@@ -105,7 +112,9 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function resolveSelectionResolvesTheChosenMethodsRate(): void
     {
-        $selection = $this->subject(true)->resolveSelection(1, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
+
+        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
 
         self::assertSame(1, $selection->getShippingMethodUid());
         self::assertSame(500, $selection->getCost()->getCents());
@@ -114,7 +123,9 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function resolveSelectionZeroesTheCostWhenWaived(): void
     {
-        $selection = $this->subject(true)->resolveSelection(1, $this->basketViewModel($this->lightProduct, 1), 'DE', true);
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', true);
+
+        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
 
         self::assertSame(0, $selection->getCost()->getCents());
     }
@@ -126,7 +137,8 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $this->expectExceptionCode(1783600000);
 
         // Method 1 (Standard DE) is capped at 1000g, the heavy basket weighs 1500g.
-        $this->subject(true)->resolveSelection(1, $this->basketViewModel($this->heavyProduct, 1), 'DE', false);
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->heavyProduct, 1), 'DE', false);
+        $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
     }
 
     #[Test]
@@ -135,7 +147,8 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $this->lightProduct->setBulky(true);
 
         // Quantity 2 keeps the basket at exactly method 1's 1000g cap (500g each).
-        $selection = $this->subject(true, '2.50')->resolveSelection(1, $this->basketViewModel($this->lightProduct, 2), 'DE', false);
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 2), 'DE', false);
+        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true, '2.50'), $criteria);
 
         self::assertSame(500 + 500, $selection->getCost()->getCents());
     }
@@ -145,7 +158,8 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     {
         $this->lightProduct->setBulky(true);
 
-        $selection = $this->subject(true, '2.50')->resolveSelection(1, $this->basketViewModel($this->lightProduct, 1), 'DE', true);
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', true);
+        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true, '2.50'), $criteria);
 
         self::assertSame(250, $selection->getCost()->getCents());
     }
@@ -153,39 +167,64 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function resolveSelectionHasNoSurchargeForNonBulkyItems(): void
     {
-        $selection = $this->subject(true, '2.50')->resolveSelection(1, $this->basketViewModel($this->lightProduct, 2), 'DE', false);
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 2), 'DE', false);
+        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true, '2.50'), $criteria);
 
         self::assertSame(500, $selection->getCost()->getCents());
     }
 
-    private function subject(bool $enabled, string $bulkySurcharge = '0.00'): ShippingCostService
+    #[Test]
+    public function resolveSelectionResolvesTheStandardTaxClassRateByDefault(): void
     {
-        return new ShippingCostService($this->get(ShippingMethodRepository::class), $this->fakeConfigurationManager($enabled, $bulkySurcharge));
+        // Method 1 has no tax override; the fixture's "standard" tax class carries 19% for DE.
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
+        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
+
+        self::assertSame(0.19, $selection->getTaxRate());
     }
 
-    private function fakeConfigurationManager(bool $enabled, string $bulkySurcharge = '0.00'): ConfigurationManagerInterface
+    #[Test]
+    public function resolveSelectionUsesTheMethodsTaxRateOverrideWhenEnabled(): void
     {
-        return new class ($enabled, $bulkySurcharge) implements ConfigurationManagerInterface {
-            public function __construct(
-                private readonly bool $enabled,
-                private readonly string $bulkySurcharge
-            ) {}
+        // Method 2 (Heavy DE) has an enabled override of 7% instead of the standard 19%.
+        $criteria = new ShippingSelectionCriteria(2, $this->basketViewModel($this->heavyProduct, 1), 'DE', false);
+        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
 
-            /**
-             * @return array<string, mixed>
-             */
-            public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
-            {
-                return ['shipping' => ['enabled' => $this->enabled, 'bulkySurcharge' => $this->bulkySurcharge]];
-            }
+        self::assertSame(0.07, $selection->getTaxRate());
+    }
 
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function setConfiguration(array $configuration = []): void {}
+    #[Test]
+    public function resolveSelectionAppliesTheShoppersDiscountToTheMethodsRateButNotTheSurcharge(): void
+    {
+        $this->lightProduct->setBulky(true);
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/frontend_user_discounts.csv');
 
-            public function setRequest(ServerRequestInterface $request): void {}
-        };
+        // user 3 has a personal 15% discount (see frontend_user_discounts.csv): 5.00 * 0.85 = 4.25, plus the untouched 2.50 surcharge.
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
+        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true, '2.50'), $criteria, $this->requestFor(3));
+
+        self::assertSame(425 + 250, $selection->getCost()->getCents());
+    }
+
+    private function configuration(bool $shippingEnabled, string $bulkySurcharge = '0.00'): ProductsConfiguration
+    {
+        return new ProductsConfiguration('DE', 'gross', 'EUR', $shippingEnabled, Money::fromDecimalString($bulkySurcharge), false);
+    }
+
+    private function requestFor(int $frontendUserUid): ServerRequestInterface
+    {
+        $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
+        $frontendUser->initializeUserSessionManager();
+        if ($frontendUserUid > 0) {
+            $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable('fe_users');
+            $row = $queryBuilder->select('*')
+                ->from('fe_users')
+                ->where($queryBuilder->expr()->eq('uid', $frontendUserUid))
+                ->executeQuery()
+                ->fetchAssociative();
+            $frontendUser->user = $row !== false ? $row : ['uid' => $frontendUserUid];
+        }
+        return (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
     }
 
     private function basketViewModel(Product $product, int $quantity): BasketViewModel

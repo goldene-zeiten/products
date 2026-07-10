@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Service\Shipping;
 
+use GoldeneZeiten\Products\Configuration\ProductsConfiguration;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\Repository\HandlingFeeRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\Shipping\HandlingFeeService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
-use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 final class HandlingFeeServiceTest extends AbstractFunctionalTestCase
 {
@@ -41,7 +39,7 @@ final class HandlingFeeServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function resolveCostIsZeroWhenDisabled(): void
     {
-        $cost = $this->subject(false)->resolveCost($this->basketViewModel($this->lightProduct), 'DE');
+        $cost = $this->get(HandlingFeeService::class)->resolveCost($this->configuration(false), $this->basketViewModel($this->lightProduct), 'DE');
 
         self::assertSame(0, $cost->getCents());
     }
@@ -49,7 +47,7 @@ final class HandlingFeeServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function resolveCostPicksTheApplicableFeeForALightBasket(): void
     {
-        $cost = $this->subject(true)->resolveCost($this->basketViewModel($this->lightProduct), 'DE');
+        $cost = $this->get(HandlingFeeService::class)->resolveCost($this->configuration(true), $this->basketViewModel($this->lightProduct), 'DE');
 
         self::assertSame(300, $cost->getCents());
     }
@@ -57,7 +55,7 @@ final class HandlingFeeServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function resolveCostPicksTheApplicableFeeForAHeavyBasket(): void
     {
-        $cost = $this->subject(true)->resolveCost($this->basketViewModel($this->heavyProduct), 'DE');
+        $cost = $this->get(HandlingFeeService::class)->resolveCost($this->configuration(true), $this->basketViewModel($this->heavyProduct), 'DE');
 
         self::assertSame(900, $cost->getCents());
     }
@@ -65,36 +63,14 @@ final class HandlingFeeServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function resolveCostIsZeroWhenNothingApplies(): void
     {
-        $cost = $this->subject(true)->resolveCost($this->basketViewModel($this->lightProduct), 'FR');
+        $cost = $this->get(HandlingFeeService::class)->resolveCost($this->configuration(true), $this->basketViewModel($this->lightProduct), 'FR');
 
         self::assertSame(0, $cost->getCents());
     }
 
-    private function subject(bool $enabled): HandlingFeeService
+    private function configuration(bool $enabled): ProductsConfiguration
     {
-        return new HandlingFeeService($this->get(HandlingFeeRepository::class), $this->fakeConfigurationManager($enabled));
-    }
-
-    private function fakeConfigurationManager(bool $enabled): ConfigurationManagerInterface
-    {
-        return new class ($enabled) implements ConfigurationManagerInterface {
-            public function __construct(private readonly bool $enabled) {}
-
-            /**
-             * @return array<string, mixed>
-             */
-            public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
-            {
-                return ['handling' => ['enabled' => $this->enabled]];
-            }
-
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function setConfiguration(array $configuration = []): void {}
-
-            public function setRequest(ServerRequestInterface $request): void {}
-        };
+        return new ProductsConfiguration('DE', 'gross', 'EUR', false, Money::fromCents(0), $enabled);
     }
 
     private function basketViewModel(Product $product): BasketViewModel

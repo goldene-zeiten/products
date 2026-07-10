@@ -16,6 +16,7 @@ use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Service\Order\OrderCreationService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
 
@@ -46,7 +47,7 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
     public function anOrderWithoutAGiftChoiceStaysBillingOnly(): void
     {
         $order = $this->subject->create(
-            new ServerRequest('http://localhost/'),
+            $this->request(),
             $this->basketViewModel(),
             new CheckoutSelections([], 0),
             $this->address(),
@@ -63,7 +64,7 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
         $delivery = new Address(firstName: 'Jane', lastName: 'Doe', street: 'Gift Lane 1', zip: '54321', city: 'Giftville', country: 'AT');
 
         $order = $this->subject->create(
-            new ServerRequest('http://localhost/'),
+            $this->request(),
             $this->basketViewModel(),
             new CheckoutSelections([], 0, 0, $delivery),
             $this->address(),
@@ -87,7 +88,7 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
         $delivery = new Address(firstName: 'Jane', lastName: 'Doe', country: 'AT');
 
         $order = $this->subject->create(
-            new ServerRequest('http://localhost/'),
+            $this->request(),
             $this->basketViewModel(),
             new CheckoutSelections([], 0, 0, $delivery),
             $this->address(),
@@ -104,7 +105,7 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
     public function aGiftMessageIsPersistedOntoTheOrder(): void
     {
         $order = $this->subject->create(
-            new ServerRequest('http://localhost/'),
+            $this->request(),
             $this->basketViewModel(),
             new CheckoutSelections([], 0, 0, null, 'Happy birthday!'),
             $this->address(),
@@ -112,6 +113,12 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
         );
 
         self::assertSame('Happy birthday!', $order->getGiftMessage());
+    }
+
+    private function request(): ServerRequestInterface
+    {
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
     private function basketViewModel(): BasketViewModel

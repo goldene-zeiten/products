@@ -44,6 +44,8 @@ final class BasketServiceTest extends AbstractFrontendTestCase
     {
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
         $frontendUser->initializeUserSessionManager();
-        return (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
+            ->withAttribute('frontend.user', $frontendUser);
     }
 }

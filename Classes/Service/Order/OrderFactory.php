@@ -67,7 +67,10 @@ final class OrderFactory
     /**
      * total_gross is reduced by the combined voucher/points discount and increased by
      * shipping/handling/deposit; total_net/total_tax stay pre-discount since tax was legitimately
-     * due on the goods and none of these adjustments are a retroactive price change.
+     * due on the goods and none of these adjustments are a retroactive price change - except
+     * shipping, which (unlike handling/deposit) now has real tax of its own reverse-split out of
+     * its tax-inclusive gross cost and folded into total_net/total_tax, so the order's tax
+     * reporting isn't silently missing it.
      */
     private function applyAdjustments(Order $order, BasketViewModel $basketViewModel, PlacementDetails $details): void
     {
@@ -79,6 +82,9 @@ final class OrderFactory
                 ->add($details->getHandlingFeeCost())
                 ->add($depositTotal)
         );
+        $shippingNet = $details->getShippingCost()->netFromGross($details->getShippingTaxRate());
+        $order->setTotalNet($order->getTotalNet()->add($shippingNet));
+        $order->setTotalTax($order->getTotalTax()->add($details->getShippingCost()->subtract($shippingNet)));
         $order->setDiscountTotal($details->getTotalDiscount());
         $order->setVoucherCodes($details->getVoucherCodes());
         $order->setShippingMethod($details->getShippingMethodUid());

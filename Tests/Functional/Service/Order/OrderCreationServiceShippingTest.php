@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
 
+use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
@@ -12,7 +13,6 @@ use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\CreditPointsTransactionRepository;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Domain\Repository\ShippingMethodRepository;
 use GoldeneZeiten\Products\Domain\Repository\VoucherRedemptionRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
@@ -157,7 +157,6 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
 
     private function subject(bool $shippingEnabled): OrderCreationService
     {
-        $shippingCostService = new ShippingCostService($this->get(ShippingMethodRepository::class), $this->fakeConfigurationManager($shippingEnabled));
         return new OrderCreationService(
             $this->get(StockService::class),
             $this->get(OrderRepository::class),
@@ -169,9 +168,10 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
             $this->get(CreditPointsService::class),
             $this->get(CreditPointsTransactionRepository::class),
             $this->get(FrontendUserResolver::class),
-            $shippingCostService,
+            $this->get(ShippingCostService::class),
             $this->get(HandlingFeeService::class),
-            $this->get(ConfigurationManagerInterface::class)
+            $this->get(ConfigurationManagerInterface::class),
+            new ProductsConfigurationFactory($this->fakeConfigurationManager($shippingEnabled))
         );
     }
 

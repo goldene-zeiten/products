@@ -48,10 +48,6 @@ final class CategoryDiscountPriceProvider implements PriceProviderInterface
             $request !== null ? $this->frontendUserResolver->getDiscountPercent($request) : 0.0
         );
 
-        if ($discountPercent <= 0.0) {
-            return $price;
-        }
-
-        return $price->multiply(1 - $discountPercent / 100);
+        return $price->discountByPercent($discountPercent);
     }
 }

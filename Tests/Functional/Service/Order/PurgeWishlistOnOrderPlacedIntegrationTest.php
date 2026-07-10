@@ -94,6 +94,8 @@ final class PurgeWishlistOnOrderPlacedIntegrationTest extends AbstractFunctional
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
         $frontendUser->initializeUserSessionManager();
         $frontendUser->user = ['uid' => $frontendUserUid];
-        return (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
+            ->withAttribute('frontend.user', $frontendUser);
     }
 }

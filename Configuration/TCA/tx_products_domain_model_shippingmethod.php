@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'title, country, min_order_value, max_order_value, min_weight, max_weight, rate'],
+        '1' => ['showitem' => 'title, country, min_order_value, max_order_value, min_weight, max_weight, rate, tax_rate_override_enabled, tax_rate_override'],
     ],
     'columns' => [
         'title' => [
@@ -80,6 +80,23 @@ return [
                 'size' => 10,
                 'eval' => 'trim',
                 'required' => true,
+            ],
+        ],
+        'tax_rate_override_enabled' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_shippingmethod.tax_rate_override_enabled',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'default' => 0,
+            ],
+        ],
+        'tax_rate_override' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_shippingmethod.tax_rate_override',
+            'config' => [
+                'type' => 'number',
+                'format' => 'decimal',
+                'size' => 10,
+                'eval' => 'trim',
             ],
         ],
     ],

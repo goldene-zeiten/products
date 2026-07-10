@@ -70,7 +70,7 @@ final class LowStockWarningIntegrationTest extends AbstractFunctionalTestCase
         $basketViewModel = new BasketViewModel([$item], $unitPriceNet, $unitPriceGross, $unitPriceGross->subtract($unitPriceNet), 'EUR');
 
         $this->get(OrderCreationService::class)->create(
-            new ServerRequest('http://localhost/'),
+            (new ServerRequest('http://localhost/'))->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE),
             $basketViewModel,
             new CheckoutSelections([], 0, 0),
             new Address(email: 'buyer@example.com', country: 'DE'),

@@ -4,36 +4,30 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service\Shipping;
 
+use GoldeneZeiten\Products\Configuration\ProductsConfiguration;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelection;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelectionCriteria;
 use GoldeneZeiten\Products\Domain\Model\ShippingMethod;
 use GoldeneZeiten\Products\Domain\Repository\ShippingMethodRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Shipping\Exception\NoShippingMethodAvailableException;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use GoldeneZeiten\Products\Service\TaxService;
+use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * Stateless by design - takes an already-resolved ProductsConfiguration rather than reading
+ * settings itself, so it's a pure function of its inputs (see ProductsConfiguration's docblock).
+ */
 final class ShippingCostService
 {
-    /**
-     * @var array<string, mixed>
-     */
-    private array $settings;
-
     public function __construct(
         private readonly ShippingMethodRepository $shippingMethodRepository,
-        ConfigurationManagerInterface $configurationManager
-    ) {
-        $this->settings = $configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
-        );
-    }
-
-    public function isEnabled(): bool
-    {
-        return (bool)($this->settings['shipping']['enabled'] ?? false);
-    }
+        private readonly TaxService $taxService,
+        private readonly FrontendUserResolver $frontendUserResolver
+    ) {}
 
     public function findMethod(int $shippingMethodUid): ?ShippingMethod
     {
@@ -47,9 +41,9 @@ final class ShippingCostService
     /**
      * @return ShippingMethod[]
      */
-    public function resolveAvailable(BasketViewModel $basketViewModel, string $countryCode): array
+    public function resolveAvailable(ProductsConfiguration $configuration, BasketViewModel $basketViewModel, string $countryCode): array
     {
-        if (!$this->isEnabled()) {
+        if (!$configuration->isShippingEnabled()) {
             return [];
         }
         $weight = $this->calculateWeight($basketViewModel);
@@ -64,29 +58,41 @@ final class ShippingCostService
     /**
      * Re-validates the shopper's earlier choice against the current basket/country rather than
      * trusting the session blindly, same reasoning as vouchers being fully re-resolved at
-     * placement time. $waived comes from the caller since it depends on which voucher (if any)
-     * ends up applied, resolved earlier in the same placement.
+     * placement time. $criteria->isWaived() comes from the caller since it depends on which
+     * voucher (if any) ends up applied, resolved earlier in the same placement. $request (when
+     * given) applies the shopper's FE-usergroup/personal discount to the method's own rate - not
+     * to the bulky surcharge, matching the existing "waiving doesn't touch the surcharge either"
+     * precedent.
      *
      * @throws NoShippingMethodAvailableException
      */
-    public function resolveSelection(int $shippingMethodUid, BasketViewModel $basketViewModel, string $countryCode, bool $waived): ShippingSelection
+    public function resolveSelection(ProductsConfiguration $configuration, ShippingSelectionCriteria $criteria, ?ServerRequestInterface $request = null): ShippingSelection
     {
-        if (!$this->isEnabled() || $shippingMethodUid === 0) {
+        if (!$configuration->isShippingEnabled() || $criteria->getShippingMethodUid() === 0) {
             return ShippingSelection::none();
         }
-        $method = $this->findSelectedMethod($shippingMethodUid, $basketViewModel, $countryCode);
-        $rate = $waived ? Money::fromCents(0) : $method->getRate();
-        $cost = $rate->add($this->calculateBulkySurcharge($basketViewModel));
-        return new ShippingSelection($method, $cost);
+        $method = $this->findSelectedMethod($configuration, $criteria);
+        $rate = $criteria->isWaived() ? Money::fromCents(0) : $this->applyDiscount($method->getRate(), $request);
+        $cost = $rate->add($this->calculateBulkySurcharge($configuration, $criteria->getBasketViewModel()));
+        $taxRate = $this->taxService->getShippingTaxRate($configuration, $method->getEffectiveTaxRateOverride(), $criteria->getCountryCode());
+        return new ShippingSelection($method, $cost, $taxRate);
+    }
+
+    private function applyDiscount(Money $amount, ?ServerRequestInterface $request): Money
+    {
+        if ($request === null) {
+            return $amount;
+        }
+        return $amount->discountByPercent($this->frontendUserResolver->getDiscountPercent($request));
     }
 
     /**
      * A free-shipping voucher waives the method's own rate, not the bulky surcharge - an
      * oversized item still costs extra to handle regardless of who pays the base shipping rate.
      */
-    private function calculateBulkySurcharge(BasketViewModel $basketViewModel): Money
+    private function calculateBulkySurcharge(ProductsConfiguration $configuration, BasketViewModel $basketViewModel): Money
     {
-        $surchargePerUnit = Money::fromDecimalString((string)($this->settings['shipping']['bulkySurcharge'] ?? '0.00'));
+        $surchargePerUnit = $configuration->getBulkySurcharge();
         if ($surchargePerUnit->getCents() === 0) {
             return Money::fromCents(0);
         }
@@ -104,15 +110,15 @@ final class ShippingCostService
         return $item->getProduct()->isBulky() || ($item->getArticle()?->isBulky() ?? false);
     }
 
-    private function findSelectedMethod(int $shippingMethodUid, BasketViewModel $basketViewModel, string $countryCode): ShippingMethod
+    private function findSelectedMethod(ProductsConfiguration $configuration, ShippingSelectionCriteria $criteria): ShippingMethod
     {
-        foreach ($this->resolveAvailable($basketViewModel, $countryCode) as $method) {
-            if ($method->getUid() === $shippingMethodUid) {
+        foreach ($this->resolveAvailable($configuration, $criteria->getBasketViewModel(), $criteria->getCountryCode()) as $method) {
+            if ($method->getUid() === $criteria->getShippingMethodUid()) {
                 return $method;
             }
         }
         throw new NoShippingMethodAvailableException(
-            sprintf('Shipping method %d is not available for the current basket and country "%s".', $shippingMethodUid, $countryCode),
+            sprintf('Shipping method %d is not available for the current basket and country "%s".', $criteria->getShippingMethodUid(), $criteria->getCountryCode()),
             1783600000
         );
     }

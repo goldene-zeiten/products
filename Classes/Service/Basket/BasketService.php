@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service\Basket;
 
+use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Domain\Dto\Basket;
 use GoldeneZeiten\Products\Domain\Dto\BasketItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
@@ -23,7 +24,8 @@ final class BasketService
         private readonly ArticleRepository $articleRepository,
         private readonly TaxService $taxService,
         private readonly BasketStorage $basketStorage,
-        private readonly PriceProviderInterface $priceProvider
+        private readonly PriceProviderInterface $priceProvider,
+        private readonly ProductsConfigurationFactory $configurationFactory
     ) {}
 
     public function add(ServerRequestInterface $request, int $productUid, ?int $articleUid, int $quantity): void
@@ -99,8 +101,9 @@ final class BasketService
         $totalGrossCents = 0;
         $totalTaxCents = 0;
 
-        $pricingMode = $this->taxService->getPricingMode();
-        $currency = $this->taxService->getCurrency();
+        $configuration = $this->configurationFactory->create($request);
+        $pricingMode = $configuration->getPricingMode();
+        $currency = $configuration->getCurrency();
 
         foreach ($basket->getItems() as $item) {
             $product = $this->productRepository->findByUid($item->getProductUid());
@@ -114,11 +117,11 @@ final class BasketService
             }
 
             $basePrice = $this->priceProvider->getUnitPrice($product, $article, $item->getQuantity(), $request);
-            $taxRate = $this->taxService->getTaxRate($product->getTaxClass());
+            $taxRate = $this->taxService->getTaxRate($configuration, $product->getTaxClass());
 
             if ($pricingMode === 'gross') {
                 $unitPriceGross = $basePrice;
-                $unitPriceNet = Money::fromCents((int)round($unitPriceGross->getCents() / (1 + $taxRate)));
+                $unitPriceNet = $unitPriceGross->netFromGross($taxRate);
             } else {
                 $unitPriceNet = $basePrice;
                 $unitPriceGross = Money::fromCents((int)round($unitPriceNet->getCents() * (1 + $taxRate)));

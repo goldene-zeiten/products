@@ -80,6 +80,8 @@ final class BasketServiceDiscountTest extends AbstractFunctionalTestCase
                 ->fetchAssociative();
             $frontendUser->user = $row !== false ? $row : ['uid' => $frontendUserUid];
         }
-        return (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
+            ->withAttribute('frontend.user', $frontendUser);
     }
 }

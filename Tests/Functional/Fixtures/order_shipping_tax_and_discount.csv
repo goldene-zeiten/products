@@ -1,0 +1,24 @@
+"tx_products_domain_model_taxclass",,,
+,"uid","title","code"
+,1,"Standard Tax","standard"
+
+"tx_products_domain_model_taxrate",,,,
+,"uid","tax_class","country","rate"
+,1,1,"DE","19.00"
+
+"tx_products_domain_model_product",,,,,,
+,"uid","pid","title","slug","price","tax_class","in_stock"
+,1,2,"Product 1","product-1","100.00",1,100
+
+"tx_products_domain_model_shippingmethod",,,,,,,,,
+,"uid","pid","title","country","min_order_value","max_order_value","min_weight","max_weight","rate","tax_rate_override_enabled","tax_rate_override"
+,1,1,"Standard DE","DE","0.00","0.00",0,0,"5.00",0,"0.00"
+,2,1,"Override DE","DE","0.00","0.00",0,0,"5.00",1,"7.00"
+
+"fe_groups",,,
+,"uid","pid","title","tx_products_discount_percent"
+,1,2,"Wholesale","15.00"
+
+"fe_users",,,,,
+,"uid","pid","username","usergroup"
+,1,2,"discounted-shopper","1"

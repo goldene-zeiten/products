@@ -19,6 +19,7 @@ use GoldeneZeiten\Products\Service\Order\Exception\VoucherRedemptionFailedExcept
 use GoldeneZeiten\Products\Service\Order\OrderCreationService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
@@ -52,7 +53,7 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
     public function voucherDiscountReducesTotalGrossButNotNetOrTax(): void
     {
         $order = $this->subject->create(
-            new ServerRequest('http://localhost/'),
+            $this->request(),
             $this->basketViewModel(),
             $this->discountRequest('SAVE10'),
             $this->address(),
@@ -72,7 +73,7 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
         self::assertNotNull($voucher);
 
         $order = $this->subject->create(
-            new ServerRequest('http://localhost/'),
+            $this->request(),
             $this->basketViewModel(),
             $this->discountRequest('SAVE10'),
             $this->address(),
@@ -86,7 +87,7 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
     public function usageLimitIsEnforcedAcrossTwoPlacements(): void
     {
         $this->subject->create(
-            new ServerRequest('http://localhost/'),
+            $this->request(),
             $this->basketViewModel(),
             $this->discountRequest('ONETIME'),
             $this->address(),
@@ -97,7 +98,7 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
         $this->expectExceptionCode(1783426407);
 
         $this->subject->create(
-            new ServerRequest('http://localhost/'),
+            $this->request(),
             $this->basketViewModel(),
             $this->discountRequest('ONETIME'),
             $this->address(),
@@ -113,7 +114,7 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
 
         try {
             $this->subject->create(
-                new ServerRequest('http://localhost/'),
+                $this->request(),
                 $this->basketViewModel(),
                 $this->discountRequest('EXHAUSTED'),
                 $this->address(),
@@ -126,6 +127,12 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
 
         self::assertSame($orderCountBefore, $this->countOrders());
         self::assertSame($stockBefore, $this->currentStock());
+    }
+
+    private function request(): ServerRequestInterface
+    {
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
     private function basketViewModel(): BasketViewModel

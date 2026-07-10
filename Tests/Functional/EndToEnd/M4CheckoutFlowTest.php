@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\EndToEnd;
 
+use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Domain\Model\Order;
@@ -12,7 +13,6 @@ use GoldeneZeiten\Products\Domain\Repository\CreditPointsTransactionRepository;
 use GoldeneZeiten\Products\Domain\Repository\GainedVoucherRepository;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Domain\Repository\ShippingMethodRepository;
 use GoldeneZeiten\Products\Domain\Repository\VoucherRedemptionRepository;
 use GoldeneZeiten\Products\Domain\Repository\VoucherRepository;
 use GoldeneZeiten\Products\Event\AfterOrderPlacedEvent;
@@ -140,10 +140,6 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
 
     private function buildOrderPlacementService(): OrderPlacementService
     {
-        $shippingCostService = new ShippingCostService(
-            $this->get(ShippingMethodRepository::class),
-            $this->fakeConfigurationManager(['shipping' => ['enabled' => true]])
-        );
         $orderCreationService = new OrderCreationService(
             $this->get(StockService::class),
             $this->get(OrderRepository::class),
@@ -155,9 +151,10 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
             $this->get(CreditPointsService::class),
             $this->get(CreditPointsTransactionRepository::class),
             $this->get(FrontendUserResolver::class),
-            $shippingCostService,
+            $this->get(ShippingCostService::class),
             $this->get(HandlingFeeService::class),
-            $this->get(ConfigurationManagerInterface::class)
+            $this->get(ConfigurationManagerInterface::class),
+            new ProductsConfigurationFactory($this->fakeConfigurationManager(['shipping' => ['enabled' => true]]))
         );
         $orderPlacementTransaction = new OrderPlacementTransaction(
             $this->get(ConnectionPool::class),
@@ -212,7 +209,9 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
         if ($frontendUserUid > 0) {
             $frontendUser->user = ['uid' => $frontendUserUid];
         }
-        return (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
+            ->withAttribute('frontend.user', $frontendUser);
     }
 
     private function address(): Address

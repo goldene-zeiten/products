@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\EndToEnd;
 
+use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Domain\Model\Product;
@@ -163,7 +164,8 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
             $this->get(FrontendUserResolver::class),
             $this->get(ShippingCostService::class),
             $this->get(HandlingFeeService::class),
-            $this->get(ConfigurationManagerInterface::class)
+            $this->get(ConfigurationManagerInterface::class),
+            $this->get(ProductsConfigurationFactory::class)
         );
         $orderPlacementTransaction = new OrderPlacementTransaction(
             $this->get(ConnectionPool::class),
@@ -208,7 +210,9 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
         if ($frontendUserUid > 0) {
             $frontendUser->user = ['uid' => $frontendUserUid];
         }
-        return (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
+            ->withAttribute('frontend.user', $frontendUser);
     }
 
     private function address(): Address

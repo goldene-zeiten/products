@@ -18,7 +18,8 @@ final readonly class ShippingSelection
 {
     public function __construct(
         private ?ShippingMethod $shippingMethod,
-        private Money $cost
+        private Money $cost,
+        private float $taxRate = 0.0
     ) {}
 
     public static function none(): self
@@ -39,5 +40,14 @@ final readonly class ShippingSelection
     public function getCost(): Money
     {
         return $this->cost;
+    }
+
+    /**
+     * A fraction (e.g. 0.19 for 19%), the rate the gross shipping cost was/should be reverse-split
+     * with - see TaxService::getShippingTaxRate().
+     */
+    public function getTaxRate(): float
+    {
+        return $this->taxRate;
     }
 }
