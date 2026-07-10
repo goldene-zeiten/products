@@ -71,4 +71,23 @@ final readonly class BasketViewModel
         }
         return $total;
     }
+
+    public function hasBulkyItem(): bool
+    {
+        foreach ($this->items as $item) {
+            if ($item->isBulky()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function getTotalWeight(): int
+    {
+        $weight = 0;
+        foreach ($this->items as $item) {
+            $weight += $item->getWeight();
+        }
+        return $weight;
+    }
 }

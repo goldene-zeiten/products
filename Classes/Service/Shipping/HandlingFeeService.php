@@ -42,7 +42,7 @@ final class HandlingFeeService
 
     private function resolveApplicable(BasketViewModel $basketViewModel, string $countryCode): ?HandlingFee
     {
-        $weight = $this->calculateWeight($basketViewModel);
+        $weight = $basketViewModel->getTotalWeight();
         $goodsTotal = $basketViewModel->getTotalGross();
         foreach ($this->handlingFeeRepository->findApplicableForCountry($countryCode) as $candidate) {
             if ($candidate->isApplicable($weight, $goodsTotal)) {
@@ -50,14 +50,5 @@ final class HandlingFeeService
             }
         }
         return null;
-    }
-
-    private function calculateWeight(BasketViewModel $basketViewModel): int
-    {
-        $weight = 0;
-        foreach ($basketViewModel->getItems() as $item) {
-            $weight += $item->getProduct()->getWeight() * $item->getQuantity();
-        }
-        return $weight;
     }
 }
