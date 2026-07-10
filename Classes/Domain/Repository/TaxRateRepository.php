@@ -15,6 +15,7 @@ final class TaxRateRepository extends AbstractReadOnlyRepository
     public function findByTaxClassAndCountry(TaxClass $taxClass, string $countryCode, \DateTimeInterface $now): ?TaxRate
     {
         $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage(false);
         $constraints = [
             $query->equals('taxClass', $taxClass),
             $query->equals('country', $countryCode),
@@ -24,6 +25,7 @@ final class TaxRateRepository extends AbstractReadOnlyRepository
             ),
             $query->logicalOr(
                 $query->equals('validUntil', null),
+                $query->equals('validUntil', 0),
                 $query->greaterThanOrEqual('validUntil', $now)
             ),
         ];

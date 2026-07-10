@@ -25,6 +25,11 @@ final class TaxService
         );
     }
 
+    /**
+     * Returns the rate as a fraction (e.g. 0.19 for 19%), ready for direct `1 + rate`
+     * multiplication - TaxRate::rate itself stores the whole percentage (19.00, editable as such
+     * in the backend), the /100 conversion happens here so every caller gets a usable multiplier.
+     */
     public function getTaxRate(?TaxClass $taxClass, ?string $countryCode = null): float
     {
         if ($taxClass === null) {
@@ -42,7 +47,7 @@ final class TaxService
             $taxRate = $this->taxRateRepository->findByTaxClassAndCountry($taxClass, $defaultCountry, $now);
         }
 
-        return $taxRate !== null ? $taxRate->getRate() : 0.0;
+        return $taxRate !== null ? $taxRate->getRate() / 100 : 0.0;
     }
 
     public function getPricingMode(): string

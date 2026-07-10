@@ -1,0 +1,7 @@
+"tx_products_domain_model_taxclass",,,
+,"uid","pid","title","code"
+,1,99,"Standard Tax","standard"
+
+"tx_products_domain_model_taxrate",,,,,
+,"uid","pid","tax_class","country","rate"
+,1,99,1,"DE","19.00"
