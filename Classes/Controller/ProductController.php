@@ -61,7 +61,7 @@ final class ProductController extends ActionController
     }
 
     /**
-     * @return array{wishlistEnabled: bool, wishlistProductUids: int[]}
+     * @return array{wishlistEnabled: bool, wishlistProductUids: int[], wishlistCount: int}
      */
     private function wishlistViewVariables(): array
     {
@@ -69,6 +69,6 @@ final class ProductController extends ActionController
         $productUids = $enabled
             ? array_map(static fn(Product $product): int => $product->getUid() ?? 0, $this->wishlistService->getItems($this->request))
             : [];
-        return ['wishlistEnabled' => $enabled, 'wishlistProductUids' => $productUids];
+        return ['wishlistEnabled' => $enabled, 'wishlistProductUids' => $productUids, 'wishlistCount' => count($productUids)];
     }
 }

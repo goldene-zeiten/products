@@ -16,7 +16,10 @@ final class WishlistController extends ActionController
 
     public function showAction(): ResponseInterface
     {
-        $this->view->assign('products', $this->wishlistService->getItems($this->request));
+        $this->view->assignMultiple([
+            'products' => $this->wishlistService->getItems($this->request),
+            'wishlistCount' => $this->wishlistService->count($this->request),
+        ]);
         return $this->htmlResponse();
     }
 

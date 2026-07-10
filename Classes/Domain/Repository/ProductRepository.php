@@ -47,6 +47,18 @@ final class ProductRepository extends AbstractReadOnlyRepository
     }
 
     /**
+     * Direct members only, same scope as findByCategory() - a nav badge counts what is actually
+     * assigned to that category, not the whole subtree beneath it.
+     */
+    public function countByCategory(Category $category): int
+    {
+        $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage(false);
+        $query->matching($query->contains('categories', $category));
+        return $query->execute()->count();
+    }
+
+    /**
      * @return QueryResultInterface<int, Product>
      */
     public function search(string $term, ?int $categoryUid, int $offset, int $limit): QueryResultInterface

@@ -15,6 +15,7 @@ use GoldeneZeiten\Products\Service\Wishlist\WishlistStorage;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -33,6 +34,10 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/wishlist.csv');
+        // WishlistStorage reads Extbase settings eagerly in its constructor (cookie-consent gate),
+        // which requires a request resolvable via $GLOBALS['TYPO3_REQUEST'] outside a real dispatch.
+        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
         $this->subject = new WishlistService(
             $this->get(WishlistItemRepository::class),
             $this->get(WishlistStorage::class),
@@ -208,6 +213,30 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
         $this->subject->removeOrderedItems($this->orderFor(0, [1]));
 
         self::assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
+    }
+
+    #[Test]
+    public function countReflectsAGuestsSessionWishlistWithoutHydratingProducts(): void
+    {
+        $request = $this->requestFor(0);
+        self::assertSame(0, $this->subject->count($request));
+
+        $this->subject->add($request, 1);
+        $this->subject->add($request, 2);
+
+        self::assertSame(2, $this->subject->count($request));
+    }
+
+    #[Test]
+    public function countReflectsAnIdentifiedCustomersPersistedWishlist(): void
+    {
+        $request = $this->requestFor(5);
+        self::assertSame(0, $this->subject->count($request));
+
+        $this->subject->add($request, 1);
+        $this->subject->add($request, 2);
+
+        self::assertSame(2, $this->subject->count($request));
     }
 
     #[Test]

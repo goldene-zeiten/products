@@ -208,7 +208,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
 
     private function configuration(bool $shippingEnabled, string $bulkySurcharge = '0.00'): ProductsConfiguration
     {
-        return new ProductsConfiguration('DE', 'gross', 'EUR', $shippingEnabled, Money::fromDecimalString($bulkySurcharge), false);
+        return new ProductsConfiguration('DE', 'gross', 'EUR', $shippingEnabled, Money::fromDecimalString($bulkySurcharge), false, 'none');
     }
 
     private function requestFor(int $frontendUserUid): ServerRequestInterface

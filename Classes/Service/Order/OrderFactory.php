@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Model\OrderAddress;
 use GoldeneZeiten\Products\Domain\Model\OrderItem;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Service\PriceRoundingService;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -29,6 +30,7 @@ final class OrderFactory
     public function __construct(
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly NumberRangeService $numberRangeService,
+        private readonly PriceRoundingService $priceRoundingService,
         ConfigurationManagerInterface $configurationManager
     ) {
         $this->settings = $configurationManager->getConfiguration(
@@ -75,13 +77,12 @@ final class OrderFactory
     private function applyAdjustments(Order $order, BasketViewModel $basketViewModel, PlacementDetails $details): void
     {
         $depositTotal = $basketViewModel->getDepositTotal();
-        $order->setTotalGross(
-            $basketViewModel->getTotalGross()
-                ->subtract($details->getTotalDiscount())
-                ->add($details->getShippingCost())
-                ->add($details->getHandlingFeeCost())
-                ->add($depositTotal)
-        );
+        $adjustedTotalGross = $basketViewModel->getTotalGross()
+            ->subtract($details->getTotalDiscount())
+            ->add($details->getShippingCost())
+            ->add($details->getHandlingFeeCost())
+            ->add($depositTotal);
+        $order->setTotalGross($this->priceRoundingService->round($adjustedTotalGross, $this->roundingMode()));
         $shippingNet = $details->getShippingCost()->netFromGross($details->getShippingTaxRate());
         $order->setTotalNet($order->getTotalNet()->add($shippingNet));
         $order->setTotalTax($order->getTotalTax()->add($details->getShippingCost()->subtract($shippingNet)));
@@ -103,6 +104,11 @@ final class OrderFactory
             $order->setDeliveryAddress($this->buildDeliveryAddress($details->getDeliveryAddress()));
         }
         $order->setGiftMessage($details->getGiftMessage());
+    }
+
+    private function roundingMode(): string
+    {
+        return (string)($this->settings['pricing']['roundingMode'] ?? PriceRoundingService::MODE_NONE);
     }
 
     private function resolveSiteIdentifier(ServerRequestInterface $request): string

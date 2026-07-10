@@ -107,6 +107,18 @@ final class WishlistService
     }
 
     /**
+     * Nav-badge accessor - counts without hydrating Product entities, unlike getItems().
+     */
+    public function count(ServerRequestInterface $request): int
+    {
+        $frontendUser = $this->frontendUserResolver->getUid($request);
+        if ($frontendUser === 0) {
+            return count($this->wishlistStorage->load($request));
+        }
+        return $this->wishlistItemRepository->findByFrontendUser($frontendUser)->count();
+    }
+
+    /**
      * @return Product[]
      */
     public function getItems(ServerRequestInterface $request): array

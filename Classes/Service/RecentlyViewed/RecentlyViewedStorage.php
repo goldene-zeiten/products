@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service\RecentlyViewed;
 
+use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
@@ -23,6 +24,7 @@ final class RecentlyViewedStorage
     private array $settings;
 
     public function __construct(
+        private readonly FrontendUserResolver $frontendUserResolver,
         ConfigurationManagerInterface $configurationManager
     ) {
         $this->settings = $configurationManager->getConfiguration(
@@ -66,9 +68,17 @@ final class RecentlyViewedStorage
         if (!$frontendUser instanceof FrontendUserAuthentication) {
             return;
         }
+        if ($this->requiresCookieConsent() && !$this->frontendUserResolver->hasConfirmedSessionCookie($request)) {
+            return;
+        }
 
         $frontendUser->setKey('ses', self::SESSION_KEY, json_encode(array_values($productUids)));
         $frontendUser->storeSessionData();
+    }
+
+    private function requiresCookieConsent(): bool
+    {
+        return (bool)($this->settings['session']['requireCookieConsent'] ?? false);
     }
 
     /**

@@ -53,6 +53,11 @@ settings:
     default: 'maxAcrossTree'
     label: 'Category-cascading discount resolution mode (maxAcrossTree|nearestCategory)'
     category: products
+  products.pricing.roundingMode:
+    type: string
+    default: 'none'
+    label: 'Basket/order gross total rounding, applied only to the final total (none|nearestInteger|psychological99)'
+    category: products
   products.tax.defaultCountry:
     type: string
     default: 'DE'
@@ -248,6 +253,11 @@ settings:
     type: int
     default: 14
     label: 'Days after order placement a customer may self-service withdraw/cancel (0 disables it)'
+    category: products
+  products.session.requireCookieConsent:
+    type: bool
+    default: false
+    label: 'Require an already-confirmed FE-session cookie before writing wishlist/recently-viewed session data'
     category: products
   products.seo.pageTitleMode:
     type: string
