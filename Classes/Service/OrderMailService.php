@@ -9,13 +9,16 @@ use GoldeneZeiten\Products\Domain\Model\Category;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Model\OrderItem;
 use GoldeneZeiten\Products\Domain\Model\Product;
+use GoldeneZeiten\Products\Domain\Model\ShippingPoint;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Service\Exception\AgbFileNotFoundException;
 use GoldeneZeiten\Products\Service\Invoice\InvoicePdfService;
 use GoldeneZeiten\Products\Service\Invoice\InvoiceRenderer;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mime\Address;
 use TYPO3\CMS\Core\Mail\FluidEmail;
 use TYPO3\CMS\Core\Mail\MailerInterface;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Settings\SettingsInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Fluid\View\TemplatePaths;
@@ -33,6 +36,7 @@ final class OrderMailService
         private readonly InvoiceRenderer $invoiceRenderer,
         private readonly InvoicePdfService $invoicePdfService,
         private readonly ProductRepository $productRepository,
+        private readonly ResourceFactory $resourceFactory,
         private readonly LoggerInterface $logger
     ) {}
 
@@ -40,13 +44,15 @@ final class OrderMailService
     {
         $email = $this->buildEmail($order, 'OrderConfirmation', self::LANGUAGE_FILE . 'order_confirmation_subject', $order->getEmail());
         $this->attachInvoice($email, $order);
+        $this->attachAgb($email, $order);
         $this->mailer->send($email);
     }
 
     /**
-     * The global recipient (if configured) always gets notified; each category-specific
-     * recipient resolved from the order's line items is notified in addition, not instead of it -
-     * a simplification of legacy's per-suffix template-bucket system, one recipient per address.
+     * The global recipient (if configured) always gets notified; each category- and
+     * shipping-point-specific recipient resolved from the order's line items is notified in
+     * addition, not instead of it - a simplification of legacy's per-suffix template-bucket
+     * system, one recipient per address, with both routing axes firing independently.
      */
     public function sendMerchantNotification(Order $order): void
     {
@@ -63,7 +69,11 @@ final class OrderMailService
     {
         $globalRecipient = $this->getSetting($this->settingsResolver->getSettings($order), 'products.email.merchantRecipient', '');
         $recipients = $globalRecipient !== '' ? [$globalRecipient] : [];
-        return array_values(array_unique(array_merge($recipients, $this->resolveCategoryNotificationRecipients($order))));
+        return array_values(array_unique(array_merge(
+            $recipients,
+            $this->resolveCategoryNotificationRecipients($order),
+            $this->resolveShippingPointNotificationRecipients($order)
+        )));
     }
 
     /**
@@ -100,6 +110,38 @@ final class OrderMailService
     {
         $product = $this->productRepository->findByUid($item->getProduct());
         return $product instanceof Product ? $product->getCategories()->toArray() : [];
+    }
+
+    /**
+     * Independent of, and dedupes separately from, the per-category routing above - a product's
+     * shipping point and its categories are unrelated axes and both can fire for the same order,
+     * matching legacy behaviour.
+     *
+     * @return string[]
+     */
+    private function resolveShippingPointNotificationRecipients(Order $order): array
+    {
+        $seenShippingPoints = [];
+        $recipients = [];
+        foreach ($order->getItems() as $item) {
+            $shippingPoint = $this->shippingPointForItem($item);
+            $shippingPointUid = $shippingPoint?->getUid();
+            if ($shippingPointUid === null || isset($seenShippingPoints[$shippingPointUid])) {
+                continue;
+            }
+            $seenShippingPoints[$shippingPointUid] = true;
+            $email = $shippingPoint->getNotificationEmail();
+            if ($email !== '') {
+                $recipients[$email] = $email;
+            }
+        }
+        return array_values($recipients);
+    }
+
+    private function shippingPointForItem(OrderItem $item): ?ShippingPoint
+    {
+        $product = $this->productRepository->findByUid($item->getProduct());
+        return $product instanceof Product ? $product->getShippingPoint() : null;
     }
 
     public function sendOrderStatusChanged(Order $order, OrderStatus $previousStatus, OrderStatus $newStatus): void
@@ -185,6 +227,30 @@ final class OrderMailService
         } catch (\Throwable $exception) {
             $this->logger->error(
                 sprintf('Failed to attach invoice PDF for order %s.', $order->getOrderNumber()),
+                ['exception' => $exception]
+            );
+        }
+    }
+
+    /**
+     * A missing/misconfigured AGB file must never prevent the confirmation email itself from
+     * being sent, same reasoning as attachInvoice().
+     */
+    private function attachAgb(FluidEmail $email, Order $order): void
+    {
+        $identifier = $this->getSetting($this->settingsResolver->getSettings($order), 'products.email.agbAttachment', '');
+        if ($identifier === '') {
+            return;
+        }
+        try {
+            $file = $this->resourceFactory->getFileObjectFromCombinedIdentifier($identifier);
+            if ($file === null) {
+                throw new AgbFileNotFoundException(sprintf('AGB file "%s" not found.', $identifier), 1783675922);
+            }
+            $email->attach($file->getContents(), $file->getName(), $file->getMimeType());
+        } catch (\Throwable $exception) {
+            $this->logger->error(
+                sprintf('Failed to attach AGB file "%s" for order %s.', $identifier, $order->getOrderNumber()),
                 ['exception' => $exception]
             );
         }

@@ -1,0 +1,11 @@
+"tx_products_domain_model_taxclass",,,
+,"uid","title","code"
+,1,"Standard Tax","STANDARD"
+
+"tx_products_domain_model_shippingpoint",,,
+,"uid","pid","title","notification_email"
+,1,2,"Warehouse North","shippingpoint@example.com"
+
+"tx_products_domain_model_product",,,,,,
+,"uid","pid","title","price","tax_class","shipping_point"
+,1,2,"Red Shoes","29.99",1,1

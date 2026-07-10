@@ -192,6 +192,18 @@
 			<trans-unit id="tx_products_domain_model_shippingmethod.tax_rate_override" resname="tx_products_domain_model_shippingmethod.tax_rate_override">
 				<source>Tax rate override (%, e.g. 19.00 - only used when enabled above)</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingpoint" resname="tx_products_domain_model_shippingpoint">
+				<source>Shipping Point</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingpoint.title" resname="tx_products_domain_model_shippingpoint.title">
+				<source>Title</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingpoint.notification_email" resname="tx_products_domain_model_shippingpoint.notification_email">
+				<source>Notification email</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingpoint.notification_recipient_name" resname="tx_products_domain_model_shippingpoint.notification_recipient_name">
+				<source>Notification recipient name</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_handlingfee" resname="tx_products_domain_model_handlingfee">
 				<source>Handling Fee</source>
 			</trans-unit>
@@ -314,6 +326,9 @@
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_product.tax_class" resname="tx_products_domain_model_product.tax_class">
 				<source>Tax Class</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.shipping_point" resname="tx_products_domain_model_product.shipping_point">
+				<source>Shipping Point</source>
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_product.categories" resname="tx_products_domain_model_product.categories">
 				<source>Categories</source>
