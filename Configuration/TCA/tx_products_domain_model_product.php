@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Product.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'title, subtitle, slug, item_number, ean, price, direct_cost, deposit, discount_percent, discount_disabled, price_tiers, tax_class, categories, in_stock, unlimited_stock, basket_min_quantity, basket_max_quantity, weight, bulky, credit_points, is_offer, is_highlight, description, images, downloads, articles, related_products, accessory_products, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => 'title, subtitle, slug, item_number, ean, price, direct_cost, deposit, discount_percent, discount_disabled, price_tiers, tax_class, shipping_point, categories, in_stock, unlimited_stock, basket_min_quantity, basket_max_quantity, weight, bulky, credit_points, is_offer, is_highlight, description, images, downloads, articles, related_products, accessory_products, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -163,6 +163,15 @@ return [
                 'renderType' => 'selectSingle',
                 'foreign_table' => 'tx_products_domain_model_taxclass',
                 'minitems' => 1,
+                'maxitems' => 1,
+            ],
+        ],
+        'shipping_point' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.shipping_point',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'foreign_table' => 'tx_products_domain_model_shippingpoint',
                 'maxitems' => 1,
             ],
         ],

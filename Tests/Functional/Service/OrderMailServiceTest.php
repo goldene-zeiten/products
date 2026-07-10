@@ -12,6 +12,10 @@ use GoldeneZeiten\Products\Service\OrderMailService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
 use GoldeneZeiten\Products\Tests\Functional\Fixtures\TestMailer;
 use PHPUnit\Framework\Attributes\Test;
+use Symfony\Component\Mime\Part\DataPart;
+use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\Resource\StorageRepository;
 
 final class OrderMailServiceTest extends AbstractFrontendTestCase
 {
@@ -275,6 +279,122 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->subject->sendMerchantNotification($order);
 
         self::assertCount(1, TestMailer::getSentEmails());
+    }
+
+    #[Test]
+    public function sendMerchantNotificationRoutesToShippingPointRecipientInAdditionToTheGlobalOne(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shipping_point_notification.csv');
+        $this->writeSiteConfiguration(
+            'products-with-shipping-point-notification',
+            $this->buildSiteConfiguration(2, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'settings' => [
+                    'products' => [
+                        'email' => ['merchantRecipient' => 'shop@example.com'],
+                    ],
+                ],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+
+        $order = $this->buildOrder();
+        $order->setSiteIdentifier('products-with-shipping-point-notification');
+        $item = new OrderItem();
+        $item->setProduct(1);
+        $order->getItems()->attach($item);
+
+        $this->subject->sendMerchantNotification($order);
+
+        $sentEmails = TestMailer::getSentEmails();
+        $recipients = array_map(static fn($email): string => $email->getTo()[0]->getAddress(), $sentEmails);
+        self::assertCount(2, $sentEmails);
+        self::assertContains('shop@example.com', $recipients);
+        self::assertContains('shippingpoint@example.com', $recipients);
+    }
+
+    #[Test]
+    public function sendMerchantNotificationSendsOnlyOnceWhenShippingPointRecipientMatchesTheGlobalOne(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shipping_point_notification.csv');
+        $this->writeSiteConfiguration(
+            'products-with-matching-shipping-point-notification',
+            $this->buildSiteConfiguration(2, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'settings' => [
+                    'products' => [
+                        'email' => ['merchantRecipient' => 'shippingpoint@example.com'],
+                    ],
+                ],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+
+        $order = $this->buildOrder();
+        $order->setSiteIdentifier('products-with-matching-shipping-point-notification');
+        $item = new OrderItem();
+        $item->setProduct(1);
+        $order->getItems()->attach($item);
+
+        $this->subject->sendMerchantNotification($order);
+
+        self::assertCount(1, TestMailer::getSentEmails());
+    }
+
+    #[Test]
+    public function sendOrderConfirmationAttachesTheConfiguredAgbFile(): void
+    {
+        $file = $this->createFileInNewLocalStorage('agb.pdf', '%PDF-1.4 fixture content');
+        $this->writeSiteConfiguration(
+            'products-with-agb-attachment',
+            $this->buildSiteConfiguration(2, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'settings' => [
+                    'products' => [
+                        'email' => ['agbAttachment' => $file->getCombinedIdentifier()],
+                    ],
+                ],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+
+        $order = $this->buildOrder();
+        $order->setSiteIdentifier('products-with-agb-attachment');
+
+        $this->subject->sendOrderConfirmation($order);
+
+        self::assertContains('agb.pdf', $this->attachmentFilenamesOfFirstSentEmail());
+    }
+
+    #[Test]
+    public function sendOrderConfirmationSkipsTheAgbAttachmentWhenNotConfigured(): void
+    {
+        $this->subject->sendOrderConfirmation($this->buildOrder());
+
+        self::assertNotContains('agb.pdf', $this->attachmentFilenamesOfFirstSentEmail());
+    }
+
+    /**
+     * @return array<string|null>
+     */
+    private function attachmentFilenamesOfFirstSentEmail(): array
+    {
+        $sentEmails = TestMailer::getSentEmails();
+        self::assertCount(1, $sentEmails);
+        return array_map(static fn(DataPart $part): ?string => $part->getFilename(), $sentEmails[0]->getAttachments());
+    }
+
+    private function createFileInNewLocalStorage(string $fileName, string $contents): File
+    {
+        $storageUid = $this->get(StorageRepository::class)->createLocalStorage(
+            'agb-test-storage',
+            'fileadmin',
+            'relative'
+        );
+        $folder = $this->get(ResourceFactory::class)->getStorageObject($storageUid)->getRootLevelFolder();
+        $file = $folder->createFile($fileName);
+        $file->setContents($contents);
+        return $file;
     }
 
     private function buildOrder(): Order
