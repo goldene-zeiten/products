@@ -1,0 +1,23 @@
+<f:layout name="Module" />
+<f:section name="Content">
+    <p>
+        <a class="btn btn-default" href="{backUrl}"><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:archive.back" /></a>
+    </p>
+    <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:archive.title" /></h2>
+    <p><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:archive.description" /></p>
+    <form method="post">
+        <div class="form-group row mb-3">
+            <label class="col-sm-3 col-form-label" for="archive-age-days"><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:archive.age_days.label" /></label>
+            <div class="col-sm-3">
+                <input type="number" min="0" class="form-control" id="archive-age-days" name="ageDays" value="0" required="required" />
+            </div>
+        </div>
+        <div class="form-group row mb-3">
+            <label class="col-sm-3 col-form-label" for="archive-destination-pid"><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:archive.destination_pid.label" /></label>
+            <div class="col-sm-3">
+                <input type="number" min="1" class="form-control" id="archive-destination-pid" name="destinationPid" required="required" />
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary"><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:archive.submit" /></button>
+    </form>
+</f:section>

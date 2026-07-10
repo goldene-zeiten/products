@@ -7,6 +7,8 @@ namespace GoldeneZeiten\Products\Controller\Backend;
 use GoldeneZeiten\Products\Backend\CategoryAccessGuard;
 use GoldeneZeiten\Products\Backend\CategoryMountResolver;
 use GoldeneZeiten\Products\Backend\CategoryTreeRepository;
+use GoldeneZeiten\Products\Backend\Exception\ProductArchiveFailedException;
+use GoldeneZeiten\Products\Backend\ProductArchiveService;
 use GoldeneZeiten\Products\Backend\StorageFolderResolver;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -41,18 +43,74 @@ final class ProductManagementModuleController
         private readonly CategoryMountResolver $mountResolver,
         private readonly CategoryAccessGuard $accessGuard,
         private readonly StorageFolderResolver $storageFolderResolver,
+        private readonly ProductArchiveService $archiveService,
     ) {}
 
     public function mainAction(ServerRequestInterface $request): ResponseInterface
     {
+        $moduleTemplate = $this->moduleTemplateFactory->create($request);
+        $moduleTemplate->setTitle($this->translate('module.products_management.title'));
+
+        if ($this->isArchiveRequest($request)) {
+            if ($request->getMethod() === 'POST') {
+                $this->handleArchivePost($request, $moduleTemplate);
+            }
+            $moduleTemplate->assignMultiple($this->buildArchiveView());
+            return $moduleTemplate->renderResponse('Backend/ProductManagement/Archive');
+        }
+
         $mounts = $this->mountResolver->resolveMountUids($this->getBackendUser());
         $categoryUid = $this->resolveSelectedCategory($request, $mounts);
         $productUid = $categoryUid > 0 ? 0 : $this->resolveSelectedProduct($request, $mounts);
-
-        $moduleTemplate = $this->moduleTemplateFactory->create($request);
-        $moduleTemplate->setTitle($this->translate('module.products_management.title'));
         $moduleTemplate->assignMultiple($this->buildViewData($request, $moduleTemplate, $categoryUid, $productUid));
         return $moduleTemplate->renderResponse('Backend/ProductManagement/Main');
+    }
+
+    private function isArchiveRequest(ServerRequestInterface $request): bool
+    {
+        return ($request->getQueryParams()['archive'] ?? null) !== null;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildArchiveView(): array
+    {
+        return [
+            'backUrl' => (string)$this->uriBuilder->buildUriFromRoute('products_management', []),
+        ];
+    }
+
+    private function handleArchivePost(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): void
+    {
+        $body = (array)$request->getParsedBody();
+        try {
+            $counts = $this->archiveService->archive(
+                $this->storageFolderResolver->resolve(),
+                (int)($body['destinationPid'] ?? 0),
+                (int)($body['ageDays'] ?? 0),
+            );
+            $moduleTemplate->addFlashMessage($this->buildArchiveResultMessage($counts));
+        } catch (ProductArchiveFailedException $exception) {
+            $moduleTemplate->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
+        }
+    }
+
+    /**
+     * @param array<string, int> $counts
+     */
+    private function buildArchiveResultMessage(array $counts): string
+    {
+        if ($counts === []) {
+            return $this->translate('archive.message.nothing_moved');
+        }
+        $labels = [self::TABLE_PRODUCT => 'column.products', self::TABLE_ARTICLE => 'column.articles'];
+        $parts = array_map(
+            fn(string $table, int $count): string => sprintf('%d %s', $count, $this->translate($labels[$table])),
+            array_keys($counts),
+            array_values($counts),
+        );
+        return sprintf($this->translate('archive.message.moved'), implode(', ', $parts));
     }
 
     /**
@@ -160,7 +218,10 @@ final class ProductManagementModuleController
             'selectedProduct' => null,
             'itemsLabel' => '',
             'items' => [],
-            'actions' => [$this->buildAction('actions.new_category', self::TABLE_CATEGORY, ['parent_category' => 0], $returnUrl)],
+            'actions' => [
+                $this->buildAction('actions.new_category', self::TABLE_CATEGORY, ['parent_category' => 0], $returnUrl),
+                ['label' => $this->translate('actions.archive_old_products'), 'url' => (string)$this->uriBuilder->buildUriFromRoute('products_management', ['archive' => 1])],
+            ],
             'overviewHtml' => $pid > 0 ? $this->renderOverviewRecordList($request, $pid) : '',
         ];
     }

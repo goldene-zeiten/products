@@ -1,0 +1,22 @@
+"be_users",,,,
+,"uid","pid","username","admin"
+,1,0,"admin",1
+
+"pages",,,,,,,
+,"uid","pid","sorting","deleted","title","slug","doktype"
+,1,0,256,0,"Root","/",1
+,2,1,256,0,"Shop","/shop",254
+,3,1,512,0,"Archive","/archive",254
+,4,1,768,0,"Other","/other",254
+
+"tx_products_domain_model_product",,,,,
+,"uid","pid","title","tax_class","crdate"
+,100,2,"Old Product",1,946684800
+,101,2,"Recent Product",1,4102444800
+,102,4,"Old Product Elsewhere",1,946684800
+
+"tx_products_domain_model_article",,,,,
+,"uid","pid","product","title","crdate"
+,200,2,100,"Old Article",946684800
+,201,2,101,"Recent Article",4102444800
+,202,4,102,"Old Article Elsewhere",946684800
