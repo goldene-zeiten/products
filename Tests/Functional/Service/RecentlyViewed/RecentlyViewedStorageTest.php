@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Service\RecentlyViewed;
 
+use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\RecentlyViewed\RecentlyViewedStorage;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -74,16 +75,42 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
         self::assertSame([], $storage->load($request));
     }
 
-    private function subject(int $limit = 10): RecentlyViewedStorage
+    #[Test]
+    public function recordingIsSkippedWhenCookieConsentIsRequiredButNotYetConfirmed(): void
     {
-        return new RecentlyViewedStorage($this->fakeConfigurationManager($limit));
+        $storage = $this->subject(requireCookieConsent: true);
+        $request = $this->request();
+
+        $storage->record($request, 1);
+
+        self::assertSame([], $storage->load($request));
     }
 
-    private function fakeConfigurationManager(int $limit): ConfigurationManagerInterface
+    #[Test]
+    public function recordingSucceedsWhenCookieConsentIsRequiredAndAlreadyConfirmed(): void
     {
-        return new class ($limit) implements ConfigurationManagerInterface {
+        $storage = $this->subject(requireCookieConsent: true);
+        $request = $this->requestWithConfirmedCookie();
+
+        $storage->record($request, 1);
+
+        self::assertSame([1], $storage->load($request));
+    }
+
+    private function subject(int $limit = 10, bool $requireCookieConsent = false): RecentlyViewedStorage
+    {
+        return new RecentlyViewedStorage(
+            $this->get(FrontendUserResolver::class),
+            $this->fakeConfigurationManager($limit, $requireCookieConsent)
+        );
+    }
+
+    private function fakeConfigurationManager(int $limit, bool $requireCookieConsent): ConfigurationManagerInterface
+    {
+        return new class ($limit, $requireCookieConsent) implements ConfigurationManagerInterface {
             public function __construct(
-                private readonly int $limit
+                private readonly int $limit,
+                private readonly bool $requireCookieConsent
             ) {}
 
             /**
@@ -91,7 +118,10 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
              */
             public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
             {
-                return ['recentlyViewed' => ['limit' => $this->limit]];
+                return [
+                    'recentlyViewed' => ['limit' => $this->limit],
+                    'session' => ['requireCookieConsent' => $this->requireCookieConsent],
+                ];
             }
 
             /**
@@ -108,5 +138,14 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
         $frontendUser->initializeUserSessionManager();
         return (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+    }
+
+    private function requestWithConfirmedCookie(): ServerRequestInterface
+    {
+        $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
+        $frontendUser->initializeUserSessionManager();
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('frontend.user', $frontendUser)
+            ->withCookieParams([$frontendUser->name => 'existing-session-id']);
     }
 }

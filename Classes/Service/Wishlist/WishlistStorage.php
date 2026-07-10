@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service\Wishlist;
 
+use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
@@ -15,6 +17,21 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class WishlistStorage
 {
     private const SESSION_KEY = 'tx_products_wishlist';
+
+    /**
+     * @var array<string, mixed>
+     */
+    private array $settings;
+
+    public function __construct(
+        private readonly FrontendUserResolver $frontendUserResolver,
+        ConfigurationManagerInterface $configurationManager
+    ) {
+        $this->settings = $configurationManager->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            'Products'
+        );
+    }
 
     /**
      * @return int[]
@@ -44,9 +61,17 @@ final class WishlistStorage
         if (!$frontendUser instanceof FrontendUserAuthentication) {
             return;
         }
+        if ($this->requiresCookieConsent() && !$this->frontendUserResolver->hasConfirmedSessionCookie($request)) {
+            return;
+        }
 
         $frontendUser->setKey('ses', self::SESSION_KEY, json_encode(array_values($productUids)));
         $frontendUser->storeSessionData();
+    }
+
+    private function requiresCookieConsent(): bool
+    {
+        return (bool)($this->settings['session']['requireCookieConsent'] ?? false);
     }
 
     public function add(ServerRequestInterface $request, int $productUid): void

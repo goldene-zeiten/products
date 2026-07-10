@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Configuration;
 
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Service\PriceRoundingService;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
@@ -37,7 +38,8 @@ final class ProductsConfigurationFactory
             (string)($settings['pricing']['currency'] ?? 'EUR'),
             (bool)($settings['shipping']['enabled'] ?? false),
             Money::fromDecimalString((string)($settings['shipping']['bulkySurcharge'] ?? '0.00')),
-            (bool)($settings['handling']['enabled'] ?? false)
+            (bool)($settings['handling']['enabled'] ?? false),
+            (string)($settings['pricing']['roundingMode'] ?? PriceRoundingService::MODE_NONE)
         );
     }
 }

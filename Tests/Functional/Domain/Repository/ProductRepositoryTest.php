@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Domain\Repository;
 
+use GoldeneZeiten\Products\Domain\Model\Category;
 use GoldeneZeiten\Products\Domain\Model\Product;
+use GoldeneZeiten\Products\Domain\Repository\CategoryRepository;
 use GoldeneZeiten\Products\Domain\Repository\Exception\RepositoryIsReadOnlyException;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
@@ -62,6 +64,18 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
 
         self::assertCount(0, $product->getRelatedProducts());
         self::assertCount(0, $product->getAccessoryProducts());
+    }
+
+    #[Test]
+    public function countByCategoryCountsOnlyDirectMembers(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+
+        $category = $this->get(CategoryRepository::class)->findByUid(1);
+        self::assertInstanceOf(Category::class, $category);
+
+        self::assertSame(1, $this->productRepository->countByCategory($category));
     }
 
     #[Test]

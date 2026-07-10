@@ -23,7 +23,8 @@ final readonly class ProductsConfiguration
         private string $currency,
         private bool $shippingEnabled,
         private Money $bulkySurcharge,
-        private bool $handlingEnabled
+        private bool $handlingEnabled,
+        private string $roundingMode
     ) {}
 
     public function getDefaultCountry(): string
@@ -54,5 +55,10 @@ final readonly class ProductsConfiguration
     public function isHandlingEnabled(): bool
     {
         return $this->handlingEnabled;
+    }
+
+    public function getRoundingMode(): string
+    {
+        return $this->roundingMode;
     }
 }

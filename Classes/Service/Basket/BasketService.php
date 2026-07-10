@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Domain\Repository\ArticleRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Pricing\PriceProviderInterface;
+use GoldeneZeiten\Products\Service\PriceRoundingService;
 use GoldeneZeiten\Products\Service\TaxService;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -25,7 +26,8 @@ final class BasketService
         private readonly TaxService $taxService,
         private readonly BasketStorage $basketStorage,
         private readonly PriceProviderInterface $priceProvider,
-        private readonly ProductsConfigurationFactory $configurationFactory
+        private readonly ProductsConfigurationFactory $configurationFactory,
+        private readonly PriceRoundingService $priceRoundingService
     ) {}
 
     public function add(ServerRequestInterface $request, int $productUid, ?int $articleUid, int $quantity): void
@@ -151,7 +153,7 @@ final class BasketService
         return new BasketViewModel(
             $viewItems,
             Money::fromCents($totalNetCents),
-            Money::fromCents($totalGrossCents),
+            $this->priceRoundingService->round(Money::fromCents($totalGrossCents), $configuration->getRoundingMode()),
             Money::fromCents($totalTaxCents),
             $currency
         );

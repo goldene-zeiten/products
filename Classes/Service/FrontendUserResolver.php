@@ -26,6 +26,21 @@ final class FrontendUserResolver
     }
 
     /**
+     * Whether the visitor's browser already carries the FE-session cookie from an earlier request
+     * - never true for the request that would be the first to set it, matching legacy's
+     * `isCookieSet()`-gated `writeSession()` (a session write never itself counts as consent).
+     */
+    public function hasConfirmedSessionCookie(ServerRequestInterface $request): bool
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if (!$frontendUser instanceof FrontendUserAuthentication) {
+            return false;
+        }
+
+        return isset($request->getCookieParams()[$frontendUser->name]);
+    }
+
+    /**
      * Never stacked - a shopper in several discounted groups (or with both a personal and a
      * group discount) gets the single best rate, not their sum, matching legacy's behaviour.
      */
