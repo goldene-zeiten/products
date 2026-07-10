@@ -5,6 +5,7 @@
             <p><f:translate key="basket_empty" /></p>
         </f:then>
         <f:else>
+            <f:render partial="Basket/Notices" arguments="{basket: basket, settings: settings}" />
             <table class="table">
                 <thead>
                     <tr>

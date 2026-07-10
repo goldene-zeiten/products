@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Service\Shipping;
 
 use GoldeneZeiten\Products\Configuration\ProductsConfiguration;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelection;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelectionCriteria;
@@ -46,7 +45,7 @@ final class ShippingCostService
         if (!$configuration->isShippingEnabled()) {
             return [];
         }
-        $weight = $this->calculateWeight($basketViewModel);
+        $weight = $basketViewModel->getTotalWeight();
         $goodsTotal = $basketViewModel->getTotalGross();
         $candidates = $this->shippingMethodRepository->findApplicableForCountry($countryCode);
         return array_values(array_filter(
@@ -98,16 +97,11 @@ final class ShippingCostService
         }
         $bulkyUnits = 0;
         foreach ($basketViewModel->getItems() as $item) {
-            if ($this->isBulky($item)) {
+            if ($item->isBulky()) {
                 $bulkyUnits += $item->getQuantity();
             }
         }
         return $surchargePerUnit->multiply($bulkyUnits);
-    }
-
-    private function isBulky(BasketViewItem $item): bool
-    {
-        return $item->getProduct()->isBulky() || ($item->getArticle()?->isBulky() ?? false);
     }
 
     private function findSelectedMethod(ProductsConfiguration $configuration, ShippingSelectionCriteria $criteria): ShippingMethod
@@ -121,17 +115,5 @@ final class ShippingCostService
             sprintf('Shipping method %d is not available for the current basket and country "%s".', $criteria->getShippingMethodUid(), $criteria->getCountryCode()),
             1783600000
         );
-    }
-
-    /**
-     * Articles inherit the product's weight, there is no per-article override.
-     */
-    private function calculateWeight(BasketViewModel $basketViewModel): int
-    {
-        $weight = 0;
-        foreach ($basketViewModel->getItems() as $item) {
-            $weight += $item->getProduct()->getWeight() * $item->getQuantity();
-        }
-        return $weight;
     }
 }

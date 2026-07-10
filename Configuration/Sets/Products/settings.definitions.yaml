@@ -184,6 +184,21 @@ settings:
     default: '0.00'
     label: 'Flat surcharge added once per bulky-flagged item unit (0.00 disables it)'
     category: products
+  products.shipping.bulkyNoticeText:
+    type: string
+    default: ''
+    label: 'Notice shown in the basket/checkout when it contains a bulky-flagged item (empty disables it)'
+    category: products
+  products.shipping.weightNoticeThreshold:
+    type: int
+    default: 0
+    label: 'Basket weight in grams above which a weight-tier shipping notice is shown (0 disables it)'
+    category: products
+  products.shipping.weightNoticeText:
+    type: string
+    default: ''
+    label: 'Notice shown in the basket/checkout when the weight threshold above is exceeded (empty disables it)'
+    category: products
   products.handling.enabled:
     type: bool
     default: false

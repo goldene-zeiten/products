@@ -79,4 +79,17 @@ final readonly class BasketViewItem
         $deposit = $this->article?->getDeposit() ?? $this->product->getDeposit();
         return $deposit->multiply($this->quantity);
     }
+
+    /**
+     * Articles inherit the product's weight, there is no per-article override.
+     */
+    public function getWeight(): int
+    {
+        return $this->product->getWeight() * $this->quantity;
+    }
+
+    public function isBulky(): bool
+    {
+        return $this->product->isBulky() || ($this->article?->isBulky() ?? false);
+    }
 }
