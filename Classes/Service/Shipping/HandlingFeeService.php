@@ -4,46 +4,40 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service\Shipping;
 
+use GoldeneZeiten\Products\Configuration\ProductsConfiguration;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Model\HandlingFee;
 use GoldeneZeiten\Products\Domain\Repository\HandlingFeeRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use GoldeneZeiten\Products\Service\FrontendUserResolver;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * A third cost bucket alongside shipping/payment (legacy tt_products modeled handling
  * separately from shipping). Unlike shipping, handling is never a shopper choice - the first
- * applicable fee for the basket/country is resolved automatically, same as tax.
+ * applicable fee for the basket/country is resolved automatically, same as tax. Stateless by
+ * design - takes an already-resolved ProductsConfiguration rather than reading settings itself,
+ * so it's a pure function of its inputs (see ProductsConfiguration's docblock).
  */
 final class HandlingFeeService
 {
-    /**
-     * @var array<string, mixed>
-     */
-    private array $settings;
-
     public function __construct(
         private readonly HandlingFeeRepository $handlingFeeRepository,
-        ConfigurationManagerInterface $configurationManager
-    ) {
-        $this->settings = $configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
-        );
-    }
+        private readonly FrontendUserResolver $frontendUserResolver
+    ) {}
 
-    public function isEnabled(): bool
+    /**
+     * $request (when given) applies the shopper's FE-usergroup/personal discount to the resolved
+     * fee, same reasoning and mechanism as ShippingCostService::resolveSelection().
+     */
+    public function resolveCost(ProductsConfiguration $configuration, BasketViewModel $basketViewModel, string $countryCode, ?ServerRequestInterface $request = null): Money
     {
-        return (bool)($this->settings['handling']['enabled'] ?? false);
-    }
-
-    public function resolveCost(BasketViewModel $basketViewModel, string $countryCode): Money
-    {
-        if (!$this->isEnabled()) {
+        if (!$configuration->isHandlingEnabled()) {
             return Money::fromCents(0);
         }
         $method = $this->resolveApplicable($basketViewModel, $countryCode);
-        return $method?->getRate() ?? Money::fromCents(0);
+        $cost = $method?->getRate() ?? Money::fromCents(0);
+        return $request !== null ? $cost->discountByPercent($this->frontendUserResolver->getDiscountPercent($request)) : $cost;
     }
 
     private function resolveApplicable(BasketViewModel $basketViewModel, string $countryCode): ?HandlingFee

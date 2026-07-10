@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service\Order;
 
+use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketDiscountSummary;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementDetails;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelection;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelectionCriteria;
 use GoldeneZeiten\Products\Domain\Dto\CreditPointsRedemption;
 use GoldeneZeiten\Products\Domain\Enum\CreditPointsTransactionType;
 use GoldeneZeiten\Products\Domain\Model\CreditPointsTransaction;
@@ -54,7 +55,8 @@ final class OrderCreationService
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly ShippingCostService $shippingCostService,
         private readonly HandlingFeeService $handlingFeeService,
-        private readonly ConfigurationManagerInterface $configurationManager
+        private readonly ConfigurationManagerInterface $configurationManager,
+        private readonly ProductsConfigurationFactory $configurationFactory
     ) {}
 
     public function create(
@@ -64,11 +66,18 @@ final class OrderCreationService
         Address $address,
         PaymentMethodInterface $paymentMethod
     ): Order {
+        $configuration = $this->configurationFactory->create($request);
         $frontendUser = $this->frontendUserResolver->getUid($request);
         $voucherSummary = $this->resolveVoucherDiscount($checkoutSelections->getVoucherCodes(), $basketViewModel, $frontendUser);
         $pointsRedemption = $this->resolvePointsRedemption($checkoutSelections->getSpendPoints(), $basketViewModel, $voucherSummary, $frontendUser);
-        $shippingSelection = $this->resolveShippingSelection($checkoutSelections->getShippingMethodUid(), $basketViewModel, $address, $voucherSummary);
-        $handlingFeeCost = $this->handlingFeeService->resolveCost($basketViewModel, $address->getCountry());
+        $shippingCriteria = new ShippingSelectionCriteria(
+            $checkoutSelections->getShippingMethodUid(),
+            $basketViewModel,
+            $address->getCountry(),
+            $this->anyVoucherWaivesShipping($voucherSummary->getAppliedVouchers())
+        );
+        $shippingSelection = $this->shippingCostService->resolveSelection($configuration, $shippingCriteria, $request);
+        $handlingFeeCost = $this->handlingFeeService->resolveCost($configuration, $basketViewModel, $address->getCountry(), $request);
         $details = new PlacementDetails(
             $voucherSummary,
             $pointsRedemption->getDiscountAmount(),
@@ -152,16 +161,6 @@ final class OrderCreationService
         } catch (VoucherExceptionInterface $exception) {
             throw new VoucherRedemptionFailedException($exception->getMessage(), 1783426407, $exception);
         }
-    }
-
-    private function resolveShippingSelection(
-        int $shippingMethodUid,
-        BasketViewModel $basketViewModel,
-        Address $address,
-        BasketDiscountSummary $voucherSummary
-    ): ShippingSelection {
-        $waived = $this->anyVoucherWaivesShipping($voucherSummary->getAppliedVouchers());
-        return $this->shippingCostService->resolveSelection($shippingMethodUid, $basketViewModel, $address->getCountry(), $waived);
     }
 
     /**

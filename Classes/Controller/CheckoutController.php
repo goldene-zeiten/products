@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Controller;
 
+use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
@@ -35,7 +36,8 @@ final class CheckoutController extends ActionController
         private readonly CreditPointsService $creditPointsService,
         private readonly ShippingCostService $shippingCostService,
         private readonly InvoiceTokenService $invoiceTokenService,
-        private readonly WithdrawalTokenService $withdrawalTokenService
+        private readonly WithdrawalTokenService $withdrawalTokenService,
+        private readonly ProductsConfigurationFactory $configurationFactory
     ) {}
 
     public function addressAction(): ResponseInterface
@@ -55,17 +57,19 @@ final class CheckoutController extends ActionController
         $this->checkoutService->setAddress($this->request, $address);
         $this->checkoutService->setDeliveryAddress($this->request, $shipToDifferentAddress ? $deliveryAddress : null);
         $this->checkoutService->setGiftMessage($this->request, $giftMessage);
-        return $this->redirect($this->shippingCostService->isEnabled() ? 'shippingMethod' : 'payment');
+        $configuration = $this->configurationFactory->create($this->request);
+        return $this->redirect($configuration->isShippingEnabled() ? 'shippingMethod' : 'payment');
     }
 
     public function shippingMethodAction(): ResponseInterface
     {
-        if (!$this->shippingCostService->isEnabled()) {
+        $configuration = $this->configurationFactory->create($this->request);
+        if (!$configuration->isShippingEnabled()) {
             return $this->redirect('payment');
         }
         $address = $this->checkoutService->getAddress($this->request);
         $this->view->assignMultiple([
-            'shippingMethods' => $this->shippingCostService->resolveAvailable($this->checkoutService->getBasketViewModel($this->request), $address->getCountry()),
+            'shippingMethods' => $this->shippingCostService->resolveAvailable($configuration, $this->checkoutService->getBasketViewModel($this->request), $address->getCountry()),
             'selectedShippingMethod' => $this->checkoutService->getShippingMethod($this->request),
         ]);
         return $this->htmlResponse();

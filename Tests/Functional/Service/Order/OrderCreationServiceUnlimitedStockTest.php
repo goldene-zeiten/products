@@ -20,6 +20,7 @@ use GoldeneZeiten\Products\Service\Order\Exception\InsufficientStockException;
 use GoldeneZeiten\Products\Service\Order\OrderCreationService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
 
@@ -46,7 +47,7 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
     public function placementSucceedsForAnUnlimitedStockProductDespiteZeroStock(): void
     {
         $order = $this->subject->create(
-            new ServerRequest('http://localhost/'),
+            $this->request(),
             $this->basketViewModel($this->product(1), null),
             $this->noSelections(),
             $this->address(),
@@ -64,7 +65,7 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
         $this->expectExceptionCode(1751751020);
 
         $this->subject->create(
-            new ServerRequest('http://localhost/'),
+            $this->request(),
             $this->basketViewModel($this->product(2), null),
             $this->noSelections(),
             $this->address(),
@@ -76,7 +77,7 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
     public function placementSucceedsWhenOnlyTheSelectedArticleIsFlaggedUnlimited(): void
     {
         $order = $this->subject->create(
-            new ServerRequest('http://localhost/'),
+            $this->request(),
             $this->basketViewModel($this->product(3), $this->article(1)),
             $this->noSelections(),
             $this->address(),
@@ -91,7 +92,7 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
     public function placementSucceedsWhenTheProductIsUnlimitedEvenIfItsSelectedArticleIsNot(): void
     {
         $order = $this->subject->create(
-            new ServerRequest('http://localhost/'),
+            $this->request(),
             $this->basketViewModel($this->product(4), $this->article(2)),
             $this->noSelections(),
             $this->address(),
@@ -100,6 +101,12 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
 
         self::assertNotNull($order->getUid());
         self::assertSame(0, $this->currentArticleStock(2));
+    }
+
+    private function request(): ServerRequestInterface
+    {
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
     private function basketViewModel(Product $product, ?Article $article): BasketViewModel

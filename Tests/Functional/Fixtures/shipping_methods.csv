@@ -1,20 +1,19 @@
-"pages",,,,,,
-,"uid","pid","sorting","deleted","title","slug"
-,1,0,256,0,"Root","/"
-,2,1,256,0,"Shop","/shop"
-
 "tx_products_domain_model_taxclass",,,
 ,"uid","title","code"
-,1,"Standard Tax","STANDARD"
+,1,"Standard Tax","standard"
+
+"tx_products_domain_model_taxrate",,,,
+,"uid","tax_class","country","rate"
+,1,1,"DE","19.00"
 
 "tx_products_domain_model_product",,,,,,,
 ,"uid","pid","title","slug","price","tax_class","in_stock","weight"
 ,1,2,"Light Product","light-product","100.00",1,100,500
 ,2,2,"Heavy Product","heavy-product","100.00",1,100,1500
 
-"tx_products_domain_model_shippingmethod",,,,,,,,
-,"uid","pid","title","country","min_order_value","max_order_value","min_weight","max_weight","rate"
-,1,1,"Standard DE","DE","0.00","0.00",0,1000,"5.00"
-,2,1,"Heavy DE","DE","0.00","0.00",1000,0,"15.00"
-,3,1,"Fallback","","0.00","0.00",0,0,"7.00"
-,4,1,"Big Orders Only DE","DE","500.00","0.00",0,0,"1.00"
+"tx_products_domain_model_shippingmethod",,,,,,,,,,
+,"uid","pid","title","country","min_order_value","max_order_value","min_weight","max_weight","rate","tax_rate_override_enabled","tax_rate_override"
+,1,1,"Standard DE","DE","0.00","0.00",0,1000,"5.00",0,"0.00"
+,2,1,"Heavy DE","DE","0.00","0.00",1000,0,"15.00",1,"7.00"
+,3,1,"Fallback","","0.00","0.00",0,0,"7.00",0,"0.00"
+,4,1,"Big Orders Only DE","DE","500.00","0.00",0,0,"1.00",0,"0.00"

@@ -47,4 +47,25 @@ final readonly class Money
     {
         return new self((int)round($this->cents * $factor));
     }
+
+    /**
+     * @param float $percent a whole percentage (e.g. 10.0 for 10%), not a fraction
+     */
+    public function discountByPercent(float $percent): self
+    {
+        if ($percent <= 0.0) {
+            return $this;
+        }
+        return $this->multiply(1 - $percent / 100);
+    }
+
+    /**
+     * Reverse-calculates the net portion of a tax-inclusive gross amount.
+     *
+     * @param float $taxRate a fraction (e.g. 0.19 for 19%), not a whole percentage
+     */
+    public function netFromGross(float $taxRate): self
+    {
+        return new self((int)round($this->cents / (1 + $taxRate)));
+    }
 }

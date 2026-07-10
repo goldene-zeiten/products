@@ -186,6 +186,12 @@
 			<trans-unit id="tx_products_domain_model_shippingmethod.rate" resname="tx_products_domain_model_shippingmethod.rate">
 				<source>Rate</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingmethod.tax_rate_override_enabled" resname="tx_products_domain_model_shippingmethod.tax_rate_override_enabled">
+				<source>Override the tax rate for this shipping method</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_shippingmethod.tax_rate_override" resname="tx_products_domain_model_shippingmethod.tax_rate_override">
+				<source>Tax rate override (%, e.g. 19.00 - only used when enabled above)</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_handlingfee" resname="tx_products_domain_model_handlingfee">
 				<source>Handling Fee</source>
 			</trans-unit>

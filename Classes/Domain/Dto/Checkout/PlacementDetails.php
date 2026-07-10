@@ -53,6 +53,11 @@ final readonly class PlacementDetails
         return $this->shippingSelection->getShippingMethodUid();
     }
 
+    public function getShippingTaxRate(): float
+    {
+        return $this->shippingSelection->getTaxRate();
+    }
+
     public function getHandlingFeeCost(): Money
     {
         return $this->handlingFeeCost;

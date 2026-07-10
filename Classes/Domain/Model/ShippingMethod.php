@@ -21,6 +21,8 @@ class ShippingMethod extends AbstractEntity
     protected int $maxWeight = 0;
     /** @var string */
     protected string $rate = '0.00';
+    protected float $taxRateOverride = 0.0;
+    protected bool $taxRateOverrideEnabled = false;
 
     public function getTitle(): string
     {
@@ -90,6 +92,37 @@ class ShippingMethod extends AbstractEntity
     public function setRate(Money $rate): void
     {
         $this->rate = $rate->getDecimalString();
+    }
+
+    public function getTaxRateOverride(): float
+    {
+        return $this->taxRateOverride;
+    }
+
+    public function setTaxRateOverride(float $taxRateOverride): void
+    {
+        $this->taxRateOverride = $taxRateOverride;
+    }
+
+    public function isTaxRateOverrideEnabled(): bool
+    {
+        return $this->taxRateOverrideEnabled;
+    }
+
+    public function setTaxRateOverrideEnabled(bool $taxRateOverrideEnabled): void
+    {
+        $this->taxRateOverrideEnabled = $taxRateOverrideEnabled;
+    }
+
+    /**
+     * A whole percentage (e.g. 19.0), or null when the override is disabled - a plain
+     * `taxRateOverride` value of 0.0 is ambiguous between "not set" and "explicitly 0% tax", so
+     * the enabled flag disambiguates it, same two-field pattern as Product/Category's own
+     * discountPercent + discountDisabled.
+     */
+    public function getEffectiveTaxRateOverride(): ?float
+    {
+        return $this->taxRateOverrideEnabled ? $this->taxRateOverride : null;
     }
 
     /**
