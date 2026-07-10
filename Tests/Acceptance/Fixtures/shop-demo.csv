@@ -8,6 +8,7 @@
 ,7,1,1536,0,"Checkout","/checkout"
 ,8,1,1792,0,"Order History","/order-history"
 ,9,1,2048,0,"Login","/login"
+,10,1,2304,0,"Cancel Order","/cancel-order"
 
 "sys_template",,,,,,,
 ,"uid","pid","title","root","clear","include_static_file","config"
@@ -20,6 +21,7 @@ plugin.tx_products.settings.pids.basketPage = 6
 plugin.tx_products.settings.pids.checkoutPage = 7
 plugin.tx_products.settings.pids.orderHistoryPage = 8
 plugin.tx_products.settings.pids.categoryPage = 4
+plugin.tx_products.settings.pids.withdrawalPage = 10
 plugin.tx_products.settings.shipping.enabled = 1"
 
 "tx_products_domain_model_taxclass",,,
@@ -43,28 +45,28 @@ plugin.tx_products.settings.shipping.enabled = 1"
 ,"uid","pid","username","password","email","name","usergroup"
 ,1,2,"shopper1","$argon2i$v=19$m=65536,t=16,p=1$UWQyb0NjZkgyOHRuTXVrZA$+iS7LsM8MXrkyYFwKqVyJzl6YlCHrsLm9j1KIngrF2I","shopper1@example.com","Shopper One","1"
 
-"tx_products_domain_model_category",,,,,
-,"uid","pid","title","slug","parent_category"
-,1,2,"Clothing","clothing",0
-,2,2,"Men","men",1
-,3,2,"Women","women",1
-,4,2,"Kids","kids",1
-,20,2,"Shirts","mens-shirts",2
-,21,2,"Trousers","mens-trousers",2
-,22,2,"Shirts","womens-shirts",3
-,23,2,"Dresses","womens-dresses",3
-,24,2,"Shirts","kids-shirts",4
-,25,2,"Shoes","kids-shoes",4
-,5,2,"Electronics","electronics",0
-,6,2,"Phones","phones",5
-,7,2,"Laptops","laptops",5
-,8,2,"Audio","audio",5
-,26,2,"Smartphones","smartphones",6
-,27,2,"Accessories","phone-accessories",6
-,28,2,"Ultrabooks","ultrabooks",7
-,29,2,"Gaming Laptops","gaming-laptops",7
-,30,2,"Headphones","headphones",8
-,31,2,"Speakers","speakers",8
+"tx_products_domain_model_category",,,,,,
+,"uid","pid","title","slug","parent_category","discount_percent"
+,1,2,"Clothing","clothing",0,"0.00"
+,2,2,"Men","men",1,"0.00"
+,3,2,"Women","women",1,"15.00"
+,4,2,"Kids","kids",1,"0.00"
+,20,2,"Shirts","mens-shirts",2,"0.00"
+,21,2,"Trousers","mens-trousers",2,"0.00"
+,22,2,"Shirts","womens-shirts",3,"0.00"
+,23,2,"Dresses","womens-dresses",3,"0.00"
+,24,2,"Shirts","kids-shirts",4,"0.00"
+,25,2,"Shoes","kids-shoes",4,"0.00"
+,5,2,"Electronics","electronics",0,"0.00"
+,6,2,"Phones","phones",5,"0.00"
+,7,2,"Laptops","laptops",5,"0.00"
+,8,2,"Audio","audio",5,"0.00"
+,26,2,"Smartphones","smartphones",6,"0.00"
+,27,2,"Accessories","phone-accessories",6,"0.00"
+,28,2,"Ultrabooks","ultrabooks",7,"0.00"
+,29,2,"Gaming Laptops","gaming-laptops",7,"0.00"
+,30,2,"Headphones","headphones",8,"0.00"
+,31,2,"Speakers","speakers",8,"0.00"
 
 "tx_products_domain_model_product",,,,,,,
 ,"uid","pid","title","slug","price","tax_class","in_stock","weight"
@@ -110,3 +112,4 @@ plugin.tx_products.settings.shipping.enabled = 1"
 ,8,7,256,0,0,"products_checkout","Checkout"
 ,9,8,256,0,0,"products_orderhistory","Order History"
 ,10,9,256,0,0,"felogin_login","Login"
+,11,10,256,0,0,"products_withdrawal","Cancel Order"

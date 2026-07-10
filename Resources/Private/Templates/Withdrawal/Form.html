@@ -9,12 +9,12 @@
                         <f:form.hidden name="order" value="{order.uid}" />
                         <f:form.hidden name="hash" value="{hash}" />
                         <div class="mb-3">
-                            <label for="email" class="form-label"><f:translate key="confirm_email" /></label>
-                            <f:form.textfield name="email" type="email" class="form-control" required="required" />
+                            <label for="withdrawal-email" class="form-label"><f:translate key="confirm_email" /></label>
+                            <f:form.textfield id="withdrawal-email" name="email" type="email" class="form-control" required="required" />
                         </div>
                         <div class="mb-3">
-                            <label for="reason" class="form-label"><f:translate key="withdrawal_reason_label" /></label>
-                            <f:form.textarea name="reason" class="form-control" />
+                            <label for="withdrawal-reason" class="form-label"><f:translate key="withdrawal_reason_label" /></label>
+                            <f:form.textarea id="withdrawal-reason" name="reason" class="form-control" />
                         </div>
                         <f:form.submit value="{f:translate(key: 'submit_withdrawal')}" class="btn btn-danger" />
                     </f:form>

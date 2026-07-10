@@ -37,6 +37,32 @@ A :guilabel:`Direct Cost` field on both products and articles records what the i
 merchant — purely an internal reference for margin calculation, never shown to shoppers or on any
 frontend page.
 
+An :guilabel:`Unlimited stock` flag on both products and articles bypasses stock tracking entirely
+for that item: it is always shown as available, never decremented when ordered, and never blocks
+checkout on insufficient stock — either the product's or the selected article's flag being set is
+enough (there is no "override" precedence between the two, since a boolean has no way to represent
+"not set" separately from "false").
+
+Product page titles
+--------------------
+
+`products.seo.pageTitleMode` controls whether a product's own title/subtitle substitutes the page
+title on its :rst:dir:`ProductDetail` page (the default, ``title``, does this) or whether the
+page's own configured title is left alone (``none``). This only affects the single-product page's
+``<title>`` tag, never listings or other pages.
+
+Archiving old products
+------------------------
+
+The :guilabel:`Products` backend module's :guilabel:`Archive old products…` action moves products
+and articles created more than a given number of days ago (housekeeping only — it never touches
+what shoppers actually see unless the destination page is later removed from the site) from a
+source page to a destination page you pick, via a plain age-threshold/destination-pid form. Both
+the source and destination must be Sysfolder pages (TYPO3's normal storage-folder doktype); this
+follows directly from how TYPO3's core `DataHandler` permission checks work, not a limitation
+specific to this extension. A flash message summarises how many records moved, or reports any
+failure (e.g. a non-Sysfolder destination) instead of moving nothing silently.
+
 ..  _users-manual-cross-selling:
 
 Cross-selling: related and accessory products
@@ -107,6 +133,31 @@ Both fields default to ``0.00`` (no discount) and are found on the group/user's 
 discount is applied on top of any graduated-pricing tier already reached, and only affects the
 basket/checkout price shown to that shopper — it has no effect for guests or non-discounted
 customers.
+
+..  _users-manual-category-discounts:
+
+Category-cascading discounts
+===============================
+
+Both products and categories have a :guilabel:`Discount Percent` field and a
+:guilabel:`Discount disabled` flag, letting a discount cascade down a category tree instead of
+being set on every single product:
+
+*   A product's own :guilabel:`Discount Percent`, if set, is always used directly — it never looks
+    at any category.
+*   Otherwise, `products.pricing.discountFieldMode` decides how the category tree is searched:
+    ``maxAcrossTree`` (the default) takes the highest discount found anywhere in the product's full
+    ancestor chain; ``nearestCategory`` takes the first discount found walking upward from the
+    product's own category, stopping at the first one found.
+*   A category's own :guilabel:`Discount disabled` flag only matters in ``nearestCategory`` mode,
+    where it acts as a hard stop — nothing above a disabled category is inherited by anything below
+    it. In ``maxAcrossTree`` mode, only a *product's* own :guilabel:`Discount disabled` flag has any
+    effect (it zeroes that product's discount regardless of any category).
+
+When a product also qualifies for graduated pricing or a FE-usergroup discount at the same time,
+the single best (highest) rate across all three sources wins — never stacked, the same
+"highest one wins" precedent :ref:`FE-usergroup discounts <users-manual-usergroup-discounts>`
+already established.
 
 ..  _users-manual-variants:
 
@@ -179,6 +230,24 @@ This extension does not ship an order export format itself; third-party extensio
 :php:`GoldeneZeiten\Products\Export\OrderExportRegistry`. See
 :ref:`Order export <introduction-order-export>` in the introduction for the technical extension
 point.
+
+..  _users-manual-withdrawal:
+
+Order withdrawal
+==================
+
+A customer can cancel an order themselves within `products.checkout.withdrawalPeriodDays` (14 days
+by default) of placing it, via a "Cancel this order" link on the thank-you page and order-detail
+page — there is no fe_user account requirement, matching this shop's guest-checkout-first design.
+Following the link asks for a cancellation reason and the billing email address again (a second
+factor, since the link itself could otherwise be forwarded to anyone); submitting it checks the
+email matches the order's billing address, the order is still within the withdrawal period, and its
+current status is still cancellable (not already shipped, cancelled, or refunded).
+
+A successful withdrawal moves the order straight to :guilabel:`Cancelled` and sends the merchant a
+dedicated notification (in addition to the customer's own status-change email) — a customer-driven
+cancellation specifically needs to alert the shop to act, unlike an ordinary backend-driven status
+change. Setting `products.checkout.withdrawalPeriodDays` to ``0`` disables the whole feature.
 
 ..  _users-manual-category-permissions:
 
@@ -270,11 +339,19 @@ spend points for a discount at checkout. The feature is off by default — enabl
 to this version see no change in behaviour until an operator opts in.
 
 *   :guilabel:`Credit points earned per unit` — a plain field on each product, 0 by default. An
-    article always earns at its product's rate; there is no separate per-article rate.
+    article always earns at its product's rate; there is no separate per-article rate. This is used
+    directly in the default `products.creditPoints.earningMode` (``perProduct``): each basket line
+    earns its product's rate times quantity, summed across the whole order.
 *   :guilabel:`Money value of one credit point when redeemed` — one sitewide setting (default
     0.10), separate from the per-product earning rate. Earning answers "how many points does
     buying this give you"; this setting answers "what is one point worth when spent" — keeping
     it sitewide means the discount a point is worth is predictable everywhere in the shop.
+
+Setting `products.creditPoints.earningMode` to ``basketTiered`` switches earning to a flat,
+order-level reward instead: `products.creditPoints.earningTiers` defines a list of
+:samp:`{amount}:{points}` thresholds (e.g. ``50.00:10``), and an order earns whichever threshold's
+points is the highest one at or below the order's total — a single flat award for the whole order,
+not summed per line, unlike ``perProduct`` mode.
 
 A customer's points balance is never stored directly — it is always the sum of their ledger
 entries (visible in the :guilabel:`Credit Points Transaction` record list), the same
@@ -323,7 +400,13 @@ a :guilabel:`Country`, and a :guilabel:`Rate`:
 
 When enabled, checkout gains a shipping-method step between the address and payment steps; the
 chosen method's cost is added to the order total (shown separately from the goods total and any
-voucher discount) unless a free-shipping voucher waives it.
+voucher discount) unless a free-shipping voucher waives it. Checking a shipping method's
+:guilabel:`Override the tax rate for this shipping method` box and filling in :guilabel:`Tax rate
+override` makes the shipping line use that rate for its own tax bucket instead of deriving it from
+the order's goods tax class(es) — useful where shipping is taxed differently from the goods
+themselves. Any FE-usergroup discount the shopper qualifies for also
+applies to the resolved shipping/handling cost, the same rate used for goods (category discounts
+do not apply here, since neither shipping nor handling is tied to a product's category).
 
 Bulky surcharge
 -----------------
@@ -333,6 +416,15 @@ A product or article can be flagged :guilabel:`Bulky` (e.g. furniture, anything 
 item unit in the basket, on top of the chosen shipping method's rate — and survives a
 free-shipping voucher, since an oversized item still costs extra to handle regardless of who pays
 the base shipping rate.
+
+Basket/checkout notices
+--------------------------
+
+Two independent, opt-in notices can be shown in the basket and checkout review:
+`products.shipping.bulkyNoticeText` appears whenever the basket contains at least one bulky-flagged
+item; `products.shipping.weightNoticeText` appears once the basket's total weight exceeds
+`products.shipping.weightNoticeThreshold` grams. Both texts are empty by default, so existing shops
+see nothing until an operator opts in by filling one in.
 
 Handling fees
 ---------------
@@ -369,7 +461,10 @@ someone else" mechanic — a basket with several gifts for different people is o
 A returning, logged-in customer who has not yet entered anything into the current checkout session
 sees the address step pre-filled from their most recent order's billing address, so they don't have
 to retype it every visit — this only ever pre-fills the initial, empty state, never overwrites an
-address already entered in the current session.
+address already entered in the current session. A first-time logged-in customer with no prior order
+instead falls back to whatever address fields are already on their frontend user profile; a
+brand-new customer with neither a prior order nor a filled-in profile simply sees a blank form, as
+before.
 
 ..  _users-manual-wishlist:
 
@@ -396,6 +491,13 @@ Placing an order automatically removes any of its items from the placing custome
 (guest orders are skipped, since a guest's wishlist is not tied to any identity an order could be
 matched against) — a convenience cleanup that never blocks or fails the order itself if it runs
 into trouble.
+
+The wishlist page heading and the product-listing wishlist widget both show the current item
+count. Enabling `products.session.requireCookieConsent` makes a guest's session wishlist (and the
+:ref:`recently-viewed list <users-manual-recently-viewed>`) only get written to once the visitor's
+browser already carries a confirmed session cookie from an earlier request — off by default, so
+existing shops keep writing unconditionally until an operator opts in for stricter cookie-consent
+compliance.
 
 ..  _users-manual-recently-viewed:
 
@@ -435,6 +537,11 @@ The same invoice is also reachable as a secured download link (shown in order hi
 on its own, e.g. for a customer who deleted the original email) — the link embeds a signed token
 tied to that specific order, so it cannot be guessed or reused for a different order.
 
+Setting `products.email.agbAttachment` to a FAL combined file identifier (e.g.
+``1:/legal/agb.pdf``) attaches that PDF (terms/AGB) to every order confirmation email alongside the
+invoice — empty by default, so nothing is attached until an operator configures it. A missing or
+misconfigured file never blocks the confirmation email itself; it is simply skipped.
+
 ..  _users-manual-category-notifications:
 
 Category-level order notifications
@@ -447,3 +554,10 @@ notification email in addition to the sitewide one — useful when different dep
 different parts of the catalog (e.g. electronics vs. clothing). An order touching several such
 categories notifies every one of them, deduplicated so the same address is never emailed twice for
 the same order.
+
+Independently of category routing, a product can also be assigned a :guilabel:`Shipping Point` —
+a lightweight record with its own :guilabel:`Notification email`/:guilabel:`Recipient name` — for
+shops that fulfil different products from different physical locations. An order touching one or
+more shipping points notifies each one the same deduplicated way category recipients do, and both
+routing axes (category and shipping point) fire independently and additively; a product can be
+covered by neither, either, or both.

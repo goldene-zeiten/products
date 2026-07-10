@@ -31,14 +31,22 @@ export default defineConfig({
       // "login" at all.
       name: 'e2e',
       testMatch: 'specs/**/*.spec.js',
-      testIgnore: ['specs/checkout-logged-in.spec.js', 'specs/basket-usergroup-discount.spec.js'],
+      testIgnore: [
+        'specs/checkout-logged-in.spec.js',
+        'specs/basket-usergroup-discount.spec.js',
+        'specs/checkout-withdrawal-logged-in.spec.js',
+      ],
     },
     {
       // The specs that need an authenticated frontend user (shopper1, who also belongs to the
       // discounted "Wholesale" fe_groups row) - depends on "login" so that setup project runs
       // first and produces the storageState file below.
       name: 'e2e-logged-in',
-      testMatch: ['specs/checkout-logged-in.spec.js', 'specs/basket-usergroup-discount.spec.js'],
+      testMatch: [
+        'specs/checkout-logged-in.spec.js',
+        'specs/basket-usergroup-discount.spec.js',
+        'specs/checkout-withdrawal-logged-in.spec.js',
+      ],
       dependencies: ['login'],
       use: {
         storageState: authFile,

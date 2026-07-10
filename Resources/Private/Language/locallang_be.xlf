@@ -39,6 +39,9 @@
 			<trans-unit id="plugin.category_list" resname="plugin.category_list">
 				<source>Category Product List</source>
 			</trans-unit>
+			<trans-unit id="plugin.withdrawal" resname="plugin.withdrawal">
+				<source>Order Withdrawal</source>
+			</trans-unit>
 			<trans-unit id="module.products.title" resname="module.products.title">
 				<source>Products</source>
 			</trans-unit>
