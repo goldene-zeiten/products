@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Configuration\ProductsConfiguration;
 use GoldeneZeiten\Products\Domain\Model\TaxClass;
 use GoldeneZeiten\Products\Domain\Repository\TaxClassRepository;
 use GoldeneZeiten\Products\Domain\Repository\TaxRateRepository;
+use GoldeneZeiten\Products\Service\Exception\MissingTaxRateException;
 
 /**
  * Stateless by design - takes an already-resolved ProductsConfiguration rather than reading
@@ -26,11 +27,17 @@ final class TaxService
      * Returns the rate as a fraction (e.g. 0.19 for 19%), ready for direct `1 + rate`
      * multiplication - TaxRate::rate itself stores the whole percentage (19.00, editable as such
      * in the backend), the /100 conversion happens here so every caller gets a usable multiplier.
+     *
+     * A found TaxRate row with rate = 0.00 (e.g. the seeded `zero` tax class) is a deliberate,
+     * valid configuration and returns 0.0 like any other rate - it must never be confused with "no
+     * row was found", which throws instead. Every real product has a mandatory tax_class FK, so a
+     * null $taxClass reaching here is itself a data-integrity problem, not an intentionally
+     * tax-free product (those use the `zero` tax class with a real TaxRate row).
      */
     public function getTaxRate(ProductsConfiguration $configuration, ?TaxClass $taxClass, ?string $countryCode = null): float
     {
         if ($taxClass === null) {
-            return 0.0;
+            throw new MissingTaxRateException('No tax class given; cannot resolve a tax rate.', 1783758015);
         }
 
         $defaultCountry = $configuration->getDefaultCountry();
@@ -44,7 +51,14 @@ final class TaxService
             $taxRate = $this->taxRateRepository->findByTaxClassAndCountry($taxClass, $defaultCountry, $now);
         }
 
-        return $taxRate !== null ? $taxRate->getRate() / 100 : 0.0;
+        if ($taxRate === null) {
+            throw new MissingTaxRateException(
+                sprintf('No tax rate configured for tax class %d in country %s (or the default country).', (int)$taxClass->getUid(), $countryCode),
+                1783758016
+            );
+        }
+
+        return $taxRate->getRate() / 100;
     }
 
     /**
