@@ -222,7 +222,7 @@ final class OrderMailService
     private function attachInvoice(FluidEmail $email, Order $order): void
     {
         try {
-            $pdf = $this->invoicePdfService->renderToPdf($this->invoiceRenderer->render($order));
+            $pdf = $this->invoicePdfService->renderToPdf($order, $this->invoiceRenderer->render($order));
             $email->attach($pdf, sprintf('invoice-%s.pdf', $order->getInvoiceNumber()), 'application/pdf');
         } catch (\Throwable $exception) {
             $this->logger->error(

@@ -6,6 +6,9 @@ namespace GoldeneZeiten\Products\Service\Invoice;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Event\BeforeInvoiceRenderedEvent;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Pure-PHP HTML-to-PDF conversion (dompdf) - no external binary/service needed, so invoice
@@ -13,8 +16,18 @@ use Dompdf\Options;
  */
 final class InvoicePdfService
 {
-    public function renderToPdf(string $html): string
+    public function __construct(
+        private readonly EventDispatcherInterface $eventDispatcher
+    ) {}
+
+    public function renderToPdf(Order $order, string $html): string
     {
+        $event = new BeforeInvoiceRenderedEvent($order, $html);
+        $this->eventDispatcher->dispatch($event);
+        if ($event->getReplacementPdf() !== null) {
+            return $event->getReplacementPdf();
+        }
+
         $options = new Options();
         $options->set('isRemoteEnabled', false);
 
