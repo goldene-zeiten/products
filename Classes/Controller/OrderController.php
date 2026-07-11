@@ -6,36 +6,46 @@ namespace GoldeneZeiten\Products\Controller;
 
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Invoice\InvoiceTokenService;
+use GoldeneZeiten\Products\Service\Order\OrderTokenService;
 use GoldeneZeiten\Products\Service\Withdrawal\WithdrawalTokenService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class OrderController extends ActionController
 {
     public function __construct(
         private readonly OrderRepository $orderRepository,
         private readonly InvoiceTokenService $invoiceTokenService,
-        private readonly WithdrawalTokenService $withdrawalTokenService
+        private readonly WithdrawalTokenService $withdrawalTokenService,
+        private readonly OrderTokenService $orderTokenService,
+        private readonly FrontendUserResolver $frontendUserResolver
     ) {}
 
     public function listAction(): ResponseInterface
     {
-        $frontendUser = $this->request->getAttribute('frontend.user');
-        if (!$frontendUser instanceof FrontendUserAuthentication || ($frontendUser->user['uid'] ?? 0) === 0) {
+        $frontendUserUid = $this->frontendUserResolver->getUid($this->request);
+        if ($frontendUserUid === 0) {
             return $this->htmlResponse();
         }
 
-        $orders = $this->orderRepository->findByFrontendUser((int)$frontendUser->user['uid']);
+        $orders = $this->orderRepository->findByFrontendUser($frontendUserUid);
         $this->view->assign('orders', $orders);
         return $this->htmlResponse();
     }
 
-    public function showAction(Order $order): ResponseInterface
+    /**
+     * A guest order's frontendUser is 0, same as an anonymous visitor's uid - ownership by
+     * frontend-user match alone can never gate a guest order, so an order-bound HMAC token
+     * (?hash=) is the only valid access path whenever the visitor isn't the order's own logged-in
+     * frontend user.
+     */
+    public function showAction(Order $order, ?string $hash = null): ResponseInterface
     {
-        $frontendUser = $this->request->getAttribute('frontend.user');
-        if (!$frontendUser instanceof FrontendUserAuthentication || $order->getFrontendUser() !== (int)($frontendUser->user['uid'] ?? 0)) {
+        $frontendUserUid = $this->frontendUserResolver->getUid($this->request);
+        $isOwner = $frontendUserUid !== 0 && $order->getFrontendUser() === $frontendUserUid;
+        if (!$isOwner && !$this->orderTokenService->isValid($order, $hash)) {
             return $this->redirect('list');
         }
 

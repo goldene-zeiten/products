@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Controller;
 
+use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Service\Order\OrderTokenService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Session\SessionManager;
@@ -17,6 +19,7 @@ final class OrderControllerTest extends AbstractFrontendTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/orders_with_frontend_user.csv');
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/guest_order.csv');
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_history_content.csv');
     }
 
@@ -58,6 +61,49 @@ final class OrderControllerTest extends AbstractFrontendTestCase
         $response = $this->executeFrontendSubRequest($request);
 
         self::assertStringNotContainsString('ORD-1', (string)$response->getBody());
+    }
+
+    #[Test]
+    public function showActionDeniesAnonymousVisitorForGuestOrderWithoutHash(): void
+    {
+        $request = $this->orderShowRequest(2, null);
+        $response = $this->executeFrontendSubRequest($request);
+
+        self::assertStringNotContainsString('ORD-2', (string)$response->getBody());
+    }
+
+    #[Test]
+    public function showActionAllowsAnonymousVisitorForGuestOrderWithValidHash(): void
+    {
+        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(2);
+        self::assertNotNull($order);
+        $hash = $this->get(OrderTokenService::class)->generateToken($order);
+
+        $request = $this->orderShowRequest(2, $hash);
+        $response = $this->executeFrontendSubRequest($request);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertStringContainsString('ORD-2', (string)$response->getBody());
+    }
+
+    private function orderShowRequest(int $order, ?string $hash): InternalRequest
+    {
+        $queryParameters = [
+            'tx_products_orderhistory[action]' => 'show',
+            'tx_products_orderhistory[order]' => $order,
+        ];
+        if ($hash !== null) {
+            $queryParameters['tx_products_orderhistory[hash]'] = $hash;
+        }
+
+        $parameterString = '&id=2';
+        foreach ($queryParameters as $key => $value) {
+            $parameterString .= '&' . $key . '=' . $value;
+        }
+        $cHash = $this->get(CacheHashCalculator::class)->generateForParameters($parameterString);
+
+        return (new InternalRequest('http://localhost/shop'))
+            ->withQueryParameters(array_merge($queryParameters, ['cHash' => $cHash]));
     }
 
     /**

@@ -150,6 +150,9 @@
 			<trans-unit id="download_invoice" resname="download_invoice">
 				<source>Download Invoice</source>
 			</trans-unit>
+			<trans-unit id="view_order" resname="view_order">
+				<source>View Order</source>
+			</trans-unit>
 			<trans-unit id="details" resname="details">
 				<source>Details</source>
 			</trans-unit>
