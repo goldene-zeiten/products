@@ -32,7 +32,10 @@ final class ProductArchiveService
             return [];
         }
 
-        $cutoff = time() - $ageDays * 86400;
+        // Clamped at 0 (crdate is never negative) - a very large ageDays would otherwise underflow
+        // the signed 32-bit integer column type Postgres maps native TYPO3 "int unsigned" to,
+        // aborting the query outright instead of correctly matching nothing.
+        $cutoff = max(0, time() - $ageDays * 86400);
         $cmd = [];
         $counts = [];
         foreach ([self::TABLE_PRODUCT, self::TABLE_ARTICLE] as $table) {
