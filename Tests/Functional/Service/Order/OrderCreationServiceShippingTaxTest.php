@@ -31,6 +31,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
@@ -130,33 +131,16 @@ final class OrderCreationServiceShippingTaxTest extends AbstractFunctionalTestCa
             $this->get(ShippingCostService::class),
             $this->get(HandlingFeeService::class),
             $this->get(ConfigurationManagerInterface::class),
-            new ProductsConfigurationFactory($this->fakeConfigurationManager())
+            $this->get(ProductsConfigurationFactory::class)
         );
-    }
-
-    private function fakeConfigurationManager(): ConfigurationManagerInterface
-    {
-        return new class () implements ConfigurationManagerInterface {
-            /**
-             * @return array<string, mixed>
-             */
-            public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
-            {
-                return ['shipping' => ['enabled' => true]];
-            }
-
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function setConfiguration(array $configuration = []): void {}
-
-            public function setRequest(ServerRequestInterface $request): void {}
-        };
     }
 
     private function requestFor(int $frontendUserUid): ServerRequestInterface
     {
-        $request = new ServerRequest('http://localhost/');
+        $site = new Site('products', 1, ['settings' => ['products' => ['shipping' => ['enabled' => true]]]]);
+        $request = (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
+            ->withAttribute('site', $site);
         if ($frontendUserUid === 0) {
             return $request;
         }

@@ -40,6 +40,7 @@ use Psr\Log\NullLogger;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
@@ -154,7 +155,7 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
             $this->get(ShippingCostService::class),
             $this->get(HandlingFeeService::class),
             $this->get(ConfigurationManagerInterface::class),
-            new ProductsConfigurationFactory($this->fakeConfigurationManager(['shipping' => ['enabled' => true]]))
+            $this->get(ProductsConfigurationFactory::class)
         );
         $orderPlacementTransaction = new OrderPlacementTransaction(
             $this->get(ConnectionPool::class),
@@ -209,9 +210,11 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
         if ($frontendUserUid > 0) {
             $frontendUser->user = ['uid' => $frontendUserUid];
         }
+        $site = new Site('products', 1, ['settings' => ['products' => ['shipping' => ['enabled' => true]]]]);
         return (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
-            ->withAttribute('frontend.user', $frontendUser);
+            ->withAttribute('frontend.user', $frontendUser)
+            ->withAttribute('site', $site);
     }
 
     private function address(): Address
