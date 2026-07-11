@@ -50,4 +50,28 @@ final class TaxRateRepositoryTest extends AbstractFunctionalTestCase
     {
         self::assertNull($this->subject->findByTaxClassAndCountry($this->taxClass, 'FR', new \DateTimeImmutable()));
     }
+
+    #[Test]
+    public function findByTaxClassAndCountryFallsBackToTheAnyCountryWildcardRow(): void
+    {
+        $reducedTaxClass = $this->get(TaxClassRepository::class)->findByUid(3);
+        self::assertInstanceOf(TaxClass::class, $reducedTaxClass);
+
+        $rate = $this->subject->findByTaxClassAndCountry($reducedTaxClass, 'AT', new \DateTimeImmutable());
+
+        self::assertInstanceOf(TaxRate::class, $rate);
+        self::assertSame(7.0, $rate->getRate());
+    }
+
+    #[Test]
+    public function findByTaxClassAndCountryPrefersACountrySpecificRowOverTheWildcard(): void
+    {
+        $reducedTaxClass = $this->get(TaxClassRepository::class)->findByUid(3);
+        self::assertInstanceOf(TaxClass::class, $reducedTaxClass);
+
+        $rate = $this->subject->findByTaxClassAndCountry($reducedTaxClass, 'FR', new \DateTimeImmutable());
+
+        self::assertInstanceOf(TaxRate::class, $rate);
+        self::assertSame(5.5, $rate->getRate());
+    }
 }

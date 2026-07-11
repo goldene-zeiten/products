@@ -12,7 +12,18 @@ use GoldeneZeiten\Products\Domain\Model\TaxRate;
  */
 final class TaxRateRepository extends AbstractReadOnlyRepository
 {
+    /**
+     * An exact match for $countryCode wins; a row with country = '' (the BE-editable "any
+     * country" fallback, per the taxrate TCA's country.fallback option) is only used when no
+     * country-specific row exists for it.
+     */
     public function findByTaxClassAndCountry(TaxClass $taxClass, string $countryCode, \DateTimeInterface $now): ?TaxRate
+    {
+        return $this->findOneMatching($taxClass, $countryCode, $now)
+            ?? ($countryCode !== '' ? $this->findOneMatching($taxClass, '', $now) : null);
+    }
+
+    private function findOneMatching(TaxClass $taxClass, string $countryCode, \DateTimeInterface $now): ?TaxRate
     {
         $query = $this->createQuery();
         $query->getQuerySettings()->setRespectStoragePage(false);

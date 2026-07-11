@@ -5,7 +5,7 @@
 
 "tx_products_domain_model_taxclass",,,
 ,"uid","title","code"
-,1,"Standard Tax","STANDARD"
+,1,"Standard Tax","standard"
 
 "tx_products_domain_model_taxrate",,,,
 ,"uid","tax_class","country","rate"

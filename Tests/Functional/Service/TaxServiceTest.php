@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Configuration\ProductsConfiguration;
 use GoldeneZeiten\Products\Domain\Model\TaxClass;
 use GoldeneZeiten\Products\Domain\Repository\TaxClassRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Service\Exception\MissingTaxRateException;
 use GoldeneZeiten\Products\Service\TaxService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -19,20 +20,28 @@ final class TaxServiceTest extends AbstractFunctionalTestCase
     ];
 
     private TaxClass $taxClass;
+    private TaxClass $zeroTaxClass;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/tax_rates.csv');
-        $taxClass = $this->get(TaxClassRepository::class)->findByUid(1);
+        $taxClassRepository = $this->get(TaxClassRepository::class);
+        $taxClass = $taxClassRepository->findByUid(1);
         self::assertInstanceOf(TaxClass::class, $taxClass);
         $this->taxClass = $taxClass;
+        $zeroTaxClass = $taxClassRepository->findByUid(2);
+        self::assertInstanceOf(TaxClass::class, $zeroTaxClass);
+        $this->zeroTaxClass = $zeroTaxClass;
     }
 
     #[Test]
-    public function getTaxRateReturnsZeroForANullTaxClass(): void
+    public function getTaxRateThrowsForANullTaxClass(): void
     {
-        self::assertSame(0.0, $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), null));
+        $this->expectException(MissingTaxRateException::class);
+        $this->expectExceptionCode(1783758015);
+
+        $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), null);
     }
 
     #[Test]
@@ -49,10 +58,23 @@ final class TaxServiceTest extends AbstractFunctionalTestCase
         self::assertSame(0.19, $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), $this->taxClass, 'FR'));
     }
 
+    /**
+     * A found TaxRate row with rate=0.00 (e.g. the seeded `zero` tax class) is a deliberate,
+     * valid configuration and must NOT throw - it is not the same thing as "no row was found".
+     */
     #[Test]
-    public function getTaxRateReturnsZeroWhenNeitherTheRequestedNorDefaultCountryHasARate(): void
+    public function getTaxRateReturnsZeroWithoutThrowingForAConfiguredZeroRate(): void
     {
-        self::assertSame(0.0, $this->get(TaxService::class)->getTaxRate($this->configuration('AT'), $this->taxClass, 'FR'));
+        self::assertSame(0.0, $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), $this->zeroTaxClass, 'DE'));
+    }
+
+    #[Test]
+    public function getTaxRateThrowsWhenNeitherTheRequestedNorDefaultCountryHasARate(): void
+    {
+        $this->expectException(MissingTaxRateException::class);
+        $this->expectExceptionCode(1783758016);
+
+        $this->get(TaxService::class)->getTaxRate($this->configuration('AT'), $this->taxClass, 'FR');
     }
 
     private function configuration(string $defaultCountry): ProductsConfiguration
