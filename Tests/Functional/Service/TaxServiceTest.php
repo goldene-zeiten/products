@@ -28,10 +28,10 @@ final class TaxServiceTest extends AbstractFunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/tax_rates.csv');
         $taxClassRepository = $this->get(TaxClassRepository::class);
         $taxClass = $taxClassRepository->findByUid(1);
-        self::assertInstanceOf(TaxClass::class, $taxClass);
+        $this->assertInstanceOf(TaxClass::class, $taxClass);
         $this->taxClass = $taxClass;
         $zeroTaxClass = $taxClassRepository->findByUid(2);
-        self::assertInstanceOf(TaxClass::class, $zeroTaxClass);
+        $this->assertInstanceOf(TaxClass::class, $zeroTaxClass);
         $this->zeroTaxClass = $zeroTaxClass;
     }
 
@@ -49,13 +49,13 @@ final class TaxServiceTest extends AbstractFunctionalTestCase
     {
         // The fixture stores rate=19.00 (a 19% whole percentage, as edited in the backend) -
         // getTaxRate() must convert it to 0.19 for direct "1 + rate" multiplication.
-        self::assertSame(0.19, $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), $this->taxClass, 'DE'));
+        $this->assertSame(0.19, $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), $this->taxClass, 'DE'));
     }
 
     #[Test]
     public function getTaxRateFallsBackToTheDefaultCountryWhenTheRequestedCountryHasNoRate(): void
     {
-        self::assertSame(0.19, $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), $this->taxClass, 'FR'));
+        $this->assertSame(0.19, $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), $this->taxClass, 'FR'));
     }
 
     /**
@@ -65,7 +65,7 @@ final class TaxServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function getTaxRateReturnsZeroWithoutThrowingForAConfiguredZeroRate(): void
     {
-        self::assertSame(0.0, $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), $this->zeroTaxClass, 'DE'));
+        $this->assertSame(0.0, $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), $this->zeroTaxClass, 'DE'));
     }
 
     #[Test]

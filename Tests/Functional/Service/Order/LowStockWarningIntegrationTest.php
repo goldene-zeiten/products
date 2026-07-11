@@ -62,7 +62,7 @@ final class LowStockWarningIntegrationTest extends AbstractFunctionalTestCase
     public function placingAnOrderThatCrossesTheLowStockThresholdSendsAWarningEmail(): void
     {
         $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
+        $this->assertInstanceOf(Product::class, $product);
 
         $unitPriceNet = Money::fromDecimalString('84.03');
         $unitPriceGross = Money::fromDecimalString('100.00');
@@ -81,6 +81,6 @@ final class LowStockWarningIntegrationTest extends AbstractFunctionalTestCase
             TestMailer::getSentEmails(),
             static fn($email): bool => str_contains((string)$email->getSubject(), 'Low Stock Warning')
         );
-        self::assertNotEmpty($lowStockEmails, 'Expected a low-stock warning email to be sent.');
+        $this->assertNotEmpty($lowStockEmails, 'Expected a low-stock warning email to be sent.');
     }
 }

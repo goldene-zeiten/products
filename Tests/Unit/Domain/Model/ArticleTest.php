@@ -25,7 +25,7 @@ final class ArticleTest extends UnitTestCase
         $article = new Article();
         $article->setProduct($product);
 
-        self::assertSame($productImages, $article->getEffectiveImages());
+        $this->assertSame($productImages, $article->getEffectiveImages());
     }
 
     #[Test]
@@ -44,7 +44,7 @@ final class ArticleTest extends UnitTestCase
         $ownImages->attach(new FileReference());
         $article->setImages($ownImages);
 
-        self::assertSame($ownImages, $article->getEffectiveImages());
+        $this->assertSame($ownImages, $article->getEffectiveImages());
     }
 
     #[Test]
@@ -52,6 +52,6 @@ final class ArticleTest extends UnitTestCase
     {
         $article = new Article();
 
-        self::assertCount(0, $article->getEffectiveImages());
+        $this->assertCount(0, $article->getEffectiveImages());
     }
 }

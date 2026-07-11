@@ -58,7 +58,7 @@ final class PurgeWishlistOnOrderPlacedIntegrationTest extends AbstractFunctional
     public function placingAnOrderRemovesTheOrderedProductFromTheWishlistButKeepsTheRest(): void
     {
         $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
+        $this->assertInstanceOf(Product::class, $product);
 
         $unitPriceNet = Money::fromDecimalString('84.03');
         $unitPriceGross = Money::fromDecimalString('100.00');
@@ -67,7 +67,7 @@ final class PurgeWishlistOnOrderPlacedIntegrationTest extends AbstractFunctional
 
         $request = $this->requestForFrontendUser(5);
         $wishlistService = $this->get(WishlistService::class);
-        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($wishlistService->getItems($request)));
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($wishlistService->getItems($request)));
 
         $this->get(OrderCreationService::class)->create(
             $request,
@@ -77,7 +77,7 @@ final class PurgeWishlistOnOrderPlacedIntegrationTest extends AbstractFunctional
             $this->get(PaymentMethodRegistry::class)->get('invoice')
         );
 
-        self::assertSame(['Product 2'], $this->titlesOf($wishlistService->getItems($request)));
+        $this->assertSame(['Product 2'], $this->titlesOf($wishlistService->getItems($request)));
     }
 
     /**

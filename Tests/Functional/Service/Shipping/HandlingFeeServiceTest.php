@@ -30,8 +30,8 @@ final class HandlingFeeServiceTest extends AbstractFunctionalTestCase
         $productRepository = $this->get(ProductRepository::class);
         $lightProduct = $productRepository->findByUid(1);
         $heavyProduct = $productRepository->findByUid(2);
-        self::assertInstanceOf(Product::class, $lightProduct);
-        self::assertInstanceOf(Product::class, $heavyProduct);
+        $this->assertInstanceOf(Product::class, $lightProduct);
+        $this->assertInstanceOf(Product::class, $heavyProduct);
         $this->lightProduct = $lightProduct;
         $this->heavyProduct = $heavyProduct;
     }
@@ -41,7 +41,7 @@ final class HandlingFeeServiceTest extends AbstractFunctionalTestCase
     {
         $cost = $this->get(HandlingFeeService::class)->resolveCost($this->configuration(false), $this->basketViewModel($this->lightProduct), 'DE');
 
-        self::assertSame(0, $cost->getCents());
+        $this->assertSame(0, $cost->getCents());
     }
 
     #[Test]
@@ -49,7 +49,7 @@ final class HandlingFeeServiceTest extends AbstractFunctionalTestCase
     {
         $cost = $this->get(HandlingFeeService::class)->resolveCost($this->configuration(true), $this->basketViewModel($this->lightProduct), 'DE');
 
-        self::assertSame(300, $cost->getCents());
+        $this->assertSame(300, $cost->getCents());
     }
 
     #[Test]
@@ -57,7 +57,7 @@ final class HandlingFeeServiceTest extends AbstractFunctionalTestCase
     {
         $cost = $this->get(HandlingFeeService::class)->resolveCost($this->configuration(true), $this->basketViewModel($this->heavyProduct), 'DE');
 
-        self::assertSame(900, $cost->getCents());
+        $this->assertSame(900, $cost->getCents());
     }
 
     #[Test]
@@ -65,7 +65,7 @@ final class HandlingFeeServiceTest extends AbstractFunctionalTestCase
     {
         $cost = $this->get(HandlingFeeService::class)->resolveCost($this->configuration(true), $this->basketViewModel($this->lightProduct), 'FR');
 
-        self::assertSame(0, $cost->getCents());
+        $this->assertSame(0, $cost->getCents());
     }
 
     private function configuration(bool $enabled): ProductsConfiguration

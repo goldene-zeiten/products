@@ -51,7 +51,7 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
         $this->orderPlacementService = $this->get(OrderPlacementService::class);
 
         $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
+        $this->assertInstanceOf(Product::class, $product);
         $this->mainProduct = $product;
     }
 
@@ -67,21 +67,21 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
 
         $order = $this->orderPlacementService->place($request, $this->address(), 'invoice', $choices)->getOrder();
 
-        self::assertSame(1, $order->getShippingMethod());
-        self::assertSame(0, $order->getShippingTotal()->getCents(), 'The free-shipping voucher must waive the shipping cost.');
-        self::assertSame(['FREESHIP'], $order->getVoucherCodes());
+        $this->assertSame(1, $order->getShippingMethod());
+        $this->assertSame(0, $order->getShippingTotal()->getCents(), 'The free-shipping voucher must waive the shipping cost.');
+        $this->assertSame(['FREESHIP'], $order->getVoucherCodes());
 
         $deliveryAddress = $order->getDeliveryAddress();
-        self::assertNotNull($deliveryAddress);
-        self::assertSame('Jane', $deliveryAddress->getFirstName());
-        self::assertSame('Happy birthday!', $order->getGiftMessage());
+        $this->assertNotNull($deliveryAddress);
+        $this->assertSame('Jane', $deliveryAddress->getFirstName());
+        $this->assertSame('Happy birthday!', $order->getGiftMessage());
 
         $this->issueGainedVoucherFor($order, $request);
 
         $voucher = $this->get(VoucherRepository::class)->findOneByCode($this->gainedVoucherCodeFor($order->getUid() ?? 0));
-        self::assertNotNull($voucher, 'A gained voucher must have been issued for clearing the reward threshold.');
-        self::assertFalse($voucher->isCombinable());
-        self::assertSame(1, $voucher->getUsageLimit());
+        $this->assertNotNull($voucher, 'A gained voucher must have been issued for clearing the reward threshold.');
+        $this->assertFalse($voucher->isCombinable());
+        $this->assertSame(1, $voucher->getUsageLimit());
     }
 
     private function issueGainedVoucherFor(Order $order, ServerRequestInterface $request): void
@@ -96,7 +96,7 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
             ->getConnectionForTable('tx_products_domain_model_voucher')
             ->select(['code'], 'tx_products_domain_model_voucher', ['generated_from_order' => $orderUid])
             ->fetchAssociative();
-        self::assertIsArray($row, 'No gained voucher row was written for this order.');
+        $this->assertIsArray($row, 'No gained voucher row was written for this order.');
         return (string)$row['code'];
     }
 

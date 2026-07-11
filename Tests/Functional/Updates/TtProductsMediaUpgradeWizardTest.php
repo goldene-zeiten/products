@@ -32,18 +32,18 @@ final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
     #[Test]
     public function updateIsNecessaryInitially(): void
     {
-        self::assertTrue($this->subject->updateNecessary());
+        $this->assertTrue($this->subject->updateNecessary());
     }
 
     #[Test]
     public function existingFalReferencesAreCopiedToLocalRecords(): void
     {
-        self::assertTrue($this->subject->executeUpdate());
+        $this->assertTrue($this->subject->executeUpdate());
 
-        self::assertSame(500, $this->fetchReferenceFileUid('tx_products_domain_model_product', 'images', 80));
-        self::assertSame(501, $this->fetchReferenceFileUid('tx_products_domain_model_product', 'downloads', 80));
-        self::assertSame(502, $this->fetchReferenceFileUid('tx_products_domain_model_category', 'image', 50));
-        self::assertSame(503, $this->fetchReferenceFileUid('tx_products_domain_model_article', 'images', 60));
+        $this->assertSame(500, $this->fetchReferenceFileUid('tx_products_domain_model_product', 'images', 80));
+        $this->assertSame(501, $this->fetchReferenceFileUid('tx_products_domain_model_product', 'downloads', 80));
+        $this->assertSame(502, $this->fetchReferenceFileUid('tx_products_domain_model_category', 'image', 50));
+        $this->assertSame(503, $this->fetchReferenceFileUid('tx_products_domain_model_article', 'images', 60));
     }
 
     #[Test]
@@ -52,8 +52,8 @@ final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
         $this->subject->executeUpdate();
 
         $output = $this->output->fetch();
-        self::assertStringContainsString('tt_products uid 1: "smallimage" is a redundant thumbnail', $output);
-        self::assertStringContainsString('tt_products_cat uid 1: "sliderimage" is a redundant thumbnail', $output);
+        $this->assertStringContainsString('tt_products uid 1: "smallimage" is a redundant thumbnail', $output);
+        $this->assertStringContainsString('tt_products_cat uid 1: "sliderimage" is a redundant thumbnail', $output);
     }
 
     #[Test]
@@ -61,7 +61,7 @@ final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
     {
         $this->subject->executeUpdate();
 
-        self::assertStringContainsString('tt_products uid 1 had catalog downloads linked', $this->output->fetch());
+        $this->assertStringContainsString('tt_products uid 1 had catalog downloads linked', $this->output->fetch());
     }
 
     #[Test]
@@ -69,8 +69,8 @@ final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
     {
         $this->subject->executeUpdate();
 
-        self::assertNull($this->fetchReferenceFileUid('tx_products_domain_model_product', 'images', 81));
-        self::assertStringContainsString('media file "missing.jpg" not found on disk, skipped', $this->output->fetch());
+        $this->assertNull($this->fetchReferenceFileUid('tx_products_domain_model_product', 'images', 81));
+        $this->assertStringContainsString('media file "missing.jpg" not found on disk, skipped', $this->output->fetch());
     }
 
     #[Test]
@@ -79,9 +79,9 @@ final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
         $this->subject->executeUpdate();
         $countAfterFirstRun = $this->countReferences('tx_products_domain_model_product', 'images', 80);
 
-        self::assertTrue($this->subject->executeUpdate());
+        $this->assertTrue($this->subject->executeUpdate());
 
-        self::assertSame($countAfterFirstRun, $this->countReferences('tx_products_domain_model_product', 'images', 80));
+        $this->assertSame($countAfterFirstRun, $this->countReferences('tx_products_domain_model_product', 'images', 80));
     }
 
     private function fetchReferenceFileUid(string $localTable, string $localField, int $localUid): ?int

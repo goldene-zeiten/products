@@ -36,8 +36,8 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $productRepository = $this->get(ProductRepository::class);
         $lightProduct = $productRepository->findByUid(1);
         $heavyProduct = $productRepository->findByUid(2);
-        self::assertInstanceOf(Product::class, $lightProduct);
-        self::assertInstanceOf(Product::class, $heavyProduct);
+        $this->assertInstanceOf(Product::class, $lightProduct);
+        $this->assertInstanceOf(Product::class, $heavyProduct);
         $this->lightProduct = $lightProduct;
         $this->heavyProduct = $heavyProduct;
     }
@@ -48,8 +48,8 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(true), $this->basketViewModel($this->lightProduct, 1), 'DE');
 
         $titles = array_map(static fn($method): string => $method->getTitle(), $methods);
-        self::assertContains('Standard DE', $titles);
-        self::assertNotContains('Fallback', $titles);
+        $this->assertContains('Standard DE', $titles);
+        $this->assertNotContains('Fallback', $titles);
     }
 
     #[Test]
@@ -57,8 +57,8 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     {
         $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(true), $this->basketViewModel($this->lightProduct, 1), 'AT');
 
-        self::assertCount(1, $methods);
-        self::assertSame('Fallback', $methods[0]->getTitle());
+        $this->assertCount(1, $methods);
+        $this->assertSame('Fallback', $methods[0]->getTitle());
     }
 
     #[Test]
@@ -67,8 +67,8 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(true), $this->basketViewModel($this->heavyProduct, 1), 'DE');
 
         $titles = array_map(static fn($method): string => $method->getTitle(), $methods);
-        self::assertContains('Heavy DE', $titles);
-        self::assertNotContains('Standard DE', $titles);
+        $this->assertContains('Heavy DE', $titles);
+        $this->assertNotContains('Standard DE', $titles);
     }
 
     #[Test]
@@ -77,7 +77,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(true), $this->basketViewModel($this->lightProduct, 1), 'DE');
 
         $titles = array_map(static fn($method): string => $method->getTitle(), $methods);
-        self::assertNotContains('Big Orders Only DE', $titles);
+        $this->assertNotContains('Big Orders Only DE', $titles);
     }
 
     #[Test]
@@ -85,7 +85,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     {
         $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(false), $this->basketViewModel($this->lightProduct, 1), 'DE');
 
-        self::assertSame([], $methods);
+        $this->assertSame([], $methods);
     }
 
     #[Test]
@@ -95,8 +95,8 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
 
         $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(false), $criteria);
 
-        self::assertSame(0, $selection->getShippingMethodUid());
-        self::assertSame(0, $selection->getCost()->getCents());
+        $this->assertSame(0, $selection->getShippingMethodUid());
+        $this->assertSame(0, $selection->getCost()->getCents());
     }
 
     #[Test]
@@ -106,7 +106,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
 
         $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
 
-        self::assertSame(0, $selection->getShippingMethodUid());
+        $this->assertSame(0, $selection->getShippingMethodUid());
     }
 
     #[Test]
@@ -116,8 +116,8 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
 
         $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
 
-        self::assertSame(1, $selection->getShippingMethodUid());
-        self::assertSame(500, $selection->getCost()->getCents());
+        $this->assertSame(1, $selection->getShippingMethodUid());
+        $this->assertSame(500, $selection->getCost()->getCents());
     }
 
     #[Test]
@@ -127,7 +127,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
 
         $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
 
-        self::assertSame(0, $selection->getCost()->getCents());
+        $this->assertSame(0, $selection->getCost()->getCents());
     }
 
     #[Test]
@@ -150,7 +150,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 2), 'DE', false);
         $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true, '2.50'), $criteria);
 
-        self::assertSame(500 + 500, $selection->getCost()->getCents());
+        $this->assertSame(500 + 500, $selection->getCost()->getCents());
     }
 
     #[Test]
@@ -161,7 +161,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', true);
         $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true, '2.50'), $criteria);
 
-        self::assertSame(250, $selection->getCost()->getCents());
+        $this->assertSame(250, $selection->getCost()->getCents());
     }
 
     #[Test]
@@ -170,7 +170,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 2), 'DE', false);
         $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true, '2.50'), $criteria);
 
-        self::assertSame(500, $selection->getCost()->getCents());
+        $this->assertSame(500, $selection->getCost()->getCents());
     }
 
     #[Test]
@@ -180,7 +180,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
         $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
 
-        self::assertSame(0.19, $selection->getTaxRate());
+        $this->assertSame(0.19, $selection->getTaxRate());
     }
 
     #[Test]
@@ -190,7 +190,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $criteria = new ShippingSelectionCriteria(2, $this->basketViewModel($this->heavyProduct, 1), 'DE', false);
         $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
 
-        self::assertSame(0.07, $selection->getTaxRate());
+        $this->assertSame(0.07, $selection->getTaxRate());
     }
 
     #[Test]
@@ -203,7 +203,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
         $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true, '2.50'), $criteria, $this->requestFor(3));
 
-        self::assertSame(425 + 250, $selection->getCost()->getCents());
+        $this->assertSame(425 + 250, $selection->getCost()->getCents());
     }
 
     private function configuration(bool $shippingEnabled, string $bulkySurcharge = '0.00'): ProductsConfiguration

@@ -33,8 +33,8 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
 
         $product = $this->productRepository->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
-        self::assertSame('Product 1', $product->getTitle());
+        $this->assertInstanceOf(Product::class, $product);
+        $this->assertSame('Product 1', $product->getTitle());
     }
 
     #[Test]
@@ -44,13 +44,13 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
 
         $product = $this->productRepository->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
+        $this->assertInstanceOf(Product::class, $product);
 
         $relatedTitles = array_map(static fn(Product $p): string => $p->getTitle(), $product->getRelatedProducts()->toArray());
         $accessoryTitles = array_map(static fn(Product $p): string => $p->getTitle(), $product->getAccessoryProducts()->toArray());
 
-        self::assertSame(['Product 2'], $relatedTitles);
-        self::assertSame(['Product 3'], $accessoryTitles);
+        $this->assertSame(['Product 2'], $relatedTitles);
+        $this->assertSame(['Product 3'], $accessoryTitles);
     }
 
     #[Test]
@@ -60,10 +60,10 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
 
         $product = $this->productRepository->findByUid(2);
-        self::assertInstanceOf(Product::class, $product);
+        $this->assertInstanceOf(Product::class, $product);
 
-        self::assertCount(0, $product->getRelatedProducts());
-        self::assertCount(0, $product->getAccessoryProducts());
+        $this->assertCount(0, $product->getRelatedProducts());
+        $this->assertCount(0, $product->getAccessoryProducts());
     }
 
     #[Test]
@@ -73,9 +73,9 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
 
         $category = $this->get(CategoryRepository::class)->findByUid(1);
-        self::assertInstanceOf(Category::class, $category);
+        $this->assertInstanceOf(Category::class, $category);
 
-        self::assertSame(1, $this->productRepository->countByCategory($category));
+        $this->assertSame(1, $this->productRepository->countByCategory($category));
     }
 
     #[Test]

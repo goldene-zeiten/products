@@ -23,7 +23,7 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
     #[Test]
     public function loadIsEmptyByDefault(): void
     {
-        self::assertSame([], $this->subject()->load($this->request()));
+        $this->assertSame([], $this->subject()->load($this->request()));
     }
 
     #[Test]
@@ -35,7 +35,7 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
         $storage->record($request, 1);
         $storage->record($request, 2);
 
-        self::assertSame([2, 1], $storage->load($request));
+        $this->assertSame([2, 1], $storage->load($request));
     }
 
     #[Test]
@@ -48,7 +48,7 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
         $storage->record($request, 2);
         $storage->record($request, 1);
 
-        self::assertSame([1, 2], $storage->load($request));
+        $this->assertSame([1, 2], $storage->load($request));
     }
 
     #[Test]
@@ -61,7 +61,7 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
         $storage->record($request, 2);
         $storage->record($request, 3);
 
-        self::assertSame([3, 2], $storage->load($request));
+        $this->assertSame([3, 2], $storage->load($request));
     }
 
     #[Test]
@@ -72,7 +72,7 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
 
         $storage->record($request, 1);
 
-        self::assertSame([], $storage->load($request));
+        $this->assertSame([], $storage->load($request));
     }
 
     #[Test]
@@ -83,7 +83,7 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
 
         $storage->record($request, 1);
 
-        self::assertSame([], $storage->load($request));
+        $this->assertSame([], $storage->load($request));
     }
 
     #[Test]
@@ -94,7 +94,7 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
 
         $storage->record($request, 1);
 
-        self::assertSame([1], $storage->load($request));
+        $this->assertSame([1], $storage->load($request));
     }
 
     private function subject(int $limit = 10, bool $requireCookieConsent = false): RecentlyViewedStorage

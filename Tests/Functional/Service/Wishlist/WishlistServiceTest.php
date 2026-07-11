@@ -38,14 +38,14 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
     {
         $request = $this->requestFor(0);
 
-        self::assertFalse($this->subject->contains($request, 1));
+        $this->assertFalse($this->subject->contains($request, 1));
         $this->subject->add($request, 1);
-        self::assertTrue($this->subject->contains($request, 1));
-        self::assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertTrue($this->subject->contains($request, 1));
+        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
 
         $this->subject->remove($request, 1);
-        self::assertFalse($this->subject->contains($request, 1));
-        self::assertSame([], $this->subject->getItems($request));
+        $this->assertFalse($this->subject->contains($request, 1));
+        $this->assertSame([], $this->subject->getItems($request));
     }
 
     #[Test]
@@ -53,14 +53,14 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
     {
         $request = $this->requestFor(5);
 
-        self::assertFalse($this->subject->contains($request, 1));
+        $this->assertFalse($this->subject->contains($request, 1));
         $this->subject->add($request, 1);
-        self::assertTrue($this->subject->contains($request, 1));
-        self::assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertTrue($this->subject->contains($request, 1));
+        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
 
         $this->subject->remove($request, 1);
-        self::assertFalse($this->subject->contains($request, 1));
-        self::assertSame([], $this->subject->getItems($request));
+        $this->assertFalse($this->subject->contains($request, 1));
+        $this->assertSame([], $this->subject->getItems($request));
     }
 
     #[Test]
@@ -71,7 +71,7 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
         $this->subject->add($request, 1);
         $this->subject->add($request, 1);
 
-        self::assertCount(1, $this->subject->getItems($request));
+        $this->assertCount(1, $this->subject->getItems($request));
     }
 
     #[Test]
@@ -82,7 +82,7 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
         $this->subject->add($request, 1);
         $this->subject->add($request, 1);
 
-        self::assertCount(1, $this->subject->getItems($request));
+        $this->assertCount(1, $this->subject->getItems($request));
     }
 
     #[Test]
@@ -94,8 +94,8 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
         $this->subject->remove($guestRequest, 999);
         $this->subject->remove($identifiedRequest, 999);
 
-        self::assertSame([], $this->subject->getItems($guestRequest));
-        self::assertSame([], $this->subject->getItems($identifiedRequest));
+        $this->assertSame([], $this->subject->getItems($guestRequest));
+        $this->assertSame([], $this->subject->getItems($identifiedRequest));
     }
 
     #[Test]
@@ -107,8 +107,8 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
         $identifiedRequest = $this->requestFor(5);
         $this->subject->add($identifiedRequest, 2);
 
-        self::assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($guestRequest)));
-        self::assertSame(['Product 2'], $this->titlesOf($this->subject->getItems($identifiedRequest)));
+        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($guestRequest)));
+        $this->assertSame(['Product 2'], $this->titlesOf($this->subject->getItems($identifiedRequest)));
     }
 
     #[Test]
@@ -119,8 +119,8 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
 
         $this->subject->add($customerA, 1);
 
-        self::assertTrue($this->subject->contains($customerA, 1));
-        self::assertFalse($this->subject->contains($customerB, 1));
+        $this->assertTrue($this->subject->contains($customerA, 1));
+        $this->assertFalse($this->subject->contains($customerB, 1));
     }
 
     #[Test]
@@ -129,13 +129,13 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
         $request = $this->requestFor(0);
         $this->subject->add($request, 1);
         $this->subject->add($request, 2);
-        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
 
         $this->subject->moveUp($request, 2);
-        self::assertSame(['Product 2', 'Product 1'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 2', 'Product 1'], $this->titlesOf($this->subject->getItems($request)));
 
         $this->subject->moveDown($request, 2);
-        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
     }
 
     #[Test]
@@ -147,7 +147,7 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
 
         $this->subject->moveUp($request, 1);
 
-        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
     }
 
     #[Test]
@@ -156,13 +156,13 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
         $request = $this->requestFor(5);
         $this->subject->add($request, 1);
         $this->subject->add($request, 2);
-        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
 
         $this->subject->moveUp($request, 2);
-        self::assertSame(['Product 2', 'Product 1'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 2', 'Product 1'], $this->titlesOf($this->subject->getItems($request)));
 
         $this->subject->moveDown($request, 2);
-        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
     }
 
     #[Test]
@@ -174,7 +174,7 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
 
         $this->subject->moveDown($request, 2);
 
-        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
     }
 
     #[Test]
@@ -186,7 +186,7 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
 
         $this->subject->removeOrderedItems($this->orderFor(5, [1]));
 
-        self::assertSame(['Product 2'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 2'], $this->titlesOf($this->subject->getItems($request)));
     }
 
     #[Test]
@@ -197,31 +197,31 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
 
         $this->subject->removeOrderedItems($this->orderFor(0, [1]));
 
-        self::assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
     }
 
     #[Test]
     public function countReflectsAGuestsSessionWishlistWithoutHydratingProducts(): void
     {
         $request = $this->requestFor(0);
-        self::assertSame(0, $this->subject->count($request));
+        $this->assertSame(0, $this->subject->count($request));
 
         $this->subject->add($request, 1);
         $this->subject->add($request, 2);
 
-        self::assertSame(2, $this->subject->count($request));
+        $this->assertSame(2, $this->subject->count($request));
     }
 
     #[Test]
     public function countReflectsAnIdentifiedCustomersPersistedWishlist(): void
     {
         $request = $this->requestFor(5);
-        self::assertSame(0, $this->subject->count($request));
+        $this->assertSame(0, $this->subject->count($request));
 
         $this->subject->add($request, 1);
         $this->subject->add($request, 2);
 
-        self::assertSame(2, $this->subject->count($request));
+        $this->assertSame(2, $this->subject->count($request));
     }
 
     #[Test]
@@ -240,8 +240,8 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
         $this->subject->mergeSessionIntoAccount($identifiedRequest);
 
-        self::assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($identifiedRequest)));
-        self::assertSame([], $this->get(WishlistStorage::class)->load($identifiedRequest));
+        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($identifiedRequest)));
+        $this->assertSame([], $this->get(WishlistStorage::class)->load($identifiedRequest));
     }
 
     #[Test]
@@ -262,7 +262,7 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
 
         $this->subject->mergeSessionIntoAccount($identifiedRequest);
 
-        self::assertCount(1, $this->subject->getItems($identifiedRequest));
+        $this->assertCount(1, $this->subject->getItems($identifiedRequest));
     }
 
     #[Test]
@@ -273,20 +273,20 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
 
         $this->subject->mergeSessionIntoAccount($request);
 
-        self::assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
     }
 
     #[Test]
     public function isEnabledReflectsTheSiteSetting(): void
     {
         $requestWithoutSite = $this->requestFor(0);
-        self::assertFalse($this->subject->isEnabled($requestWithoutSite));
+        $this->assertFalse($this->subject->isEnabled($requestWithoutSite));
 
         $enabledSite = new Site('products', 1, ['settings' => ['products' => ['wishlist' => ['enabled' => true]]]]);
-        self::assertTrue($this->subject->isEnabled($requestWithoutSite->withAttribute('site', $enabledSite)));
+        $this->assertTrue($this->subject->isEnabled($requestWithoutSite->withAttribute('site', $enabledSite)));
 
         $disabledSite = new Site('products', 1, ['settings' => ['products' => ['wishlist' => ['enabled' => false]]]]);
-        self::assertFalse($this->subject->isEnabled($requestWithoutSite->withAttribute('site', $disabledSite)));
+        $this->assertFalse($this->subject->isEnabled($requestWithoutSite->withAttribute('site', $disabledSite)));
     }
 
     /**

@@ -31,19 +31,19 @@ final class LegacyMigrationHelperTest extends AbstractFunctionalTestCase
     #[Test]
     public function tablesExistIsTrueForExistingTable(): void
     {
-        self::assertTrue($this->subject->tablesExist(self::LEGACY_TABLE));
+        $this->assertTrue($this->subject->tablesExist(self::LEGACY_TABLE));
     }
 
     #[Test]
     public function tablesExistIsFalseWhenAnyTableIsMissing(): void
     {
-        self::assertFalse($this->subject->tablesExist(self::LEGACY_TABLE, 'tt_products_does_not_exist'));
+        $this->assertFalse($this->subject->tablesExist(self::LEGACY_TABLE, 'tt_products_does_not_exist'));
     }
 
     #[Test]
     public function countUnmigratedExcludesDeletedAndAlreadyMappedRows(): void
     {
-        self::assertSame(1, $this->subject->countUnmigrated(self::LEGACY_TABLE, self::LOCAL_TABLE));
+        $this->assertSame(1, $this->subject->countUnmigrated(self::LEGACY_TABLE, self::LOCAL_TABLE));
     }
 
     #[Test]
@@ -51,20 +51,20 @@ final class LegacyMigrationHelperTest extends AbstractFunctionalTestCase
     {
         $rows = $this->subject->fetchUnmigratedBatch(self::LEGACY_TABLE, self::LOCAL_TABLE);
 
-        self::assertCount(1, $rows);
-        self::assertSame(2, (int)$rows[0]['uid']);
+        $this->assertCount(1, $rows);
+        $this->assertSame(2, (int)$rows[0]['uid']);
     }
 
     #[Test]
     public function resolveLocalUidReturnsNullForUnmappedRow(): void
     {
-        self::assertNull($this->subject->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE));
+        $this->assertNull($this->subject->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE));
     }
 
     #[Test]
     public function resolveLocalUidReturnsMappedUid(): void
     {
-        self::assertSame(100, $this->subject->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE));
+        $this->assertSame(100, $this->subject->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE));
     }
 
     #[Test]
@@ -72,7 +72,7 @@ final class LegacyMigrationHelperTest extends AbstractFunctionalTestCase
     {
         $this->subject->recordMapping(self::LEGACY_TABLE, 2, self::LOCAL_TABLE, 200);
 
-        self::assertSame(200, $this->subject->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE));
-        self::assertSame(0, $this->subject->countUnmigrated(self::LEGACY_TABLE, self::LOCAL_TABLE));
+        $this->assertSame(200, $this->subject->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE));
+        $this->assertSame(0, $this->subject->countUnmigrated(self::LEGACY_TABLE, self::LOCAL_TABLE));
     }
 }

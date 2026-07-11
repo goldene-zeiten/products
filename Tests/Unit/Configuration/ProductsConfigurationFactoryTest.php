@@ -35,10 +35,10 @@ final class ProductsConfigurationFactoryTest extends UnitTestCase
 
         $configuration = $this->subject()->create($request);
 
-        self::assertTrue($configuration->isShippingEnabled());
-        self::assertSame(250, $configuration->getBulkySurcharge()->getCents());
-        self::assertTrue($configuration->isHandlingEnabled());
-        self::assertSame('nearestInteger', $configuration->getRoundingMode());
+        $this->assertTrue($configuration->isShippingEnabled());
+        $this->assertSame(250, $configuration->getBulkySurcharge()->getCents());
+        $this->assertTrue($configuration->isHandlingEnabled());
+        $this->assertSame('nearestInteger', $configuration->getRoundingMode());
     }
 
     #[Test]
@@ -46,10 +46,10 @@ final class ProductsConfigurationFactoryTest extends UnitTestCase
     {
         $configuration = $this->subject()->create(new ServerRequest('http://localhost/'));
 
-        self::assertFalse($configuration->isShippingEnabled());
-        self::assertSame(0, $configuration->getBulkySurcharge()->getCents());
-        self::assertFalse($configuration->isHandlingEnabled());
-        self::assertSame(PriceRoundingService::MODE_NONE, $configuration->getRoundingMode());
+        $this->assertFalse($configuration->isShippingEnabled());
+        $this->assertSame(0, $configuration->getBulkySurcharge()->getCents());
+        $this->assertFalse($configuration->isHandlingEnabled());
+        $this->assertSame(PriceRoundingService::MODE_NONE, $configuration->getRoundingMode());
     }
 
     #[Test]
@@ -60,9 +60,9 @@ final class ProductsConfigurationFactoryTest extends UnitTestCase
             'pricing' => ['mode' => 'net', 'currency' => 'CHF'],
         ])->create(new ServerRequest('http://localhost/'));
 
-        self::assertSame('AT', $configuration->getDefaultCountry());
-        self::assertSame('net', $configuration->getPricingMode());
-        self::assertSame('CHF', $configuration->getCurrency());
+        $this->assertSame('AT', $configuration->getDefaultCountry());
+        $this->assertSame('net', $configuration->getPricingMode());
+        $this->assertSame('CHF', $configuration->getCurrency());
     }
 
     /**

@@ -26,7 +26,7 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
     {
         $voucher = $this->subject()->maybeIssue($this->order(frontendUser: 5, totalGross: '100.00'), $this->configuration(enabled: false));
 
-        self::assertNull($voucher);
+        $this->assertNull($voucher);
     }
 
     #[Test]
@@ -34,7 +34,7 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
     {
         $voucher = $this->subject()->maybeIssue($this->order(frontendUser: 5, totalGross: '49.99'), $this->configuration(enabled: true, minimumOrderValue: '50.00'));
 
-        self::assertNull($voucher);
+        $this->assertNull($voucher);
     }
 
     #[Test]
@@ -44,14 +44,14 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
         $configuration = $this->configuration(enabled: true, minimumOrderValue: '50.00', rewardType: 'fixed', rewardValue: '7.50');
         $voucher = $this->subject()->maybeIssue($order, $configuration);
 
-        self::assertNotNull($voucher);
-        self::assertStringStartsWith('GAINED-', $voucher->getCode());
-        self::assertSame(VoucherDiscountType::FIXED, $voucher->getDiscountType());
-        self::assertSame('7.50', $voucher->getDiscountValue());
-        self::assertFalse($voucher->isCombinable());
-        self::assertSame(1, $voucher->getUsageLimit());
-        self::assertSame(5, $voucher->getBoundFrontendUser());
-        self::assertSame($order->getUid() ?? 0, $voucher->getGeneratedFromOrder());
+        $this->assertNotNull($voucher);
+        $this->assertStringStartsWith('GAINED-', $voucher->getCode());
+        $this->assertSame(VoucherDiscountType::FIXED, $voucher->getDiscountType());
+        $this->assertSame('7.50', $voucher->getDiscountValue());
+        $this->assertFalse($voucher->isCombinable());
+        $this->assertSame(1, $voucher->getUsageLimit());
+        $this->assertSame(5, $voucher->getBoundFrontendUser());
+        $this->assertSame($order->getUid() ?? 0, $voucher->getGeneratedFromOrder());
     }
 
     #[Test]
@@ -60,8 +60,8 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
         $order = $this->order(frontendUser: 0, totalGross: '100.00');
         $voucher = $this->subject()->maybeIssue($order, $this->configuration(enabled: true, minimumOrderValue: '50.00'));
 
-        self::assertNotNull($voucher);
-        self::assertSame(0, $voucher->getBoundFrontendUser());
+        $this->assertNotNull($voucher);
+        $this->assertSame(0, $voucher->getBoundFrontendUser());
     }
 
     #[Test]
@@ -69,11 +69,11 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
     {
         $order = $this->order(frontendUser: 5, totalGross: '100.00');
         $voucher = $this->subject()->maybeIssue($order, $this->configuration(enabled: true, minimumOrderValue: '50.00'));
-        self::assertNotNull($voucher);
+        $this->assertNotNull($voucher);
 
         $found = $this->get(VoucherRepository::class)->findOneByCode($voucher->getCode());
-        self::assertNotNull($found);
-        self::assertSame($voucher->getCode(), $found->getCode());
+        $this->assertNotNull($found);
+        $this->assertSame($voucher->getCode(), $found->getCode());
     }
 
     #[Test]
@@ -84,9 +84,9 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
         $first = $subject->maybeIssue($this->order(frontendUser: 5, totalGross: '100.00'), $configuration);
         $second = $subject->maybeIssue($this->order(frontendUser: 6, totalGross: '100.00'), $configuration);
 
-        self::assertNotNull($first);
-        self::assertNotNull($second);
-        self::assertNotSame($first->getCode(), $second->getCode());
+        $this->assertNotNull($first);
+        $this->assertNotNull($second);
+        $this->assertNotSame($first->getCode(), $second->getCode());
     }
 
     private function subject(): GainedVoucherService

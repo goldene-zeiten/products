@@ -49,11 +49,11 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
 
         $response = $this->executeFrontendSubRequest(new InternalRequest('http://localhost/shop'));
 
-        self::assertSame(200, $response->getStatusCode());
+        $this->assertSame(200, $response->getStatusCode());
         $body = (string)$response->getBody();
-        self::assertStringContainsString('Main Category 1', $body);
-        self::assertStringContainsString('Last Category 3', $body);
-        self::assertStringContainsString('/shop/main-category-1/sub-category-5/last-category-3', $body);
+        $this->assertStringContainsString('Main Category 1', $body);
+        $this->assertStringContainsString('Last Category 3', $body);
+        $this->assertStringContainsString('/shop/main-category-1/sub-category-5/last-category-3', $body);
     }
 
     /**
@@ -87,8 +87,8 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
             new InternalRequest('http://localhost/shop/main-category-1/sub-category-5/last-category-3')
         );
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('Product 2', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('Product 2', (string)$response->getBody());
     }
 
     #[Test]

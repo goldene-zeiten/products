@@ -24,7 +24,7 @@ final class PriceRoundingServiceTest extends UnitTestCase
     {
         $result = $this->subject->round(Money::fromDecimalString('23.45'), PriceRoundingService::MODE_NONE);
 
-        self::assertSame(2345, $result->getCents());
+        $this->assertSame(2345, $result->getCents());
     }
 
     #[Test]
@@ -32,14 +32,14 @@ final class PriceRoundingServiceTest extends UnitTestCase
     {
         $result = $this->subject->round(Money::fromDecimalString('23.45'), 'bogus');
 
-        self::assertSame(2345, $result->getCents());
+        $this->assertSame(2345, $result->getCents());
     }
 
     #[Test]
     public function nearestIntegerRoundsHalfAwayFromZero(): void
     {
-        self::assertSame(2300, $this->subject->round(Money::fromDecimalString('23.45'), PriceRoundingService::MODE_NEAREST_INTEGER)->getCents());
-        self::assertSame(2400, $this->subject->round(Money::fromDecimalString('23.55'), PriceRoundingService::MODE_NEAREST_INTEGER)->getCents());
+        $this->assertSame(2300, $this->subject->round(Money::fromDecimalString('23.45'), PriceRoundingService::MODE_NEAREST_INTEGER)->getCents());
+        $this->assertSame(2400, $this->subject->round(Money::fromDecimalString('23.55'), PriceRoundingService::MODE_NEAREST_INTEGER)->getCents());
     }
 
     #[Test]
@@ -47,7 +47,7 @@ final class PriceRoundingServiceTest extends UnitTestCase
     {
         $result = $this->subject->round(Money::fromDecimalString('20.00'), PriceRoundingService::MODE_PSYCHOLOGICAL_99);
 
-        self::assertSame(1999, $result->getCents());
+        $this->assertSame(1999, $result->getCents());
     }
 
     #[Test]
@@ -55,7 +55,7 @@ final class PriceRoundingServiceTest extends UnitTestCase
     {
         $result = $this->subject->round(Money::fromDecimalString('23.45'), PriceRoundingService::MODE_PSYCHOLOGICAL_99);
 
-        self::assertSame(2399, $result->getCents());
+        $this->assertSame(2399, $result->getCents());
     }
 
     #[Test]
@@ -63,7 +63,7 @@ final class PriceRoundingServiceTest extends UnitTestCase
     {
         $result = $this->subject->round(Money::fromDecimalString('23.99'), PriceRoundingService::MODE_PSYCHOLOGICAL_99);
 
-        self::assertSame(2399, $result->getCents());
+        $this->assertSame(2399, $result->getCents());
     }
 
     #[Test]
@@ -71,6 +71,6 @@ final class PriceRoundingServiceTest extends UnitTestCase
     {
         $result = $this->subject->round(Money::fromCents(0), PriceRoundingService::MODE_PSYCHOLOGICAL_99);
 
-        self::assertSame(0, $result->getCents());
+        $this->assertSame(0, $result->getCents());
     }
 }

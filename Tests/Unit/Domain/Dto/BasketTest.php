@@ -18,7 +18,7 @@ final class BasketTest extends UnitTestCase
 
         $basket->addItem(new BasketItem(1, null, -5));
 
-        self::assertSame(1, $basket->getItems()[0]->getQuantity());
+        $this->assertSame(1, $basket->getItems()[0]->getQuantity());
     }
 
     #[Test]
@@ -29,7 +29,7 @@ final class BasketTest extends UnitTestCase
 
         $basket->addItem(new BasketItem(1, null, -5));
 
-        self::assertSame(4, $basket->getItems()[0]->getQuantity());
+        $this->assertSame(4, $basket->getItems()[0]->getQuantity());
     }
 
     #[Test]
@@ -37,7 +37,7 @@ final class BasketTest extends UnitTestCase
     {
         $basket = new Basket();
 
-        self::assertSame([], $basket->getVoucherCodes());
+        $this->assertSame([], $basket->getVoucherCodes());
     }
 
     #[Test]
@@ -48,7 +48,7 @@ final class BasketTest extends UnitTestCase
         $basket->addVoucherCode('SAVE10');
         $basket->addVoucherCode('SAVE10');
 
-        self::assertSame(['SAVE10'], $basket->getVoucherCodes());
+        $this->assertSame(['SAVE10'], $basket->getVoucherCodes());
     }
 
     #[Test]
@@ -59,7 +59,7 @@ final class BasketTest extends UnitTestCase
         $basket->addVoucherCode('SAVE10');
         $basket->addVoucherCode('FLAT5');
 
-        self::assertSame(['SAVE10', 'FLAT5'], $basket->getVoucherCodes());
+        $this->assertSame(['SAVE10', 'FLAT5'], $basket->getVoucherCodes());
     }
 
     #[Test]
@@ -71,7 +71,7 @@ final class BasketTest extends UnitTestCase
 
         $basket->removeVoucherCode('SAVE10');
 
-        self::assertSame(['FLAT5'], $basket->getVoucherCodes());
+        $this->assertSame(['FLAT5'], $basket->getVoucherCodes());
     }
 
     #[Test]
@@ -83,7 +83,7 @@ final class BasketTest extends UnitTestCase
 
         $basket->clearVoucherCodes();
 
-        self::assertSame([], $basket->getVoucherCodes());
+        $this->assertSame([], $basket->getVoucherCodes());
     }
 
     #[Test]
@@ -91,6 +91,6 @@ final class BasketTest extends UnitTestCase
     {
         $basket = new Basket([], ['SAVE10', 'FLAT5']);
 
-        self::assertSame(['SAVE10', 'FLAT5'], $basket->getVoucherCodes());
+        $this->assertSame(['SAVE10', 'FLAT5'], $basket->getVoucherCodes());
     }
 }

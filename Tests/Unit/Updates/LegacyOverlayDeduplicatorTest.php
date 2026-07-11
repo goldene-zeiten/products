@@ -29,8 +29,8 @@ final class LegacyOverlayDeduplicatorTest extends UnitTestCase
 
         $result = $this->subject->deduplicate($rows, 'cat_uid');
 
-        self::assertCount(3, $result['winners']);
-        self::assertSame([], $result['losers']);
+        $this->assertCount(3, $result['winners']);
+        $this->assertSame([], $result['losers']);
     }
 
     #[Test]
@@ -42,8 +42,8 @@ final class LegacyOverlayDeduplicatorTest extends UnitTestCase
 
         $result = $this->subject->deduplicate($rows, 'cat_uid');
 
-        self::assertSame([], $result['winners']);
-        self::assertSame([], $result['losers']);
+        $this->assertSame([], $result['winners']);
+        $this->assertSame([], $result['losers']);
     }
 
     #[Test]
@@ -56,10 +56,10 @@ final class LegacyOverlayDeduplicatorTest extends UnitTestCase
 
         $result = $this->subject->deduplicate($rows, 'cat_uid');
 
-        self::assertCount(1, $result['winners']);
-        self::assertSame(5, $result['winners'][0]['uid']);
-        self::assertCount(1, $result['losers']);
-        self::assertSame(9, $result['losers'][0]['uid']);
+        $this->assertCount(1, $result['winners']);
+        $this->assertSame(5, $result['winners'][0]['uid']);
+        $this->assertCount(1, $result['losers']);
+        $this->assertSame(9, $result['losers'][0]['uid']);
     }
 
     #[Test]
@@ -73,9 +73,9 @@ final class LegacyOverlayDeduplicatorTest extends UnitTestCase
 
         $result = $this->subject->deduplicate($rows, 'cat_uid');
 
-        self::assertCount(1, $result['winners']);
-        self::assertSame(7, $result['winners'][0]['uid']);
-        self::assertCount(2, $result['losers']);
+        $this->assertCount(1, $result['winners']);
+        $this->assertSame(7, $result['winners'][0]['uid']);
+        $this->assertCount(2, $result['losers']);
     }
 
     #[Test]
@@ -88,8 +88,8 @@ final class LegacyOverlayDeduplicatorTest extends UnitTestCase
 
         $result = $this->subject->deduplicate($rows, 'cat_uid');
 
-        self::assertCount(1, $result['winners']);
-        self::assertSame(8, $result['winners'][0]['uid']);
-        self::assertSame(1, $result['winners'][0]['hidden']);
+        $this->assertCount(1, $result['winners']);
+        $this->assertSame(8, $result['winners'][0]['uid']);
+        $this->assertSame(1, $result['winners'][0]['hidden']);
     }
 }

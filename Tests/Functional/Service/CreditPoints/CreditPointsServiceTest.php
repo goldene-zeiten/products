@@ -34,32 +34,32 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function balanceIsTheSumOfLedgerEntries(): void
     {
-        self::assertSame(70, $this->subject()->getBalance(1));
-        self::assertSame(50, $this->subject()->getBalance(2));
+        $this->assertSame(70, $this->subject()->getBalance(1));
+        $this->assertSame(50, $this->subject()->getBalance(2));
     }
 
     #[Test]
     public function balanceIsZeroForAFrontendUserWithNoLedgerEntries(): void
     {
-        self::assertSame(0, $this->subject()->getBalance(999));
+        $this->assertSame(0, $this->subject()->getBalance(999));
     }
 
     #[Test]
     public function guestsAlwaysHaveAZeroBalanceWithoutQuerying(): void
     {
-        self::assertSame(0, $this->subject()->getBalance(0));
+        $this->assertSame(0, $this->subject()->getBalance(0));
     }
 
     #[Test]
     public function manualAdjustmentRowsCountTowardTheBalance(): void
     {
-        self::assertSame(20, $this->subject()->getBalance(3));
+        $this->assertSame(20, $this->subject()->getBalance(3));
     }
 
     #[Test]
     public function earnedPointsSumTheProductRateAcrossBasketLinesAndQuantities(): void
     {
-        self::assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel(), $this->configuration()));
+        $this->assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel(), $this->configuration()));
     }
 
     #[Test]
@@ -67,7 +67,7 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     {
         $configuration = $this->configuration(earningMode: 'perProduct', earningTiers: ['0.00:999']);
 
-        self::assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel(), $configuration));
+        $this->assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel(), $configuration));
     }
 
     #[Test]
@@ -75,8 +75,8 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     {
         $configuration = $this->configuration(earningMode: 'basketTiered', earningTiers: ['50.00:10', '100.00:25']);
 
-        self::assertSame(10, $this->subject()->calculateEarnedPoints($this->basketWithTotal('75.00'), $configuration));
-        self::assertSame(25, $this->subject()->calculateEarnedPoints($this->basketWithTotal('150.00'), $configuration));
+        $this->assertSame(10, $this->subject()->calculateEarnedPoints($this->basketWithTotal('75.00'), $configuration));
+        $this->assertSame(25, $this->subject()->calculateEarnedPoints($this->basketWithTotal('150.00'), $configuration));
     }
 
     #[Test]
@@ -84,7 +84,7 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     {
         $configuration = $this->configuration(earningMode: 'basketTiered', earningTiers: ['50.00:10']);
 
-        self::assertSame(0, $this->subject()->calculateEarnedPoints($this->basketWithTotal('49.99'), $configuration));
+        $this->assertSame(0, $this->subject()->calculateEarnedPoints($this->basketWithTotal('49.99'), $configuration));
     }
 
     #[Test]
@@ -92,7 +92,7 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     {
         $configuration = $this->configuration(earningMode: 'basketTiered', earningTiers: ['50.00:10']);
 
-        self::assertSame(10, $this->subject()->calculateEarnedPoints($this->basketWithTotal('50.00'), $configuration));
+        $this->assertSame(10, $this->subject()->calculateEarnedPoints($this->basketWithTotal('50.00'), $configuration));
     }
 
     #[Test]
@@ -100,7 +100,7 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     {
         $configuration = $this->configuration(earningMode: 'autoPriceFactor', priceFactor: 1.0);
 
-        self::assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel(), $configuration));
+        $this->assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel(), $configuration));
     }
 
     #[Test]
@@ -115,7 +115,7 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
         $basket = new BasketViewModel([$item], $lineTotal, $lineTotal, Money::fromCents(0), 'EUR');
 
         // lineTotalGross 30.00 * priceFactor 2.0 = 60 points
-        self::assertSame(60, $this->subject()->calculateEarnedPoints($basket, $configuration));
+        $this->assertSame(60, $this->subject()->calculateEarnedPoints($basket, $configuration));
     }
 
     #[Test]
@@ -123,8 +123,8 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     {
         $redemption = $this->subject()->redeem(1, 1000, Money::fromDecimalString('1000.00'), $this->configuration());
 
-        self::assertSame(70, $redemption->getPoints());
-        self::assertSame(700, $redemption->getDiscountAmount()->getCents());
+        $this->assertSame(70, $redemption->getPoints());
+        $this->assertSame(700, $redemption->getDiscountAmount()->getCents());
     }
 
     #[Test]
@@ -132,14 +132,14 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     {
         $redemption = $this->subject()->redeem(1, 70, Money::fromDecimalString('3.00'), $this->configuration());
 
-        self::assertSame(30, $redemption->getPoints());
-        self::assertSame(300, $redemption->getDiscountAmount()->getCents());
+        $this->assertSame(30, $redemption->getPoints());
+        $this->assertSame(300, $redemption->getDiscountAmount()->getCents());
     }
 
     #[Test]
     public function guestsCanNeverRedeemPoints(): void
     {
-        self::assertTrue($this->subject()->redeem(0, 100, Money::fromDecimalString('1000.00'), $this->configuration())->isEmpty());
+        $this->assertTrue($this->subject()->redeem(0, 100, Money::fromDecimalString('1000.00'), $this->configuration())->isEmpty());
     }
 
     #[Test]
@@ -147,7 +147,7 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     {
         $configuration = $this->configuration(enabled: false);
 
-        self::assertTrue($this->subject()->redeem(1, 10, Money::fromDecimalString('100.00'), $configuration)->isEmpty());
+        $this->assertTrue($this->subject()->redeem(1, 10, Money::fromDecimalString('100.00'), $configuration)->isEmpty());
     }
 
     #[Test]
@@ -197,8 +197,8 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     {
         $product1 = $this->productRepository->findByUid(1);
         $product2 = $this->productRepository->findByUid(2);
-        self::assertInstanceOf(Product::class, $product1);
-        self::assertInstanceOf(Product::class, $product2);
+        $this->assertInstanceOf(Product::class, $product1);
+        $this->assertInstanceOf(Product::class, $product2);
 
         $price = Money::fromDecimalString('10.00');
         $noTax = Money::fromCents(0);

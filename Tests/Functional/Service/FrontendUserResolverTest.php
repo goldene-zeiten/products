@@ -31,39 +31,39 @@ final class FrontendUserResolverTest extends AbstractFunctionalTestCase
     #[Test]
     public function anonymousVisitorHasNoDiscount(): void
     {
-        self::assertSame(0.0, $this->subject->getDiscountPercent($this->requestFor(0)));
+        $this->assertSame(0.0, $this->subject->getDiscountPercent($this->requestFor(0)));
     }
 
     #[Test]
     public function userWithoutAnyDiscountConfiguredGetsZero(): void
     {
-        self::assertSame(0.0, $this->subject->getDiscountPercent($this->requestFor(1)));
+        $this->assertSame(0.0, $this->subject->getDiscountPercent($this->requestFor(1)));
     }
 
     #[Test]
     public function userInheritsTheirGroupsDiscount(): void
     {
-        self::assertSame(10.0, $this->subject->getDiscountPercent($this->requestFor(2)));
+        $this->assertSame(10.0, $this->subject->getDiscountPercent($this->requestFor(2)));
     }
 
     #[Test]
     public function personalDiscountAppliesWithoutAnyGroup(): void
     {
-        self::assertSame(15.0, $this->subject->getDiscountPercent($this->requestFor(3)));
+        $this->assertSame(15.0, $this->subject->getDiscountPercent($this->requestFor(3)));
     }
 
     #[Test]
     public function theBestOfPersonalAndGroupDiscountWinsRatherThanStacking(): void
     {
         // user 4: 20% personal vs. 10% from group 1 - personal wins as the higher rate.
-        self::assertSame(20.0, $this->subject->getDiscountPercent($this->requestFor(4)));
+        $this->assertSame(20.0, $this->subject->getDiscountPercent($this->requestFor(4)));
     }
 
     #[Test]
     public function theHighestOfMultipleGroupDiscountsWinsRatherThanStacking(): void
     {
         // user 5: group 1 = 10%, group 2 = 25% - the higher rate wins, they are never summed.
-        self::assertSame(25.0, $this->subject->getDiscountPercent($this->requestFor(5)));
+        $this->assertSame(25.0, $this->subject->getDiscountPercent($this->requestFor(5)));
     }
 
     private function requestFor(int $frontendUserUid): ServerRequestInterface

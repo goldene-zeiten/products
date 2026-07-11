@@ -28,7 +28,7 @@ final class OrderExportRegistryTest extends AbstractFunctionalTestCase
     #[Test]
     public function aThirdPartyExporterIsAutoRegisteredViaTheTaggedIterator(): void
     {
-        self::assertSame('dummy', $this->subject->get('dummy')->getIdentifier());
+        $this->assertSame('dummy', $this->subject->get('dummy')->getIdentifier());
     }
 
     #[Test]
@@ -39,7 +39,7 @@ final class OrderExportRegistryTest extends AbstractFunctionalTestCase
             $this->subject->getAvailable()
         );
 
-        self::assertContains('dummy', $identifiers);
+        $this->assertContains('dummy', $identifiers);
     }
 
     #[Test]
@@ -48,7 +48,7 @@ final class OrderExportRegistryTest extends AbstractFunctionalTestCase
         $order = new Order();
         $order->setOrderNumber('ORD-42');
 
-        self::assertSame('order:ORD-42', $this->subject->get('dummy')->export($order));
+        $this->assertSame('order:ORD-42', $this->subject->get('dummy')->export($order));
     }
 
     #[Test]

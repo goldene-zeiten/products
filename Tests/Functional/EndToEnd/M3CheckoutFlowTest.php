@@ -53,7 +53,7 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
         $this->orderPlacementService = $this->get(OrderPlacementService::class);
 
         $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
+        $this->assertInstanceOf(Product::class, $product);
         $this->mainProduct = $product;
     }
 
@@ -67,30 +67,30 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
             static fn(Product $related): string => $related->getTitle(),
             $this->mainProduct->getRelatedProducts()->toArray()
         );
-        self::assertSame(['Related Product'], $relatedTitles);
+        $this->assertSame(['Related Product'], $relatedTitles);
 
         $this->applyVoucher($request, 'COMBO1');
-        self::assertSame(['COMBO1'], $this->basketService->getAppliedVoucherCodes($request));
+        $this->assertSame(['COMBO1'], $this->basketService->getAppliedVoucherCodes($request));
 
         $this->applyVoucher($request, 'SOLO');
-        self::assertSame(['SOLO'], $this->basketService->getAppliedVoucherCodes($request), 'A non-combinable voucher must replace, not join, an existing code.');
+        $this->assertSame(['SOLO'], $this->basketService->getAppliedVoucherCodes($request), 'A non-combinable voucher must replace, not join, an existing code.');
 
         $order = $this->orderPlacementService->place($request, $this->address(), 'invoice', new CheckoutChoices(30))->getOrder();
 
-        self::assertSame(9200, $order->getTotalGross()->getCents());
-        self::assertSame(800, $order->getDiscountTotal()->getCents());
-        self::assertSame(['SOLO'], $order->getVoucherCodes());
+        $this->assertSame(9200, $order->getTotalGross()->getCents());
+        $this->assertSame(800, $order->getDiscountTotal()->getCents());
+        $this->assertSame(['SOLO'], $order->getVoucherCodes());
 
         $voucher = $this->get(VoucherRepository::class)->findOneByCode('SOLO');
-        self::assertNotNull($voucher);
-        self::assertSame(1, $this->get(VoucherRedemptionRepository::class)->countFor($voucher));
+        $this->assertNotNull($voucher);
+        $this->assertSame(1, $this->get(VoucherRedemptionRepository::class)->countFor($voucher));
 
         $ledgerRows = $this->ledgerRows($order->getUid() ?? 0);
-        self::assertCount(2, $ledgerRows);
-        self::assertContainsEquals(['frontend_user' => 7, 'points' => 10, 'type' => 'earn'], $ledgerRows);
-        self::assertContainsEquals(['frontend_user' => 7, 'points' => -30, 'type' => 'redeem'], $ledgerRows);
+        $this->assertCount(2, $ledgerRows);
+        $this->assertContainsEquals(['frontend_user' => 7, 'points' => 10, 'type' => 'earn'], $ledgerRows);
+        $this->assertContainsEquals(['frontend_user' => 7, 'points' => -30, 'type' => 'redeem'], $ledgerRows);
 
-        self::assertSame([], $this->basketService->getAppliedVoucherCodes($request), 'A finalized order clears the basket, including its voucher codes.');
+        $this->assertSame([], $this->basketService->getAppliedVoucherCodes($request), 'A finalized order clears the basket, including its voucher codes.');
     }
 
     #[Test]
@@ -103,18 +103,18 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
         $orderCountBefore = $this->countOrders();
         try {
             $this->orderPlacementService->place($request, $this->address(), 'invoice', new CheckoutChoices(10));
-            self::fail('Expected InsufficientCreditPointsException was not thrown for a guest requesting points.');
+            $this->fail('Expected InsufficientCreditPointsException was not thrown for a guest requesting points.');
         } catch (InsufficientCreditPointsException) {
             // expected: guests always have a zero balance
         }
-        self::assertSame($orderCountBefore, $this->countOrders(), 'A rejected points request must not place an order.');
+        $this->assertSame($orderCountBefore, $this->countOrders(), 'A rejected points request must not place an order.');
 
         $order = $this->orderPlacementService->place($request, $this->address(), 'invoice')->getOrder();
 
-        self::assertSame(9000, $order->getTotalGross()->getCents());
-        self::assertSame(1000, $order->getDiscountTotal()->getCents());
-        self::assertSame(['COMBO1'], $order->getVoucherCodes());
-        self::assertSame([], $this->ledgerRows($order->getUid() ?? 0), 'Guests never touch the credit points ledger.');
+        $this->assertSame(9000, $order->getTotalGross()->getCents());
+        $this->assertSame(1000, $order->getDiscountTotal()->getCents());
+        $this->assertSame(['COMBO1'], $order->getVoucherCodes());
+        $this->assertSame([], $this->ledgerRows($order->getUid() ?? 0), 'Guests never touch the credit points ledger.');
     }
 
     private function applyVoucher(ServerRequestInterface $request, string $code): void

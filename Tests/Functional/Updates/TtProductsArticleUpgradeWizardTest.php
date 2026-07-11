@@ -38,43 +38,43 @@ final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCas
     #[Test]
     public function updateIsNecessaryInitially(): void
     {
-        self::assertTrue($this->subject->updateNecessary());
+        $this->assertTrue($this->subject->updateNecessary());
     }
 
     #[Test]
     public function executeUpdateMigratesArticleWithResolvedProduct(): void
     {
-        self::assertTrue($this->subject->executeUpdate());
+        $this->assertTrue($this->subject->executeUpdate());
 
         $articleUid = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
-        self::assertNotNull($articleUid);
-        self::assertSame(80, (int)$this->fetchField((int)$articleUid, 'product'));
-        self::assertSame('9.99', $this->fetchField((int)$articleUid, 'price'));
-        self::assertSame(10, (int)$this->fetchField((int)$articleUid, 'in_stock'));
-        self::assertSame(2, (int)$this->fetchField((int)$articleUid, 'basket_min_quantity'));
-        self::assertSame(5, (int)$this->fetchField((int)$articleUid, 'basket_max_quantity'));
+        $this->assertNotNull($articleUid);
+        $this->assertSame(80, (int)$this->fetchField((int)$articleUid, 'product'));
+        $this->assertSame('9.99', $this->fetchField((int)$articleUid, 'price'));
+        $this->assertSame(10, (int)$this->fetchField((int)$articleUid, 'in_stock'));
+        $this->assertSame(2, (int)$this->fetchField((int)$articleUid, 'basket_min_quantity'));
+        $this->assertSame(5, (int)$this->fetchField((int)$articleUid, 'basket_max_quantity'));
     }
 
     #[Test]
     public function isAddedPriceFlexFormFlagMapsToSurchargePriceMode(): void
     {
-        self::assertTrue($this->subject->executeUpdate());
+        $this->assertTrue($this->subject->executeUpdate());
 
         $withoutFlag = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
         $withFlag = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 4, self::LOCAL_TABLE);
-        self::assertNotNull($withoutFlag);
-        self::assertNotNull($withFlag);
-        self::assertSame('override', $this->fetchField((int)$withoutFlag, 'price_mode'));
-        self::assertSame('surcharge', $this->fetchField((int)$withFlag, 'price_mode'));
+        $this->assertNotNull($withoutFlag);
+        $this->assertNotNull($withFlag);
+        $this->assertSame('override', $this->fetchField((int)$withoutFlag, 'price_mode'));
+        $this->assertSame('surcharge', $this->fetchField((int)$withFlag, 'price_mode'));
     }
 
     #[Test]
     public function articleWithMissingProductIsSkippedAndWarns(): void
     {
-        self::assertTrue($this->subject->executeUpdate());
+        $this->assertTrue($this->subject->executeUpdate());
 
-        self::assertSame(0, $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE));
-        self::assertStringContainsString('referenced missing product uid 999', $this->output->fetch());
+        $this->assertSame(0, $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE));
+        $this->assertStringContainsString('referenced missing product uid 999', $this->output->fetch());
     }
 
     #[Test]
@@ -82,7 +82,7 @@ final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCas
     {
         $this->subject->executeUpdate();
 
-        self::assertNull($this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 3, self::LOCAL_TABLE));
+        $this->assertNull($this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 3, self::LOCAL_TABLE));
     }
 
     #[Test]
@@ -90,13 +90,13 @@ final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCas
     {
         $this->subject->executeUpdate();
 
-        self::assertSame(1, $this->countRows(['title' => 'New DE']));
-        self::assertSame(0, $this->countRows(['title' => 'Old DE']));
-        self::assertSame(0, $this->countRows(['title' => 'Orphan overlay']));
+        $this->assertSame(1, $this->countRows(['title' => 'New DE']));
+        $this->assertSame(0, $this->countRows(['title' => 'Old DE']));
+        $this->assertSame(0, $this->countRows(['title' => 'Orphan overlay']));
 
         $output = $this->output->fetch();
-        self::assertStringContainsString('Skipped duplicate tt_products_articles_language uid 10', $output);
-        self::assertStringContainsString('parent uid 999 was never migrated', $output);
+        $this->assertStringContainsString('Skipped duplicate tt_products_articles_language uid 10', $output);
+        $this->assertStringContainsString('parent uid 999 was never migrated', $output);
     }
 
     #[Test]
@@ -105,9 +105,9 @@ final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCas
         $this->subject->executeUpdate();
         $totalAfterFirstRun = $this->countRows([]);
 
-        self::assertFalse($this->subject->updateNecessary());
-        self::assertTrue($this->subject->executeUpdate());
-        self::assertSame($totalAfterFirstRun, $this->countRows([]));
+        $this->assertFalse($this->subject->updateNecessary());
+        $this->assertTrue($this->subject->executeUpdate());
+        $this->assertSame($totalAfterFirstRun, $this->countRows([]));
     }
 
     /**

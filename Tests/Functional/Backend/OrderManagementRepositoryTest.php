@@ -32,7 +32,7 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $orders = $this->subject->fetchFiltered(new OrderListFilter());
 
-        self::assertCount(2, $orders);
+        $this->assertCount(2, $orders);
     }
 
     #[Test]
@@ -40,8 +40,8 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $orders = $this->subject->fetchFiltered(new OrderListFilter(status: 'confirmed'));
 
-        self::assertCount(1, $orders);
-        self::assertSame('ORD-2', $orders[0]['orderNumber']);
+        $this->assertCount(1, $orders);
+        $this->assertSame('ORD-2', $orders[0]['orderNumber']);
     }
 
     #[Test]
@@ -49,8 +49,8 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $orders = $this->subject->fetchFiltered(new OrderListFilter(email: 'alice'));
 
-        self::assertCount(1, $orders);
-        self::assertSame('ORD-1', $orders[0]['orderNumber']);
+        $this->assertCount(1, $orders);
+        $this->assertSame('ORD-1', $orders[0]['orderNumber']);
     }
 
     #[Test]
@@ -58,16 +58,16 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $row = $this->subject->fetchRow(1);
 
-        self::assertNotNull($row);
-        self::assertSame('ORD-1', $row['orderNumber']);
-        self::assertSame('alice@example.com', $row['email']);
-        self::assertSame(1999, $row['totalGrossCents']);
+        $this->assertNotNull($row);
+        $this->assertSame('ORD-1', $row['orderNumber']);
+        $this->assertSame('alice@example.com', $row['email']);
+        $this->assertSame(1999, $row['totalGrossCents']);
     }
 
     #[Test]
     public function fetchRowReturnsNullForDeletedOrder(): void
     {
-        self::assertNull($this->subject->fetchRow(3));
+        $this->assertNull($this->subject->fetchRow(3));
     }
 
     #[Test]
@@ -75,9 +75,9 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $row = $this->subject->fetchRow(1);
 
-        self::assertNotNull($row);
-        self::assertSame(1, $row['shippingMethodUid']);
-        self::assertSame(500, $row['shippingTotalCents']);
+        $this->assertNotNull($row);
+        $this->assertSame(1, $row['shippingMethodUid']);
+        $this->assertSame(500, $row['shippingTotalCents']);
     }
 
     #[Test]
@@ -85,9 +85,9 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $row = $this->subject->fetchRow(2);
 
-        self::assertNotNull($row);
-        self::assertSame(0, $row['shippingMethodUid']);
-        self::assertSame(0, $row['shippingTotalCents']);
+        $this->assertNotNull($row);
+        $this->assertSame(0, $row['shippingMethodUid']);
+        $this->assertSame(0, $row['shippingTotalCents']);
     }
 
     #[Test]
@@ -95,15 +95,15 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $redemptions = $this->subject->fetchVoucherRedemptions(1);
 
-        self::assertCount(1, $redemptions);
-        self::assertSame('SAVE10', $redemptions[0]['voucherCode']);
-        self::assertSame(199, $redemptions[0]['discountTotalCents']);
+        $this->assertCount(1, $redemptions);
+        $this->assertSame('SAVE10', $redemptions[0]['voucherCode']);
+        $this->assertSame(199, $redemptions[0]['discountTotalCents']);
     }
 
     #[Test]
     public function fetchVoucherRedemptionsIsEmptyForAnOrderWithNone(): void
     {
-        self::assertSame([], $this->subject->fetchVoucherRedemptions(2));
+        $this->assertSame([], $this->subject->fetchVoucherRedemptions(2));
     }
 
     #[Test]
@@ -111,15 +111,15 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $gainedVoucher = $this->subject->fetchGainedVoucher(1);
 
-        self::assertNotNull($gainedVoucher);
-        self::assertSame('GAINED-ABC123', $gainedVoucher['code']);
-        self::assertFalse($gainedVoucher['used']);
+        $this->assertNotNull($gainedVoucher);
+        $this->assertSame('GAINED-ABC123', $gainedVoucher['code']);
+        $this->assertFalse($gainedVoucher['used']);
     }
 
     #[Test]
     public function fetchGainedVoucherIsNullWhenTheOrderGeneratedNone(): void
     {
-        self::assertNull($this->subject->fetchGainedVoucher(2));
+        $this->assertNull($this->subject->fetchGainedVoucher(2));
     }
 
     #[Test]
@@ -127,30 +127,30 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $ledger = $this->subject->fetchCreditPointsLedger(1);
 
-        self::assertCount(1, $ledger);
-        self::assertSame(5, $ledger[0]['frontendUser']);
-        self::assertSame(20, $ledger[0]['points']);
-        self::assertSame('earn', $ledger[0]['type']);
+        $this->assertCount(1, $ledger);
+        $this->assertSame(5, $ledger[0]['frontendUser']);
+        $this->assertSame(20, $ledger[0]['points']);
+        $this->assertSame('earn', $ledger[0]['type']);
     }
 
     #[Test]
     public function fetchCreditPointsLedgerIsEmptyForAnOrderWithNone(): void
     {
-        self::assertSame([], $this->subject->fetchCreditPointsLedger(2));
+        $this->assertSame([], $this->subject->fetchCreditPointsLedger(2));
     }
 
     #[Test]
     public function findForEditingAndPersistWritesTheTransitionToTheDatabase(): void
     {
         $order = $this->subject->findForEditing(1);
-        self::assertInstanceOf(Order::class, $order);
+        $this->assertInstanceOf(Order::class, $order);
 
         $this->get(OrderStatusManager::class)->transitionPayment($order, PaymentStatus::PAID);
         $this->subject->persist($order);
 
         $row = $this->subject->fetchRow(1);
-        self::assertNotNull($row);
-        self::assertSame('paid', $row['paymentStatus']);
+        $this->assertNotNull($row);
+        $this->assertSame('paid', $row['paymentStatus']);
     }
 
     /**
@@ -168,9 +168,9 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $order = $this->subject->findForEditing(1);
 
-        self::assertInstanceOf(Order::class, $order);
-        self::assertSame(1999, $order->getTotalGross()->getCents());
-        self::assertSame(500, $order->getDiscountTotal()->getCents());
-        self::assertSame(500, $order->getShippingTotal()->getCents());
+        $this->assertInstanceOf(Order::class, $order);
+        $this->assertSame(1999, $order->getTotalGross()->getCents());
+        $this->assertSame(500, $order->getDiscountTotal()->getCents());
+        $this->assertSame(500, $order->getShippingTotal()->getCents());
     }
 }

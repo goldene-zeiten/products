@@ -27,23 +27,23 @@ final class InitialTaxClassesUpgradeWizardTest extends AbstractFunctionalTestCas
     #[Test]
     public function updateIsNecessaryWhenNoTaxClassesExistYet(): void
     {
-        self::assertTrue($this->subject->updateNecessary());
+        $this->assertTrue($this->subject->updateNecessary());
     }
 
     #[Test]
     public function executeUpdateSeedsAllThreeTaxClasses(): void
     {
-        self::assertTrue($this->subject->executeUpdate());
-        self::assertSame(['reduced', 'standard', 'zero'], $this->fetchCodes());
-        self::assertFalse($this->subject->updateNecessary());
+        $this->assertTrue($this->subject->executeUpdate());
+        $this->assertSame(['reduced', 'standard', 'zero'], $this->fetchCodes());
+        $this->assertFalse($this->subject->updateNecessary());
     }
 
     #[Test]
     public function executeUpdateIsIdempotent(): void
     {
-        self::assertTrue($this->subject->executeUpdate());
-        self::assertTrue($this->subject->executeUpdate());
-        self::assertSame(['reduced', 'standard', 'zero'], $this->fetchCodes());
+        $this->assertTrue($this->subject->executeUpdate());
+        $this->assertTrue($this->subject->executeUpdate());
+        $this->assertSame(['reduced', 'standard', 'zero'], $this->fetchCodes());
     }
 
     #[Test]
@@ -52,9 +52,9 @@ final class InitialTaxClassesUpgradeWizardTest extends AbstractFunctionalTestCas
         $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable(self::TABLE);
         $queryBuilder->insert(self::TABLE)->values(['code' => 'standard', 'title' => 'Custom standard'])->executeStatement();
 
-        self::assertTrue($this->subject->updateNecessary());
-        self::assertTrue($this->subject->executeUpdate());
-        self::assertSame(['reduced', 'standard', 'zero'], $this->fetchCodes());
+        $this->assertTrue($this->subject->updateNecessary());
+        $this->assertTrue($this->subject->executeUpdate());
+        $this->assertSame(['reduced', 'standard', 'zero'], $this->fetchCodes());
     }
 
     /**
