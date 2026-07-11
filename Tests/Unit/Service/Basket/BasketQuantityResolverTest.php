@@ -25,7 +25,7 @@ final class BasketQuantityResolverTest extends UnitTestCase
     {
         $product = new Product();
 
-        self::assertSame(3, $this->subject->clamp($product, null, 3));
+        $this->assertSame(3, $this->subject->clamp($product, null, 3));
     }
 
     #[Test]
@@ -34,7 +34,7 @@ final class BasketQuantityResolverTest extends UnitTestCase
         $product = new Product();
         $product->setBasketMinQuantity(5);
 
-        self::assertSame(5, $this->subject->clamp($product, null, 2));
+        $this->assertSame(5, $this->subject->clamp($product, null, 2));
     }
 
     #[Test]
@@ -43,7 +43,7 @@ final class BasketQuantityResolverTest extends UnitTestCase
         $product = new Product();
         $product->setBasketMaxQuantity(4);
 
-        self::assertSame(4, $this->subject->clamp($product, null, 10));
+        $this->assertSame(4, $this->subject->clamp($product, null, 10));
     }
 
     #[Test]
@@ -56,7 +56,7 @@ final class BasketQuantityResolverTest extends UnitTestCase
         $article->setBasketMinQuantity(1);
         $article->setBasketMaxQuantity(2);
 
-        self::assertSame(2, $this->subject->clamp($product, $article, 3));
+        $this->assertSame(2, $this->subject->clamp($product, $article, 3));
     }
 
     #[Test]
@@ -66,6 +66,6 @@ final class BasketQuantityResolverTest extends UnitTestCase
         $product->setBasketMaxQuantity(4);
         $article = new Article();
 
-        self::assertSame(4, $this->subject->clamp($product, $article, 10));
+        $this->assertSame(4, $this->subject->clamp($product, $article, 10));
     }
 }

@@ -27,59 +27,59 @@ final class ProductRepositorySearchTest extends AbstractFunctionalTestCase
     #[Test]
     public function matchesByTitle(): void
     {
-        self::assertSame(['Red Shoes', 'Blue Shoes'], $this->titles($this->subject->search('Shoes', null, 0, 10)));
+        $this->assertSame(['Red Shoes', 'Blue Shoes'], $this->titles($this->subject->search('Shoes', null, 0, 10)));
     }
 
     #[Test]
     public function matchesByItemNumber(): void
     {
-        self::assertSame(['Green Hat'], $this->titles($this->subject->search('HAT-GREEN', null, 0, 10)));
+        $this->assertSame(['Green Hat'], $this->titles($this->subject->search('HAT-GREEN', null, 0, 10)));
     }
 
     #[Test]
     public function matchesByDescription(): void
     {
-        self::assertSame(['Red Shoes', 'Blue Shoes'], $this->titles($this->subject->search('comfortable', null, 0, 10)));
+        $this->assertSame(['Red Shoes', 'Blue Shoes'], $this->titles($this->subject->search('comfortable', null, 0, 10)));
     }
 
     #[Test]
     public function matchesByEan(): void
     {
-        self::assertSame(['Red Shoes'], $this->titles($this->subject->search('1111111111111', null, 0, 10)));
+        $this->assertSame(['Red Shoes'], $this->titles($this->subject->search('1111111111111', null, 0, 10)));
     }
 
     #[Test]
     public function matchesBySubtitle(): void
     {
-        self::assertSame(['Yellow Hat'], $this->titles($this->subject->search('Autumn Collection', null, 0, 10)));
+        $this->assertSame(['Yellow Hat'], $this->titles($this->subject->search('Autumn Collection', null, 0, 10)));
     }
 
     #[Test]
     public function noMatchReturnsNoResults(): void
     {
-        self::assertSame([], $this->titles($this->subject->search('doesnotexist', null, 0, 10)));
-        self::assertSame(0, $this->subject->countSearchResults('doesnotexist', null));
+        $this->assertSame([], $this->titles($this->subject->search('doesnotexist', null, 0, 10)));
+        $this->assertSame(0, $this->subject->countSearchResults('doesnotexist', null));
     }
 
     #[Test]
     public function categoryFilterNarrowsResults(): void
     {
-        self::assertSame(['Red Shoes', 'Blue Shoes'], $this->titles($this->subject->search('Shoes', 10, 0, 10)));
-        self::assertSame([], $this->titles($this->subject->search('Shoes', 11, 0, 10)));
+        $this->assertSame(['Red Shoes', 'Blue Shoes'], $this->titles($this->subject->search('Shoes', 10, 0, 10)));
+        $this->assertSame([], $this->titles($this->subject->search('Shoes', 11, 0, 10)));
     }
 
     #[Test]
     public function limitAndOffsetPaginateResults(): void
     {
-        self::assertSame(2, $this->subject->countSearchResults('Shoes', null));
-        self::assertSame(['Red Shoes'], $this->titles($this->subject->search('Shoes', null, 0, 1)));
-        self::assertSame(['Blue Shoes'], $this->titles($this->subject->search('Shoes', null, 1, 1)));
+        $this->assertSame(2, $this->subject->countSearchResults('Shoes', null));
+        $this->assertSame(['Red Shoes'], $this->titles($this->subject->search('Shoes', null, 0, 1)));
+        $this->assertSame(['Blue Shoes'], $this->titles($this->subject->search('Shoes', null, 1, 1)));
     }
 
     #[Test]
     public function literalPercentSignInTheTermIsNotTreatedAsAWildcard(): void
     {
-        self::assertSame([], $this->titles($this->subject->search('%', null, 0, 10)));
+        $this->assertSame([], $this->titles($this->subject->search('%', null, 0, 10)));
     }
 
     /**

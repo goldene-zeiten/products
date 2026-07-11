@@ -45,7 +45,7 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
     #[Test]
     public function priceProviderInterfaceIsAliasedToTheCategoryDiscountProvider(): void
     {
-        self::assertInstanceOf(CategoryDiscountPriceProvider::class, $this->get(PriceProviderInterface::class));
+        $this->assertInstanceOf(CategoryDiscountPriceProvider::class, $this->get(PriceProviderInterface::class));
     }
 
     #[Test]
@@ -54,7 +54,7 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
         $product = new Product();
         $product->setPrice(Money::fromDecimalString('100.00'));
 
-        self::assertSame(10000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1)->getCents());
+        $this->assertSame(10000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1)->getCents());
     }
 
     #[Test]
@@ -63,7 +63,7 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
         $product = new Product();
         $product->setPrice(Money::fromDecimalString('100.00'));
 
-        self::assertSame(10000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(0))->getCents());
+        $this->assertSame(10000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(0))->getCents());
     }
 
     #[Test]
@@ -73,7 +73,7 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
         $product->setPrice(Money::fromDecimalString('100.00'));
 
         // user 2 belongs to group 1, which carries a 10% discount (see frontend_user_discounts.csv)
-        self::assertSame(9000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(2))->getCents());
+        $this->assertSame(9000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(2))->getCents());
     }
 
     #[Test]
@@ -90,7 +90,7 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
         $product->setPriceTiers($tiers);
 
         // user 3 has a personal 15% discount (see frontend_user_discounts.csv)
-        self::assertSame(4250, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 10, $this->requestFor(3))->getCents());
+        $this->assertSame(4250, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 10, $this->requestFor(3))->getCents());
     }
 
     #[Test]
@@ -99,7 +99,7 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
         $product = $this->productInCategory(20.0);
         $product->setPrice(Money::fromDecimalString('100.00'));
 
-        self::assertSame(8000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(0))->getCents());
+        $this->assertSame(8000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(0))->getCents());
     }
 
     #[Test]
@@ -109,7 +109,7 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
         $product->setPrice(Money::fromDecimalString('100.00'));
 
         // user 2's group discount (10%) is smaller than the category discount (30%) - not stacked
-        self::assertSame(7000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(2))->getCents());
+        $this->assertSame(7000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(2))->getCents());
     }
 
     #[Test]
@@ -119,7 +119,7 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
         $product->setPrice(Money::fromDecimalString('100.00'));
 
         // user 3's personal discount (15%) is bigger than the category discount (5%) - not stacked
-        self::assertSame(8500, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(3))->getCents());
+        $this->assertSame(8500, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(3))->getCents());
     }
 
     #[Test]
@@ -138,7 +138,7 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
         $product->setCategories($categories);
 
         // nearestCategory mode: the leaf's own 5% wins over the root's 30%, unlike maxAcrossTree
-        self::assertSame(9500, $this->subject('nearestCategory')->getUnitPrice($product, null, 1, $this->requestFor(0))->getCents());
+        $this->assertSame(9500, $this->subject('nearestCategory')->getUnitPrice($product, null, 1, $this->requestFor(0))->getCents());
     }
 
     private function productInCategory(float $categoryDiscountPercent): Product

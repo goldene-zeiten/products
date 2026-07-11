@@ -36,7 +36,7 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
     {
         $uids = array_column($this->treeRepository->fetchRootCategories(), 'uid');
 
-        self::assertSame([10, 13], $uids);
+        $this->assertSame([10, 13], $uids);
     }
 
     #[Test]
@@ -44,14 +44,14 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
     {
         $uids = array_column($this->treeRepository->fetchChildCategories(10), 'uid');
 
-        self::assertSame([11, 12], $uids);
+        $this->assertSame([11, 12], $uids);
     }
 
     #[Test]
     public function categoryHasChildrenIsFalseForALeafCategory(): void
     {
-        self::assertFalse($this->treeRepository->categoryHasChildren(11));
-        self::assertTrue($this->treeRepository->categoryHasChildren(10));
+        $this->assertFalse($this->treeRepository->categoryHasChildren(11));
+        $this->assertTrue($this->treeRepository->categoryHasChildren(10));
     }
 
     #[Test]
@@ -59,8 +59,8 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
     {
         $uids = array_column($this->treeRepository->fetchProductsByCategory(11), 'uid');
 
-        self::assertSame([20], $uids);
-        self::assertSame([], array_column($this->treeRepository->fetchProductsByCategory(10), 'uid'));
+        $this->assertSame([20], $uids);
+        $this->assertSame([], array_column($this->treeRepository->fetchProductsByCategory(10), 'uid'));
     }
 
     #[Test]
@@ -68,29 +68,29 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
     {
         $uids = array_column($this->treeRepository->fetchArticlesByProduct(20), 'uid');
 
-        self::assertSame([30], $uids);
-        self::assertTrue($this->treeRepository->productHasArticles(20));
+        $this->assertSame([30], $uids);
+        $this->assertTrue($this->treeRepository->productHasArticles(20));
     }
 
     #[Test]
     public function fetchCategoryUidsOfProductReturnsLinkedCategories(): void
     {
-        self::assertSame([11], $this->treeRepository->fetchCategoryUidsOfProduct(20));
+        $this->assertSame([11], $this->treeRepository->fetchCategoryUidsOfProduct(20));
     }
 
     #[Test]
     public function fetchParentCategoryUidWalksTheParentChain(): void
     {
-        self::assertSame(10, $this->treeRepository->fetchParentCategoryUid(11));
-        self::assertSame(0, $this->treeRepository->fetchParentCategoryUid(10));
+        $this->assertSame(10, $this->treeRepository->fetchParentCategoryUid(11));
+        $this->assertSame(0, $this->treeRepository->fetchParentCategoryUid(10));
     }
 
     #[Test]
     public function categoryExistsIsFalseForDeletedOrMissingRecords(): void
     {
-        self::assertTrue($this->treeRepository->categoryExists(10));
-        self::assertFalse($this->treeRepository->categoryExists(14));
-        self::assertFalse($this->treeRepository->categoryExists(999999));
+        $this->assertTrue($this->treeRepository->categoryExists(10));
+        $this->assertFalse($this->treeRepository->categoryExists(14));
+        $this->assertFalse($this->treeRepository->categoryExists(999999));
     }
 
     #[Test]
@@ -98,8 +98,8 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
     {
         $backendUser = $this->setUpBackendUser(1);
 
-        self::assertNull($this->mountResolver->resolveMountUids($backendUser));
-        self::assertTrue($this->accessGuard->isCategoryAccessible(13, null));
+        $this->assertNull($this->mountResolver->resolveMountUids($backendUser));
+        $this->assertTrue($this->accessGuard->isCategoryAccessible(13, null));
     }
 
     #[Test]
@@ -108,11 +108,11 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
         $backendUser = $this->setUpBackendUser(2);
         $mounts = $this->mountResolver->resolveMountUids($backendUser);
 
-        self::assertSame([10], $mounts);
-        self::assertTrue($this->accessGuard->isCategoryAccessible(10, $mounts));
-        self::assertTrue($this->accessGuard->isCategoryAccessible(11, $mounts));
-        self::assertFalse($this->accessGuard->isCategoryAccessible(13, $mounts));
-        self::assertTrue($this->accessGuard->isProductAccessible(20, $mounts));
+        $this->assertSame([10], $mounts);
+        $this->assertTrue($this->accessGuard->isCategoryAccessible(10, $mounts));
+        $this->assertTrue($this->accessGuard->isCategoryAccessible(11, $mounts));
+        $this->assertFalse($this->accessGuard->isCategoryAccessible(13, $mounts));
+        $this->assertTrue($this->accessGuard->isProductAccessible(20, $mounts));
     }
 
     #[Test]
@@ -121,9 +121,9 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
         $backendUser = $this->setUpBackendUser(3);
         $mounts = $this->mountResolver->resolveMountUids($backendUser);
 
-        self::assertSame([13], $mounts);
-        self::assertTrue($this->accessGuard->isCategoryAccessible(13, $mounts));
-        self::assertFalse($this->accessGuard->isCategoryAccessible(10, $mounts));
+        $this->assertSame([13], $mounts);
+        $this->assertTrue($this->accessGuard->isCategoryAccessible(13, $mounts));
+        $this->assertFalse($this->accessGuard->isCategoryAccessible(10, $mounts));
     }
 
     #[Test]
@@ -132,8 +132,8 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
         $backendUser = $this->setUpBackendUser(4);
         $mounts = $this->mountResolver->resolveMountUids($backendUser);
 
-        self::assertSame([], $mounts);
-        self::assertFalse($this->accessGuard->isCategoryAccessible(10, $mounts));
-        self::assertFalse($this->accessGuard->isProductAccessible(20, $mounts));
+        $this->assertSame([], $mounts);
+        $this->assertFalse($this->accessGuard->isCategoryAccessible(10, $mounts));
+        $this->assertFalse($this->accessGuard->isProductAccessible(20, $mounts));
     }
 }

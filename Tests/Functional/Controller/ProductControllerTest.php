@@ -57,8 +57,8 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         $request = new InternalRequest('http://localhost/shop');
         $response = $this->executeFrontendSubRequest($request);
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('Product 1', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('Product 1', (string)$response->getBody());
     }
 
     #[Test]
@@ -117,8 +117,8 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         $request = new InternalRequest('http://localhost/shop/product-1');
         $response = $this->executeFrontendSubRequest($request);
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('Product 1', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('Product 1', (string)$response->getBody());
     }
 
     #[Test]
@@ -177,9 +177,9 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         $withRelations = $this->executeFrontendSubRequest(new InternalRequest('http://localhost/shop/product-1'));
         $withoutRelations = $this->executeFrontendSubRequest(new InternalRequest('http://localhost/shop/product-2'));
 
-        self::assertStringContainsString('Product 2', (string)$withRelations->getBody());
-        self::assertStringContainsString('Product 3', (string)$withRelations->getBody());
-        self::assertStringNotContainsString('You might also like', (string)$withoutRelations->getBody());
-        self::assertStringNotContainsString('Frequently bought with', (string)$withoutRelations->getBody());
+        $this->assertStringContainsString('Product 2', (string)$withRelations->getBody());
+        $this->assertStringContainsString('Product 3', (string)$withRelations->getBody());
+        $this->assertStringNotContainsString('You might also like', (string)$withoutRelations->getBody());
+        $this->assertStringNotContainsString('Frequently bought with', (string)$withoutRelations->getBody());
     }
 }

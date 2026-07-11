@@ -17,7 +17,7 @@ final class SmokeTest extends AbstractFunctionalTestCase
     #[Test]
     public function extensionCanBeLoaded(): void
     {
-        self::assertGreaterThan(0, $this->get(Typo3Version::class)->getMajorVersion());
+        $this->assertGreaterThan(0, $this->get(Typo3Version::class)->getMajorVersion());
     }
 
     /**
@@ -30,10 +30,10 @@ final class SmokeTest extends AbstractFunctionalTestCase
     {
         $majorVersion = $this->get(Typo3Version::class)->getMajorVersion();
         if ($majorVersion !== 13) {
-            self::markTestSkipped('This test only applies to TYPO3 v13.');
+            $this->markTestSkipped('This test only applies to TYPO3 v13.');
         }
 
-        self::assertSame(13, $majorVersion);
+        $this->assertSame(13, $majorVersion);
     }
 
     /**
@@ -46,9 +46,9 @@ final class SmokeTest extends AbstractFunctionalTestCase
     {
         $majorVersion = $this->get(Typo3Version::class)->getMajorVersion();
         if ($majorVersion !== 14) {
-            self::markTestSkipped('This test only applies to TYPO3 v14.');
+            $this->markTestSkipped('This test only applies to TYPO3 v14.');
         }
 
-        self::assertSame(14, $majorVersion);
+        $this->assertSame(14, $majorVersion);
     }
 }

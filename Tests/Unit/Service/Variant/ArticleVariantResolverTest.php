@@ -34,7 +34,7 @@ final class ArticleVariantResolverTest extends UnitTestCase
 
         $resolved = $this->subject->resolve($product, [2, 1]);
 
-        self::assertSame($smallRed, $resolved);
+        $this->assertSame($smallRed, $resolved);
     }
 
     #[Test]
@@ -42,7 +42,7 @@ final class ArticleVariantResolverTest extends UnitTestCase
     {
         $product = $this->productWithArticles([$this->articleWithValues([$this->attributeValue(1)])]);
 
-        self::assertNull($this->subject->resolve($product, [999]));
+        $this->assertNull($this->subject->resolve($product, [999]));
     }
 
     #[Test]
@@ -51,7 +51,7 @@ final class ArticleVariantResolverTest extends UnitTestCase
         $article = $this->articleWithValues([$this->attributeValue(1), $this->attributeValue(2)]);
         $product = $this->productWithArticles([$article]);
 
-        self::assertNull($this->subject->resolve($product, [1]));
+        $this->assertNull($this->subject->resolve($product, [1]));
     }
 
     private function attributeValue(int $uid): AttributeValue

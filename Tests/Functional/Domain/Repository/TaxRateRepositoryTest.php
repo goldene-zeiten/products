@@ -32,7 +32,7 @@ final class TaxRateRepositoryTest extends AbstractFunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/tax_rates.csv');
         $this->subject = $this->get(TaxRateRepository::class);
         $taxClass = $this->get(TaxClassRepository::class)->findByUid(1);
-        self::assertInstanceOf(TaxClass::class, $taxClass);
+        $this->assertInstanceOf(TaxClass::class, $taxClass);
         $this->taxClass = $taxClass;
     }
 
@@ -41,37 +41,37 @@ final class TaxRateRepositoryTest extends AbstractFunctionalTestCase
     {
         $rate = $this->subject->findByTaxClassAndCountry($this->taxClass, 'DE', new \DateTimeImmutable());
 
-        self::assertInstanceOf(TaxRate::class, $rate);
-        self::assertSame(19.0, $rate->getRate());
+        $this->assertInstanceOf(TaxRate::class, $rate);
+        $this->assertSame(19.0, $rate->getRate());
     }
 
     #[Test]
     public function findByTaxClassAndCountryReturnsNullForAnUnconfiguredCountry(): void
     {
-        self::assertNull($this->subject->findByTaxClassAndCountry($this->taxClass, 'FR', new \DateTimeImmutable()));
+        $this->assertNull($this->subject->findByTaxClassAndCountry($this->taxClass, 'FR', new \DateTimeImmutable()));
     }
 
     #[Test]
     public function findByTaxClassAndCountryFallsBackToTheAnyCountryWildcardRow(): void
     {
         $reducedTaxClass = $this->get(TaxClassRepository::class)->findByUid(3);
-        self::assertInstanceOf(TaxClass::class, $reducedTaxClass);
+        $this->assertInstanceOf(TaxClass::class, $reducedTaxClass);
 
         $rate = $this->subject->findByTaxClassAndCountry($reducedTaxClass, 'AT', new \DateTimeImmutable());
 
-        self::assertInstanceOf(TaxRate::class, $rate);
-        self::assertSame(7.0, $rate->getRate());
+        $this->assertInstanceOf(TaxRate::class, $rate);
+        $this->assertSame(7.0, $rate->getRate());
     }
 
     #[Test]
     public function findByTaxClassAndCountryPrefersACountrySpecificRowOverTheWildcard(): void
     {
         $reducedTaxClass = $this->get(TaxClassRepository::class)->findByUid(3);
-        self::assertInstanceOf(TaxClass::class, $reducedTaxClass);
+        $this->assertInstanceOf(TaxClass::class, $reducedTaxClass);
 
         $rate = $this->subject->findByTaxClassAndCountry($reducedTaxClass, 'FR', new \DateTimeImmutable());
 
-        self::assertInstanceOf(TaxRate::class, $rate);
-        self::assertSame(5.5, $rate->getRate());
+        $this->assertInstanceOf(TaxRate::class, $rate);
+        $this->assertSame(5.5, $rate->getRate());
     }
 }

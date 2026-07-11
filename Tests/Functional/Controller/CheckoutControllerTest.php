@@ -29,7 +29,7 @@ final class CheckoutControllerTest extends AbstractFrontendTestCase
             ]);
         $response = $this->executeFrontendSubRequest($request);
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('method-invoice', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('method-invoice', (string)$response->getBody());
     }
 }

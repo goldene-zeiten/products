@@ -31,7 +31,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
     {
         $voucher = $this->subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1);
 
-        self::assertSame('SAVE10', $voucher->getCode());
+        $this->assertSame('SAVE10', $voucher->getCode());
     }
 
     #[Test]
@@ -65,7 +65,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
     {
         $voucher = $this->subject->resolve('VIPONLY', Money::fromDecimalString('100.00'), 42);
 
-        self::assertSame('VIPONLY', $voucher->getCode());
+        $this->assertSame('VIPONLY', $voucher->getCode());
     }
 
     #[Test]
@@ -95,7 +95,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         $discount = $this->subject->calculateCombinedDiscount([$save10, $flat5], Money::fromDecimalString('20.00'));
 
         // 10% of 20.00 (2.00) + 5.00 fixed = 7.00, well under the 20.00 cap
-        self::assertSame(700, $discount->getCents());
+        $this->assertSame(700, $discount->getCents());
     }
 
     #[Test]
@@ -106,7 +106,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
 
         $discount = $this->subject->calculateCombinedDiscount([$save10, $flat5], Money::fromDecimalString('4.00'));
 
-        self::assertSame(400, $discount->getCents());
+        $this->assertSame(400, $discount->getCents());
     }
 
     #[Test]
@@ -123,7 +123,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
     {
         $voucher = $this->subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1, basketAlreadyDiscounted: true);
 
-        self::assertSame('SAVE10', $voucher->getCode());
+        $this->assertSame('SAVE10', $voucher->getCode());
     }
 
     #[Test]
@@ -131,7 +131,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
     {
         $voucher = $this->subject->resolve('FLAT5', Money::fromDecimalString('100.00'), 1, basketAlreadyDiscounted: false);
 
-        self::assertSame('FLAT5', $voucher->getCode());
+        $this->assertSame('FLAT5', $voucher->getCode());
     }
 
     #[Test]
@@ -139,7 +139,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
     {
         $save10 = $this->subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1);
 
-        self::assertTrue($this->subject->canCoexist([$save10], $save10));
+        $this->assertTrue($this->subject->canCoexist([$save10], $save10));
     }
 
     #[Test]
@@ -148,7 +148,7 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         $save10 = $this->subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1);
         $flat5 = $this->subject->resolve('FLAT5', Money::fromDecimalString('100.00'), 1);
 
-        self::assertFalse($this->subject->canCoexist([$save10], $flat5));
+        $this->assertFalse($this->subject->canCoexist([$save10], $flat5));
     }
 
     #[Test]
@@ -156,6 +156,6 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
     {
         $flat5 = $this->subject->resolve('FLAT5', Money::fromDecimalString('100.00'), 1);
 
-        self::assertTrue($this->subject->canCoexist([], $flat5));
+        $this->assertTrue($this->subject->canCoexist([], $flat5));
     }
 }

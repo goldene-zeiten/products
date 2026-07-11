@@ -40,7 +40,7 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
     #[Test]
     public function updateIsNecessaryInitially(): void
     {
-        self::assertTrue($this->subject->updateNecessary());
+        $this->assertTrue($this->subject->updateNecessary());
     }
 
     #[Test]
@@ -48,7 +48,7 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
     {
         $this->subject->executeUpdate();
 
-        self::assertNull($this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 3, self::LOCAL_TABLE));
+        $this->assertNull($this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 3, self::LOCAL_TABLE));
     }
 
     #[Test]
@@ -59,15 +59,15 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         $orderUid = (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
         $order = $this->fetchOrder($orderUid);
 
-        self::assertSame('TRACK1', $order['order_number']);
-        self::assertSame('invoice', $order['payment_method']);
-        self::assertSame('paid', $order['payment_status']);
-        self::assertSame('confirmed', $order['status']);
-        self::assertSame('INV-001', $order['invoice_number']);
-        self::assertSame(9999, (int)$order['total_gross']);
-        self::assertSame('DE', $order['tax_country']);
-        self::assertSame('', $order['legacy_country_name']);
-        self::assertNotSame(0, (int)$order['terms_accepted_at']);
+        $this->assertSame('TRACK1', $order['order_number']);
+        $this->assertSame('invoice', $order['payment_method']);
+        $this->assertSame('paid', $order['payment_status']);
+        $this->assertSame('confirmed', $order['status']);
+        $this->assertSame('INV-001', $order['invoice_number']);
+        $this->assertSame(9999, (int)$order['total_gross']);
+        $this->assertSame('DE', $order['tax_country']);
+        $this->assertSame('', $order['legacy_country_name']);
+        $this->assertNotSame(0, (int)$order['terms_accepted_at']);
     }
 
     #[Test]
@@ -79,13 +79,13 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         $order = $this->fetchOrder($orderUid);
         $address = $this->fetchAddress((int)$order['billing_address']);
 
-        self::assertSame('billing', $address['address_type']);
-        self::assertSame('Jane', $address['first_name']);
-        self::assertSame('Doe', $address['last_name']);
-        self::assertSame('Mrs.', $address['salutation']);
-        self::assertSame('Main St', $address['street']);
-        self::assertSame('1', $address['house_number']);
-        self::assertSame('DE', $address['country']);
+        $this->assertSame('billing', $address['address_type']);
+        $this->assertSame('Jane', $address['first_name']);
+        $this->assertSame('Doe', $address['last_name']);
+        $this->assertSame('Mrs.', $address['salutation']);
+        $this->assertSame('Main St', $address['street']);
+        $this->assertSame('1', $address['house_number']);
+        $this->assertSame('DE', $address['country']);
     }
 
     #[Test]
@@ -97,8 +97,8 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         $order = $this->fetchOrder($orderUid);
         $legacyOrderData = json_decode($order['legacy_order_data'], true);
 
-        self::assertSame('1.2.3.4', $legacyOrderData['client_ip']);
-        self::assertSame(['version' => '1.0'], $legacyOrderData['order_data']);
+        $this->assertSame('1.2.3.4', $legacyOrderData['client_ip']);
+        $this->assertSame(['version' => '1.0'], $legacyOrderData['order_data']);
     }
 
     #[Test]
@@ -109,18 +109,18 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         $orderUid = (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE);
         $order = $this->fetchOrder($orderUid);
 
-        self::assertSame('LEGACY-2', $order['order_number']);
-        self::assertSame('new', $order['status']);
-        self::assertSame('open', $order['payment_status']);
-        self::assertSame('', $order['tax_country']);
-        self::assertSame('Wonderland', $order['legacy_country_name']);
-        self::assertNull(json_decode($order['legacy_order_data'], true)['order_data']);
+        $this->assertSame('LEGACY-2', $order['order_number']);
+        $this->assertSame('new', $order['status']);
+        $this->assertSame('open', $order['payment_status']);
+        $this->assertSame('', $order['tax_country']);
+        $this->assertSame('Wonderland', $order['legacy_country_name']);
+        $this->assertNull(json_decode($order['legacy_order_data'], true)['order_data']);
 
         $output = $this->output->fetch();
-        self::assertStringContainsString('had unknown status 999', $output);
-        self::assertStringContainsString('country "Wonderland" not recognized', $output);
-        self::assertStringContainsString('unparseable orderData blob', $output);
-        self::assertStringContainsString('used electronic pay_mode 4', $output);
+        $this->assertStringContainsString('had unknown status 999', $output);
+        $this->assertStringContainsString('country "Wonderland" not recognized', $output);
+        $this->assertStringContainsString('unparseable orderData blob', $output);
+        $this->assertStringContainsString('used electronic pay_mode 4', $output);
     }
 
     #[Test]
@@ -131,13 +131,13 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         $orderUid = (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
         $items = $this->fetchItems($orderUid);
 
-        self::assertCount(1, $items);
-        self::assertSame('Existing Product', $items[0]['title']);
-        self::assertSame(2, (int)$items[0]['quantity']);
-        self::assertSame(1000, (int)$items[0]['unit_price_gross']);
-        self::assertSame(2000, (int)$items[0]['line_total_gross']);
+        $this->assertCount(1, $items);
+        $this->assertSame('Existing Product', $items[0]['title']);
+        $this->assertSame(2, (int)$items[0]['quantity']);
+        $this->assertSame(1000, (int)$items[0]['unit_price_gross']);
+        $this->assertSame(2000, (int)$items[0]['line_total_gross']);
 
-        self::assertStringContainsString(
+        $this->assertStringContainsString(
             'sys_products_orders_mm_tt_products uid 2 referenced missing product uid 999, item dropped',
             $this->output->fetch()
         );
@@ -152,11 +152,11 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         $items = $this->fetchItems($orderUid);
         $itemsByItemNumber = array_column($items, null, 'item_number');
 
-        self::assertCount(2, $items);
-        self::assertSame(1250, (int)$itemsByItemNumber['ART1']['unit_price_gross']);
-        self::assertSame(1000, (int)$itemsByItemNumber['PROD1']['unit_price_gross']);
-        self::assertSame(0, (int)$itemsByItemNumber['PROD1']['article']);
-        self::assertStringContainsString('referenced missing article uid 999, kept as product-only', $this->output->fetch());
+        $this->assertCount(2, $items);
+        $this->assertSame(1250, (int)$itemsByItemNumber['ART1']['unit_price_gross']);
+        $this->assertSame(1000, (int)$itemsByItemNumber['PROD1']['unit_price_gross']);
+        $this->assertSame(0, (int)$itemsByItemNumber['PROD1']['article']);
+        $this->assertStringContainsString('referenced missing article uid 999, kept as product-only', $this->output->fetch());
     }
 
     #[Test]
@@ -166,10 +166,10 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         $ordersAfterFirstRun = $this->countRows(self::LOCAL_TABLE);
         $itemsAfterFirstRun = $this->countRows(self::LOCAL_ITEM_TABLE);
 
-        self::assertFalse($this->subject->updateNecessary());
-        self::assertTrue($this->subject->executeUpdate());
-        self::assertSame($ordersAfterFirstRun, $this->countRows(self::LOCAL_TABLE));
-        self::assertSame($itemsAfterFirstRun, $this->countRows(self::LOCAL_ITEM_TABLE));
+        $this->assertFalse($this->subject->updateNecessary());
+        $this->assertTrue($this->subject->executeUpdate());
+        $this->assertSame($ordersAfterFirstRun, $this->countRows(self::LOCAL_TABLE));
+        $this->assertSame($itemsAfterFirstRun, $this->countRows(self::LOCAL_ITEM_TABLE));
     }
 
     /**

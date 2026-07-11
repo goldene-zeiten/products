@@ -18,8 +18,8 @@ final class InvoicePdfServiceTest extends UnitTestCase
     {
         $pdf = $this->subject()->renderToPdf(new Order(), '<html><body><h1>Invoice</h1></body></html>');
 
-        self::assertNotSame('', $pdf);
-        self::assertStringStartsWith('%PDF', $pdf);
+        $this->assertNotSame('', $pdf);
+        $this->assertStringStartsWith('%PDF', $pdf);
     }
 
     #[Test]
@@ -37,7 +37,7 @@ final class InvoicePdfServiceTest extends UnitTestCase
 
         $pdf = (new InvoicePdfService($eventDispatcher))->renderToPdf(new Order(), '<html></html>');
 
-        self::assertSame('%PDF-REPLACED', $pdf);
+        $this->assertSame('%PDF-REPLACED', $pdf);
     }
 
     private function subject(): InvoicePdfService

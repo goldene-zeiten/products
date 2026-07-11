@@ -17,7 +17,7 @@ final class ProductTest extends UnitTestCase
     {
         $product = new Product();
 
-        self::assertNull($product->getPrimaryImage());
+        $this->assertNull($product->getPrimaryImage());
     }
 
     #[Test]
@@ -31,6 +31,6 @@ final class ProductTest extends UnitTestCase
         $images->attach(new FileReference());
         $product->setImages($images);
 
-        self::assertSame($first, $product->getPrimaryImage());
+        $this->assertSame($first, $product->getPrimaryImage());
     }
 }

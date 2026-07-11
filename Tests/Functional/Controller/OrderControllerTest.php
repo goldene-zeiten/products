@@ -30,8 +30,8 @@ final class OrderControllerTest extends AbstractFrontendTestCase
             ->withCookieParams(['fe_typo_user' => $this->loginFrontendUser(1)]);
         $response = $this->executeFrontendSubRequest($request);
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('ORD-1', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('ORD-1', (string)$response->getBody());
     }
 
     #[Test]
@@ -40,9 +40,9 @@ final class OrderControllerTest extends AbstractFrontendTestCase
         $request = new InternalRequest('http://localhost/shop');
         $response = $this->executeFrontendSubRequest($request);
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringNotContainsString('ORD-1', (string)$response->getBody());
-        self::assertStringContainsString('No orders found.', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringNotContainsString('ORD-1', (string)$response->getBody());
+        $this->assertStringContainsString('No orders found.', (string)$response->getBody());
     }
 
     #[Test]
@@ -60,7 +60,7 @@ final class OrderControllerTest extends AbstractFrontendTestCase
             ]);
         $response = $this->executeFrontendSubRequest($request);
 
-        self::assertStringNotContainsString('ORD-1', (string)$response->getBody());
+        $this->assertStringNotContainsString('ORD-1', (string)$response->getBody());
     }
 
     #[Test]
@@ -69,21 +69,21 @@ final class OrderControllerTest extends AbstractFrontendTestCase
         $request = $this->orderShowRequest(2, null);
         $response = $this->executeFrontendSubRequest($request);
 
-        self::assertStringNotContainsString('ORD-2', (string)$response->getBody());
+        $this->assertStringNotContainsString('ORD-2', (string)$response->getBody());
     }
 
     #[Test]
     public function showActionAllowsAnonymousVisitorForGuestOrderWithValidHash(): void
     {
         $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(2);
-        self::assertNotNull($order);
+        $this->assertNotNull($order);
         $hash = $this->get(OrderTokenService::class)->generateToken($order);
 
         $request = $this->orderShowRequest(2, $hash);
         $response = $this->executeFrontendSubRequest($request);
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('ORD-2', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('ORD-2', (string)$response->getBody());
     }
 
     private function orderShowRequest(int $order, ?string $hash): InternalRequest

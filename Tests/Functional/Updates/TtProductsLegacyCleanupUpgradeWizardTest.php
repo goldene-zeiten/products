@@ -37,7 +37,7 @@ final class TtProductsLegacyCleanupUpgradeWizardTest extends AbstractFunctionalT
     #[Test]
     public function updateIsNecessaryWhileLegacyTablesExist(): void
     {
-        self::assertTrue($this->subject->updateNecessary());
+        $this->assertTrue($this->subject->updateNecessary());
     }
 
     #[Test]
@@ -45,22 +45,22 @@ final class TtProductsLegacyCleanupUpgradeWizardTest extends AbstractFunctionalT
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/LegacyMigration/legacy_cleanup_incomplete.csv');
 
-        self::assertFalse($this->subject->executeUpdate());
-        self::assertTrue($this->migrationHelper->tablesExist(self::LEGACY_TABLE));
-        self::assertStringContainsString('refusing to drop legacy tables', $this->output->fetch());
+        $this->assertFalse($this->subject->executeUpdate());
+        $this->assertTrue($this->migrationHelper->tablesExist(self::LEGACY_TABLE));
+        $this->assertStringContainsString('refusing to drop legacy tables', $this->output->fetch());
     }
 
     #[Test]
     public function dropsLegacyTablesOnceEveryEntityIsMigratedAndIsNoLongerNecessaryAfterwards(): void
     {
-        self::assertTrue($this->subject->executeUpdate());
+        $this->assertTrue($this->subject->executeUpdate());
 
-        self::assertFalse($this->migrationHelper->tablesExist(self::LEGACY_TABLE));
-        self::assertFalse($this->migrationHelper->tablesExist('tt_products'));
-        self::assertFalse($this->migrationHelper->tablesExist('tt_products_articles'));
-        self::assertFalse($this->migrationHelper->tablesExist('sys_products_orders'));
-        self::assertStringContainsString('Dropped legacy table', $this->output->fetch());
+        $this->assertFalse($this->migrationHelper->tablesExist(self::LEGACY_TABLE));
+        $this->assertFalse($this->migrationHelper->tablesExist('tt_products'));
+        $this->assertFalse($this->migrationHelper->tablesExist('tt_products_articles'));
+        $this->assertFalse($this->migrationHelper->tablesExist('sys_products_orders'));
+        $this->assertStringContainsString('Dropped legacy table', $this->output->fetch());
 
-        self::assertFalse($this->subject->updateNecessary());
+        $this->assertFalse($this->subject->updateNecessary());
     }
 }

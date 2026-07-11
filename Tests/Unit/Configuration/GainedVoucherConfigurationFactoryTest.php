@@ -32,10 +32,10 @@ final class GainedVoucherConfigurationFactoryTest extends UnitTestCase
 
         $configuration = $this->subject()->create($request);
 
-        self::assertTrue($configuration->isEnabled());
-        self::assertSame(5000, $configuration->getMinimumOrderValue()->getCents());
-        self::assertSame(VoucherDiscountType::PERCENTAGE, $configuration->getRewardType());
-        self::assertSame('10.00', $configuration->getRewardValue());
+        $this->assertTrue($configuration->isEnabled());
+        $this->assertSame(5000, $configuration->getMinimumOrderValue()->getCents());
+        $this->assertSame(VoucherDiscountType::PERCENTAGE, $configuration->getRewardType());
+        $this->assertSame('10.00', $configuration->getRewardValue());
     }
 
     #[Test]
@@ -43,10 +43,10 @@ final class GainedVoucherConfigurationFactoryTest extends UnitTestCase
     {
         $configuration = $this->subject()->create(new ServerRequest('http://localhost/'));
 
-        self::assertFalse($configuration->isEnabled());
-        self::assertSame(0, $configuration->getMinimumOrderValue()->getCents());
-        self::assertSame(VoucherDiscountType::FIXED, $configuration->getRewardType());
-        self::assertSame('5.00', $configuration->getRewardValue());
+        $this->assertFalse($configuration->isEnabled());
+        $this->assertSame(0, $configuration->getMinimumOrderValue()->getCents());
+        $this->assertSame(VoucherDiscountType::FIXED, $configuration->getRewardType());
+        $this->assertSame('5.00', $configuration->getRewardValue());
     }
 
     private function subject(): GainedVoucherConfigurationFactory

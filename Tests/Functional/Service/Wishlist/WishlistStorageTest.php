@@ -27,7 +27,7 @@ final class WishlistStorageTest extends AbstractFunctionalTestCase
 
         $storage->add($request, 1);
 
-        self::assertSame([1], $storage->load($request));
+        $this->assertSame([1], $storage->load($request));
     }
 
     #[Test]
@@ -38,7 +38,7 @@ final class WishlistStorageTest extends AbstractFunctionalTestCase
 
         $storage->add($request, 1);
 
-        self::assertSame([], $storage->load($request));
+        $this->assertSame([], $storage->load($request));
     }
 
     #[Test]
@@ -49,7 +49,7 @@ final class WishlistStorageTest extends AbstractFunctionalTestCase
 
         $storage->add($request, 1);
 
-        self::assertSame([1], $storage->load($request));
+        $this->assertSame([1], $storage->load($request));
     }
 
     private function request(bool $requireCookieConsent): ServerRequestInterface

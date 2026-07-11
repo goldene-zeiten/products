@@ -34,10 +34,10 @@ final class BasketServiceTest extends AbstractFrontendTestCase
         $basketService->add($request, 1, null, 1);
         $item = $basketService->getBasketViewModel($request)->getItems()[0];
 
-        self::assertSame(10000, $item->getUnitPriceGross()->getCents());
-        self::assertSame(8403, $item->getUnitPriceNet()->getCents());
-        self::assertSame(1597, $item->getLineTotalTax()->getCents());
-        self::assertSame(0.19, $item->getTaxRate());
+        $this->assertSame(10000, $item->getUnitPriceGross()->getCents());
+        $this->assertSame(8403, $item->getUnitPriceNet()->getCents());
+        $this->assertSame(1597, $item->getLineTotalTax()->getCents());
+        $this->assertSame(0.19, $item->getTaxRate());
     }
 
     private function anonymousSessionRequest(): ServerRequestInterface

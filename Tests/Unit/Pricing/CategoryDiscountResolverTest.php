@@ -26,8 +26,8 @@ final class CategoryDiscountResolverTest extends UnitTestCase
     {
         $product = $this->productInCategory($this->category(0.0));
 
-        self::assertSame(0.0, $this->subject->getDiscountPercent($product, 'maxAcrossTree'));
-        self::assertSame(0.0, $this->subject->getDiscountPercent($product, 'nearestCategory'));
+        $this->assertSame(0.0, $this->subject->getDiscountPercent($product, 'maxAcrossTree'));
+        $this->assertSame(0.0, $this->subject->getDiscountPercent($product, 'nearestCategory'));
     }
 
     #[Test]
@@ -36,8 +36,8 @@ final class CategoryDiscountResolverTest extends UnitTestCase
         $product = $this->productInCategory($this->category(5.0));
         $product->setDiscountPercent(15.0);
 
-        self::assertSame(15.0, $this->subject->getDiscountPercent($product, 'maxAcrossTree'));
-        self::assertSame(15.0, $this->subject->getDiscountPercent($product, 'nearestCategory'));
+        $this->assertSame(15.0, $this->subject->getDiscountPercent($product, 'maxAcrossTree'));
+        $this->assertSame(15.0, $this->subject->getDiscountPercent($product, 'nearestCategory'));
     }
 
     #[Test]
@@ -47,8 +47,8 @@ final class CategoryDiscountResolverTest extends UnitTestCase
         $product->setDiscountPercent(15.0);
         $product->setDiscountDisabled(true);
 
-        self::assertSame(0.0, $this->subject->getDiscountPercent($product, 'maxAcrossTree'));
-        self::assertSame(0.0, $this->subject->getDiscountPercent($product, 'nearestCategory'));
+        $this->assertSame(0.0, $this->subject->getDiscountPercent($product, 'maxAcrossTree'));
+        $this->assertSame(0.0, $this->subject->getDiscountPercent($product, 'nearestCategory'));
     }
 
     #[Test]
@@ -59,7 +59,7 @@ final class CategoryDiscountResolverTest extends UnitTestCase
         $leaf->setParentCategory($root);
         $product = $this->productInCategory($leaf);
 
-        self::assertSame(10.0, $this->subject->getDiscountPercent($product, 'maxAcrossTree'));
+        $this->assertSame(10.0, $this->subject->getDiscountPercent($product, 'maxAcrossTree'));
     }
 
     #[Test]
@@ -71,7 +71,7 @@ final class CategoryDiscountResolverTest extends UnitTestCase
         $leaf->setParentCategory($root);
         $product = $this->productInCategory($leaf);
 
-        self::assertSame(10.0, $this->subject->getDiscountPercent($product, 'maxAcrossTree'));
+        $this->assertSame(10.0, $this->subject->getDiscountPercent($product, 'maxAcrossTree'));
     }
 
     #[Test]
@@ -82,7 +82,7 @@ final class CategoryDiscountResolverTest extends UnitTestCase
         $leaf->setParentCategory($root);
         $product = $this->productInCategory($leaf);
 
-        self::assertSame(5.0, $this->subject->getDiscountPercent($product, 'nearestCategory'));
+        $this->assertSame(5.0, $this->subject->getDiscountPercent($product, 'nearestCategory'));
     }
 
     #[Test]
@@ -93,7 +93,7 @@ final class CategoryDiscountResolverTest extends UnitTestCase
         $leaf->setParentCategory($root);
         $product = $this->productInCategory($leaf);
 
-        self::assertSame(20.0, $this->subject->getDiscountPercent($product, 'nearestCategory'));
+        $this->assertSame(20.0, $this->subject->getDiscountPercent($product, 'nearestCategory'));
     }
 
     #[Test]
@@ -105,7 +105,7 @@ final class CategoryDiscountResolverTest extends UnitTestCase
         $leaf->setParentCategory($root);
         $product = $this->productInCategory($leaf);
 
-        self::assertSame(0.0, $this->subject->getDiscountPercent($product, 'nearestCategory'));
+        $this->assertSame(0.0, $this->subject->getDiscountPercent($product, 'nearestCategory'));
     }
 
     private function category(float $discountPercent): Category

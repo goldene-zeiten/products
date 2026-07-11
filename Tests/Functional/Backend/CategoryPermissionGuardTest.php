@@ -29,7 +29,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
     {
         $backendUser = $this->setUpBackendUser(1);
 
-        self::assertTrue($this->subject->isCategoryEditable(100, $backendUser));
+        $this->assertTrue($this->subject->isCategoryEditable(100, $backendUser));
     }
 
     #[Test]
@@ -37,7 +37,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
     {
         $backendUser = $this->setUpBackendUser(2);
 
-        self::assertTrue($this->subject->isCategoryEditable(100, $backendUser));
+        $this->assertTrue($this->subject->isCategoryEditable(100, $backendUser));
     }
 
     #[Test]
@@ -45,7 +45,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
     {
         $backendUser = $this->setUpBackendUser(3);
 
-        self::assertFalse($this->subject->isCategoryEditable(100, $backendUser));
+        $this->assertFalse($this->subject->isCategoryEditable(100, $backendUser));
     }
 
     #[Test]
@@ -53,7 +53,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
     {
         $backendUser = $this->setUpBackendUser(3);
 
-        self::assertTrue($this->subject->isCategoryEditable(101, $backendUser));
+        $this->assertTrue($this->subject->isCategoryEditable(101, $backendUser));
     }
 
     #[Test]
@@ -61,7 +61,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
     {
         $backendUser = $this->setUpBackendUser(4);
 
-        self::assertTrue($this->subject->isCategoryEditable(102, $backendUser));
+        $this->assertTrue($this->subject->isCategoryEditable(102, $backendUser));
     }
 
     #[Test]
@@ -69,7 +69,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
     {
         $backendUser = $this->setUpBackendUser(3);
 
-        self::assertFalse($this->subject->isCategoryEditable(102, $backendUser));
+        $this->assertFalse($this->subject->isCategoryEditable(102, $backendUser));
     }
 
     #[Test]
@@ -77,7 +77,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
     {
         $backendUser = $this->setUpBackendUser(3);
 
-        self::assertFalse($this->subject->isCategoryEditable(999999, $backendUser));
+        $this->assertFalse($this->subject->isCategoryEditable(999999, $backendUser));
     }
 
     #[Test]
@@ -85,7 +85,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
     {
         $backendUser = $this->setUpBackendUser(1);
 
-        self::assertTrue($this->subject->isCategoryDeletable(100, $backendUser));
+        $this->assertTrue($this->subject->isCategoryDeletable(100, $backendUser));
     }
 
     #[Test]
@@ -93,7 +93,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
     {
         $backendUser = $this->setUpBackendUser(2);
 
-        self::assertFalse($this->subject->isCategoryDeletable(100, $backendUser));
+        $this->assertFalse($this->subject->isCategoryDeletable(100, $backendUser));
     }
 
     #[Test]
@@ -101,7 +101,7 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
     {
         $backendUser = $this->setUpBackendUser(2);
 
-        self::assertTrue($this->subject->isCategoryDeletable(103, $backendUser));
+        $this->assertTrue($this->subject->isCategoryDeletable(103, $backendUser));
     }
 
     #[Test]
@@ -109,6 +109,6 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
     {
         $backendUser = $this->setUpBackendUser(3);
 
-        self::assertFalse($this->subject->isCategoryDeletable(999999, $backendUser));
+        $this->assertFalse($this->subject->isCategoryDeletable(999999, $backendUser));
     }
 }
