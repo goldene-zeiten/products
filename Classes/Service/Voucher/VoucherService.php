@@ -22,7 +22,7 @@ final class VoucherService
     /**
      * @throws VoucherNotFoundException|VoucherNotApplicableException
      */
-    public function resolve(string $code, Money $basketGoodsTotal, int $frontendUser): Voucher
+    public function resolve(string $code, Money $basketGoodsTotal, int $frontendUser, bool $basketAlreadyDiscounted = false): Voucher
     {
         $voucher = $this->voucherRepository->findOneByCode($code);
         if ($voucher === null) {
@@ -31,7 +31,7 @@ final class VoucherService
                 1751850000
             );
         }
-        $this->assertApplicable($voucher, $basketGoodsTotal, $frontendUser);
+        $this->assertApplicable($voucher, $basketGoodsTotal, $frontendUser, $basketAlreadyDiscounted);
         return $voucher;
     }
 
@@ -116,7 +116,7 @@ final class VoucherService
         return $vouchers;
     }
 
-    private function assertApplicable(Voucher $voucher, Money $basketGoodsTotal, int $frontendUser): void
+    private function assertApplicable(Voucher $voucher, Money $basketGoodsTotal, int $frontendUser, bool $basketAlreadyDiscounted): void
     {
         if (!$voucher->isAvailableToFrontendUser($frontendUser)) {
             throw new VoucherNotApplicableException(
@@ -131,6 +131,23 @@ final class VoucherService
             );
         }
         $this->assertUsageLimitNotExceeded($voucher);
+        $this->assertNotBlockedByExistingDiscount($voucher, $basketAlreadyDiscounted);
+    }
+
+    /**
+     * Mirrors legacy's voucherCodeDiscountCombinable(), which also rejects a non-combinable
+     * voucher whenever the basket total is already reduced by a non-voucher discount source
+     * (there, any discount at all; here specifically the category-cascading/FE-usergroup pricing
+     * step - see BasketService::isAlreadyDiscounted()).
+     */
+    private function assertNotBlockedByExistingDiscount(Voucher $voucher, bool $basketAlreadyDiscounted): void
+    {
+        if ($basketAlreadyDiscounted && !$voucher->isCombinable()) {
+            throw new VoucherNotApplicableException(
+                sprintf('Voucher "%s" cannot be combined with the basket\'s existing discount.', $voucher->getCode()),
+                1783760128
+            );
+        }
     }
 
     private function assertUsageLimitNotExceeded(Voucher $voucher): void

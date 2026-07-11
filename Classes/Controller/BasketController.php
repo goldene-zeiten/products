@@ -49,7 +49,12 @@ final class BasketController extends ActionController
         $frontendUser = $this->frontendUserResolver->getUid($this->request);
 
         try {
-            $newVoucher = $this->voucherService->resolve($voucherCode, $basketViewModel->getTotalGross(), $frontendUser);
+            $newVoucher = $this->voucherService->resolve(
+                $voucherCode,
+                $basketViewModel->getTotalGross(),
+                $frontendUser,
+                $this->basketService->isAlreadyDiscounted($this->request)
+            );
         } catch (VoucherExceptionInterface $exception) {
             $this->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
             return $this->redirect('show');
