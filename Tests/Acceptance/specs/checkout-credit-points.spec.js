@@ -19,7 +19,7 @@ async function rowValue(page, label) {
 async function emptyBasket(page) {
   await page.goto('/basket');
   let removeLink = page.locator('tbody tr').getByRole('link', { name: 'Remove' }).first();
-  while (await removeLink.count() > 0) {
+  while ((await removeLink.count()) > 0) {
     await removeLink.click();
     removeLink = page.locator('tbody tr').getByRole('link', { name: 'Remove' }).first();
   }
@@ -42,7 +42,9 @@ async function goThroughCheckoutToReview(page) {
   await page.getByRole('button', { name: 'Continue to review' }).click();
 }
 
-test('spending credit points reduces the order total, and points earned from the order raise the balance', async ({ page }) => {
+test('spending credit points reduces the order total, and points earned from the order raise the balance', async ({
+  page,
+}) => {
   // shopper1 starts with a balance of 100 points (see shop-demo.csv), worth 0.10 EUR each -
   // spending 50 of them must knock exactly 5.00 EUR off the order total.
   await emptyBasket(page);

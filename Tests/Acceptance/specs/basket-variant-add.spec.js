@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-test('adding a variant article puts that article - not the base product - in the basket with its own price and stock', async ({ page }) => {
+test('adding a variant article puts that article - not the base product - in the basket with its own price and stock', async ({
+  page,
+}) => {
   await page.goto('/product/variant-tee');
 
   // Variant Tee's own (never-sold) base price is 10.00 EUR; with no article selected yet, the

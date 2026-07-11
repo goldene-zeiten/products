@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-test('a guest follows the thank-you page\'s order-detail link and sees the order without logging in', async ({ page }) => {
+test("a guest follows the thank-you page's order-detail link and sees the order without logging in", async ({
+  page,
+}) => {
   await page.goto('/product/black-denim-jeans');
   await page.getByRole('button', { name: 'Add to Basket' }).click();
 
