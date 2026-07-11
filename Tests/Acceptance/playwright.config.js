@@ -36,6 +36,7 @@ export default defineConfig({
         'specs/basket-usergroup-discount.spec.js',
         'specs/checkout-withdrawal-logged-in.spec.js',
         'specs/checkout-credit-points.spec.js',
+        'specs/withdrawal-expired.spec.js',
       ],
     },
     {
@@ -48,6 +49,7 @@ export default defineConfig({
         'specs/basket-usergroup-discount.spec.js',
         'specs/checkout-withdrawal-logged-in.spec.js',
         'specs/checkout-credit-points.spec.js',
+        'specs/withdrawal-expired.spec.js',
       ],
       dependencies: ['login'],
       use: {
