@@ -24,6 +24,7 @@ class Voucher extends AbstractEntity
     protected string $discountValue = '0.00';
     protected bool $combinable = false;
     protected int $usageLimit = 0;
+    protected int $redemptionCount = 0;
     protected ?\DateTime $validFrom = null;
     protected ?\DateTime $validUntil = null;
     /** @var string */
@@ -90,6 +91,16 @@ class Voucher extends AbstractEntity
     public function setUsageLimit(int $usageLimit): void
     {
         $this->usageLimit = $usageLimit;
+    }
+
+    public function getRedemptionCount(): int
+    {
+        return $this->redemptionCount;
+    }
+
+    public function setRedemptionCount(int $redemptionCount): void
+    {
+        $this->redemptionCount = $redemptionCount;
     }
 
     public function getValidFrom(): ?\DateTime

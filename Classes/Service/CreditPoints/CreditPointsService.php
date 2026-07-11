@@ -4,42 +4,28 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service\CreditPoints;
 
-use Doctrine\DBAL\ParameterType;
 use GoldeneZeiten\Products\Configuration\CreditPointsConfiguration;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\CreditPointsRedemption;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\CreditPoints\Exception\InsufficientCreditPointsException;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /**
- * Balance is always derived by summing tx_products_domain_model_creditpointstransaction rather
- * than stored on a mutable column, avoiding a race condition under concurrent checkouts (same
- * reasoning as the voucher redemption log). Stateless by design - takes an already-resolved
- * CreditPointsConfiguration rather than reading settings itself, so it's a pure function of its
- * inputs (see CreditPointsConfiguration's docblock).
+ * Balance reads/writes are delegated to CreditPointsBalanceService, which maintains a running
+ * total atomically guarded against concurrent over-spend (see CreditPointsBalanceService's own
+ * docblock) - the ledger table remains the permanent audit trail. Stateless by design - takes an
+ * already-resolved CreditPointsConfiguration rather than reading settings itself, so it's a pure
+ * function of its inputs (see CreditPointsConfiguration's docblock).
  */
 final class CreditPointsService
 {
-    private const TABLE = 'tx_products_domain_model_creditpointstransaction';
-
     public function __construct(
-        private readonly ConnectionPool $connectionPool
+        private readonly CreditPointsBalanceService $creditPointsBalanceService
     ) {}
 
     public function getBalance(int $frontendUser): int
     {
-        if ($frontendUser === 0) {
-            return 0;
-        }
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
-        $sum = $queryBuilder
-            ->selectLiteral('SUM(' . $queryBuilder->quoteIdentifier('points') . ') AS balance')
-            ->from(self::TABLE)
-            ->where($queryBuilder->expr()->eq('frontend_user', $queryBuilder->createNamedParameter($frontendUser, ParameterType::INTEGER)))
-            ->executeQuery()
-            ->fetchOne();
-        return (int)($sum ?? 0);
+        return $this->creditPointsBalanceService->getBalance($frontendUser);
     }
 
     /**

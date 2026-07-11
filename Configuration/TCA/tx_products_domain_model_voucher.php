@@ -90,6 +90,15 @@ return [
                 'default' => 0,
             ],
         ],
+        'redemption_count' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_voucher.redemption_count',
+            'config' => [
+                'type' => 'number',
+                'size' => 10,
+                'default' => 0,
+                'readOnly' => true,
+            ],
+        ],
         'min_basket_value' => [
             'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_voucher.min_basket_value',
             'config' => [

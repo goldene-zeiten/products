@@ -66,6 +66,9 @@
 			<trans-unit id="tx_products_domain_model_voucher.usage_limit" resname="tx_products_domain_model_voucher.usage_limit">
 				<source>Usage limit (0 = unlimited)</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.redemption_count" resname="tx_products_domain_model_voucher.redemption_count">
+				<source>Redemption Count</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_voucher.min_basket_value" resname="tx_products_domain_model_voucher.min_basket_value">
 				<source>Minimum basket value</source>
 			</trans-unit>
@@ -101,6 +104,15 @@
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_voucherredemption.redeemed_at" resname="tx_products_domain_model_voucherredemption.redeemed_at">
 				<source>Redeemed At</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_creditpointsbalance" resname="tx_products_domain_model_creditpointsbalance">
+				<source>Credit Points Balance</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_creditpointsbalance.frontend_user" resname="tx_products_domain_model_creditpointsbalance.frontend_user">
+				<source>Frontend User</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_creditpointsbalance.balance" resname="tx_products_domain_model_creditpointsbalance.balance">
+				<source>Balance</source>
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_creditpointstransaction" resname="tx_products_domain_model_creditpointstransaction">
 				<source>Credit Points Transaction</source>
