@@ -79,4 +79,36 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
 
         self::assertFalse($this->subject->isCategoryEditable(999999, $backendUser));
     }
+
+    #[Test]
+    public function adminIsAlwaysAllowedToDelete(): void
+    {
+        $backendUser = $this->setUpBackendUser(1);
+
+        self::assertTrue($this->subject->isCategoryDeletable(100, $backendUser));
+    }
+
+    #[Test]
+    public function ownerWithEditOnlyPermissionCannotDelete(): void
+    {
+        $backendUser = $this->setUpBackendUser(2);
+
+        self::assertFalse($this->subject->isCategoryDeletable(100, $backendUser));
+    }
+
+    #[Test]
+    public function ownerWithEditAndDeletePermissionCanDelete(): void
+    {
+        $backendUser = $this->setUpBackendUser(2);
+
+        self::assertTrue($this->subject->isCategoryDeletable(103, $backendUser));
+    }
+
+    #[Test]
+    public function missingCategoryIsDeniedForDelete(): void
+    {
+        $backendUser = $this->setUpBackendUser(3);
+
+        self::assertFalse($this->subject->isCategoryDeletable(999999, $backendUser));
+    }
 }
