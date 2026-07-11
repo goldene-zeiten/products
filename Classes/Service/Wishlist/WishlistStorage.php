@@ -89,6 +89,11 @@ final class WishlistStorage
         $this->save($request, $productUids);
     }
 
+    public function clear(ServerRequestInterface $request): void
+    {
+        $this->save($request, []);
+    }
+
     public function moveUp(ServerRequestInterface $request, int $productUid): void
     {
         $this->swap($request, $productUid, -1);

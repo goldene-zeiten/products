@@ -240,6 +240,50 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function mergeSessionIntoAccountMovesGuestWishlistItemsIntoThePersistedAccount(): void
+    {
+        $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
+        $frontendUser->initializeUserSessionManager();
+        $guestRequest = (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        $this->subject->add($guestRequest, 1);
+
+        $frontendUser->user = ['uid' => 5];
+        $identifiedRequest = (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        $this->subject->mergeSessionIntoAccount($identifiedRequest);
+
+        self::assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($identifiedRequest)));
+        self::assertSame([], $this->get(WishlistStorage::class)->load($identifiedRequest));
+    }
+
+    #[Test]
+    public function mergeSessionIntoAccountDeduplicatesAgainstItemsAlreadyInTheAccount(): void
+    {
+        $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
+        $frontendUser->initializeUserSessionManager();
+        $guestRequest = (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        $this->subject->add($guestRequest, 1);
+
+        $frontendUser->user = ['uid' => 5];
+        $identifiedRequest = (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        $this->subject->add($identifiedRequest, 1);
+
+        $this->subject->mergeSessionIntoAccount($identifiedRequest);
+
+        self::assertCount(1, $this->subject->getItems($identifiedRequest));
+    }
+
+    #[Test]
+    public function mergeSessionIntoAccountIsANoOpForAnonymousVisitors(): void
+    {
+        $request = $this->requestFor(0);
+        $this->subject->add($request, 1);
+
+        $this->subject->mergeSessionIntoAccount($request);
+
+        self::assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
+    }
+
+    #[Test]
     public function isEnabledReflectsTheSiteSetting(): void
     {
         self::assertTrue($this->subject->isEnabled());
