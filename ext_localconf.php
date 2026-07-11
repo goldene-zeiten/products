@@ -130,9 +130,13 @@ ExtensionUtility::configurePlugin(
     [
         RecentlyViewedController::class => 'list, mostViewed, myMostViewed',
     ],
-    // non-cacheable actions (myMostViewed is per-shopper, list/mostViewed are cacheable)
+    // non-cacheable actions - list reads the FE-session-scoped recently-viewed FIFO
+    // (RecentlyViewedStorage), so it must never be page-cached or every visitor would be served
+    // whichever session happened to render it first; myMostViewed is per-shopper for the same
+    // reason. mostViewed is the only one of the three that's a true site-wide aggregate
+    // independent of session/login state, so it's safe to leave cacheable.
     [
-        RecentlyViewedController::class => 'myMostViewed',
+        RecentlyViewedController::class => 'list, myMostViewed',
     ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );

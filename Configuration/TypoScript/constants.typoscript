@@ -15,6 +15,8 @@ plugin.tx_products {
             categoryPage = 0
             # cat=plugin.tx_products.pids; type=int; label=Order withdrawal/cancellation page UID
             withdrawalPage = 0
+            # cat=plugin.tx_products.pids; type=int; label=Wishlist page UID
+            wishlistPage = 0
         }
         pricing {
             # cat=plugin.tx_products.pricing; type=string; label=Pricing mode (gross|net)
