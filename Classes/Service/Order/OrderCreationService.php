@@ -28,7 +28,9 @@ use GoldeneZeiten\Products\Event\AfterOrderPlacedEvent;
 use GoldeneZeiten\Products\Event\LowStockThresholdReachedEvent;
 use GoldeneZeiten\Products\Event\VoucherRedeemedEvent;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
+use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsBalanceService;
 use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
+use GoldeneZeiten\Products\Service\CreditPoints\Exception\InsufficientCreditPointsException;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Order\Exception\VoucherRedemptionFailedException;
 use GoldeneZeiten\Products\Service\Shipping\HandlingFeeService;
@@ -52,6 +54,7 @@ final class OrderCreationService
         private readonly VoucherService $voucherService,
         private readonly VoucherRedemptionRepository $voucherRedemptionRepository,
         private readonly CreditPointsService $creditPointsService,
+        private readonly CreditPointsBalanceService $creditPointsBalanceService,
         private readonly CreditPointsTransactionRepository $creditPointsTransactionRepository,
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly ShippingCostService $shippingCostService,
@@ -199,11 +202,27 @@ final class OrderCreationService
             return;
         }
         foreach ($vouchers as $voucher) {
+            $this->redeemVoucherAtomically($voucher);
             $this->voucherRedemptionRepository->add($this->buildRedemption($voucher, $order, $frontendUser, $basketGoodsTotal));
         }
         $this->persistenceManager->persistAll();
         foreach ($vouchers as $voucher) {
             $this->eventDispatcher->dispatch(new VoucherRedeemedEvent($voucher, $order, $voucher->calculateDiscount($basketGoodsTotal)));
+        }
+    }
+
+    /**
+     * VoucherService::redeemAtomically() guards the usage limit with a single atomic SQL
+     * statement (mirroring StockService's stock decrement) instead of the plain count-based check
+     * already done earlier in resolveVoucherDiscount() - that earlier check is only a soft,
+     * early-feedback check; this is the real boundary that a concurrent redemption cannot bypass.
+     */
+    private function redeemVoucherAtomically(Voucher $voucher): void
+    {
+        try {
+            $this->voucherService->redeemAtomically($voucher);
+        } catch (VoucherExceptionInterface $exception) {
+            throw new VoucherRedemptionFailedException($exception->getMessage(), 1783426501, $exception);
         }
     }
 
@@ -230,14 +249,33 @@ final class OrderCreationService
             return;
         }
         $earned = $this->creditPointsService->calculateEarnedPoints($basketViewModel, $creditPointsConfiguration);
-        if ($earned > 0) {
-            $this->creditPointsTransactionRepository->add($this->buildTransaction($frontendUser, $order, $earned, CreditPointsTransactionType::EARN));
-        }
         if ($pointsRedemption->getPoints() > 0) {
+            $this->redeemCreditPointsAtomically($frontendUser, $pointsRedemption->getPoints());
             $this->creditPointsTransactionRepository->add($this->buildTransaction($frontendUser, $order, -$pointsRedemption->getPoints(), CreditPointsTransactionType::REDEEM));
+        }
+        if ($earned > 0) {
+            $this->creditPointsBalanceService->credit($frontendUser, $earned);
+            $this->creditPointsTransactionRepository->add($this->buildTransaction($frontendUser, $order, $earned, CreditPointsTransactionType::EARN));
         }
         if ($earned > 0 || $pointsRedemption->getPoints() > 0) {
             $this->persistenceManager->persistAll();
+        }
+    }
+
+    /**
+     * CreditPointsBalanceService::debitIfAffordable() guards the maintained running balance with a
+     * single atomic SQL statement (mirroring StockService's stock decrement) instead of the
+     * earlier assertSpendable() check in OrderPlacementService::place(), which only reads a
+     * point-in-time balance - that earlier check is only a soft, early-feedback check; this is the
+     * real boundary that a concurrent redemption cannot bypass.
+     */
+    private function redeemCreditPointsAtomically(int $frontendUser, int $points): void
+    {
+        if (!$this->creditPointsBalanceService->debitIfAffordable($frontendUser, $points)) {
+            throw new InsufficientCreditPointsException(
+                sprintf('Requested %d credit points but the balance could not afford it at redemption time.', $points),
+                1783430100
+            );
         }
     }
 

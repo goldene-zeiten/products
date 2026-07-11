@@ -11,12 +11,15 @@ use GoldeneZeiten\Products\Domain\Repository\VoucherRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherNotApplicableException;
 use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherNotFoundException;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 
 final class VoucherService
 {
     public function __construct(
         private readonly VoucherRepository $voucherRepository,
         private readonly VoucherRedemptionRepository $voucherRedemptionRepository,
+        private readonly ConnectionPool $connectionPool,
     ) {}
 
     /**
@@ -156,6 +159,36 @@ final class VoucherService
             throw new VoucherNotApplicableException(
                 sprintf('Voucher "%s" has already been used the maximum number of times.', $voucher->getCode()),
                 1751850003
+            );
+        }
+    }
+
+    /**
+     * Atomically increments the voucher's redemption counter, but only if it is still under its
+     * usage limit (0 = unlimited) - the check and the increment happen in one SQL statement, exactly
+     * like StockService's stock decrement (see StockService.php), so two concurrent redemptions of
+     * the same single-use voucher cannot both succeed. This is the real enforcement boundary, called
+     * at actual order placement (OrderCreationService::redeemVouchers()) - assertUsageLimitNotExceeded()
+     * above is only an early, non-authoritative check shown when a voucher is applied to the basket.
+     *
+     * @throws VoucherNotApplicableException
+     */
+    public function redeemAtomically(Voucher $voucher): void
+    {
+        $usageLimit = $voucher->getUsageLimit();
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_products_domain_model_voucher');
+        $queryBuilder->update('tx_products_domain_model_voucher')
+            ->set('redemption_count', $queryBuilder->quoteIdentifier('redemption_count') . ' + 1', false)
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($voucher->getUid(), Connection::PARAM_INT)));
+        if ($usageLimit > 0) {
+            $queryBuilder->andWhere($queryBuilder->expr()->lt('redemption_count', $queryBuilder->createNamedParameter($usageLimit, Connection::PARAM_INT)));
+        }
+        $affectedRows = $queryBuilder->executeStatement();
+
+        if ($affectedRows === 0) {
+            throw new VoucherNotApplicableException(
+                sprintf('Voucher "%s" has already been used the maximum number of times.', $voucher->getCode()),
+                1751850004
             );
         }
     }
