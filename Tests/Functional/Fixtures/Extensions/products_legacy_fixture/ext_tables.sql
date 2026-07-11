@@ -107,6 +107,8 @@ CREATE TABLE tt_products_articles (
 	inStock int(11) DEFAULT '1' NOT NULL,
 	weight decimal(19,6) DEFAULT '0.000000' NOT NULL,
 	uid_product int(11) DEFAULT '0' NOT NULL,
+	basketminquantity decimal(19,2) DEFAULT '0.00' NOT NULL,
+	basketmaxquantity decimal(19,2) DEFAULT '0.00' NOT NULL,
 	image text,
 	smallimage text,
 

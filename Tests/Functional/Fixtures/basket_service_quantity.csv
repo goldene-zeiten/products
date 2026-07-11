@@ -1,0 +1,8 @@
+"tx_products_domain_model_product",,,,,,,
+,"uid","pid","title","slug","price","basket_min_quantity","basket_max_quantity"
+,1,2,"Product 1","product-1","10.00",2,5
+,2,2,"Product 2","product-2","10.00",2,5
+
+"tx_products_domain_model_article",,,,,,,
+,"uid","pid","product","title","price","basket_min_quantity","basket_max_quantity"
+,1,2,2,"Article 1","0.00",1,2

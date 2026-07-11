@@ -25,6 +25,8 @@ class Article extends AbstractEntity
     protected string $deposit = '0.00';
     protected int $inStock = 0;
     protected bool $unlimitedStock = false;
+    protected int $basketMinQuantity = 0;
+    protected int $basketMaxQuantity = 0;
     protected int $weight = 0;
     protected bool $bulky = false;
     /**
@@ -145,6 +147,26 @@ class Article extends AbstractEntity
     public function setUnlimitedStock(bool $unlimitedStock): void
     {
         $this->unlimitedStock = $unlimitedStock;
+    }
+
+    public function getBasketMinQuantity(): int
+    {
+        return $this->basketMinQuantity;
+    }
+
+    public function setBasketMinQuantity(int $basketMinQuantity): void
+    {
+        $this->basketMinQuantity = $basketMinQuantity;
+    }
+
+    public function getBasketMaxQuantity(): int
+    {
+        return $this->basketMaxQuantity;
+    }
+
+    public function setBasketMaxQuantity(int $basketMaxQuantity): void
+    {
+        $this->basketMaxQuantity = $basketMaxQuantity;
     }
 
     public function getWeight(): int
