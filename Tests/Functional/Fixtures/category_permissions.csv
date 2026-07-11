@@ -14,3 +14,4 @@
 ,100,2,"Owner Only",2,2,0,0,0
 ,101,2,"Everybody Editable",0,0,0,0,2
 ,102,2,"Group Editable",0,0,5,2,0
+,103,2,"Owner Editable And Deletable",2,6,0,0,0

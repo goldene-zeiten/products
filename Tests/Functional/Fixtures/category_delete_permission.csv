@@ -1,0 +1,13 @@
+"pages",,,,,,
+,"uid","pid","sorting","deleted","title","slug","doktype"
+,1,0,256,0,"Root","/",254
+,2,1,256,0,"Shop","/shop",254
+
+"be_users",,,,,,
+,"uid","pid","username","admin","tx_products_category_mounts"
+,10,0,"restricted-editor","0","200,201"
+
+"tx_products_domain_model_category",,,,,,,,
+,"uid","pid","deleted","title","perms_userid","perms_user","perms_groupid","perms_group","perms_everybody"
+,200,2,0,"No Delete Permission",10,2,0,0,0
+,201,2,0,"Has Delete Permission",10,6,0,0,0

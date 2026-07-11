@@ -30,6 +30,18 @@ final class CategoryPermissionGuard
         return $this->calculatePermission($row, $backendUser)->editPagePermissionIsGranted();
     }
 
+    public function isCategoryDeletable(int $categoryUid, BackendUserAuthentication $backendUser): bool
+    {
+        if ($backendUser->isAdmin()) {
+            return true;
+        }
+        $row = $this->treeRepository->fetchCategoryPermissionRow($categoryUid);
+        if ($row === null) {
+            return false;
+        }
+        return $this->calculatePermission($row, $backendUser)->deletePagePermissionIsGranted();
+    }
+
     /**
      * @param array{perms_userid: int, perms_user: int, perms_groupid: int, perms_group: int, perms_everybody: int} $row
      */

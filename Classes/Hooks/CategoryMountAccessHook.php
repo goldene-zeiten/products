@@ -62,9 +62,17 @@ final class CategoryMountAccessHook
             return;
         }
         $mounts = $this->mountResolver->resolveMountUids($dataHandler->BE_USER);
-        if ($mounts === null || $this->isRecordAccessible($table, $id, $mounts)) {
+        if ($mounts !== null && !$this->isRecordAccessible($table, $id, $mounts)) {
+            $this->denyCommand($command, $table, $id, $commandIsProcessed, $dataHandler, 'category mount restrictions');
             return;
         }
+        if ($command === 'delete' && $table === self::TABLE_CATEGORY && !$this->permissionGuard->isCategoryDeletable($id, $dataHandler->BE_USER)) {
+            $this->denyCommand($command, $table, $id, $commandIsProcessed, $dataHandler, 'insufficient category delete permission');
+        }
+    }
+
+    private function denyCommand(string $command, string $table, int $id, bool &$commandIsProcessed, DataHandler $dataHandler, string $reason): void
+    {
         $commandIsProcessed = true;
         $dataHandler->log(
             $table,
@@ -72,7 +80,7 @@ final class CategoryMountAccessHook
             SystemLogDatabaseAction::UPDATE,
             null,
             SystemLogErrorClassification::USER_ERROR,
-            'Attempt to "{command}" record {table}:{uid} denied by category mount restrictions',
+            'Attempt to "{command}" record {table}:{uid} denied by ' . $reason,
             null,
             ['command' => $command, 'table' => $table, 'uid' => $id]
         );

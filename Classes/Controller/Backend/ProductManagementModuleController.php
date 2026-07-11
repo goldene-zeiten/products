@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Controller\Backend;
 
 use GoldeneZeiten\Products\Backend\CategoryAccessGuard;
 use GoldeneZeiten\Products\Backend\CategoryMountResolver;
+use GoldeneZeiten\Products\Backend\CategoryPermissionGuard;
 use GoldeneZeiten\Products\Backend\CategoryTreeRepository;
 use GoldeneZeiten\Products\Backend\Exception\ProductArchiveFailedException;
 use GoldeneZeiten\Products\Backend\ProductArchiveService;
@@ -42,6 +43,7 @@ final class ProductManagementModuleController
         private readonly CategoryTreeRepository $treeRepository,
         private readonly CategoryMountResolver $mountResolver,
         private readonly CategoryAccessGuard $accessGuard,
+        private readonly CategoryPermissionGuard $permissionGuard,
         private readonly StorageFolderResolver $storageFolderResolver,
         private readonly ProductArchiveService $archiveService,
     ) {}
@@ -193,12 +195,23 @@ final class ProductManagementModuleController
             'selectedProduct' => null,
             'itemsLabel' => $this->translate('column.products'),
             'items' => $items,
-            'actions' => [
-                $this->buildAction('actions.new_subcategory', self::TABLE_CATEGORY, ['parent_category' => $categoryUid], $returnUrl),
-                $this->buildAction('actions.new_product', self::TABLE_PRODUCT, ['categories' => $categoryUid], $returnUrl),
-                $this->buildEditAction('actions.edit_category', self::TABLE_CATEGORY, $categoryUid, $returnUrl),
-            ],
+            'actions' => $this->buildCategoryScopedActions($categoryUid, $returnUrl),
             'overviewHtml' => null,
+        ];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildCategoryScopedActions(int $categoryUid, string $returnUrl): array
+    {
+        if (!$this->permissionGuard->isCategoryEditable($categoryUid, $this->getBackendUser())) {
+            return [];
+        }
+        return [
+            $this->buildAction('actions.new_subcategory', self::TABLE_CATEGORY, ['parent_category' => $categoryUid], $returnUrl),
+            $this->buildAction('actions.new_product', self::TABLE_PRODUCT, ['categories' => $categoryUid], $returnUrl),
+            $this->buildEditAction('actions.edit_category', self::TABLE_CATEGORY, $categoryUid, $returnUrl),
         ];
     }
 
