@@ -196,6 +196,7 @@ final class OrderMailService
         $settings = $this->settingsResolver->getSettings($order);
         $email = new FluidEmail($this->buildTemplatePaths($settings));
         $this->applySender($email, $settings);
+        $this->applyBcc($email, $settings);
 
         $email
             ->to($recipient)
@@ -205,6 +206,18 @@ final class OrderMailService
             ->assign('order', $order);
 
         return $email;
+    }
+
+    /**
+     * A standing blind-copy recipient (e.g. accounting/archival/compliance) for every order email
+     * built through here - order confirmation, merchant notification, status-changed, withdrawal.
+     */
+    private function applyBcc(FluidEmail $email, SettingsInterface $settings): void
+    {
+        $bccRecipient = $this->getSetting($settings, 'products.email.orderBccRecipient', '');
+        if ($bccRecipient !== '') {
+            $email->bcc($bccRecipient);
+        }
     }
 
     private function applySender(FluidEmail $email, SettingsInterface $settings): void
