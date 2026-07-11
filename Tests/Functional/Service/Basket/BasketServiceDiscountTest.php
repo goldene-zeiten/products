@@ -67,6 +67,24 @@ final class BasketServiceDiscountTest extends AbstractFunctionalTestCase
         self::assertSame(8000, $viewModel->getItems()[0]->getUnitPriceGross()->getCents());
     }
 
+    #[Test]
+    public function isAlreadyDiscountedIsFalseForAnUndiscountedShopper(): void
+    {
+        $request = $this->requestFor(0);
+        $this->basketService->add($request, $this->product->getUid() ?? 0, null, 1);
+
+        self::assertFalse($this->basketService->isAlreadyDiscounted($request));
+    }
+
+    #[Test]
+    public function isAlreadyDiscountedIsTrueForADiscountedGroupsShopper(): void
+    {
+        $request = $this->requestFor(9);
+        $this->basketService->add($request, $this->product->getUid() ?? 0, null, 1);
+
+        self::assertTrue($this->basketService->isAlreadyDiscounted($request));
+    }
+
     private function requestFor(int $frontendUserUid): ServerRequestInterface
     {
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);

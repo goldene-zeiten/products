@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ArticleRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Pricing\GraduatedPriceProvider;
 use GoldeneZeiten\Products\Pricing\PriceProviderInterface;
 use GoldeneZeiten\Products\Service\PriceRoundingService;
 use GoldeneZeiten\Products\Service\TaxService;
@@ -29,7 +30,8 @@ final class BasketService
         private readonly PriceProviderInterface $priceProvider,
         private readonly ProductsConfigurationFactory $configurationFactory,
         private readonly PriceRoundingService $priceRoundingService,
-        private readonly BasketQuantityResolver $basketQuantityResolver
+        private readonly BasketQuantityResolver $basketQuantityResolver,
+        private readonly GraduatedPriceProvider $graduatedPriceProvider
     ) {}
 
     public function add(ServerRequestInterface $request, int $productUid, ?int $articleUid, int $quantity): void
@@ -90,6 +92,31 @@ final class BasketService
     public function clear(ServerRequestInterface $request): void
     {
         $this->basketStorage->save($request, new Basket());
+    }
+
+    /**
+     * Whether any basket line's price is already reduced by a category-cascading or FE-usergroup
+     * discount (comparing GraduatedPriceProvider's quantity-tier price, which never applies either
+     * discount, against the full PriceProviderInterface chain's result) - used to block stacking a
+     * non-combinable voucher on top of an already-discounted basket, matching legacy's
+     * `noDiscountPriceTax` vs `priceTax` comparison. Quantity-tier pricing itself never counts as a
+     * "discount" here, only the category/usergroup step does.
+     */
+    public function isAlreadyDiscounted(ServerRequestInterface $request): bool
+    {
+        foreach ($this->basketStorage->load($request)->getItems() as $item) {
+            $product = $this->productRepository->findByUid($item->getProductUid());
+            if (!$product instanceof Product) {
+                continue;
+            }
+            $article = $this->resolveArticle($item->getArticleUid());
+            $undiscounted = $this->graduatedPriceProvider->getUnitPrice($product, $article, $item->getQuantity(), $request);
+            $discounted = $this->priceProvider->getUnitPrice($product, $article, $item->getQuantity(), $request);
+            if ($undiscounted->getCents() !== $discounted->getCents()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function addVoucherCode(ServerRequestInterface $request, string $voucherCode): void

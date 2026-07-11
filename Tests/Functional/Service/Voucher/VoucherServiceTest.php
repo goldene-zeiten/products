@@ -110,6 +110,31 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function nonCombinableVoucherIsBlockedWhenBasketAlreadyHasADiscount(): void
+    {
+        $this->expectException(VoucherNotApplicableException::class);
+        $this->expectExceptionCode(1783760128);
+
+        $this->subject->resolve('FLAT5', Money::fromDecimalString('100.00'), 1, basketAlreadyDiscounted: true);
+    }
+
+    #[Test]
+    public function combinableVoucherIsNotBlockedWhenBasketAlreadyHasADiscount(): void
+    {
+        $voucher = $this->subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1, basketAlreadyDiscounted: true);
+
+        self::assertSame('SAVE10', $voucher->getCode());
+    }
+
+    #[Test]
+    public function nonCombinableVoucherIsAllowedWhenBasketHasNoExistingDiscount(): void
+    {
+        $voucher = $this->subject->resolve('FLAT5', Money::fromDecimalString('100.00'), 1, basketAlreadyDiscounted: false);
+
+        self::assertSame('FLAT5', $voucher->getCode());
+    }
+
+    #[Test]
     public function combinableVouchersCanCoexist(): void
     {
         $save10 = $this->subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1);

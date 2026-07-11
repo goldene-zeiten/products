@@ -105,6 +105,29 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function autoPriceFactorModeUsesTheExplicitRateWhenPresent(): void
+    {
+        $subject = $this->subject(earningMode: 'autoPriceFactor', priceFactor: 1.0);
+
+        self::assertSame(10 * 2 + 5 * 3, $subject->calculateEarnedPoints($this->basketViewModel()));
+    }
+
+    #[Test]
+    public function autoPriceFactorModeConvertsPriceToPointsForUnratedLines(): void
+    {
+        $subject = $this->subject(earningMode: 'autoPriceFactor', priceFactor: 2.0);
+        $unratedProduct = new Product();
+        $unratedProduct->setCreditPoints(0);
+        $unitPrice = Money::fromDecimalString('10.00');
+        $lineTotal = $unitPrice->multiply(3);
+        $item = new BasketViewItem($unratedProduct, null, 3, $unitPrice, $unitPrice, 0.0, $lineTotal, $lineTotal, Money::fromCents(0));
+        $basket = new BasketViewModel([$item], $lineTotal, $lineTotal, Money::fromCents(0), 'EUR');
+
+        // lineTotalGross 30.00 * priceFactor 2.0 = 60 points
+        self::assertSame(60, $subject->calculateEarnedPoints($basket));
+    }
+
+    #[Test]
     public function redeemClampsToBalanceWhenMoreIsRequestedThanAvailable(): void
     {
         $redemption = $this->subject()->redeem(1, 1000, Money::fromDecimalString('1000.00'));
@@ -153,20 +176,20 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     /**
      * @param string[] $earningTiers
      */
-    private function subject(bool $enabled = true, string $moneyPerPoint = '0.10', string $earningMode = 'perProduct', array $earningTiers = []): CreditPointsService
+    private function subject(bool $enabled = true, string $moneyPerPoint = '0.10', string $earningMode = 'perProduct', array $earningTiers = [], float $priceFactor = 0.0): CreditPointsService
     {
         return new CreditPointsService(
             $this->get(ConnectionPool::class),
-            $this->fakeConfigurationManager($enabled, $moneyPerPoint, $earningMode, $earningTiers)
+            $this->fakeConfigurationManager($enabled, $moneyPerPoint, $earningMode, $earningTiers, $priceFactor)
         );
     }
 
     /**
      * @param string[] $earningTiers
      */
-    private function fakeConfigurationManager(bool $enabled, string $moneyPerPoint, string $earningMode, array $earningTiers): ConfigurationManagerInterface
+    private function fakeConfigurationManager(bool $enabled, string $moneyPerPoint, string $earningMode, array $earningTiers, float $priceFactor = 0.0): ConfigurationManagerInterface
     {
-        return new class ($enabled, $moneyPerPoint, $earningMode, $earningTiers) implements ConfigurationManagerInterface {
+        return new class ($enabled, $moneyPerPoint, $earningMode, $earningTiers, $priceFactor) implements ConfigurationManagerInterface {
             /**
              * @param string[] $earningTiers
              */
@@ -174,7 +197,8 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
                 private readonly bool $enabled,
                 private readonly string $moneyPerPoint,
                 private readonly string $earningMode,
-                private readonly array $earningTiers
+                private readonly array $earningTiers,
+                private readonly float $priceFactor
             ) {}
 
             /**
@@ -187,6 +211,7 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
                     'moneyPerPoint' => $this->moneyPerPoint,
                     'earningMode' => $this->earningMode,
                     'earningTiers' => $this->earningTiers,
+                    'priceFactor' => $this->priceFactor,
                 ]];
             }
 

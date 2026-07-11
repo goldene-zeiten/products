@@ -66,19 +66,48 @@ final class CreditPointsService
      * Article inherits the product's earning rate, there is no per-article override. In
      * "basketTiered" mode the whole order earns a single highest-qualifying tier's points
      * instead, mirroring legacy tx_ttproducts_creditpoints_div::getCreditPoints() (krsort by
-     * threshold, first match at or below the basket total wins - not summed across tiers).
+     * threshold, first match at or below the basket total wins - not summed across tiers). In
+     * "autoPriceFactor" mode, a line without its own explicit creditPoints value earns points via
+     * a flat price->points conversion instead of 0, mirroring legacy's "auto" earning mode.
      */
     public function calculateEarnedPoints(BasketViewModel $basket): int
     {
-        if ($this->earningMode() === 'basketTiered') {
-            return $this->calculateTieredPoints($basket->getTotalGross());
-        }
+        return match ($this->earningMode()) {
+            'basketTiered' => $this->calculateTieredPoints($basket->getTotalGross()),
+            'autoPriceFactor' => $this->calculateAutoPriceFactorPoints($basket),
+            default => $this->calculatePerProductPoints($basket),
+        };
+    }
 
+    private function calculatePerProductPoints(BasketViewModel $basket): int
+    {
         $points = 0;
         foreach ($basket->getItems() as $item) {
             $points += $item->getProduct()->getCreditPoints() * $item->getQuantity();
         }
         return $points;
+    }
+
+    /**
+     * A line's own explicit creditPoints value always wins, even in this mode - only lines with
+     * none (0) fall back to the price->points conversion.
+     */
+    private function calculateAutoPriceFactorPoints(BasketViewModel $basket): int
+    {
+        $priceFactor = $this->priceFactor();
+        $points = 0;
+        foreach ($basket->getItems() as $item) {
+            $explicitPoints = $item->getProduct()->getCreditPoints();
+            $points += $explicitPoints > 0
+                ? $explicitPoints * $item->getQuantity()
+                : (int)floor($item->getLineTotalGross()->getCents() / 100 * $priceFactor);
+        }
+        return $points;
+    }
+
+    private function priceFactor(): float
+    {
+        return (float)($this->settings['creditPoints']['priceFactor'] ?? 0.0);
     }
 
     private function earningMode(): string
