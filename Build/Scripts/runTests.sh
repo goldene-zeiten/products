@@ -580,7 +580,14 @@ case ${TEST_SUITE} in
         rm -rf .Build/vendor
         cp composer.json composer.json.orig
         COMMAND=(composer require --dev "typo3/minimal:^${CORE_VERSION}" --with-all-dependencies --no-progress --no-interaction)
-        ${CONTAINER_BIN} run ${CONTAINER_SIMPLE_PARAMS} --name composer-command-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} "${COMMAND[@]}"
+        # TYPO3_SKIP_ASSET_PUBLISH: since core 14.2, "composer install/require" auto-runs
+        # "typo3 asset:publish" as a subprocess (core#109163). That subprocess inherits this
+        # container's cwd (the real project root, not .Build/Web) and, since no TYPO3_PATH_ROOT
+        # is set for it, bootstraps a full TYPO3 application against the project root - writing
+        # a stray var/cache/ there. Not needed here: this suite only pins/resolves a TYPO3 major
+        # for whichever real suite runs next, which publishes its own assets in its own
+        # properly-scoped instance regardless.
+        ${CONTAINER_BIN} run ${CONTAINER_SIMPLE_PARAMS} --name composer-command-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} -e TYPO3_SKIP_ASSET_PUBLISH=1 ${IMAGE_PHP} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
         mv composer.json.orig composer.json
         ;;
@@ -677,13 +684,28 @@ case ${TEST_SUITE} in
     unit)
         PHPUNIT_CONFIG_FILE="Build/phpunit/UnitTests.xml"
         COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} "$@")
-        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name unit-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_PHP} "${COMMAND[@]}"
+        # TYPO3_PATH_ROOT/TYPO3_PATH_WEB: without these, UnitTestsBootstrap.php's getWebRoot()
+        # falls back to getcwd() (the real project root), making Environment think project path
+        # == public path and mis-scope typo3temp/assets, typo3temp/var/tests and
+        # typo3temp/var/transient there instead of .Build/Web. Setting them here correctly
+        # separates project path (always the real root - TYPO3 core hardcodes this, see
+        # Breaking-107482 in the core changelog) from public path (.Build/Web, this project's
+        # composer.json web-dir). Note this does NOT eliminate the stray root-level packages/
+        # directory (see .gitignore) - that one is Environment's own hardcoded "project path !=
+        # public path" convention (packages/ext, packages/sysext, packages/PackageStates.php,
+        # packages/autoload-tests), unconditional and not redirectable by any env var; it would
+        # appear either way, just as packages/ once project/public paths are correctly separated
+        # (as here) or, without this fix, disguised as a stray root typo3conf/autoload-tests/ once
+        # Environment falls back to treating the whole project root as both project and public
+        # path. This fix is still worth keeping since it's the accurate way to model this
+        # project's actual composer.json layout.
+        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name unit-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" -e TYPO3_PATH_ROOT=${ROOT_DIR}/.Build/Web -e TYPO3_PATH_WEB=${ROOT_DIR}/.Build/Web ${IMAGE_PHP} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
         ;;
     unitRandom)
         PHPUNIT_CONFIG_FILE="Build/phpunit/UnitTests.xml"
         COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} --order-by=random ${PHPUNIT_RANDOM} "$@")
-        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name unit-random-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_PHP} "${COMMAND[@]}"
+        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name unit-random-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" -e TYPO3_PATH_ROOT=${ROOT_DIR}/.Build/Web -e TYPO3_PATH_WEB=${ROOT_DIR}/.Build/Web ${IMAGE_PHP} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
         ;;
     update)
