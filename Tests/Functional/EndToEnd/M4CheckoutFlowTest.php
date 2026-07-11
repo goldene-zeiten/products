@@ -65,8 +65,9 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/m4_end_to_end.csv');
-        // OrderFactory/TaxService read Extbase settings eagerly in their constructors, which
-        // requires a request resolvable via $GLOBALS['TYPO3_REQUEST'] outside a real dispatch.
+        // CreditPointsService/GainedVoucherService still read Extbase settings eagerly in their
+        // constructors, which requires a request resolvable via $GLOBALS['TYPO3_REQUEST'] outside
+        // a real dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
 
@@ -154,7 +155,6 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
             $this->get(FrontendUserResolver::class),
             $this->get(ShippingCostService::class),
             $this->get(HandlingFeeService::class),
-            $this->get(ConfigurationManagerInterface::class),
             $this->get(ProductsConfigurationFactory::class)
         );
         $orderPlacementTransaction = new OrderPlacementTransaction(

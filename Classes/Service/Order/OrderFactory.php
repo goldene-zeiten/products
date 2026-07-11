@@ -16,28 +16,22 @@ use GoldeneZeiten\Products\Domain\Model\OrderItem;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\PriceRoundingService;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\Site\Entity\SiteInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
+/**
+ * `order.numberPrefix`/`pricing.roundingMode` are Site Settings
+ * (Configuration/Sets/Products/settings.definitions.yaml), read straight from the request's
+ * `site` attribute - see ProductsConfigurationFactory's docblock for why
+ * ConfigurationManagerInterface can't be used for these.
+ */
 final class OrderFactory
 {
-    /**
-     * @var array<string, mixed>
-     */
-    private array $settings;
-
     public function __construct(
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly NumberRangeService $numberRangeService,
-        private readonly PriceRoundingService $priceRoundingService,
-        ConfigurationManagerInterface $configurationManager
-    ) {
-        $this->settings = $configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
-        );
-    }
+        private readonly PriceRoundingService $priceRoundingService
+    ) {}
 
     public function create(
         ServerRequestInterface $request,
@@ -46,11 +40,12 @@ final class OrderFactory
         string $paymentMethodIdentifier,
         PlacementDetails $details
     ): Order {
+        $site = $request->getAttribute('site');
         $order = new Order();
         $order->setFrontendUser($this->frontendUserResolver->getUid($request));
         $order->setOrderDate(new \DateTime());
-        $order->setSiteIdentifier($this->resolveSiteIdentifier($request));
-        $order->setOrderNumber($this->generateOrderNumber($order->getSiteIdentifier()));
+        $order->setSiteIdentifier($site instanceof Site ? $site->getIdentifier() : 'default');
+        $order->setOrderNumber($this->generateOrderNumber($order->getSiteIdentifier(), $site));
         $order->setEmail($address->getEmail());
         $order->setPaymentMethod($paymentMethodIdentifier);
         $order->setPaymentStatus(PaymentStatus::OPEN);
@@ -58,7 +53,7 @@ final class OrderFactory
         $order->setCurrency($basketViewModel->getCurrency());
         $order->setTotalNet($basketViewModel->getTotalNet());
         $order->setTotalTax($basketViewModel->getTotalTax());
-        $this->applyAdjustments($order, $basketViewModel, $details);
+        $this->applyAdjustments($order, $basketViewModel, $details, $site);
         $order->setTaxCountry($address->getCountry());
         $order->setBillingAddress($this->buildBillingAddress($address));
         $this->applyGiftOrderDetails($order, $details);
@@ -74,7 +69,7 @@ final class OrderFactory
      * its tax-inclusive gross cost and folded into total_net/total_tax, so the order's tax
      * reporting isn't silently missing it.
      */
-    private function applyAdjustments(Order $order, BasketViewModel $basketViewModel, PlacementDetails $details): void
+    private function applyAdjustments(Order $order, BasketViewModel $basketViewModel, PlacementDetails $details, ?Site $site): void
     {
         $depositTotal = $basketViewModel->getDepositTotal();
         $adjustedTotalGross = $basketViewModel->getTotalGross()
@@ -82,7 +77,7 @@ final class OrderFactory
             ->add($details->getShippingCost())
             ->add($details->getHandlingFeeCost())
             ->add($depositTotal);
-        $order->setTotalGross($this->priceRoundingService->round($adjustedTotalGross, $this->roundingMode()));
+        $order->setTotalGross($this->priceRoundingService->round($adjustedTotalGross, $this->roundingMode($site)));
         $shippingNet = $details->getShippingCost()->netFromGross($details->getShippingTaxRate());
         $order->setTotalNet($order->getTotalNet()->add($shippingNet));
         $order->setTotalTax($order->getTotalTax()->add($details->getShippingCost()->subtract($shippingNet)));
@@ -106,21 +101,15 @@ final class OrderFactory
         $order->setGiftMessage($details->getGiftMessage());
     }
 
-    private function roundingMode(): string
+    private function roundingMode(?Site $site): string
     {
-        return (string)($this->settings['pricing']['roundingMode'] ?? PriceRoundingService::MODE_NONE);
+        return (string)($site?->getSettings()->get('products.pricing.roundingMode', PriceRoundingService::MODE_NONE) ?? PriceRoundingService::MODE_NONE);
     }
 
-    private function resolveSiteIdentifier(ServerRequestInterface $request): string
-    {
-        $site = $request->getAttribute('site');
-        return $site instanceof SiteInterface ? $site->getIdentifier() : 'default';
-    }
-
-    private function generateOrderNumber(string $siteIdentifier): string
+    private function generateOrderNumber(string $siteIdentifier, ?Site $site): string
     {
         $scope = sprintf('order:%s:%s', $siteIdentifier, (new \DateTimeImmutable())->format('Y'));
-        $prefix = (string)($this->settings['order']['numberPrefix'] ?? 'ORD-');
+        $prefix = (string)($site?->getSettings()->get('products.order.numberPrefix', 'ORD-') ?? 'ORD-');
         return $prefix . $this->numberRangeService->next($scope);
     }
 
