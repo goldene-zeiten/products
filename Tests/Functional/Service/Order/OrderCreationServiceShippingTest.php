@@ -33,7 +33,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\Entity\Site;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
@@ -171,7 +170,6 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
             $this->get(FrontendUserResolver::class),
             $this->get(ShippingCostService::class),
             $this->get(HandlingFeeService::class),
-            $this->get(ConfigurationManagerInterface::class),
             $this->get(ProductsConfigurationFactory::class)
         );
     }

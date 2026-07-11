@@ -35,7 +35,6 @@ use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherExceptionInterface;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 final class OrderCreationService
@@ -55,7 +54,6 @@ final class OrderCreationService
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly ShippingCostService $shippingCostService,
         private readonly HandlingFeeService $handlingFeeService,
-        private readonly ConfigurationManagerInterface $configurationManager,
         private readonly ProductsConfigurationFactory $configurationFactory
     ) {}
 
@@ -87,7 +85,7 @@ final class OrderCreationService
             $checkoutSelections->getGiftMessage()
         );
 
-        $this->decrementStock($basketViewModel);
+        $this->decrementStock($basketViewModel, $request);
 
         $order = $this->orderFactory->create($request, $basketViewModel, $address, $paymentMethod->getIdentifier(), $details);
         $this->orderRepository->add($order);
@@ -100,9 +98,9 @@ final class OrderCreationService
         return $order;
     }
 
-    private function decrementStock(BasketViewModel $basketViewModel): void
+    private function decrementStock(BasketViewModel $basketViewModel, ServerRequestInterface $request): void
     {
-        $threshold = $this->lowStockThreshold();
+        $threshold = $this->lowStockThreshold($request);
         foreach ($basketViewModel->getItems() as $viewItem) {
             if ($this->hasUnlimitedStock($viewItem)) {
                 continue;
@@ -142,13 +140,13 @@ final class OrderCreationService
     }
 
     /**
-     * Read via classic Extbase settings (not Site Settings) since this threshold is a per-plugin
-     * operational tuning knob, same access pattern as RecentlyViewedStorage's own limit setting.
+     * `stock.lowStockThreshold` is a Site Setting - see ProductsConfigurationFactory's docblock
+     * for why ConfigurationManagerInterface can't be used for these.
      */
-    private function lowStockThreshold(): int
+    private function lowStockThreshold(ServerRequestInterface $request): int
     {
-        $settings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS, 'Products');
-        return (int)($settings['stock']['lowStockThreshold'] ?? self::DEFAULT_LOW_STOCK_THRESHOLD);
+        $threshold = $request->getAttribute('site')?->getSettings()->get('products.stock.lowStockThreshold', self::DEFAULT_LOW_STOCK_THRESHOLD);
+        return (int)($threshold ?? self::DEFAULT_LOW_STOCK_THRESHOLD);
     }
 
     /**
