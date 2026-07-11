@@ -14,7 +14,9 @@
                 <td style="padding: 4px; border-bottom: 1px solid #ddd;">
                     {item.title}
                     <f:if condition="{item.articleTitle}">
-                        <br><small>{item.articleTitle}</small>
+                        <f:then>
+                            <br><small>{item.articleTitle}</small>
+                        </f:then>
                     </f:if>
                 </td>
                 <td style="padding: 4px; border-bottom: 1px solid #ddd;">{item.itemNumber}</td>

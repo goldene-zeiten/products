@@ -7,7 +7,9 @@
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
                             <f:if condition="{product.primaryImage}">
-                                <f:image image="{product.primaryImage}" width="300c" height="200c" alt="{product.title}" class="card-img-top" />
+                                <f:then>
+                                    <f:image image="{product.primaryImage}" width="300c" height="200c" alt="{product.title}" class="card-img-top" />
+                                </f:then>
                             </f:if>
                             <div class="card-body">
                                 <h5 class="card-title">{product.title}</h5>
@@ -18,10 +20,14 @@
                                     <f:link.action action="show" controller="Product" arguments="{product: product}" class="btn btn-primary btn-sm"><f:translate key="details" /></f:link.action>
                                     <f:link.action action="remove" arguments="{product: product.uid}" class="btn btn-outline-danger btn-sm"><f:translate key="remove" /></f:link.action>
                                     <f:if condition="{iterator.isFirst} == 0">
-                                        <f:link.action action="moveUp" arguments="{product: product.uid}" class="btn btn-outline-secondary btn-sm"><f:translate key="move_up" /></f:link.action>
+                                        <f:then>
+                                            <f:link.action action="moveUp" arguments="{product: product.uid}" class="btn btn-outline-secondary btn-sm"><f:translate key="move_up" /></f:link.action>
+                                        </f:then>
                                     </f:if>
                                     <f:if condition="{iterator.isLast} == 0">
-                                        <f:link.action action="moveDown" arguments="{product: product.uid}" class="btn btn-outline-secondary btn-sm"><f:translate key="move_down" /></f:link.action>
+                                        <f:then>
+                                            <f:link.action action="moveDown" arguments="{product: product.uid}" class="btn btn-outline-secondary btn-sm"><f:translate key="move_down" /></f:link.action>
+                                        </f:then>
                                     </f:if>
                                 </div>
                             </div>

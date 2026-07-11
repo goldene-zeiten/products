@@ -1,7 +1,9 @@
 <div class="product-detail">
     <h1>{product.title}</h1>
     <f:if condition="{product.subtitle}">
-        <h2 class="text-muted">{product.subtitle}</h2>
+        <f:then>
+            <h2 class="text-muted">{product.subtitle}</h2>
+        </f:then>
     </f:if>
 
     <f:render partial="Product/Gallery" arguments="{images: product.images}" />
@@ -13,7 +15,9 @@
         <div class="col-md-6">
             <div class="card p-3">
                 <f:if condition="{product.articles}">
-                    <f:render partial="Product/ArticleSelector" arguments="{product: product, variantAttributes: variantAttributes}" />
+                    <f:then>
+                        <f:render partial="Product/ArticleSelector" arguments="{product: product, variantAttributes: variantAttributes}" />
+                    </f:then>
                 </f:if>
 
                 <f:render partial="Product/PriceAndStock" arguments="{product: product, selectedArticle: selectedArticle}" />

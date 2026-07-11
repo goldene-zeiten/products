@@ -1,10 +1,12 @@
 <div class="category-list">
     <f:if condition="{ancestorChain}">
-        <nav class="breadcrumb">
-            <f:for each="{ancestorChain}" as="ancestor" iteration="iterator">
-                <span>{ancestor.title}</span><f:if condition="{iterator.isLast} == 0"> / </f:if>
-            </f:for>
-        </nav>
+        <f:then>
+            <nav class="breadcrumb">
+                <f:for each="{ancestorChain}" as="ancestor" iteration="iterator">
+                    <span>{ancestor.title}</span><f:if condition="{iterator.isLast} == 0"><f:then> / </f:then></f:if>
+                </f:for>
+            </nav>
+        </f:then>
     </f:if>
     <f:if condition="{products}">
         <f:then>

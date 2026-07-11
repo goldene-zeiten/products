@@ -7,10 +7,14 @@
     </div>
 
     <f:if condition="{selectedCategory}">
-        <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:labels.category" />: {selectedCategory.title}</h2>
+        <f:then>
+            <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:labels.category" />: {selectedCategory.title}</h2>
+        </f:then>
     </f:if>
     <f:if condition="{selectedProduct}">
-        <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:labels.product" />: {selectedProduct.title}</h2>
+        <f:then>
+            <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:labels.product" />: {selectedProduct.title}</h2>
+        </f:then>
     </f:if>
 
     <f:if condition="{mode} == 'overview'">

@@ -1,6 +1,10 @@
 <f:if condition="{basket.hasBulkyItem} && {settings.shipping.bulkyNoticeText}">
-    <p class="basket-notice basket-notice-bulky">{settings.shipping.bulkyNoticeText}</p>
+    <f:then>
+        <p class="basket-notice basket-notice-bulky">{settings.shipping.bulkyNoticeText}</p>
+    </f:then>
 </f:if>
 <f:if condition="{settings.shipping.weightNoticeThreshold} > 0 && {basket.totalWeight} > {settings.shipping.weightNoticeThreshold} && {settings.shipping.weightNoticeText}">
-    <p class="basket-notice basket-notice-weight">{settings.shipping.weightNoticeText}</p>
+    <f:then>
+        <p class="basket-notice basket-notice-weight">{settings.shipping.weightNoticeText}</p>
+    </f:then>
 </f:if>

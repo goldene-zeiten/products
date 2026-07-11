@@ -5,7 +5,9 @@
             <a href="{f:uri.page(pageUid: '{settings.pids.categoryPage}')}/{node.slugPath}">{node.category.title}</a>
             <span class="badge">(<p:category.productCount category="{node.category}" />)</span>
             <f:if condition="{node.children}">
-                <f:render partial="Category/TreeBranch" arguments="{nodes: node.children, settings: settings}" />
+                <f:then>
+                    <f:render partial="Category/TreeBranch" arguments="{nodes: node.children, settings: settings}" />
+                </f:then>
             </f:if>
         </li>
     </f:for>
