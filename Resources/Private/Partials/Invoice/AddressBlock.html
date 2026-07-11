@@ -10,12 +10,14 @@
         </td>
         <td style="width: 50%; vertical-align: top;">
             <f:if condition="{order.deliveryAddress}">
-                <strong><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_invoice.xlf:delivery_address" /></strong><br>
-                {order.deliveryAddress.company}<br>
-                {order.deliveryAddress.firstName} {order.deliveryAddress.lastName}<br>
-                {order.deliveryAddress.street} {order.deliveryAddress.houseNumber}<br>
-                {order.deliveryAddress.zip} {order.deliveryAddress.city}<br>
-                {order.deliveryAddress.country}
+                <f:then>
+                    <strong><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_invoice.xlf:delivery_address" /></strong><br>
+                    {order.deliveryAddress.company}<br>
+                    {order.deliveryAddress.firstName} {order.deliveryAddress.lastName}<br>
+                    {order.deliveryAddress.street} {order.deliveryAddress.houseNumber}<br>
+                    {order.deliveryAddress.zip} {order.deliveryAddress.city}<br>
+                    {order.deliveryAddress.country}
+                </f:then>
             </f:if>
         </td>
     </tr>

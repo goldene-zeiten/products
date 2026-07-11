@@ -6,30 +6,38 @@
     </f:form>
 
     <f:if condition="{result.searched}">
-        <f:if condition="{result.results}">
-            <f:then>
-                <div class="row">
-                    <f:for each="{result.products}" as="product">
-                        <div class="col-md-4">
-                            <f:render partial="Product/ListItem" arguments="{product: product}" />
-                        </div>
-                    </f:for>
-                </div>
-                <f:if condition="{result.totalPages} > 1">
-                    <nav class="d-flex gap-2 mt-3">
-                        <f:if condition="{result.currentPage} > 1">
-                            <f:link.action action="search" arguments="{term: result.term, page: result.currentPage - 1}" class="btn btn-outline-secondary btn-sm"><f:translate key="previous_page" /></f:link.action>
-                        </f:if>
-                        <span class="align-self-center"><f:translate key="page_of_pages" arguments="{0: result.currentPage, 1: result.totalPages}" /></span>
-                        <f:if condition="{result.currentPage} < {result.totalPages}">
-                            <f:link.action action="search" arguments="{term: result.term, page: result.currentPage + 1}" class="btn btn-outline-secondary btn-sm"><f:translate key="next_page" /></f:link.action>
-                        </f:if>
-                    </nav>
-                </f:if>
-            </f:then>
-            <f:else>
-                <p><f:translate key="search_no_results" arguments="{0: result.term}" /></p>
-            </f:else>
-        </f:if>
+        <f:then>
+            <f:if condition="{result.results}">
+                <f:then>
+                    <div class="row">
+                        <f:for each="{result.products}" as="product">
+                            <div class="col-md-4">
+                                <f:render partial="Product/ListItem" arguments="{product: product}" />
+                            </div>
+                        </f:for>
+                    </div>
+                    <f:if condition="{result.totalPages} > 1">
+                        <f:then>
+                            <nav class="d-flex gap-2 mt-3">
+                                <f:if condition="{result.currentPage} > 1">
+                                    <f:then>
+                                        <f:link.action action="search" arguments="{term: result.term, page: result.currentPage - 1}" class="btn btn-outline-secondary btn-sm"><f:translate key="previous_page" /></f:link.action>
+                                    </f:then>
+                                </f:if>
+                                <span class="align-self-center"><f:translate key="page_of_pages" arguments="{0: result.currentPage, 1: result.totalPages}" /></span>
+                                <f:if condition="{result.currentPage} < {result.totalPages}">
+                                    <f:then>
+                                        <f:link.action action="search" arguments="{term: result.term, page: result.currentPage + 1}" class="btn btn-outline-secondary btn-sm"><f:translate key="next_page" /></f:link.action>
+                                    </f:then>
+                                </f:if>
+                            </nav>
+                        </f:then>
+                    </f:if>
+                </f:then>
+                <f:else>
+                    <p><f:translate key="search_no_results" arguments="{0: result.term}" /></p>
+                </f:else>
+            </f:if>
+        </f:then>
     </f:if>
 </div>

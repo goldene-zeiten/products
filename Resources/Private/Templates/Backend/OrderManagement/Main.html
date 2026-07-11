@@ -33,100 +33,118 @@
                             <td><p:format.money value="{order.totalGrossCents}" currency="{order.currency}" /></td>
                         </tr>
                         <f:if condition="{order.voucherCodes}">
-                            <tr>
-                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.vouchers" /></th>
-                                <td><f:for each="{order.voucherCodes}" as="voucherCode" iteration="iterator">{voucherCode}<f:if condition="{iterator.isLast} == 0">, </f:if></f:for></td>
-                            </tr>
-                            <tr>
-                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.discount" /></th>
-                                <td><p:format.money value="{order.discountTotalCents}" currency="{order.currency}" /></td>
-                            </tr>
+                            <f:then>
+                                <tr>
+                                    <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.vouchers" /></th>
+                                    <td><f:for each="{order.voucherCodes}" as="voucherCode" iteration="iterator">{voucherCode}<f:if condition="{iterator.isLast} == 0"><f:then>, </f:then></f:if></f:for></td>
+                                </tr>
+                                <tr>
+                                    <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.discount" /></th>
+                                    <td><p:format.money value="{order.discountTotalCents}" currency="{order.currency}" /></td>
+                                </tr>
+                            </f:then>
                         </f:if>
                         <f:if condition="{order.shippingMethodUid}">
-                            <tr>
-                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.shipping" /></th>
-                                <td><p:format.money value="{order.shippingTotalCents}" currency="{order.currency}" /></td>
-                            </tr>
+                            <f:then>
+                                <tr>
+                                    <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.shipping" /></th>
+                                    <td><p:format.money value="{order.shippingTotalCents}" currency="{order.currency}" /></td>
+                                </tr>
+                            </f:then>
                         </f:if>
                         <f:if condition="{order.customerNote}">
-                            <tr>
-                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.note" /></th>
-                                <td>{order.customerNote}</td>
-                            </tr>
+                            <f:then>
+                                <tr>
+                                    <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.note" /></th>
+                                    <td>{order.customerNote}</td>
+                                </tr>
+                            </f:then>
                         </f:if>
                     </table>
 
                     <f:if condition="{voucherRedemptions} || {gainedVoucher} || {creditPointsLedger}">
-                        <h3><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.section.discounts_and_rewards" /></h3>
-                        <f:if condition="{voucherRedemptions}">
-                            <table class="table table-striped w-auto">
-                                <thead>
-                                    <tr>
-                                        <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.vouchers" /></th>
-                                        <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.discount" /></th>
-                                        <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.redeemed_at" /></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <f:for each="{voucherRedemptions}" as="redemption">
-                                        <tr>
-                                            <td>{redemption.voucherCode}</td>
-                                            <td><p:format.money value="{redemption.discountTotalCents}" currency="{order.currency}" /></td>
-                                            <td>{redemption.redeemedAt}</td>
-                                        </tr>
-                                    </f:for>
-                                </tbody>
-                            </table>
-                        </f:if>
-                        <f:if condition="{gainedVoucher}">
-                            <p>
-                                <f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.gained_voucher" arguments="{0: gainedVoucher.code}" />
-                                <f:if condition="{gainedVoucher.used}">
-                                    <f:then> (<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.gained_voucher.used" />)</f:then>
-                                    <f:else> (<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.gained_voucher.unused" />)</f:else>
-                                </f:if>
-                            </p>
-                        </f:if>
-                        <f:if condition="{creditPointsLedger}">
-                            <table class="table table-striped w-auto">
-                                <thead>
-                                    <tr>
-                                        <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.credit_points_type" /></th>
-                                        <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.credit_points_points" /></th>
-                                        <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.date" /></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <f:for each="{creditPointsLedger}" as="ledgerRow">
-                                        <tr>
-                                            <td>{ledgerRow.type}</td>
-                                            <td>{ledgerRow.points}</td>
-                                            <td>{ledgerRow.created}</td>
-                                        </tr>
-                                    </f:for>
-                                </tbody>
-                            </table>
-                        </f:if>
+                        <f:then>
+                            <h3><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.section.discounts_and_rewards" /></h3>
+                            <f:if condition="{voucherRedemptions}">
+                                <f:then>
+                                    <table class="table table-striped w-auto">
+                                        <thead>
+                                            <tr>
+                                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.vouchers" /></th>
+                                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.discount" /></th>
+                                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.redeemed_at" /></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <f:for each="{voucherRedemptions}" as="redemption">
+                                                <tr>
+                                                    <td>{redemption.voucherCode}</td>
+                                                    <td><p:format.money value="{redemption.discountTotalCents}" currency="{order.currency}" /></td>
+                                                    <td>{redemption.redeemedAt}</td>
+                                                </tr>
+                                            </f:for>
+                                        </tbody>
+                                    </table>
+                                </f:then>
+                            </f:if>
+                            <f:if condition="{gainedVoucher}">
+                                <f:then>
+                                    <p>
+                                        <f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.gained_voucher" arguments="{0: gainedVoucher.code}" />
+                                        <f:if condition="{gainedVoucher.used}">
+                                            <f:then> (<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.gained_voucher.used" />)</f:then>
+                                            <f:else> (<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.gained_voucher.unused" />)</f:else>
+                                        </f:if>
+                                    </p>
+                                </f:then>
+                            </f:if>
+                            <f:if condition="{creditPointsLedger}">
+                                <f:then>
+                                    <table class="table table-striped w-auto">
+                                        <thead>
+                                            <tr>
+                                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.credit_points_type" /></th>
+                                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.credit_points_points" /></th>
+                                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.date" /></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <f:for each="{creditPointsLedger}" as="ledgerRow">
+                                                <tr>
+                                                    <td>{ledgerRow.type}</td>
+                                                    <td>{ledgerRow.points}</td>
+                                                    <td>{ledgerRow.created}</td>
+                                                </tr>
+                                            </f:for>
+                                        </tbody>
+                                    </table>
+                                </f:then>
+                            </f:if>
+                        </f:then>
                     </f:if>
 
                     <div class="d-flex gap-2 flex-wrap">
                         <f:if condition="{canMarkPaid}">
-                            <form method="post">
-                                <input type="hidden" name="orderUid" value="{order.uid}" />
-                                <input type="hidden" name="action" value="markPaid" />
-                                <button type="submit" class="btn btn-success">
-                                    <f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.action.mark_paid" />
-                                </button>
-                            </form>
+                            <f:then>
+                                <form method="post">
+                                    <input type="hidden" name="orderUid" value="{order.uid}" />
+                                    <input type="hidden" name="action" value="markPaid" />
+                                    <button type="submit" class="btn btn-success">
+                                        <f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.action.mark_paid" />
+                                    </button>
+                                </form>
+                            </f:then>
                         </f:if>
                         <f:if condition="{canRefund}">
-                            <form method="post">
-                                <input type="hidden" name="orderUid" value="{order.uid}" />
-                                <input type="hidden" name="action" value="refund" />
-                                <button type="submit" class="btn btn-warning">
-                                    <f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.action.refund" />
-                                </button>
-                            </form>
+                            <f:then>
+                                <form method="post">
+                                    <input type="hidden" name="orderUid" value="{order.uid}" />
+                                    <input type="hidden" name="action" value="refund" />
+                                    <button type="submit" class="btn btn-warning">
+                                        <f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.action.refund" />
+                                    </button>
+                                </form>
+                            </f:then>
                         </f:if>
                         <f:for each="{availableStatusTransitions}" as="targetStatus">
                             <form method="post">

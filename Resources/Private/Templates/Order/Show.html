@@ -11,17 +11,21 @@
                 {order.billingAddress.country}
             </p>
             <f:if condition="{order.deliveryAddress}">
-                <h4><f:translate key="delivery_address" /></h4>
-                <p>
-                    {order.deliveryAddress.firstName} {order.deliveryAddress.lastName}<br>
-                    {order.deliveryAddress.street}<br>
-                    {order.deliveryAddress.zip} {order.deliveryAddress.city}<br>
-                    {order.deliveryAddress.country}
-                </p>
+                <f:then>
+                    <h4><f:translate key="delivery_address" /></h4>
+                    <p>
+                        {order.deliveryAddress.firstName} {order.deliveryAddress.lastName}<br>
+                        {order.deliveryAddress.street}<br>
+                        {order.deliveryAddress.zip} {order.deliveryAddress.city}<br>
+                        {order.deliveryAddress.country}
+                    </p>
+                </f:then>
             </f:if>
             <f:if condition="{order.giftMessage}">
-                <h4><f:translate key="gift_message" /></h4>
-                <p>{order.giftMessage}</p>
+                <f:then>
+                    <h4><f:translate key="gift_message" /></h4>
+                    <p>{order.giftMessage}</p>
+                </f:then>
             </f:if>
         </div>
         <div class="col-md-6">

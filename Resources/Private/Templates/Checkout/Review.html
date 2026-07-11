@@ -11,25 +11,31 @@
                 {address.country}
             </p>
             <f:if condition="{deliveryAddress}">
-                <h4><f:translate key="delivery_address" /></h4>
-                <p>
-                    {deliveryAddress.firstName} {deliveryAddress.lastName}<br>
-                    {deliveryAddress.street}<br>
-                    {deliveryAddress.zip} {deliveryAddress.city}<br>
-                    {deliveryAddress.country}
-                </p>
+                <f:then>
+                    <h4><f:translate key="delivery_address" /></h4>
+                    <p>
+                        {deliveryAddress.firstName} {deliveryAddress.lastName}<br>
+                        {deliveryAddress.street}<br>
+                        {deliveryAddress.zip} {deliveryAddress.city}<br>
+                        {deliveryAddress.country}
+                    </p>
+                </f:then>
             </f:if>
             <f:if condition="{giftMessage}">
-                <h4><f:translate key="gift_message" /></h4>
-                <p>{giftMessage}</p>
+                <f:then>
+                    <h4><f:translate key="gift_message" /></h4>
+                    <p>{giftMessage}</p>
+                </f:then>
             </f:if>
         </div>
         <div class="col-md-6">
             <h4><f:translate key="payment_method" /></h4>
             <p>{paymentMethod.label}</p>
             <f:if condition="{shippingMethod}">
-                <h4><f:translate key="checkout_shipping_method" /></h4>
-                <p>{shippingMethod.title} - {shippingMethod.rate.decimalString}</p>
+                <f:then>
+                    <h4><f:translate key="checkout_shipping_method" /></h4>
+                    <p>{shippingMethod.title} - {shippingMethod.rate.decimalString}</p>
+                </f:then>
             </f:if>
         </div>
     </div>
@@ -43,11 +49,13 @@
     <div class="mt-4">
         <f:form action="finalize">
             <f:if condition="{creditPointsBalance} > 0">
-                <div class="mb-3">
-                    <label for="spendPoints"><f:translate key="credit_points_balance" arguments="{0: creditPointsBalance}" /></label>
-                    <f:form.textfield name="spendPoints" additionalAttributes="{type: 'number', min: 0, max: creditPointsBalance}" value="0" class="form-control" id="spendPoints" />
-                    <span class="form-text"><f:translate key="credit_points_spend_label" /></span>
-                </div>
+                <f:then>
+                    <div class="mb-3">
+                        <label for="spendPoints"><f:translate key="credit_points_balance" arguments="{0: creditPointsBalance}" /></label>
+                        <f:form.textfield name="spendPoints" additionalAttributes="{type: 'number', min: 0, max: creditPointsBalance}" value="0" class="form-control" id="spendPoints" />
+                        <span class="form-text"><f:translate key="credit_points_spend_label" /></span>
+                    </div>
+                </f:then>
             </f:if>
             <f:form.submit value="{f:translate(key: 'place_order')}" class="btn btn-success btn-lg" />
         </f:form>

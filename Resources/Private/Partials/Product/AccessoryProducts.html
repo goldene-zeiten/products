@@ -1,13 +1,15 @@
 <f:if condition="{accessoryProducts}">
-    <div class="product-accessory-products mt-3">
-        <h6><f:translate key="accessory_products" /></h6>
-        <ul class="list-unstyled">
-            <f:for each="{accessoryProducts}" as="product">
-                <li class="d-flex justify-content-between align-items-center mb-1">
-                    <f:link.action action="show" arguments="{product: product}">{product.title}</f:link.action>
-                    <f:render partial="Product/Price" arguments="{price: product.price}" />
-                </li>
-            </f:for>
-        </ul>
-    </div>
+    <f:then>
+        <div class="product-accessory-products mt-3">
+            <h6><f:translate key="accessory_products" /></h6>
+            <ul class="list-unstyled">
+                <f:for each="{accessoryProducts}" as="product">
+                    <li class="d-flex justify-content-between align-items-center mb-1">
+                        <f:link.action action="show" arguments="{product: product}">{product.title}</f:link.action>
+                        <f:render partial="Product/Price" arguments="{price: product.price}" />
+                    </li>
+                </f:for>
+            </ul>
+        </div>
+    </f:then>
 </f:if>

@@ -1,12 +1,14 @@
 <f:if condition="{relatedProducts}">
-    <div class="product-related-products mt-5">
-        <h3><f:translate key="related_products" /></h3>
-        <div class="row">
-            <f:for each="{relatedProducts}" as="product">
-                <div class="col-md-4">
-                    <f:render partial="Product/ListItem" arguments="{product: product}" />
-                </div>
-            </f:for>
+    <f:then>
+        <div class="product-related-products mt-5">
+            <h3><f:translate key="related_products" /></h3>
+            <div class="row">
+                <f:for each="{relatedProducts}" as="product">
+                    <div class="col-md-4">
+                        <f:render partial="Product/ListItem" arguments="{product: product}" />
+                    </div>
+                </f:for>
+            </div>
         </div>
-    </div>
+    </f:then>
 </f:if>
