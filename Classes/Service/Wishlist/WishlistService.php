@@ -11,7 +11,7 @@ use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Domain\Repository\WishlistItemRepository;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 /**
@@ -22,32 +22,25 @@ use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
  */
 final class WishlistService
 {
-    /**
-     * @var array<string, mixed>
-     */
-    private array $settings;
-
     public function __construct(
         private readonly WishlistItemRepository $wishlistItemRepository,
         private readonly WishlistStorage $wishlistStorage,
         private readonly ProductRepository $productRepository,
         private readonly FrontendUserResolver $frontendUserResolver,
-        private readonly PersistenceManagerInterface $persistenceManager,
-        ConfigurationManagerInterface $configurationManager
-    ) {
-        $this->settings = $configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
-        );
-    }
+        private readonly PersistenceManagerInterface $persistenceManager
+    ) {}
 
     /**
      * Gates only the "add/remove to wishlist" affordance on product list/detail templates - the
      * plugin/controller itself works regardless, opt-in by placing it on a page.
      */
-    public function isEnabled(): bool
+    public function isEnabled(ServerRequestInterface $request): bool
     {
-        return (bool)($this->settings['wishlist']['enabled'] ?? false);
+        $site = $request->getAttribute('site');
+        if (!$site instanceof SiteInterface) {
+            return false;
+        }
+        return (bool)$site->getSettings()->get('products.wishlist.enabled', false);
     }
 
     public function add(ServerRequestInterface $request, int $productUid): void

@@ -7,9 +7,6 @@ namespace GoldeneZeiten\Products\Tests\Functional\Service\Wishlist;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Model\OrderItem;
 use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Domain\Repository\WishlistItemRepository;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Wishlist\WishlistService;
 use GoldeneZeiten\Products\Service\Wishlist\WishlistStorage;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
@@ -17,9 +14,8 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class WishlistServiceTest extends AbstractFunctionalTestCase
@@ -34,18 +30,7 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/wishlist.csv');
-        // WishlistStorage reads Extbase settings eagerly in its constructor (cookie-consent gate),
-        // which requires a request resolvable via $GLOBALS['TYPO3_REQUEST'] outside a real dispatch.
-        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $this->subject = new WishlistService(
-            $this->get(WishlistItemRepository::class),
-            $this->get(WishlistStorage::class),
-            $this->get(ProductRepository::class),
-            $this->get(FrontendUserResolver::class),
-            $this->get(PersistenceManagerInterface::class),
-            $this->fakeConfigurationManager()
-        );
+        $this->subject = $this->get(WishlistService::class);
     }
 
     #[Test]
@@ -244,11 +229,15 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
     {
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
         $frontendUser->initializeUserSessionManager();
-        $guestRequest = (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        $guestRequest = (new ServerRequest('http://localhost/'))
+            ->withAttribute('frontend.user', $frontendUser)
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
         $this->subject->add($guestRequest, 1);
 
         $frontendUser->user = ['uid' => 5];
-        $identifiedRequest = (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        $identifiedRequest = (new ServerRequest('http://localhost/'))
+            ->withAttribute('frontend.user', $frontendUser)
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
         $this->subject->mergeSessionIntoAccount($identifiedRequest);
 
         self::assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($identifiedRequest)));
@@ -260,11 +249,15 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
     {
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
         $frontendUser->initializeUserSessionManager();
-        $guestRequest = (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        $guestRequest = (new ServerRequest('http://localhost/'))
+            ->withAttribute('frontend.user', $frontendUser)
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
         $this->subject->add($guestRequest, 1);
 
         $frontendUser->user = ['uid' => 5];
-        $identifiedRequest = (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        $identifiedRequest = (new ServerRequest('http://localhost/'))
+            ->withAttribute('frontend.user', $frontendUser)
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
         $this->subject->add($identifiedRequest, 1);
 
         $this->subject->mergeSessionIntoAccount($identifiedRequest);
@@ -286,17 +279,14 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function isEnabledReflectsTheSiteSetting(): void
     {
-        self::assertTrue($this->subject->isEnabled());
+        $requestWithoutSite = $this->requestFor(0);
+        self::assertFalse($this->subject->isEnabled($requestWithoutSite));
 
-        $disabled = new WishlistService(
-            $this->get(WishlistItemRepository::class),
-            $this->get(WishlistStorage::class),
-            $this->get(ProductRepository::class),
-            $this->get(FrontendUserResolver::class),
-            $this->get(PersistenceManagerInterface::class),
-            $this->fakeConfigurationManager(enabled: false)
-        );
-        self::assertFalse($disabled->isEnabled());
+        $enabledSite = new Site('products', 1, ['settings' => ['products' => ['wishlist' => ['enabled' => true]]]]);
+        self::assertTrue($this->subject->isEnabled($requestWithoutSite->withAttribute('site', $enabledSite)));
+
+        $disabledSite = new Site('products', 1, ['settings' => ['products' => ['wishlist' => ['enabled' => false]]]]);
+        self::assertFalse($this->subject->isEnabled($requestWithoutSite->withAttribute('site', $disabledSite)));
     }
 
     /**
@@ -308,30 +298,6 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
         return array_map(static fn(Product $product): string => $product->getTitle(), $products);
     }
 
-    private function fakeConfigurationManager(bool $enabled = true): ConfigurationManagerInterface
-    {
-        return new class ($enabled) implements ConfigurationManagerInterface {
-            public function __construct(
-                private readonly bool $enabled
-            ) {}
-
-            /**
-             * @return array<string, mixed>
-             */
-            public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
-            {
-                return ['wishlist' => ['enabled' => $this->enabled]];
-            }
-
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function setConfiguration(array $configuration = []): void {}
-
-            public function setRequest(ServerRequestInterface $request): void {}
-        };
-    }
-
     private function requestFor(int $frontendUserUid): ServerRequestInterface
     {
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
@@ -339,7 +305,9 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
         if ($frontendUserUid > 0) {
             $frontendUser->user = ['uid' => $frontendUserUid];
         }
-        return (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('frontend.user', $frontendUser)
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
     /**

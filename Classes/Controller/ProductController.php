@@ -68,7 +68,7 @@ final class ProductController extends ActionController
      */
     private function wishlistViewVariables(): array
     {
-        $enabled = $this->wishlistService->isEnabled();
+        $enabled = $this->wishlistService->isEnabled($this->request);
         $productUids = $enabled
             ? array_map(static fn(Product $product): int => $product->getUid() ?? 0, $this->wishlistService->getItems($this->request))
             : [];

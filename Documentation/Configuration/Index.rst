@@ -166,6 +166,14 @@ from. Set it before creating any content.
         Whether the customer gets an email when an order's status changes (see
         :ref:`Managing orders <users-manual-orders>`).
 
+    ..  confval:: products.email.orderBccRecipient
+        :type: string
+        :Default: (empty)
+
+        A standing blind-copy recipient (e.g. an accounting/archival mailbox) added to every
+        order confirmation, merchant notification, status-changed, and withdrawal email. Empty
+        disables it.
+
     ..  confval:: products.stock.lowStockThreshold
         :type: int
         :Default: 5
@@ -247,9 +255,11 @@ from. Set it before creating any content.
         :type: string
         :Default: perProduct
 
-        Either ``perProduct`` (each line's own credit-point value, summed across the basket) or
+        One of ``perProduct`` (each line's own credit-point value, summed across the basket),
         ``basketTiered`` (the single highest-qualifying tier from `products.creditPoints.earningTiers`
-        wins, not summed).
+        wins, not summed), or ``autoPriceFactor`` (a line with no explicit credit-point value earns
+        points via `products.creditPoints.priceFactor` instead of 0; a line that does have one
+        always keeps using it, even in this mode).
 
     ..  confval:: products.creditPoints.earningTiers
         :type: stringlist
@@ -257,6 +267,13 @@ from. Set it before creating any content.
 
         ``basketTiered`` mode thresholds as ``amount:points`` pairs, e.g. ``50.00:10``. The highest
         threshold at or below the basket total wins; malformed entries are silently skipped.
+
+    ..  confval:: products.creditPoints.priceFactor
+        :type: number
+        :Default: 0.0
+
+        ``autoPriceFactor`` mode: points earned per whole currency unit, for lines without their
+        own explicit credit-points value.
 
     ..  confval:: products.shipping.enabled
         :type: bool
@@ -339,6 +356,14 @@ from. Set it before creating any content.
         :Default: 10
 
         Maximum number of recently-viewed products remembered per visitor.
+
+    ..  confval:: products.mostViewed.limit
+        :type: int
+        :Default: 10
+
+        Maximum number of products shown in the site-wide and per-shopper "most viewed" listings
+        (the :rst:dir:`RecentlyViewed` plugin's ``mostViewed``/``myMostViewed`` actions). See
+        :ref:`Most viewed <users-manual-most-viewed>`.
 
     ..  confval:: products.search.resultsPerPage
         :type: int

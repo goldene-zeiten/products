@@ -91,6 +91,15 @@ higher, never both. Each step decorates the concrete class beneath it (not the i
 order is fixed at this one binding in ``Services.yaml`` rather than discoverable/pluggable; a shop
 needing a genuinely different pricing strategy overrides that alias.
 
+Invoice rendering
+=================
+
+:php:`GoldeneZeiten\Products\Service\Invoice\InvoicePdfService` dispatches a
+:php:`BeforeInvoiceRenderedEvent` (order + rendered HTML) before converting that HTML to a PDF
+with dompdf. A listener calling :php:`$event->setReplacementPdf()` replaces the document entirely —
+a different PDF engine, or a wholly custom layout — without reimplementing
+:php:`InvoicePdfService`/:php:`InvoiceRenderer` themselves.
+
 ..  _introduction-order-export:
 
 Order export
