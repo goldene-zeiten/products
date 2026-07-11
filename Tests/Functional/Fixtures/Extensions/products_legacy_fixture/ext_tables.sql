@@ -109,6 +109,7 @@ CREATE TABLE tt_products_articles (
 	uid_product int(11) DEFAULT '0' NOT NULL,
 	basketminquantity decimal(19,2) DEFAULT '0.00' NOT NULL,
 	basketmaxquantity decimal(19,2) DEFAULT '0.00' NOT NULL,
+	config mediumtext,
 	image text,
 	smallimage text,
 

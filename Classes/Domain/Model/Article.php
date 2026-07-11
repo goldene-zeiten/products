@@ -19,6 +19,7 @@ class Article extends AbstractEntity
     protected string $ean = '';
     /** @var string */
     protected string $price = '0.00';
+    protected string $priceMode = 'override';
     /** @var string */
     protected string $directCost = '0.00';
     /** @var string */
@@ -107,6 +108,22 @@ class Article extends AbstractEntity
     public function setPrice(Money $price): void
     {
         $this->price = $price->getDecimalString();
+    }
+
+    /**
+     * "override" (default): the article's own price fully replaces the product's, unless it is
+     * the 0.00 = inherit sentinel. "surcharge": the article's price is instead added on top of the
+     * product's base price (0.00 still means "no surcharge", same sentinel either way) - see
+     * ProductPriceProvider.
+     */
+    public function getPriceMode(): string
+    {
+        return $this->priceMode;
+    }
+
+    public function setPriceMode(string $priceMode): void
+    {
+        $this->priceMode = $priceMode;
     }
 
     public function getDirectCost(): Money

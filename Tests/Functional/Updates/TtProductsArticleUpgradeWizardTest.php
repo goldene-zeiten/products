@@ -56,6 +56,19 @@ final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCas
     }
 
     #[Test]
+    public function isAddedPriceFlexFormFlagMapsToSurchargePriceMode(): void
+    {
+        self::assertTrue($this->subject->executeUpdate());
+
+        $withoutFlag = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
+        $withFlag = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 4, self::LOCAL_TABLE);
+        self::assertNotNull($withoutFlag);
+        self::assertNotNull($withFlag);
+        self::assertSame('override', $this->fetchField((int)$withoutFlag, 'price_mode'));
+        self::assertSame('surcharge', $this->fetchField((int)$withFlag, 'price_mode'));
+    }
+
+    #[Test]
     public function articleWithMissingProductIsSkippedAndWarns(): void
     {
         self::assertTrue($this->subject->executeUpdate());
