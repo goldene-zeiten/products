@@ -35,16 +35,28 @@ final class PaymentInitiationService
         return $paymentResult;
     }
 
+    /**
+     * Reuses an existing not-yet-approved transaction for the same order/method instead of
+     * inserting a duplicate row - a resubmitted checkout/double-click/timeout-retry must not
+     * pollute payment reporting/reconciliation with multiple rows for the same attempt.
+     */
     private function persistPaymentTransaction(Order $order, PaymentMethodInterface $paymentMethod, PaymentResult $paymentResult): void
     {
-        $transaction = new PaymentTransaction();
-        $transaction->setOrderUid($order->getUid() ?? 0);
+        $orderUid = $order->getUid() ?? 0;
+        $existing = $this->paymentTransactionRepository->findOneNotYetApproved($orderUid, $paymentMethod->getIdentifier());
+        $transaction = $existing ?? new PaymentTransaction();
+        $transaction->setOrderUid($orderUid);
         $transaction->setPaymentMethod($paymentMethod->getIdentifier());
         $transaction->setState($paymentResult->getState()->value);
         $transaction->setAmount($order->getTotalGross()->getCents());
         $transaction->setCurrency($order->getCurrency());
         $transaction->setRawData($paymentResult->getRawData());
-        $this->paymentTransactionRepository->add($transaction);
+
+        if ($existing !== null) {
+            $this->paymentTransactionRepository->update($transaction);
+        } else {
+            $this->paymentTransactionRepository->add($transaction);
+        }
         $this->persistenceManager->persistAll();
     }
 }

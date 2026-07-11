@@ -1,0 +1,8 @@
+"pages",,,,,,
+,"uid","pid","sorting","deleted","title","slug"
+,1,0,256,0,"Root","/"
+,2,1,256,0,"Shop","/shop"
+
+"tx_products_domain_model_order",,,,,,,,,,,
+,"uid","pid","deleted","order_number","frontend_user","email","currency","total_gross","items","status","payment_status"
+,1,2,0,"ORD-1",0,"guest@example.com","EUR",1999,0,"pending","open"

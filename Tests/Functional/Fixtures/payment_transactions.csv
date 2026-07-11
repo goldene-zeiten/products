@@ -1,0 +1,5 @@
+"tx_products_domain_model_paymenttransaction",,,,,,,
+,"uid","pid","order_uid","payment_method","external_id","state","amount","currency"
+,1,2,100,"invoice","EXT-1","pending",1999,"EUR"
+,2,2,100,"paypal","EXT-2","completed",2999,"EUR"
+,3,2,101,"invoice","EXT-3","failed",999,"EUR"
