@@ -119,11 +119,11 @@ ExtensionUtility::configurePlugin(
     'Products',
     'RecentlyViewed',
     [
-        RecentlyViewedController::class => 'list',
+        RecentlyViewedController::class => 'list, mostViewed, myMostViewed',
     ],
-    // non-cacheable actions
+    // non-cacheable actions (myMostViewed is per-shopper, list/mostViewed are cacheable)
     [
-        RecentlyViewedController::class => 'list',
+        RecentlyViewedController::class => 'myMostViewed',
     ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );

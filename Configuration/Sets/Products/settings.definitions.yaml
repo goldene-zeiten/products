@@ -244,6 +244,11 @@ settings:
     default: 10
     label: Maximum number of recently-viewed products remembered per visitor
     category: products
+  products.mostViewed.limit:
+    type: int
+    default: 10
+    label: Maximum number of products shown in the site-wide/per-shopper "most viewed" listings
+    category: products
   products.search.resultsPerPage:
     type: int
     default: 20
