@@ -31,7 +31,7 @@ final class InvoiceController extends ActionController
             );
         }
 
-        $pdf = $this->invoicePdfService->renderToPdf($this->invoiceRenderer->render($orderObject));
+        $pdf = $this->invoicePdfService->renderToPdf($orderObject, $this->invoiceRenderer->render($orderObject));
 
         return $this->responseFactory->createResponse()
             ->withHeader('Content-Type', 'application/pdf')
