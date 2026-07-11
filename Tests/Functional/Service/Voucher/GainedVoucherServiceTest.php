@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Service\Voucher;
 
+use GoldeneZeiten\Products\Configuration\GainedVoucherConfiguration;
 use GoldeneZeiten\Products\Domain\Enum\VoucherDiscountType;
 use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Repository\GainedVoucherRepository;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Domain\Repository\VoucherRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\Voucher\GainedVoucherService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
@@ -27,7 +24,7 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function nothingIsIssuedWhileTheFeatureIsDisabled(): void
     {
-        $voucher = $this->subject(enabled: false)->maybeIssue($this->order(frontendUser: 5, totalGross: '100.00'));
+        $voucher = $this->subject()->maybeIssue($this->order(frontendUser: 5, totalGross: '100.00'), $this->configuration(enabled: false));
 
         self::assertNull($voucher);
     }
@@ -35,7 +32,7 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function nothingIsIssuedBelowTheMinimumOrderValue(): void
     {
-        $voucher = $this->subject(enabled: true, minimumOrderValue: '50.00')->maybeIssue($this->order(frontendUser: 5, totalGross: '49.99'));
+        $voucher = $this->subject()->maybeIssue($this->order(frontendUser: 5, totalGross: '49.99'), $this->configuration(enabled: true, minimumOrderValue: '50.00'));
 
         self::assertNull($voucher);
     }
@@ -44,7 +41,8 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
     public function aQualifyingOrderIssuesANonCombinableSingleUseVoucher(): void
     {
         $order = $this->order(frontendUser: 5, totalGross: '100.00', orderNumber: 'ORD-42');
-        $voucher = $this->subject(enabled: true, minimumOrderValue: '50.00', rewardType: 'fixed', rewardValue: '7.50')->maybeIssue($order);
+        $configuration = $this->configuration(enabled: true, minimumOrderValue: '50.00', rewardType: 'fixed', rewardValue: '7.50');
+        $voucher = $this->subject()->maybeIssue($order, $configuration);
 
         self::assertNotNull($voucher);
         self::assertStringStartsWith('GAINED-', $voucher->getCode());
@@ -60,7 +58,7 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
     public function aGuestOrderIssuesAnUnboundVoucher(): void
     {
         $order = $this->order(frontendUser: 0, totalGross: '100.00');
-        $voucher = $this->subject(enabled: true, minimumOrderValue: '50.00')->maybeIssue($order);
+        $voucher = $this->subject()->maybeIssue($order, $this->configuration(enabled: true, minimumOrderValue: '50.00'));
 
         self::assertNotNull($voucher);
         self::assertSame(0, $voucher->getBoundFrontendUser());
@@ -70,7 +68,7 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
     public function issuedVouchersArePersistedAndFindableByCode(): void
     {
         $order = $this->order(frontendUser: 5, totalGross: '100.00');
-        $voucher = $this->subject(enabled: true, minimumOrderValue: '50.00')->maybeIssue($order);
+        $voucher = $this->subject()->maybeIssue($order, $this->configuration(enabled: true, minimumOrderValue: '50.00'));
         self::assertNotNull($voucher);
 
         $found = $this->get(VoucherRepository::class)->findOneByCode($voucher->getCode());
@@ -81,60 +79,33 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function twoIssuedVouchersGetDifferentCodes(): void
     {
-        $subject = $this->subject(enabled: true, minimumOrderValue: '50.00');
-        $first = $subject->maybeIssue($this->order(frontendUser: 5, totalGross: '100.00'));
-        $second = $subject->maybeIssue($this->order(frontendUser: 6, totalGross: '100.00'));
+        $configuration = $this->configuration(enabled: true, minimumOrderValue: '50.00');
+        $subject = $this->subject();
+        $first = $subject->maybeIssue($this->order(frontendUser: 5, totalGross: '100.00'), $configuration);
+        $second = $subject->maybeIssue($this->order(frontendUser: 6, totalGross: '100.00'), $configuration);
 
         self::assertNotNull($first);
         self::assertNotNull($second);
         self::assertNotSame($first->getCode(), $second->getCode());
     }
 
-    private function subject(
+    private function subject(): GainedVoucherService
+    {
+        return $this->get(GainedVoucherService::class);
+    }
+
+    private function configuration(
         bool $enabled,
         string $minimumOrderValue = '0.00',
         string $rewardType = 'fixed',
         string $rewardValue = '5.00'
-    ): GainedVoucherService {
-        return new GainedVoucherService(
-            $this->get(GainedVoucherRepository::class),
-            $this->get(VoucherRepository::class),
-            $this->get(PersistenceManagerInterface::class),
-            $this->get(EventDispatcherInterface::class),
-            $this->fakeConfigurationManager($enabled, $minimumOrderValue, $rewardType, $rewardValue)
+    ): GainedVoucherConfiguration {
+        return new GainedVoucherConfiguration(
+            $enabled,
+            Money::fromDecimalString($minimumOrderValue),
+            VoucherDiscountType::tryFrom($rewardType) ?? VoucherDiscountType::FIXED,
+            $rewardValue
         );
-    }
-
-    private function fakeConfigurationManager(bool $enabled, string $minimumOrderValue, string $rewardType, string $rewardValue): ConfigurationManagerInterface
-    {
-        return new class ($enabled, $minimumOrderValue, $rewardType, $rewardValue) implements ConfigurationManagerInterface {
-            public function __construct(
-                private readonly bool $enabled,
-                private readonly string $minimumOrderValue,
-                private readonly string $rewardType,
-                private readonly string $rewardValue
-            ) {}
-
-            /**
-             * @return array<string, mixed>
-             */
-            public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
-            {
-                return ['vouchers' => ['gained' => [
-                    'enabled' => $this->enabled,
-                    'minimumOrderValue' => $this->minimumOrderValue,
-                    'rewardType' => $this->rewardType,
-                    'rewardValue' => $this->rewardValue,
-                ]]];
-            }
-
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function setConfiguration(array $configuration = []): void {}
-
-            public function setRequest(ServerRequestInterface $request): void {}
-        };
     }
 
     private function order(int $frontendUser, string $totalGross, string $orderNumber = 'ORD-1'): Order

@@ -4,46 +4,23 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\EndToEnd;
 
-use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\Repository\CreditPointsTransactionRepository;
-use GoldeneZeiten\Products\Domain\Repository\GainedVoucherRepository;
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Domain\Repository\VoucherRedemptionRepository;
 use GoldeneZeiten\Products\Domain\Repository\VoucherRepository;
 use GoldeneZeiten\Products\Event\AfterOrderPlacedEvent;
 use GoldeneZeiten\Products\EventListener\IssueGainedVoucherListener;
-use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Service\Basket\BasketService;
-use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
-use GoldeneZeiten\Products\Service\Order\OrderCreationService;
-use GoldeneZeiten\Products\Service\Order\OrderFactory;
-use GoldeneZeiten\Products\Service\Order\OrderFinalizationService;
 use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
-use GoldeneZeiten\Products\Service\Order\OrderPlacementTransaction;
-use GoldeneZeiten\Products\Service\Order\PaymentInitiationService;
-use GoldeneZeiten\Products\Service\Order\StockService;
-use GoldeneZeiten\Products\Service\Shipping\HandlingFeeService;
-use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
-use GoldeneZeiten\Products\Service\Voucher\GainedVoucherService;
-use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log\NullLogger;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
@@ -65,14 +42,13 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/m4_end_to_end.csv');
-        // CreditPointsService/GainedVoucherService still read Extbase settings eagerly in their
-        // constructors, which requires a request resolvable via $GLOBALS['TYPO3_REQUEST'] outside
-        // a real dispatch.
+        // CategoryDiscountPriceProvider still reads Extbase settings eagerly in its constructor,
+        // which requires a request resolvable via $GLOBALS['TYPO3_REQUEST'] outside a real dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
 
         $this->basketService = $this->get(BasketService::class);
-        $this->orderPlacementService = $this->buildOrderPlacementService();
+        $this->orderPlacementService = $this->get(OrderPlacementService::class);
 
         $product = $this->get(ProductRepository::class)->findByUid(1);
         self::assertInstanceOf(Product::class, $product);
@@ -100,7 +76,7 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
         self::assertSame('Jane', $deliveryAddress->getFirstName());
         self::assertSame('Happy birthday!', $order->getGiftMessage());
 
-        $this->issueGainedVoucherFor($order);
+        $this->issueGainedVoucherFor($order, $request);
 
         $voucher = $this->get(VoucherRepository::class)->findOneByCode($this->gainedVoucherCodeFor($order->getUid() ?? 0));
         self::assertNotNull($voucher, 'A gained voucher must have been issued for clearing the reward threshold.');
@@ -108,10 +84,10 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
         self::assertSame(1, $voucher->getUsageLimit());
     }
 
-    private function issueGainedVoucherFor(Order $order): void
+    private function issueGainedVoucherFor(Order $order, ServerRequestInterface $request): void
     {
-        $listener = new IssueGainedVoucherListener($this->buildGainedVoucherService(), new NullLogger());
-        $listener(new AfterOrderPlacedEvent($order, new ServerRequest('http://localhost/')));
+        $listener = $this->get(IssueGainedVoucherListener::class);
+        $listener(new AfterOrderPlacedEvent($order, $request));
     }
 
     private function gainedVoucherCodeFor(int $orderUid): string
@@ -124,85 +100,6 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
         return (string)$row['code'];
     }
 
-    private function buildGainedVoucherService(): GainedVoucherService
-    {
-        return new GainedVoucherService(
-            $this->get(GainedVoucherRepository::class),
-            $this->get(VoucherRepository::class),
-            $this->get(PersistenceManagerInterface::class),
-            $this->get(EventDispatcherInterface::class),
-            $this->fakeConfigurationManager(['vouchers' => ['gained' => [
-                'enabled' => true,
-                'minimumOrderValue' => '1.00',
-                'rewardType' => 'fixed',
-                'rewardValue' => '5.00',
-            ]]])
-        );
-    }
-
-    private function buildOrderPlacementService(): OrderPlacementService
-    {
-        $orderCreationService = new OrderCreationService(
-            $this->get(StockService::class),
-            $this->get(OrderRepository::class),
-            $this->get(OrderFactory::class),
-            $this->get(PersistenceManagerInterface::class),
-            $this->get(EventDispatcherInterface::class),
-            $this->get(VoucherService::class),
-            $this->get(VoucherRedemptionRepository::class),
-            $this->get(CreditPointsService::class),
-            $this->get(CreditPointsTransactionRepository::class),
-            $this->get(FrontendUserResolver::class),
-            $this->get(ShippingCostService::class),
-            $this->get(HandlingFeeService::class),
-            $this->get(ProductsConfigurationFactory::class)
-        );
-        $orderPlacementTransaction = new OrderPlacementTransaction(
-            $this->get(ConnectionPool::class),
-            $orderCreationService,
-            $this->get(PaymentInitiationService::class)
-        );
-        return new OrderPlacementService(
-            $this->basketService,
-            $this->get(PaymentMethodRegistry::class),
-            $orderPlacementTransaction,
-            $this->get(OrderFinalizationService::class),
-            $this->get(EventDispatcherInterface::class),
-            $this->get(CreditPointsService::class),
-            $this->get(FrontendUserResolver::class)
-        );
-    }
-
-    /**
-     * @param array<string, mixed> $configuration
-     */
-    private function fakeConfigurationManager(array $configuration): ConfigurationManagerInterface
-    {
-        return new class ($configuration) implements ConfigurationManagerInterface {
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function __construct(
-                private readonly array $configuration
-            ) {}
-
-            /**
-             * @return array<string, mixed>
-             */
-            public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
-            {
-                return $this->configuration;
-            }
-
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function setConfiguration(array $configuration = []): void {}
-
-            public function setRequest(ServerRequestInterface $request): void {}
-        };
-    }
-
     private function requestFor(int $frontendUserUid): ServerRequestInterface
     {
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
@@ -210,7 +107,15 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
         if ($frontendUserUid > 0) {
             $frontendUser->user = ['uid' => $frontendUserUid];
         }
-        $site = new Site('products', 1, ['settings' => ['products' => ['shipping' => ['enabled' => true]]]]);
+        $site = new Site('products', 1, ['settings' => ['products' => [
+            'shipping' => ['enabled' => true],
+            'vouchers' => ['gained' => [
+                'enabled' => true,
+                'minimumOrderValue' => '1.00',
+                'rewardType' => 'fixed',
+                'rewardValue' => '5.00',
+            ]],
+        ]]]);
         return (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
             ->withAttribute('frontend.user', $frontendUser)

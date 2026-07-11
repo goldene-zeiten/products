@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Service\CreditPoints;
 
+use GoldeneZeiten\Products\Configuration\CreditPointsConfiguration;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Domain\Dto\CreditPointsEarningTier;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
@@ -13,9 +15,6 @@ use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
 use GoldeneZeiten\Products\Service\CreditPoints\Exception\InsufficientCreditPointsException;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
-use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 final class CreditPointsServiceTest extends AbstractFunctionalTestCase
 {
@@ -60,62 +59,54 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function earnedPointsSumTheProductRateAcrossBasketLinesAndQuantities(): void
     {
-        self::assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel()));
+        self::assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel(), $this->configuration()));
     }
 
     #[Test]
     public function perProductModeIgnoresConfiguredTiers(): void
     {
-        $subject = $this->subject(earningMode: 'perProduct', earningTiers: ['0.00:999']);
+        $configuration = $this->configuration(earningMode: 'perProduct', earningTiers: ['0.00:999']);
 
-        self::assertSame(10 * 2 + 5 * 3, $subject->calculateEarnedPoints($this->basketViewModel()));
+        self::assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel(), $configuration));
     }
 
     #[Test]
     public function basketTieredModeAwardsTheHighestQualifyingTiersPoints(): void
     {
-        $subject = $this->subject(earningMode: 'basketTiered', earningTiers: ['50.00:10', '100.00:25']);
+        $configuration = $this->configuration(earningMode: 'basketTiered', earningTiers: ['50.00:10', '100.00:25']);
 
-        self::assertSame(10, $subject->calculateEarnedPoints($this->basketWithTotal('75.00')));
-        self::assertSame(25, $subject->calculateEarnedPoints($this->basketWithTotal('150.00')));
+        self::assertSame(10, $this->subject()->calculateEarnedPoints($this->basketWithTotal('75.00'), $configuration));
+        self::assertSame(25, $this->subject()->calculateEarnedPoints($this->basketWithTotal('150.00'), $configuration));
     }
 
     #[Test]
     public function basketTieredModeAwardsNoPointsBelowTheLowestTier(): void
     {
-        $subject = $this->subject(earningMode: 'basketTiered', earningTiers: ['50.00:10']);
+        $configuration = $this->configuration(earningMode: 'basketTiered', earningTiers: ['50.00:10']);
 
-        self::assertSame(0, $subject->calculateEarnedPoints($this->basketWithTotal('49.99')));
+        self::assertSame(0, $this->subject()->calculateEarnedPoints($this->basketWithTotal('49.99'), $configuration));
     }
 
     #[Test]
     public function basketTieredModeAtExactlyTheThresholdQualifies(): void
     {
-        $subject = $this->subject(earningMode: 'basketTiered', earningTiers: ['50.00:10']);
+        $configuration = $this->configuration(earningMode: 'basketTiered', earningTiers: ['50.00:10']);
 
-        self::assertSame(10, $subject->calculateEarnedPoints($this->basketWithTotal('50.00')));
-    }
-
-    #[Test]
-    public function basketTieredModeIgnoresMalformedTierEntries(): void
-    {
-        $subject = $this->subject(earningMode: 'basketTiered', earningTiers: ['not-a-tier', '50.00:10']);
-
-        self::assertSame(10, $subject->calculateEarnedPoints($this->basketWithTotal('75.00')));
+        self::assertSame(10, $this->subject()->calculateEarnedPoints($this->basketWithTotal('50.00'), $configuration));
     }
 
     #[Test]
     public function autoPriceFactorModeUsesTheExplicitRateWhenPresent(): void
     {
-        $subject = $this->subject(earningMode: 'autoPriceFactor', priceFactor: 1.0);
+        $configuration = $this->configuration(earningMode: 'autoPriceFactor', priceFactor: 1.0);
 
-        self::assertSame(10 * 2 + 5 * 3, $subject->calculateEarnedPoints($this->basketViewModel()));
+        self::assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel(), $configuration));
     }
 
     #[Test]
     public function autoPriceFactorModeConvertsPriceToPointsForUnratedLines(): void
     {
-        $subject = $this->subject(earningMode: 'autoPriceFactor', priceFactor: 2.0);
+        $configuration = $this->configuration(earningMode: 'autoPriceFactor', priceFactor: 2.0);
         $unratedProduct = new Product();
         $unratedProduct->setCreditPoints(0);
         $unitPrice = Money::fromDecimalString('10.00');
@@ -124,13 +115,13 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
         $basket = new BasketViewModel([$item], $lineTotal, $lineTotal, Money::fromCents(0), 'EUR');
 
         // lineTotalGross 30.00 * priceFactor 2.0 = 60 points
-        self::assertSame(60, $subject->calculateEarnedPoints($basket));
+        self::assertSame(60, $this->subject()->calculateEarnedPoints($basket, $configuration));
     }
 
     #[Test]
     public function redeemClampsToBalanceWhenMoreIsRequestedThanAvailable(): void
     {
-        $redemption = $this->subject()->redeem(1, 1000, Money::fromDecimalString('1000.00'));
+        $redemption = $this->subject()->redeem(1, 1000, Money::fromDecimalString('1000.00'), $this->configuration());
 
         self::assertSame(70, $redemption->getPoints());
         self::assertSame(700, $redemption->getDiscountAmount()->getCents());
@@ -139,7 +130,7 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function redeemClampsToWhatTheBasketCanAbsorb(): void
     {
-        $redemption = $this->subject()->redeem(1, 70, Money::fromDecimalString('3.00'));
+        $redemption = $this->subject()->redeem(1, 70, Money::fromDecimalString('3.00'), $this->configuration());
 
         self::assertSame(30, $redemption->getPoints());
         self::assertSame(300, $redemption->getDiscountAmount()->getCents());
@@ -148,13 +139,15 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function guestsCanNeverRedeemPoints(): void
     {
-        self::assertTrue($this->subject()->redeem(0, 100, Money::fromDecimalString('1000.00'))->isEmpty());
+        self::assertTrue($this->subject()->redeem(0, 100, Money::fromDecimalString('1000.00'), $this->configuration())->isEmpty());
     }
 
     #[Test]
     public function redeemIsANoOpWhenTheFeatureIsDisabled(): void
     {
-        self::assertTrue($this->subject(enabled: false)->redeem(1, 10, Money::fromDecimalString('100.00'))->isEmpty());
+        $configuration = $this->configuration(enabled: false);
+
+        self::assertTrue($this->subject()->redeem(1, 10, Money::fromDecimalString('100.00'), $configuration)->isEmpty());
     }
 
     #[Test]
@@ -173,55 +166,31 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
         $this->addToAssertionCount(1);
     }
 
-    /**
-     * @param string[] $earningTiers
-     */
-    private function subject(bool $enabled = true, string $moneyPerPoint = '0.10', string $earningMode = 'perProduct', array $earningTiers = [], float $priceFactor = 0.0): CreditPointsService
+    private function subject(): CreditPointsService
     {
-        return new CreditPointsService(
-            $this->get(ConnectionPool::class),
-            $this->fakeConfigurationManager($enabled, $moneyPerPoint, $earningMode, $earningTiers, $priceFactor)
-        );
+        return $this->get(CreditPointsService::class);
     }
 
     /**
      * @param string[] $earningTiers
      */
-    private function fakeConfigurationManager(bool $enabled, string $moneyPerPoint, string $earningMode, array $earningTiers, float $priceFactor = 0.0): ConfigurationManagerInterface
+    private function configuration(bool $enabled = true, string $moneyPerPoint = '0.10', string $earningMode = 'perProduct', array $earningTiers = [], float $priceFactor = 0.0): CreditPointsConfiguration
     {
-        return new class ($enabled, $moneyPerPoint, $earningMode, $earningTiers, $priceFactor) implements ConfigurationManagerInterface {
-            /**
-             * @param string[] $earningTiers
-             */
-            public function __construct(
-                private readonly bool $enabled,
-                private readonly string $moneyPerPoint,
-                private readonly string $earningMode,
-                private readonly array $earningTiers,
-                private readonly float $priceFactor
-            ) {}
+        return new CreditPointsConfiguration($enabled, Money::fromDecimalString($moneyPerPoint), $earningMode, $this->parseEarningTiers($earningTiers), $priceFactor);
+    }
 
-            /**
-             * @return array<string, mixed>
-             */
-            public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
-            {
-                return ['creditPoints' => [
-                    'enabled' => $this->enabled,
-                    'moneyPerPoint' => $this->moneyPerPoint,
-                    'earningMode' => $this->earningMode,
-                    'earningTiers' => $this->earningTiers,
-                    'priceFactor' => $this->priceFactor,
-                ]];
-            }
-
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function setConfiguration(array $configuration = []): void {}
-
-            public function setRequest(ServerRequestInterface $request): void {}
-        };
+    /**
+     * @param string[] $rawTiers
+     * @return CreditPointsEarningTier[]
+     */
+    private function parseEarningTiers(array $rawTiers): array
+    {
+        $tiers = [];
+        foreach ($rawTiers as $entry) {
+            [$threshold, $points] = explode(':', $entry, 2);
+            $tiers[] = new CreditPointsEarningTier(Money::fromDecimalString($threshold), (int)$points);
+        }
+        return $tiers;
     }
 
     private function basketViewModel(): BasketViewModel

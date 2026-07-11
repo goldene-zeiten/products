@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Controller;
 
+use GoldeneZeiten\Products\Configuration\CreditPointsConfigurationFactory;
 use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
@@ -39,7 +40,8 @@ final class CheckoutController extends ActionController
         private readonly InvoiceTokenService $invoiceTokenService,
         private readonly WithdrawalTokenService $withdrawalTokenService,
         private readonly OrderTokenService $orderTokenService,
-        private readonly ProductsConfigurationFactory $configurationFactory
+        private readonly ProductsConfigurationFactory $configurationFactory,
+        private readonly CreditPointsConfigurationFactory $creditPointsConfigurationFactory
     ) {}
 
     public function addressAction(): ResponseInterface
@@ -122,7 +124,8 @@ final class CheckoutController extends ActionController
      */
     private function creditPointsBalance(): int
     {
-        if (!$this->creditPointsService->isEnabled()) {
+        $configuration = $this->creditPointsConfigurationFactory->create($this->request);
+        if (!$configuration->isEnabled()) {
             return 0;
         }
         return $this->creditPointsService->getBalance($this->frontendUserResolver->getUid($this->request));

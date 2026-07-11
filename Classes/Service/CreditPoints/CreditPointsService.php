@@ -5,47 +5,27 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Service\CreditPoints;
 
 use Doctrine\DBAL\ParameterType;
+use GoldeneZeiten\Products\Configuration\CreditPointsConfiguration;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Dto\CreditPointsEarningTier;
 use GoldeneZeiten\Products\Domain\Dto\CreditPointsRedemption;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\CreditPoints\Exception\InsufficientCreditPointsException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Balance is always derived by summing tx_products_domain_model_creditpointstransaction rather
  * than stored on a mutable column, avoiding a race condition under concurrent checkouts (same
- * reasoning as the voucher redemption log).
+ * reasoning as the voucher redemption log). Stateless by design - takes an already-resolved
+ * CreditPointsConfiguration rather than reading settings itself, so it's a pure function of its
+ * inputs (see CreditPointsConfiguration's docblock).
  */
 final class CreditPointsService
 {
     private const TABLE = 'tx_products_domain_model_creditpointstransaction';
 
-    /**
-     * @var array<string, mixed>
-     */
-    private array $settings;
-
     public function __construct(
-        private readonly ConnectionPool $connectionPool,
-        ConfigurationManagerInterface $configurationManager
-    ) {
-        $this->settings = $configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
-        );
-    }
-
-    public function isEnabled(): bool
-    {
-        return (bool)($this->settings['creditPoints']['enabled'] ?? false);
-    }
-
-    public function getMoneyPerPoint(): Money
-    {
-        return Money::fromDecimalString((string)($this->settings['creditPoints']['moneyPerPoint'] ?? '0.10'));
-    }
+        private readonly ConnectionPool $connectionPool
+    ) {}
 
     public function getBalance(int $frontendUser): int
     {
@@ -70,11 +50,11 @@ final class CreditPointsService
      * "autoPriceFactor" mode, a line without its own explicit creditPoints value earns points via
      * a flat price->points conversion instead of 0, mirroring legacy's "auto" earning mode.
      */
-    public function calculateEarnedPoints(BasketViewModel $basket): int
+    public function calculateEarnedPoints(BasketViewModel $basket, CreditPointsConfiguration $configuration): int
     {
-        return match ($this->earningMode()) {
-            'basketTiered' => $this->calculateTieredPoints($basket->getTotalGross()),
-            'autoPriceFactor' => $this->calculateAutoPriceFactorPoints($basket),
+        return match ($configuration->getEarningMode()) {
+            'basketTiered' => $this->calculateTieredPoints($basket->getTotalGross(), $configuration),
+            'autoPriceFactor' => $this->calculateAutoPriceFactorPoints($basket, $configuration),
             default => $this->calculatePerProductPoints($basket),
         };
     }
@@ -92,9 +72,9 @@ final class CreditPointsService
      * A line's own explicit creditPoints value always wins, even in this mode - only lines with
      * none (0) fall back to the price->points conversion.
      */
-    private function calculateAutoPriceFactorPoints(BasketViewModel $basket): int
+    private function calculateAutoPriceFactorPoints(BasketViewModel $basket, CreditPointsConfiguration $configuration): int
     {
-        $priceFactor = $this->priceFactor();
+        $priceFactor = $configuration->getPriceFactor();
         $points = 0;
         foreach ($basket->getItems() as $item) {
             $explicitPoints = $item->getProduct()->getCreditPoints();
@@ -105,21 +85,11 @@ final class CreditPointsService
         return $points;
     }
 
-    private function priceFactor(): float
-    {
-        return (float)($this->settings['creditPoints']['priceFactor'] ?? 0.0);
-    }
-
-    private function earningMode(): string
-    {
-        return (string)($this->settings['creditPoints']['earningMode'] ?? 'perProduct');
-    }
-
-    private function calculateTieredPoints(Money $basketTotal): int
+    private function calculateTieredPoints(Money $basketTotal, CreditPointsConfiguration $configuration): int
     {
         $points = 0;
         $bestThresholdCents = -1;
-        foreach ($this->earningTiers() as $tier) {
+        foreach ($configuration->getEarningTiers() as $tier) {
             $thresholdCents = $tier->getThreshold()->getCents();
             if ($basketTotal->getCents() >= $thresholdCents && $thresholdCents > $bestThresholdCents) {
                 $bestThresholdCents = $thresholdCents;
@@ -129,25 +99,9 @@ final class CreditPointsService
         return $points;
     }
 
-    /**
-     * @return CreditPointsEarningTier[]
-     */
-    private function earningTiers(): array
+    public function calculateRedemptionValue(int $points, CreditPointsConfiguration $configuration): Money
     {
-        $tiers = [];
-        foreach ((array)($this->settings['creditPoints']['earningTiers'] ?? []) as $entry) {
-            $parts = explode(':', (string)$entry, 2);
-            if (count($parts) !== 2) {
-                continue;
-            }
-            $tiers[] = new CreditPointsEarningTier(Money::fromDecimalString(trim($parts[0])), (int)trim($parts[1]));
-        }
-        return $tiers;
-    }
-
-    public function calculateRedemptionValue(int $points): Money
-    {
-        return $this->getMoneyPerPoint()->multiply($points);
+        return $configuration->getMoneyPerPoint()->multiply($points);
     }
 
     /**
@@ -168,16 +122,16 @@ final class CreditPointsService
      * Clamps to whichever is lower: the current balance or what the basket total can absorb -
      * the same double-cap idea as legacy's max1/max2. Guests (frontend_user 0) never redeem.
      */
-    public function redeem(int $frontendUser, int $requestedPoints, Money $basketGoodsTotal): CreditPointsRedemption
+    public function redeem(int $frontendUser, int $requestedPoints, Money $basketGoodsTotal, CreditPointsConfiguration $configuration): CreditPointsRedemption
     {
-        $points = $this->clampRedeemablePoints($frontendUser, $requestedPoints, $basketGoodsTotal);
-        return new CreditPointsRedemption($points, $this->calculateRedemptionValue($points));
+        $points = $this->clampRedeemablePoints($frontendUser, $requestedPoints, $basketGoodsTotal, $configuration);
+        return new CreditPointsRedemption($points, $this->calculateRedemptionValue($points, $configuration));
     }
 
-    private function clampRedeemablePoints(int $frontendUser, int $requestedPoints, Money $basketGoodsTotal): int
+    private function clampRedeemablePoints(int $frontendUser, int $requestedPoints, Money $basketGoodsTotal, CreditPointsConfiguration $configuration): int
     {
-        $moneyPerPointCents = $this->getMoneyPerPoint()->getCents();
-        if (!$this->isEnabled() || $requestedPoints <= 0 || $frontendUser === 0 || $moneyPerPointCents <= 0) {
+        $moneyPerPointCents = $configuration->getMoneyPerPoint()->getCents();
+        if (!$configuration->isEnabled() || $requestedPoints <= 0 || $frontendUser === 0 || $moneyPerPointCents <= 0) {
             return 0;
         }
         $maxByBasketValue = intdiv($basketGoodsTotal->getCents(), $moneyPerPointCents);
