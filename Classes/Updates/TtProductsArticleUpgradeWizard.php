@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Backend\StorageFolderResolver;
 use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 // EXT:install namespaces are valid through TYPO3 v14 (deprecated there); migrate to the
 // TYPO3\CMS\Core\Attribute\UpgradeWizard / TYPO3\CMS\Core\Updates\* equivalents once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
@@ -148,6 +149,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
             'in_stock' => (int)$legacyRow['inStock'],
             'basket_min_quantity' => (int)round((float)($legacyRow['basketminquantity'] ?? 0)),
             'basket_max_quantity' => (int)round((float)($legacyRow['basketmaxquantity'] ?? 0)),
+            'price_mode' => $this->isAddedPrice((string)($legacyRow['config'] ?? '')) ? 'surcharge' : 'override',
             'weight' => (int)round((float)$legacyRow['weight']),
         ])->executeStatement();
         $localUid = (int)$this->connectionPool->getConnectionForTable(self::LOCAL_TABLE)->lastInsertId();
@@ -157,6 +159,24 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
     private function formatPrice(string $legacyPrice): string
     {
         return number_format((float)$legacyPrice, 2, '.', '');
+    }
+
+    /**
+     * The `isAddedPrice` flag lives inside the article's FlexForm `config` blob, not a plain
+     * column - defensively parsed, defaulting to false (override mode) for anything empty,
+     * unparseable, or without that field, rather than failing the migration over it.
+     */
+    private function isAddedPrice(string $flexFormXml): bool
+    {
+        if (trim($flexFormXml) === '') {
+            return false;
+        }
+        $parsed = GeneralUtility::xml2array($flexFormXml);
+        if (!is_array($parsed)) {
+            return false;
+        }
+        $value = $parsed['data']['sDEF']['lDEF']['isAddedPrice']['vDEF'] ?? null;
+        return (bool)((int)$value);
     }
 
     /**

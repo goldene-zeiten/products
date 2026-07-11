@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Article.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'product, title, item_number, ean, price, direct_cost, deposit, price_tiers, attribute_values, in_stock, unlimited_stock, basket_min_quantity, basket_max_quantity, weight, bulky, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => 'product, title, item_number, ean, price, price_mode, direct_cost, deposit, price_tiers, attribute_values, in_stock, unlimited_stock, basket_min_quantity, basket_max_quantity, weight, bulky, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -91,6 +91,18 @@ return [
                 'format' => 'decimal',
                 'size' => 10,
                 'eval' => 'trim',
+            ],
+        ],
+        'price_mode' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_mode',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'items' => [
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_mode.override', 'value' => 'override'],
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_mode.surcharge', 'value' => 'surcharge'],
+                ],
+                'default' => 'override',
             ],
         ],
         'direct_cost' => [

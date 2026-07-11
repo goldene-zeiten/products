@@ -4,11 +4,12 @@
 "tx_products_migration_map",,,,
 ,"legacy_table","legacy_uid","local_table","local_uid"
 ,"tt_products",1,"tx_products_domain_model_product",80
-"tt_products_articles",,,,,,,,,,,,
-,"uid","pid","deleted","hidden","title","itemnumber","price","inStock","weight","uid_product","basketminquantity","basketmaxquantity"
-,1,1,0,0,"Article One","A1","9.99",10,"250.000000",1,"2.000000","5.000000"
-,2,1,0,0,"Article Two","A2","19.99",2,"100.000000",999,"0.000000","0.000000"
-,3,1,1,0,"Deleted article","A3","1.00",1,"0.000000",1,"0.000000","0.000000"
+"tt_products_articles",,,,,,,,,,,,,
+,"uid","pid","deleted","hidden","title","itemnumber","price","inStock","weight","uid_product","basketminquantity","basketmaxquantity","config"
+,1,1,0,0,"Article One","A1","9.99",10,"250.000000",1,"2.000000","5.000000",
+,2,1,0,0,"Article Two","A2","19.99",2,"100.000000",999,"0.000000","0.000000",
+,3,1,1,0,"Deleted article","A3","1.00",1,"0.000000",1,"0.000000","0.000000",
+,4,1,0,0,"Added Price Article","A4","5.00",1,"0.000000",1,"0.000000","0.000000","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""isAddedPrice""><value index=""vDEF"">1</value></field></language></sheet></data></T3FlexForms>"
 "tt_products_articles_language",,,,,,,
 ,"uid","pid","sys_language_uid","deleted","hidden","title","article_uid"
 ,10,1,1,0,1,"Old DE",1

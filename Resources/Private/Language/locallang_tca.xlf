@@ -396,6 +396,15 @@
 			<trans-unit id="tx_products_domain_model_article.price" resname="tx_products_domain_model_article.price">
 				<source>Price (0.00 to inherit)</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.price_mode" resname="tx_products_domain_model_article.price_mode">
+				<source>Price Mode</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.price_mode.override" resname="tx_products_domain_model_article.price_mode.override">
+				<source>Override (article price replaces the product price)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.price_mode.surcharge" resname="tx_products_domain_model_article.price_mode.surcharge">
+				<source>Surcharge (article price is added on top of the product price)</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_article.direct_cost" resname="tx_products_domain_model_article.direct_cost">
 				<source>Direct Cost (internal, not shown to shoppers)</source>
 			</trans-unit>
