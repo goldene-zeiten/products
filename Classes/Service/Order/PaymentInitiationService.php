@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
 use GoldeneZeiten\Products\Domain\Enum\PaymentResultState;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Model\PaymentTransaction;
+use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Domain\Repository\PaymentTransactionRepository;
 use GoldeneZeiten\Products\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
@@ -19,6 +20,7 @@ final class PaymentInitiationService
     public function __construct(
         private readonly PaymentContextFactory $paymentContextFactory,
         private readonly PaymentTransactionRepository $paymentTransactionRepository,
+        private readonly OrderRepository $orderRepository,
         private readonly PersistenceManagerInterface $persistenceManager
     ) {}
 
@@ -26,6 +28,10 @@ final class PaymentInitiationService
     {
         $paymentContext = $this->paymentContextFactory->createFromOrder($order);
         $paymentResult = $paymentMethod->initiate($order, $paymentContext);
+        // A payment method's initiate() is free to mutate $order (InvoicePaymentMethod sets the
+        // invoice number) - without an explicit update() here that mutation is silently dropped
+        // on persistAll(), since Extbase never auto-flushes a fetched-then-mutated entity.
+        $this->orderRepository->update($order);
         $this->persistPaymentTransaction($order, $paymentMethod, $paymentResult);
 
         if ($paymentResult->getState() === PaymentResultState::FAILED) {
