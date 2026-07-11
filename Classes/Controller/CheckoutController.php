@@ -18,6 +18,7 @@ use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Invoice\InvoiceTokenService;
 use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementExceptionInterface;
 use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
+use GoldeneZeiten\Products\Service\Order\OrderTokenService;
 use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
 use GoldeneZeiten\Products\Service\Withdrawal\WithdrawalTokenService;
 use Psr\Http\Message\ResponseInterface;
@@ -37,6 +38,7 @@ final class CheckoutController extends ActionController
         private readonly ShippingCostService $shippingCostService,
         private readonly InvoiceTokenService $invoiceTokenService,
         private readonly WithdrawalTokenService $withdrawalTokenService,
+        private readonly OrderTokenService $orderTokenService,
         private readonly ProductsConfigurationFactory $configurationFactory
     ) {}
 
@@ -184,6 +186,7 @@ final class CheckoutController extends ActionController
             'order' => $orderObject,
             'invoiceHash' => $this->invoiceTokenService->generateToken($orderObject),
             'withdrawalHash' => $this->withdrawalTokenService->generateToken($orderObject),
+            'orderHash' => $this->orderTokenService->generateToken($orderObject),
         ]);
         return $this->htmlResponse();
     }

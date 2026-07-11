@@ -1,0 +1,3 @@
+"tx_products_domain_model_order",,,,,,,,,,,
+,"uid","pid","deleted","order_number","frontend_user","email","currency","total_gross","items","status","payment_status"
+,2,2,0,"ORD-2",0,"guest@example.com","EUR",2999,1,"new","open"

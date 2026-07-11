@@ -8,6 +8,7 @@
     </div>
 
     <div class="mt-4">
+        <f:link.action action="show" controller="Order" pageUid="{settings.pids.orderHistoryPage}" arguments="{order: order.uid, hash: orderHash}" class="btn btn-outline-secondary"><f:translate key="view_order" /></f:link.action>
         <f:link.action action="download" controller="Invoice" pageType="{settings.invoice.pageType}" arguments="{order: order.uid, hash: invoiceHash}" class="btn btn-secondary"><f:translate key="download_invoice" /></f:link.action>
         <f:link.action action="form" controller="Withdrawal" pageUid="{settings.pids.withdrawalPage}" arguments="{order: order.uid, hash: withdrawalHash}" class="btn btn-outline-danger"><f:translate key="cancel_order" /></f:link.action>
         <f:link.action action="list" controller="Product" class="btn btn-primary"><f:translate key="back_to_shop" /></f:link.action>
