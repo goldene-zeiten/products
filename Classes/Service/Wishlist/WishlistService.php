@@ -16,8 +16,9 @@ use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 /**
  * Picks a persisted (tx_products_domain_model_wishlistitem) or FE-session backend by login state.
- * The two are never merged - a guest's session wishlist is not carried over on login, same
- * simplification legacy's memo control also had (it gated one mode or the other, never both).
+ * A guest's session wishlist is merged into the account's persisted wishlist on login (see
+ * mergeSessionIntoAccount(), invoked by MergeWishlistOnLoginListener) - legacy always did this via
+ * tx_ttproducts_control_memo::copySession2Feuser(), so this is parity, not a new feature.
  */
 final class WishlistService
 {
@@ -144,6 +145,23 @@ final class WishlistService
         foreach ($order->getItems() as $orderItem) {
             $this->removePersisted($frontendUser, $orderItem->getProduct());
         }
+    }
+
+    /**
+     * Invoked once, right after a guest with an existing session wishlist logs in - merges those
+     * products into the now-identified account's persisted wishlist (addPersisted() already
+     * dedupes against anything the account already has) and clears the session copy.
+     */
+    public function mergeSessionIntoAccount(ServerRequestInterface $request): void
+    {
+        $frontendUser = $this->frontendUserResolver->getUid($request);
+        if ($frontendUser === 0) {
+            return;
+        }
+        foreach ($this->wishlistStorage->load($request) as $productUid) {
+            $this->addPersisted($frontendUser, $productUid);
+        }
+        $this->wishlistStorage->clear($request);
     }
 
     private function addPersisted(int $frontendUser, int $productUid): void
