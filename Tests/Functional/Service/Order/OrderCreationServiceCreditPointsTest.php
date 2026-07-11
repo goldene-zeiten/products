@@ -4,42 +4,44 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
 
-use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
 use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\Repository\CreditPointsTransactionRepository;
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Domain\Repository\VoucherRedemptionRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
-use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Order\OrderCreationService;
-use GoldeneZeiten\Products\Service\Order\OrderFactory;
-use GoldeneZeiten\Products\Service\Order\StockService;
-use GoldeneZeiten\Products\Service\Shipping\HandlingFeeService;
-use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
-use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\ServerRequest;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
+/**
+ * `creditPoints.*` are Site Settings - see ProductsConfigurationFactoryTest for the same class of
+ * fix applied to ProductsConfigurationFactory.
+ */
 final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestCase
 {
+    use SiteBasedTestTrait;
+
+    protected const LANGUAGE_PRESETS = [
+        'en' => [
+            'id' => 0,
+            'title' => 'English',
+            'locale' => 'en_US.UTF-8',
+        ],
+    ];
+
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products',
+        'goldene-zeiten/frontend-test',
     ];
 
     private Product $product;
@@ -48,10 +50,6 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_placement_with_credit_points.csv');
-        // OrderFactory reads Extbase settings eagerly in its constructor, which requires a request
-        // to be resolvable via $GLOBALS['TYPO3_REQUEST'] outside of a real controller dispatch.
-        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
         $product = $this->get(ProductRepository::class)->findByUid(1);
         self::assertInstanceOf(Product::class, $product);
         $this->product = $product;
@@ -60,8 +58,8 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
     #[Test]
     public function identifiedCustomerEarnsAndRedeemsPointsOnPlacement(): void
     {
-        $order = $this->subject(enabled: true)->create(
-            $this->requestFor(5),
+        $order = $this->get(OrderCreationService::class)->create(
+            $this->requestFor(enabled: true, frontendUserUid: 5),
             $this->basketViewModel(),
             new CheckoutSelections([], 20),
             $this->address(),
@@ -79,8 +77,8 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
     #[Test]
     public function guestOrdersNeverTouchTheLedgerEvenThoughTheProductEarnsPoints(): void
     {
-        $order = $this->subject(enabled: true)->create(
-            $this->requestFor(0),
+        $order = $this->get(OrderCreationService::class)->create(
+            $this->requestFor(enabled: true, frontendUserUid: 0),
             $this->basketViewModel(),
             new CheckoutSelections([], 0),
             $this->address(),
@@ -93,8 +91,8 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
     #[Test]
     public function nothingIsRecordedOrDiscountedWhileTheFeatureIsDisabled(): void
     {
-        $order = $this->subject(enabled: false)->create(
-            $this->requestFor(5),
+        $order = $this->get(OrderCreationService::class)->create(
+            $this->requestFor(enabled: false, frontendUserUid: 5),
             $this->basketViewModel(),
             new CheckoutSelections([], 20),
             $this->address(),
@@ -105,52 +103,25 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
         self::assertSame(0, $order->getDiscountTotal()->getCents());
     }
 
-    private function subject(bool $enabled): OrderCreationService
+    private function requestFor(bool $enabled, int $frontendUserUid): ServerRequestInterface
     {
-        $creditPointsService = new CreditPointsService($this->get(ConnectionPool::class), $this->fakeConfigurationManager($enabled));
-        return new OrderCreationService(
-            $this->get(StockService::class),
-            $this->get(OrderRepository::class),
-            $this->get(OrderFactory::class),
-            $this->get(PersistenceManagerInterface::class),
-            $this->get(EventDispatcherInterface::class),
-            $this->get(VoucherService::class),
-            $this->get(VoucherRedemptionRepository::class),
-            $creditPointsService,
-            $this->get(CreditPointsTransactionRepository::class),
-            $this->get(FrontendUserResolver::class),
-            $this->get(ShippingCostService::class),
-            $this->get(HandlingFeeService::class),
-            $this->get(ProductsConfigurationFactory::class)
+        $this->writeSiteConfiguration(
+            'products',
+            $this->buildSiteConfiguration(2, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'settings' => [
+                    'products' => [
+                        'creditPoints' => ['enabled' => $enabled],
+                    ],
+                ],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
-    }
+        $site = $this->get(SiteFinder::class)->getSiteByIdentifier('products');
 
-    private function fakeConfigurationManager(bool $enabled): ConfigurationManagerInterface
-    {
-        return new class ($enabled) implements ConfigurationManagerInterface {
-            public function __construct(private readonly bool $enabled) {}
-
-            /**
-             * @return array<string, mixed>
-             */
-            public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
-            {
-                return ['creditPoints' => ['enabled' => $this->enabled, 'moneyPerPoint' => '0.10']];
-            }
-
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function setConfiguration(array $configuration = []): void {}
-
-            public function setRequest(ServerRequestInterface $request): void {}
-        };
-    }
-
-    private function requestFor(int $frontendUserUid): ServerRequestInterface
-    {
         $request = (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
+            ->withAttribute('site', $site);
         if ($frontendUserUid === 0) {
             return $request;
         }

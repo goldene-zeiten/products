@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service\Order;
 
+use GoldeneZeiten\Products\Configuration\CreditPointsConfiguration;
+use GoldeneZeiten\Products\Configuration\CreditPointsConfigurationFactory;
 use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketDiscountSummary;
@@ -54,7 +56,8 @@ final class OrderCreationService
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly ShippingCostService $shippingCostService,
         private readonly HandlingFeeService $handlingFeeService,
-        private readonly ProductsConfigurationFactory $configurationFactory
+        private readonly ProductsConfigurationFactory $configurationFactory,
+        private readonly CreditPointsConfigurationFactory $creditPointsConfigurationFactory
     ) {}
 
     public function create(
@@ -65,9 +68,10 @@ final class OrderCreationService
         PaymentMethodInterface $paymentMethod
     ): Order {
         $configuration = $this->configurationFactory->create($request);
+        $creditPointsConfiguration = $this->creditPointsConfigurationFactory->create($request);
         $frontendUser = $this->frontendUserResolver->getUid($request);
         $voucherSummary = $this->resolveVoucherDiscount($checkoutSelections->getVoucherCodes(), $basketViewModel, $frontendUser);
-        $pointsRedemption = $this->resolvePointsRedemption($checkoutSelections->getSpendPoints(), $basketViewModel, $voucherSummary, $frontendUser);
+        $pointsRedemption = $this->resolvePointsRedemption($checkoutSelections->getSpendPoints(), $basketViewModel, $voucherSummary, $frontendUser, $creditPointsConfiguration);
         $shippingCriteria = new ShippingSelectionCriteria(
             $checkoutSelections->getShippingMethodUid(),
             $basketViewModel,
@@ -92,7 +96,7 @@ final class OrderCreationService
         $this->persistenceManager->persistAll();
 
         $this->redeemVouchers($voucherSummary, $order, $frontendUser, $basketViewModel->getTotalGross());
-        $this->recordCreditPoints($basketViewModel, $pointsRedemption, $order, $frontendUser);
+        $this->recordCreditPoints($basketViewModel, $pointsRedemption, $order, $frontendUser, $creditPointsConfiguration);
         $this->eventDispatcher->dispatch(new AfterOrderPlacedEvent($order, $request));
 
         return $order;
@@ -181,10 +185,11 @@ final class OrderCreationService
         int $spendPoints,
         BasketViewModel $basketViewModel,
         BasketDiscountSummary $voucherSummary,
-        int $frontendUser
+        int $frontendUser,
+        CreditPointsConfiguration $creditPointsConfiguration
     ): CreditPointsRedemption {
         $remainingGoodsTotal = $basketViewModel->getTotalGross()->subtract($voucherSummary->getDiscountTotal());
-        return $this->creditPointsService->redeem($frontendUser, $spendPoints, $remainingGoodsTotal);
+        return $this->creditPointsService->redeem($frontendUser, $spendPoints, $remainingGoodsTotal, $creditPointsConfiguration);
     }
 
     private function redeemVouchers(BasketDiscountSummary $discountSummary, Order $order, int $frontendUser, Money $basketGoodsTotal): void
@@ -219,12 +224,12 @@ final class OrderCreationService
      * feature is disabled sitewide - existing installations see no behaviour change until an
      * operator opts in.
      */
-    private function recordCreditPoints(BasketViewModel $basketViewModel, CreditPointsRedemption $pointsRedemption, Order $order, int $frontendUser): void
+    private function recordCreditPoints(BasketViewModel $basketViewModel, CreditPointsRedemption $pointsRedemption, Order $order, int $frontendUser, CreditPointsConfiguration $creditPointsConfiguration): void
     {
-        if (!$this->creditPointsService->isEnabled() || $frontendUser === 0) {
+        if (!$creditPointsConfiguration->isEnabled() || $frontendUser === 0) {
             return;
         }
-        $earned = $this->creditPointsService->calculateEarnedPoints($basketViewModel);
+        $earned = $this->creditPointsService->calculateEarnedPoints($basketViewModel, $creditPointsConfiguration);
         if ($earned > 0) {
             $this->creditPointsTransactionRepository->add($this->buildTransaction($frontendUser, $order, $earned, CreditPointsTransactionType::EARN));
         }
