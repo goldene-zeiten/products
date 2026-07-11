@@ -180,6 +180,10 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
     }
 
     /**
+     * price_mode is set explicitly rather than left to the column's TCA-derived schema default -
+     * that default isn't applied consistently by every supported core major, so relying on it
+     * left this overlay row with a core-version-dependent price_mode.
+     *
      * @param array<string, mixed> $winner
      * @return array<string, mixed>
      */
@@ -187,6 +191,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
     {
         return [
             'title' => (string)$winner['title'],
+            'price_mode' => 'override',
         ];
     }
 }
