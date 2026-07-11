@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
 
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
-use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Model\PaymentTransaction;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Domain\Repository\PaymentTransactionRepository;
-use GoldeneZeiten\Products\Payment\PaymentContextFactory;
-use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Service\Order\PaymentInitiationService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Tests\Functional\Fixtures\FixturePaymentMethod;
+use GoldeneZeiten\Products\Tests\Functional\Fixtures\InvoiceNumberMutatingPaymentMethod;
 use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /**
  * Regression coverage for a real (fixed) bug: PaymentInitiationService unconditionally inserted a
@@ -30,49 +28,67 @@ final class PaymentInitiationServiceTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private PaymentInitiationService $subject;
-    private PaymentTransactionRepository $paymentTransactionRepository;
-    private Order $order;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/orders_with_frontend_user.csv');
-        $this->paymentTransactionRepository = $this->get(PaymentTransactionRepository::class);
-        $this->subject = new PaymentInitiationService(
-            $this->get(PaymentContextFactory::class),
-            $this->paymentTransactionRepository,
-            $this->get(PersistenceManagerInterface::class)
-        );
-        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
-        self::assertNotNull($order);
-        $this->order = $order;
     }
 
     #[Test]
     public function initiateCreatesOneTransaction(): void
     {
-        $this->subject->initiate($this->order, $this->pendingPaymentMethod());
+        $this->get(PaymentInitiationService::class)->initiate($this->fetchOrder(), FixturePaymentMethod::pending());
 
-        self::assertCount(1, $this->allTransactions());
+        $this->assertCount(1, $this->allTransactions());
     }
 
     #[Test]
     public function repeatedInitiateReusesTheStillOpenTransactionInstead(): void
     {
-        $this->subject->initiate($this->order, $this->pendingPaymentMethod());
-        $this->subject->initiate($this->order, $this->pendingPaymentMethod());
+        $subject = $this->get(PaymentInitiationService::class);
+        $order = $this->fetchOrder();
 
-        self::assertCount(1, $this->allTransactions());
+        $subject->initiate($order, FixturePaymentMethod::pending());
+        $subject->initiate($order, FixturePaymentMethod::pending());
+
+        $this->assertCount(1, $this->allTransactions());
     }
 
     #[Test]
     public function initiateAfterCompletionCreatesANewDistinctAttempt(): void
     {
-        $this->subject->initiate($this->order, $this->completedPaymentMethod());
-        $this->subject->initiate($this->order, $this->completedPaymentMethod());
+        $subject = $this->get(PaymentInitiationService::class);
+        $order = $this->fetchOrder();
 
-        self::assertCount(2, $this->allTransactions());
+        $subject->initiate($order, FixturePaymentMethod::completed());
+        $subject->initiate($order, FixturePaymentMethod::completed());
+
+        $this->assertCount(2, $this->allTransactions());
+    }
+
+    /**
+     * Regression coverage: a payment method's initiate() (InvoicePaymentMethod::initiate() being
+     * the shipped example) is allowed to mutate the $order it's handed - here setting an invoice
+     * number - but $order was fetched via the repository, not freshly add()ed, so Extbase never
+     * auto-flushes that mutation on persistAll() without an explicit update() first. Asserted via
+     * a raw column read, not a re-fetch through the repository, since Extbase's identity map would
+     * return the same in-memory (already-mutated) object and mask a persistence gap.
+     */
+    #[Test]
+    public function initiateFlushesOrderMutationsMadeByThePaymentMethod(): void
+    {
+        $order = $this->fetchOrder();
+
+        $this->get(PaymentInitiationService::class)->initiate($order, new InvoiceNumberMutatingPaymentMethod());
+
+        $this->assertSame(InvoiceNumberMutatingPaymentMethod::INVOICE_NUMBER, $this->persistedInvoiceNumber($order));
+    }
+
+    private function fetchOrder(): Order
+    {
+        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
+        $this->assertInstanceOf(Order::class, $order);
+        return $order;
     }
 
     /**
@@ -80,48 +96,17 @@ final class PaymentInitiationServiceTest extends AbstractFunctionalTestCase
      */
     private function allTransactions(): array
     {
-        return iterator_to_array($this->paymentTransactionRepository->findAll());
+        return iterator_to_array($this->get(PaymentTransactionRepository::class)->findAll());
     }
 
-    private function pendingPaymentMethod(): PaymentMethodInterface
+    private function persistedInvoiceNumber(Order $order): string
     {
-        return $this->fakePaymentMethod(PaymentResult::pending('EXT-1'));
-    }
-
-    private function completedPaymentMethod(): PaymentMethodInterface
-    {
-        return $this->fakePaymentMethod(PaymentResult::completed(PaymentStatus::PENDING, 'EXT-2'));
-    }
-
-    private function fakePaymentMethod(PaymentResult $result): PaymentMethodInterface
-    {
-        return new class ($result) implements PaymentMethodInterface {
-            public function __construct(private readonly PaymentResult $result) {}
-
-            public function getIdentifier(): string
-            {
-                return 'fake';
-            }
-
-            public function getLabel(): string
-            {
-                return 'Fake';
-            }
-
-            public function isAvailable(PaymentContext $context): bool
-            {
-                return true;
-            }
-
-            public function calculateFee(PaymentContext $context): int
-            {
-                return 0;
-            }
-
-            public function initiate(Order $order, PaymentContext $context): PaymentResult
-            {
-                return $this->result;
-            }
-        };
+        $queryBuilder = $this->get(ConnectionPool::class)->getQueryBuilderForTable('tx_products_domain_model_order');
+        return (string)$queryBuilder
+            ->select('invoice_number')
+            ->from('tx_products_domain_model_order')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($order->getUid(), Connection::PARAM_INT)))
+            ->executeQuery()
+            ->fetchOne();
     }
 }
