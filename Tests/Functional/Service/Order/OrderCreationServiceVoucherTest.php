@@ -30,10 +30,6 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private OrderCreationService $subject;
-    private VoucherRedemptionRepository $voucherRedemptionRepository;
-    private Product $product;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -42,53 +38,49 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
         // to be resolvable via $GLOBALS['TYPO3_REQUEST'] outside of a real controller dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $this->subject = $this->get(OrderCreationService::class);
-        $this->voucherRedemptionRepository = $this->get(VoucherRedemptionRepository::class);
-        $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
-        $this->product = $product;
     }
 
     #[Test]
     public function voucherDiscountReducesTotalGrossButNotNetOrTax(): void
     {
-        $order = $this->subject->create(
+        $order = $this->get(OrderCreationService::class)->create(
             $this->request(),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             $this->discountRequest('SAVE10'),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame(1000, $order->getDiscountTotal()->getCents());
-        self::assertSame(['SAVE10'], $order->getVoucherCodes());
-        self::assertSame(9000, $order->getTotalGross()->getCents());
-        self::assertSame(8403, $order->getTotalNet()->getCents());
+        $this->assertSame(1000, $order->getDiscountTotal()->getCents());
+        $this->assertSame(['SAVE10'], $order->getVoucherCodes());
+        $this->assertSame(9000, $order->getTotalGross()->getCents());
+        $this->assertSame(8403, $order->getTotalNet()->getCents());
     }
 
     #[Test]
     public function appliedVoucherWritesARedemptionRow(): void
     {
         $voucher = $this->get(VoucherRepository::class)->findOneByCode('SAVE10');
-        self::assertNotNull($voucher);
+        $this->assertNotNull($voucher);
 
-        $order = $this->subject->create(
+        $this->get(OrderCreationService::class)->create(
             $this->request(),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             $this->discountRequest('SAVE10'),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame(1, $this->voucherRedemptionRepository->countFor($voucher));
+        $this->assertSame(1, $this->get(VoucherRedemptionRepository::class)->countFor($voucher));
     }
 
     #[Test]
     public function usageLimitIsEnforcedAcrossTwoPlacements(): void
     {
-        $this->subject->create(
+        $subject = $this->get(OrderCreationService::class);
+        $subject->create(
             $this->request(),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             $this->discountRequest('ONETIME'),
             $this->address(),
             $this->paymentMethod()
@@ -97,9 +89,9 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
         $this->expectException(VoucherRedemptionFailedException::class);
         $this->expectExceptionCode(1783426407);
 
-        $this->subject->create(
+        $subject->create(
             $this->request(),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             $this->discountRequest('ONETIME'),
             $this->address(),
             $this->paymentMethod()
@@ -113,20 +105,20 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
         $stockBefore = $this->currentStock();
 
         try {
-            $this->subject->create(
+            $this->get(OrderCreationService::class)->create(
                 $this->request(),
-                $this->basketViewModel(),
+                $this->basketViewModel($this->product()),
                 $this->discountRequest('EXHAUSTED'),
                 $this->address(),
                 $this->paymentMethod()
             );
-            self::fail('Expected VoucherRedemptionFailedException was not thrown.');
+            $this->fail('Expected VoucherRedemptionFailedException was not thrown.');
         } catch (VoucherRedemptionFailedException) {
             // expected
         }
 
-        self::assertSame($orderCountBefore, $this->countOrders());
-        self::assertSame($stockBefore, $this->currentStock());
+        $this->assertSame($orderCountBefore, $this->countOrders());
+        $this->assertSame($stockBefore, $this->currentStock());
     }
 
     private function request(): ServerRequestInterface
@@ -135,12 +127,19 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
-    private function basketViewModel(): BasketViewModel
+    private function product(): Product
+    {
+        $product = $this->get(ProductRepository::class)->findByUid(1);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
+    }
+
+    private function basketViewModel(Product $product): BasketViewModel
     {
         $unitPriceNet = Money::fromDecimalString('84.03');
         $unitPriceGross = Money::fromDecimalString('100.00');
         $item = new BasketViewItem(
-            $this->product,
+            $product,
             null,
             1,
             $unitPriceNet,
@@ -180,7 +179,7 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
     {
         $this->get(PersistenceManagerInterface::class)->clearState();
         $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
+        $this->assertInstanceOf(Product::class, $product);
         return $product->getInStock();
     }
 }

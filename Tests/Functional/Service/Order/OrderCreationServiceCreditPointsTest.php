@@ -44,15 +44,10 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
         'goldene-zeiten/frontend-test',
     ];
 
-    private Product $product;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_placement_with_credit_points.csv');
-        $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
-        $this->product = $product;
     }
 
     #[Test]
@@ -60,18 +55,18 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
     {
         $order = $this->get(OrderCreationService::class)->create(
             $this->requestFor(enabled: true, frontendUserUid: 5),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 20),
             $this->address(),
             $this->paymentMethod()
         );
 
         $rows = $this->ledgerRows($order->getUid() ?? 0);
-        self::assertCount(2, $rows);
-        self::assertContainsEquals(['frontend_user' => 5, 'points' => 20, 'type' => 'earn'], $rows);
-        self::assertContainsEquals(['frontend_user' => 5, 'points' => -20, 'type' => 'redeem'], $rows);
-        self::assertSame(19800, $order->getTotalGross()->getCents());
-        self::assertSame(200, $order->getDiscountTotal()->getCents());
+        $this->assertCount(2, $rows);
+        $this->assertContainsEquals(['frontend_user' => 5, 'points' => 20, 'type' => 'earn'], $rows);
+        $this->assertContainsEquals(['frontend_user' => 5, 'points' => -20, 'type' => 'redeem'], $rows);
+        $this->assertSame(19800, $order->getTotalGross()->getCents());
+        $this->assertSame(200, $order->getDiscountTotal()->getCents());
     }
 
     #[Test]
@@ -79,13 +74,13 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
     {
         $order = $this->get(OrderCreationService::class)->create(
             $this->requestFor(enabled: true, frontendUserUid: 0),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 0),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame([], $this->ledgerRows($order->getUid() ?? 0));
+        $this->assertSame([], $this->ledgerRows($order->getUid() ?? 0));
     }
 
     #[Test]
@@ -93,14 +88,14 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
     {
         $order = $this->get(OrderCreationService::class)->create(
             $this->requestFor(enabled: false, frontendUserUid: 5),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 20),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame([], $this->ledgerRows($order->getUid() ?? 0));
-        self::assertSame(0, $order->getDiscountTotal()->getCents());
+        $this->assertSame([], $this->ledgerRows($order->getUid() ?? 0));
+        $this->assertSame(0, $order->getDiscountTotal()->getCents());
     }
 
     private function requestFor(bool $enabled, int $frontendUserUid): ServerRequestInterface
@@ -141,11 +136,18 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
             ->fetchAllAssociative();
     }
 
-    private function basketViewModel(): BasketViewModel
+    private function product(): Product
+    {
+        $product = $this->get(ProductRepository::class)->findByUid(1);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
+    }
+
+    private function basketViewModel(Product $product): BasketViewModel
     {
         $unitPrice = Money::fromDecimalString('100.00');
         $lineTotal = Money::fromDecimalString('200.00');
-        $item = new BasketViewItem($this->product, null, 2, $unitPrice, $unitPrice, 0.0, $lineTotal, $lineTotal, Money::fromCents(0));
+        $item = new BasketViewItem($product, null, 2, $unitPrice, $unitPrice, 0.0, $lineTotal, $lineTotal, Money::fromCents(0));
         return new BasketViewModel([$item], $lineTotal, $lineTotal, Money::fromCents(0), 'EUR');
     }
 

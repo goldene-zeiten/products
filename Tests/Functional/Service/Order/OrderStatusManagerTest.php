@@ -19,25 +19,17 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private OrderStatusManager $subject;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->subject = $this->get(OrderStatusManager::class);
-    }
-
     #[Test]
     public function transitionChangesStatusAndAppendsLog(): void
     {
         $order = new Order();
 
-        $this->subject->transition($order, OrderStatus::PENDING);
+        $this->get(OrderStatusManager::class)->transition($order, OrderStatus::PENDING);
 
-        self::assertSame(OrderStatus::PENDING, $order->getStatus());
-        self::assertCount(1, $order->getStatusLog());
-        self::assertSame('new', $order->getStatusLog()[0]['from']);
-        self::assertSame('pending', $order->getStatusLog()[0]['to']);
+        $this->assertSame(OrderStatus::PENDING, $order->getStatus());
+        $this->assertCount(1, $order->getStatusLog());
+        $this->assertSame('new', $order->getStatusLog()[0]['from']);
+        $this->assertSame('pending', $order->getStatusLog()[0]['to']);
     }
 
     #[Test]
@@ -45,9 +37,9 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
     {
         $order = new Order();
 
-        $this->subject->transition($order, OrderStatus::CANCELLED, 'Customer withdrew from the order.');
+        $this->get(OrderStatusManager::class)->transition($order, OrderStatus::CANCELLED, 'Customer withdrew from the order.');
 
-        self::assertSame('Customer withdrew from the order.', $order->getStatusLog()[0]['note']);
+        $this->assertSame('Customer withdrew from the order.', $order->getStatusLog()[0]['note']);
     }
 
     #[Test]
@@ -55,9 +47,9 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
     {
         $order = new Order();
 
-        $this->subject->transition($order, OrderStatus::PENDING);
+        $this->get(OrderStatusManager::class)->transition($order, OrderStatus::PENDING);
 
-        self::assertArrayNotHasKey('note', $order->getStatusLog()[0]);
+        $this->assertArrayNotHasKey('note', $order->getStatusLog()[0]);
     }
 
     #[Test]
@@ -65,10 +57,10 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
     {
         $order = new Order();
 
-        $this->subject->transition($order, OrderStatus::NEW);
+        $this->get(OrderStatusManager::class)->transition($order, OrderStatus::NEW);
 
-        self::assertSame(OrderStatus::NEW, $order->getStatus());
-        self::assertCount(0, $order->getStatusLog());
+        $this->assertSame(OrderStatus::NEW, $order->getStatus());
+        $this->assertCount(0, $order->getStatusLog());
     }
 
     #[Test]
@@ -80,7 +72,7 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
         $this->expectException(InvalidOrderStatusTransitionException::class);
         $this->expectExceptionCode(1751751030);
 
-        $this->subject->transition($order, OrderStatus::CONFIRMED);
+        $this->get(OrderStatusManager::class)->transition($order, OrderStatus::CONFIRMED);
     }
 
     #[Test]
@@ -88,9 +80,9 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
     {
         $order = new Order();
 
-        $this->subject->transitionPayment($order, PaymentStatus::PAID);
+        $this->get(OrderStatusManager::class)->transitionPayment($order, PaymentStatus::PAID);
 
-        self::assertSame(PaymentStatus::PAID, $order->getPaymentStatus());
+        $this->assertSame(PaymentStatus::PAID, $order->getPaymentStatus());
     }
 
     #[Test]
@@ -102,6 +94,6 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
         $this->expectException(InvalidPaymentStatusTransitionException::class);
         $this->expectExceptionCode(1751751031);
 
-        $this->subject->transitionPayment($order, PaymentStatus::PAID);
+        $this->get(OrderStatusManager::class)->transitionPayment($order, PaymentStatus::PAID);
     }
 }

@@ -12,52 +12,52 @@ use PHPUnit\Framework\Attributes\Test;
 
 final class InvoiceRendererTest extends AbstractFrontendTestCase
 {
-    private InvoiceRenderer $subject;
-    private Order $order;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_with_items_and_addresses.csv');
-        $this->subject = $this->get(InvoiceRenderer::class);
-        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
-        self::assertInstanceOf(Order::class, $order);
-        $this->order = $order;
     }
 
     #[Test]
     public function renderContainsInvoiceAndOrderNumbers(): void
     {
-        $html = $this->subject->render($this->order);
+        $html = $this->get(InvoiceRenderer::class)->render($this->fetchOrder());
 
-        self::assertStringContainsString('INV-1', $html);
-        self::assertStringContainsString('ORD-1', $html);
+        $this->assertStringContainsString('INV-1', $html);
+        $this->assertStringContainsString('ORD-1', $html);
     }
 
     #[Test]
     public function renderContainsLineItemDetails(): void
     {
-        $html = $this->subject->render($this->order);
+        $html = $this->get(InvoiceRenderer::class)->render($this->fetchOrder());
 
-        self::assertStringContainsString('Red Shoes', $html);
-        self::assertStringContainsString('SHOE-RED', $html);
+        $this->assertStringContainsString('Red Shoes', $html);
+        $this->assertStringContainsString('SHOE-RED', $html);
     }
 
     #[Test]
     public function renderContainsBillingAddress(): void
     {
-        $html = $this->subject->render($this->order);
+        $html = $this->get(InvoiceRenderer::class)->render($this->fetchOrder());
 
-        self::assertStringContainsString('Jane', $html);
-        self::assertStringContainsString('Shopper', $html);
-        self::assertStringContainsString('Sampletown', $html);
+        $this->assertStringContainsString('Jane', $html);
+        $this->assertStringContainsString('Shopper', $html);
+        $this->assertStringContainsString('Sampletown', $html);
     }
 
     #[Test]
     public function renderContainsTheGrandTotal(): void
     {
-        $html = $this->subject->render($this->order);
+        $html = $this->get(InvoiceRenderer::class)->render($this->fetchOrder());
 
-        self::assertStringContainsString('100.00 EUR', $html);
+        $this->assertStringContainsString('100.00 EUR', $html);
+    }
+
+    private function fetchOrder(): Order
+    {
+        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
+        $this->assertInstanceOf(Order::class, $order);
+        return $order;
     }
 }

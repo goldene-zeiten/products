@@ -32,9 +32,6 @@ final class OrderFinalizationServiceIdempotencyTest extends AbstractFunctionalTe
         'goldene-zeiten/frontend-test',
     ];
 
-    private OrderFinalizationService $subject;
-    private Order $order;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -45,32 +42,40 @@ final class OrderFinalizationServiceIdempotencyTest extends AbstractFunctionalTe
         // a real dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $this->subject = $this->get(OrderFinalizationService::class);
-        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
-        self::assertNotNull($order);
-        $this->order = $order;
     }
 
     #[Test]
     public function finalizeTransitionsAPendingOrderToConfirmed(): void
     {
-        $this->subject->finalize($this->order, PaymentResult::completed(PaymentStatus::PAID), $this->request());
+        $order = $this->fetchOrder();
 
-        self::assertSame(OrderStatus::CONFIRMED, $this->order->getStatus());
+        $this->get(OrderFinalizationService::class)->finalize($order, PaymentResult::completed(PaymentStatus::PAID), $this->request());
+
+        $this->assertSame(OrderStatus::CONFIRMED, $order->getStatus());
         // One AfterOrderFinalizedEvent confirmation mail + one OrderStatusChangedEvent mail
         // (the pending->confirmed transition itself).
-        self::assertCount(2, TestMailer::getSentEmails());
+        $this->assertCount(2, TestMailer::getSentEmails());
     }
 
     #[Test]
     public function finalizeIsANoOpWhenCalledAgainForAnAlreadyFinalizedOrder(): void
     {
-        $this->subject->finalize($this->order, PaymentResult::completed(PaymentStatus::PAID), $this->request());
-        $this->subject->finalize($this->order, PaymentResult::completed(PaymentStatus::PAID), $this->request());
+        $order = $this->fetchOrder();
+        $subject = $this->get(OrderFinalizationService::class);
 
-        self::assertSame(OrderStatus::CONFIRMED, $this->order->getStatus());
+        $subject->finalize($order, PaymentResult::completed(PaymentStatus::PAID), $this->request());
+        $subject->finalize($order, PaymentResult::completed(PaymentStatus::PAID), $this->request());
+
+        $this->assertSame(OrderStatus::CONFIRMED, $order->getStatus());
         // The second call must not re-dispatch anything - still exactly the first call's mails.
-        self::assertCount(2, TestMailer::getSentEmails());
+        $this->assertCount(2, TestMailer::getSentEmails());
+    }
+
+    private function fetchOrder(): Order
+    {
+        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
+        $this->assertNotNull($order);
+        return $order;
     }
 
     private function request(): ServerRequestInterface

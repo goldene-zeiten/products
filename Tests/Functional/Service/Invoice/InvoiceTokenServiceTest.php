@@ -16,38 +16,44 @@ final class InvoiceTokenServiceTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private InvoiceTokenService $subject;
-    private Order $order;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_with_items_and_addresses.csv');
-        $this->subject = $this->get(InvoiceTokenService::class);
-        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
-        self::assertInstanceOf(Order::class, $order);
-        $this->order = $order;
     }
 
     #[Test]
     public function aGeneratedTokenIsValidForTheSameOrder(): void
     {
-        $token = $this->subject->generateToken($this->order);
+        $subject = $this->get(InvoiceTokenService::class);
+        $order = $this->fetchOrder();
 
-        self::assertTrue($this->subject->isValid($this->order, $token));
+        $token = $subject->generateToken($order);
+
+        $this->assertTrue($subject->isValid($order, $token));
     }
 
     #[Test]
     public function aTamperedTokenIsRejected(): void
     {
-        $token = $this->subject->generateToken($this->order);
+        $subject = $this->get(InvoiceTokenService::class);
+        $order = $this->fetchOrder();
 
-        self::assertFalse($this->subject->isValid($this->order, $token . 'x'));
+        $token = $subject->generateToken($order);
+
+        $this->assertFalse($subject->isValid($order, $token . 'x'));
     }
 
     #[Test]
     public function anEmptyTokenIsRejected(): void
     {
-        self::assertFalse($this->subject->isValid($this->order, ''));
+        $this->assertFalse($this->get(InvoiceTokenService::class)->isValid($this->fetchOrder(), ''));
+    }
+
+    private function fetchOrder(): Order
+    {
+        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
+        $this->assertInstanceOf(Order::class, $order);
+        return $order;
     }
 }

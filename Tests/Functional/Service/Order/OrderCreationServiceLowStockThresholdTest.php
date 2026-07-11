@@ -48,8 +48,6 @@ final class OrderCreationServiceLowStockThresholdTest extends AbstractFunctional
         'goldene-zeiten/frontend-test',
     ];
 
-    private Product $product;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -59,9 +57,6 @@ final class OrderCreationServiceLowStockThresholdTest extends AbstractFunctional
         // $GLOBALS['TYPO3_REQUEST'] outside of a real controller dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
-        $this->product = $product;
         TestMailer::reset();
     }
 
@@ -70,13 +65,13 @@ final class OrderCreationServiceLowStockThresholdTest extends AbstractFunctional
     {
         $this->get(OrderCreationService::class)->create(
             (new ServerRequest('http://localhost/'))->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 0, 0),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertEmpty($this->lowStockEmails());
+        $this->assertEmpty($this->lowStockEmails());
     }
 
     #[Test]
@@ -84,13 +79,13 @@ final class OrderCreationServiceLowStockThresholdTest extends AbstractFunctional
     {
         $this->get(OrderCreationService::class)->create(
             $this->requestWithLowStockThreshold(10),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 0, 0),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertNotEmpty($this->lowStockEmails(), 'Expected a low-stock warning email using the site-configured threshold.');
+        $this->assertNotEmpty($this->lowStockEmails(), 'Expected a low-stock warning email using the site-configured threshold.');
     }
 
     private function requestWithLowStockThreshold(int $threshold): ServerRequestInterface
@@ -126,11 +121,18 @@ final class OrderCreationServiceLowStockThresholdTest extends AbstractFunctional
         ));
     }
 
-    private function basketViewModel(): BasketViewModel
+    private function product(): Product
+    {
+        $product = $this->get(ProductRepository::class)->findByUid(1);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
+    }
+
+    private function basketViewModel(Product $product): BasketViewModel
     {
         $unitPriceNet = Money::fromDecimalString('84.03');
         $unitPriceGross = Money::fromDecimalString('100.00');
-        $item = new BasketViewItem($this->product, null, 1, $unitPriceNet, $unitPriceGross, 0.19, $unitPriceNet, $unitPriceGross, $unitPriceGross->subtract($unitPriceNet));
+        $item = new BasketViewItem($product, null, 1, $unitPriceNet, $unitPriceGross, 0.19, $unitPriceNet, $unitPriceGross, $unitPriceGross->subtract($unitPriceNet));
         return new BasketViewModel([$item], $unitPriceNet, $unitPriceGross, $unitPriceGross->subtract($unitPriceNet), 'EUR');
     }
 

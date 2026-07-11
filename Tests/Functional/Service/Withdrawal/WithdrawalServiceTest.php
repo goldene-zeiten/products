@@ -21,9 +21,6 @@ use TYPO3\CMS\Core\Http\ServerRequest;
 
 final class WithdrawalServiceTest extends AbstractFrontendTestCase
 {
-    private WithdrawalService $subject;
-    private OrderRepository $orderRepository;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -33,8 +30,6 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         // request resolvable via $GLOBALS['TYPO3_REQUEST'] outside a real dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $this->subject = $this->get(WithdrawalService::class);
-        $this->orderRepository = $this->get(OrderRepository::class);
     }
 
     #[Test]
@@ -43,9 +38,9 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         $order = $this->fetchOrder();
         $token = $this->get(WithdrawalTokenService::class)->generateToken($order);
 
-        $resolved = $this->subject->resolveOrder(1, $token);
+        $resolved = $this->get(WithdrawalService::class)->resolveOrder(1, $token);
 
-        self::assertSame($order->getUid(), $resolved->getUid());
+        $this->assertSame($order->getUid(), $resolved->getUid());
     }
 
     #[Test]
@@ -54,7 +49,7 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         $this->expectException(InvalidWithdrawalTokenException::class);
         $this->expectExceptionCode(1752100000);
 
-        $this->subject->resolveOrder(1, 'not-a-valid-token');
+        $this->get(WithdrawalService::class)->resolveOrder(1, 'not-a-valid-token');
     }
 
     #[Test]
@@ -63,7 +58,7 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         $order = $this->fetchOrder();
         $order->setOrderDate(new \DateTime());
 
-        self::assertTrue($this->subject->isStillWithdrawable($order));
+        $this->assertTrue($this->get(WithdrawalService::class)->isStillWithdrawable($order));
     }
 
     #[Test]
@@ -72,7 +67,7 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         $order = $this->fetchOrder();
         $order->setOrderDate((new \DateTime())->modify('-30 days'));
 
-        self::assertFalse($this->subject->isStillWithdrawable($order));
+        $this->assertFalse($this->get(WithdrawalService::class)->isStillWithdrawable($order));
     }
 
     #[Test]
@@ -82,7 +77,7 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         $order->setOrderDate(new \DateTime());
         $order->setStatus(OrderStatus::SHIPPED);
 
-        self::assertFalse($this->subject->isStillWithdrawable($order));
+        $this->assertFalse($this->get(WithdrawalService::class)->isStillWithdrawable($order));
     }
 
     #[Test]
@@ -103,14 +98,14 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         $order = $this->fetchOrder();
         $order->setOrderDate(new \DateTime());
 
-        $this->subject->withdraw($order, 'shopper@example.com', 'Changed my mind');
+        $this->get(WithdrawalService::class)->withdraw($order, 'shopper@example.com', 'Changed my mind');
 
-        self::assertSame(OrderStatus::CANCELLED, $order->getStatus());
-        self::assertCount(1, $order->getStatusLog());
-        self::assertSame('Changed my mind', $order->getStatusLog()[0]['note']);
+        $this->assertSame(OrderStatus::CANCELLED, $order->getStatus());
+        $this->assertCount(1, $order->getStatusLog());
+        $this->assertSame('Changed my mind', $order->getStatusLog()[0]['note']);
         $recipients = array_map(static fn($email): string => $email->getTo()[0]->getAddress(), TestMailer::getSentEmails());
-        self::assertContains('merchant@example.com', $recipients);
-        self::assertContains('shopper@example.com', $recipients);
+        $this->assertContains('merchant@example.com', $recipients);
+        $this->assertContains('shopper@example.com', $recipients);
     }
 
     #[Test]
@@ -121,7 +116,7 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         $this->expectException(WithdrawalEmailMismatchException::class);
         $this->expectExceptionCode(1752100001);
 
-        $this->subject->withdraw($order, 'someone-else@example.com', '');
+        $this->get(WithdrawalService::class)->withdraw($order, 'someone-else@example.com', '');
     }
 
     #[Test]
@@ -133,7 +128,7 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         $this->expectException(WithdrawalPeriodExpiredException::class);
         $this->expectExceptionCode(1752100002);
 
-        $this->subject->withdraw($order, 'shopper@example.com', '');
+        $this->get(WithdrawalService::class)->withdraw($order, 'shopper@example.com', '');
     }
 
     #[Test]
@@ -146,13 +141,13 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         $this->expectException(OrderNotWithdrawableException::class);
         $this->expectExceptionCode(1752100003);
 
-        $this->subject->withdraw($order, 'shopper@example.com', '');
+        $this->get(WithdrawalService::class)->withdraw($order, 'shopper@example.com', '');
     }
 
     private function fetchOrder(): Order
     {
-        $order = $this->orderRepository->findByUidIgnoringStoragePage(1);
-        self::assertInstanceOf(Order::class, $order);
+        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
+        $this->assertInstanceOf(Order::class, $order);
         return $order;
     }
 }

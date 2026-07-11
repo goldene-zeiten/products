@@ -29,15 +29,10 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private Product $product;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_placement_with_shipping.csv');
-        $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
-        $this->product = $product;
     }
 
     #[Test]
@@ -45,15 +40,15 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     {
         $order = $this->subject()->create(
             $this->requestWithShipping(enabled: true),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 0, 1),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame(1, $order->getShippingMethod());
-        self::assertSame(500, $order->getShippingTotal()->getCents());
-        self::assertSame(10500, $order->getTotalGross()->getCents());
+        $this->assertSame(1, $order->getShippingMethod());
+        $this->assertSame(500, $order->getShippingTotal()->getCents());
+        $this->assertSame(10500, $order->getTotalGross()->getCents());
     }
 
     #[Test]
@@ -61,14 +56,14 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     {
         $order = $this->subject()->create(
             $this->requestWithShipping(enabled: true),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections(['FREESHIP'], 0, 1),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame(1, $order->getShippingMethod());
-        self::assertSame(0, $order->getShippingTotal()->getCents());
+        $this->assertSame(1, $order->getShippingMethod());
+        $this->assertSame(0, $order->getShippingTotal()->getCents());
     }
 
     #[Test]
@@ -76,13 +71,13 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     {
         $order = $this->subject()->create(
             $this->requestWithShipping(enabled: true),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections(['REGULAR'], 0, 1),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame(500, $order->getShippingTotal()->getCents());
+        $this->assertSame(500, $order->getShippingTotal()->getCents());
     }
 
     #[Test]
@@ -90,15 +85,15 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     {
         $order = $this->subject()->create(
             $this->requestWithShipping(enabled: false),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 0, 1),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame(0, $order->getShippingMethod());
-        self::assertSame(0, $order->getShippingTotal()->getCents());
-        self::assertSame(10000, $order->getTotalGross()->getCents());
+        $this->assertSame(0, $order->getShippingMethod());
+        $this->assertSame(0, $order->getShippingTotal()->getCents());
+        $this->assertSame(10000, $order->getTotalGross()->getCents());
     }
 
     #[Test]
@@ -106,14 +101,14 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     {
         $order = $this->subject()->create(
             $this->requestWithShipping(enabled: true),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 0, 0),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame(0, $order->getShippingMethod());
-        self::assertSame(0, $order->getShippingTotal()->getCents());
+        $this->assertSame(0, $order->getShippingMethod());
+        $this->assertSame(0, $order->getShippingTotal()->getCents());
     }
 
     #[Test]
@@ -125,18 +120,18 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
         try {
             $this->subject()->create(
                 $this->requestWithShipping(enabled: true),
-                $this->basketViewModel(),
+                $this->basketViewModel($this->product()),
                 new CheckoutSelections([], 0, 999),
                 $this->address(),
                 $this->paymentMethod()
             );
-            self::fail('Expected NoShippingMethodAvailableException was not thrown.');
+            $this->fail('Expected NoShippingMethodAvailableException was not thrown.');
         } catch (NoShippingMethodAvailableException) {
             // expected
         }
 
-        self::assertSame($orderCountBefore, $this->countOrders());
-        self::assertSame($stockBefore, $this->currentStock());
+        $this->assertSame($orderCountBefore, $this->countOrders());
+        $this->assertSame($stockBefore, $this->currentStock());
     }
 
     private function subject(): OrderCreationService
@@ -152,12 +147,19 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
             ->withAttribute('site', $site);
     }
 
-    private function basketViewModel(): BasketViewModel
+    private function product(): Product
+    {
+        $product = $this->get(ProductRepository::class)->findByUid(1);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
+    }
+
+    private function basketViewModel(Product $product): BasketViewModel
     {
         $unitPriceNet = Money::fromDecimalString('84.03');
         $unitPriceGross = Money::fromDecimalString('100.00');
         $item = new BasketViewItem(
-            $this->product,
+            $product,
             null,
             1,
             $unitPriceNet,
@@ -192,7 +194,7 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     {
         $this->get(PersistenceManagerInterface::class)->clearState();
         $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
+        $this->assertInstanceOf(Product::class, $product);
         return $product->getInStock();
     }
 }

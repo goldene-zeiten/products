@@ -19,18 +19,10 @@ final class InvoicePaymentMethodTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private InvoicePaymentMethod $subject;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->subject = $this->get(InvoicePaymentMethod::class);
-    }
-
     #[Test]
     public function implementsTheRefundableInterface(): void
     {
-        self::assertInstanceOf(RefundablePaymentMethodInterface::class, $this->subject);
+        $this->assertInstanceOf(RefundablePaymentMethodInterface::class, $this->get(InvoicePaymentMethod::class));
     }
 
     #[Test]
@@ -39,11 +31,11 @@ final class InvoicePaymentMethodTest extends AbstractFunctionalTestCase
         $order = new Order();
         $order->setInvoiceNumber('INV-1');
 
-        $result = $this->subject->refund($order, Money::fromCents(1999));
+        $result = $this->get(InvoicePaymentMethod::class)->refund($order, Money::fromCents(1999));
 
-        self::assertSame(PaymentResultState::COMPLETED, $result->getState());
-        self::assertSame(PaymentStatus::REFUNDED, $result->getPaymentStatus());
-        self::assertSame('INV-1', $result->getExternalId());
+        $this->assertSame(PaymentResultState::COMPLETED, $result->getState());
+        $this->assertSame(PaymentStatus::REFUNDED, $result->getPaymentStatus());
+        $this->assertSame('INV-1', $result->getExternalId());
     }
 
     #[Test]
@@ -52,9 +44,9 @@ final class InvoicePaymentMethodTest extends AbstractFunctionalTestCase
         $order = new Order();
         $order->setInvoiceNumber('INV-2');
 
-        $result = $this->subject->cancel($order);
+        $result = $this->get(InvoicePaymentMethod::class)->cancel($order);
 
-        self::assertSame(PaymentResultState::COMPLETED, $result->getState());
-        self::assertSame(PaymentStatus::FAILED, $result->getPaymentStatus());
+        $this->assertSame(PaymentResultState::COMPLETED, $result->getState());
+        $this->assertSame(PaymentStatus::FAILED, $result->getPaymentStatus());
     }
 }

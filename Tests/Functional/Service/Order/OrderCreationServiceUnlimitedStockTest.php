@@ -30,8 +30,6 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
         'goldene-zeiten/products',
     ];
 
-    private OrderCreationService $subject;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -40,13 +38,12 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
         // to be resolvable via $GLOBALS['TYPO3_REQUEST'] outside of a real controller dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $this->subject = $this->get(OrderCreationService::class);
     }
 
     #[Test]
     public function placementSucceedsForAnUnlimitedStockProductDespiteZeroStock(): void
     {
-        $order = $this->subject->create(
+        $order = $this->subject()->create(
             $this->request(),
             $this->basketViewModel($this->product(1), null),
             $this->noSelections(),
@@ -54,8 +51,8 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
             $this->paymentMethod()
         );
 
-        self::assertNotNull($order->getUid());
-        self::assertSame(0, $this->currentProductStock(1));
+        $this->assertNotNull($order->getUid());
+        $this->assertSame(0, $this->currentProductStock(1));
     }
 
     #[Test]
@@ -64,7 +61,7 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
         $this->expectException(InsufficientStockException::class);
         $this->expectExceptionCode(1751751020);
 
-        $this->subject->create(
+        $this->subject()->create(
             $this->request(),
             $this->basketViewModel($this->product(2), null),
             $this->noSelections(),
@@ -76,7 +73,7 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
     #[Test]
     public function placementSucceedsWhenOnlyTheSelectedArticleIsFlaggedUnlimited(): void
     {
-        $order = $this->subject->create(
+        $order = $this->subject()->create(
             $this->request(),
             $this->basketViewModel($this->product(3), $this->article(1)),
             $this->noSelections(),
@@ -84,14 +81,14 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
             $this->paymentMethod()
         );
 
-        self::assertNotNull($order->getUid());
-        self::assertSame(0, $this->currentArticleStock(1));
+        $this->assertNotNull($order->getUid());
+        $this->assertSame(0, $this->currentArticleStock(1));
     }
 
     #[Test]
     public function placementSucceedsWhenTheProductIsUnlimitedEvenIfItsSelectedArticleIsNot(): void
     {
-        $order = $this->subject->create(
+        $order = $this->subject()->create(
             $this->request(),
             $this->basketViewModel($this->product(4), $this->article(2)),
             $this->noSelections(),
@@ -99,8 +96,13 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
             $this->paymentMethod()
         );
 
-        self::assertNotNull($order->getUid());
-        self::assertSame(0, $this->currentArticleStock(2));
+        $this->assertNotNull($order->getUid());
+        $this->assertSame(0, $this->currentArticleStock(2));
+    }
+
+    private function subject(): OrderCreationService
+    {
+        return $this->get(OrderCreationService::class);
     }
 
     private function request(): ServerRequestInterface
@@ -145,14 +147,14 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
     private function product(int $uid): Product
     {
         $product = $this->get(ProductRepository::class)->findByUid($uid);
-        self::assertInstanceOf(Product::class, $product);
+        $this->assertInstanceOf(Product::class, $product);
         return $product;
     }
 
     private function article(int $uid): Article
     {
         $article = $this->get(ArticleRepository::class)->findByUid($uid);
-        self::assertInstanceOf(Article::class, $article);
+        $this->assertInstanceOf(Article::class, $article);
         return $article;
     }
 

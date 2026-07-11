@@ -17,73 +17,82 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 
 final class WithdrawalControllerTest extends AbstractFrontendTestCase
 {
-    private OrderRepository $orderRepository;
-    private Order $order;
-
     protected function setUp(): void
     {
         parent::setUp();
         TestMailer::reset();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_with_items_and_addresses.csv');
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/withdrawal_content.csv');
-        $this->orderRepository = $this->get(OrderRepository::class);
-
-        $order = $this->orderRepository->findByUidIgnoringStoragePage(1);
-        self::assertInstanceOf(Order::class, $order);
-        $order->setOrderDate(new \DateTime());
-        $this->orderRepository->update($order);
-        $this->get(PersistenceManagerInterface::class)->persistAll();
-        $this->order = $order;
     }
 
     #[Test]
     public function formActionRendersTheFormForAValidToken(): void
     {
-        $token = $this->get(WithdrawalTokenService::class)->generateToken($this->order);
+        $order = $this->fetchWithinWithdrawalPeriodOrder();
+        $token = $this->get(WithdrawalTokenService::class)->generateToken($order);
 
         $response = $this->executeFrontendSubRequest($this->requestFor('form', [
-            'order' => $this->orderUid(),
+            'order' => $this->orderUid($order),
             'hash' => $token,
         ]));
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('tx_products_withdrawal[email]', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('tx_products_withdrawal[email]', (string)$response->getBody());
     }
 
     #[Test]
     public function formActionShowsTheInvalidLinkMessageForATamperedToken(): void
     {
+        $order = $this->fetchWithinWithdrawalPeriodOrder();
+
         $response = $this->executeFrontendSubRequest($this->requestFor('form', [
-            'order' => $this->orderUid(),
+            'order' => $this->orderUid($order),
             'hash' => 'not-a-valid-token',
         ]));
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringNotContainsString('tx_products_withdrawal[email]', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringNotContainsString('tx_products_withdrawal[email]', (string)$response->getBody());
     }
 
     #[Test]
     public function confirmActionCancelsTheOrderForValidInput(): void
     {
-        $token = $this->get(WithdrawalTokenService::class)->generateToken($this->order);
+        $order = $this->fetchWithinWithdrawalPeriodOrder();
+        $token = $this->get(WithdrawalTokenService::class)->generateToken($order);
 
         $response = $this->executeFrontendSubRequest($this->requestFor('confirm', [
-            'order' => $this->orderUid(),
+            'order' => $this->orderUid($order),
             'hash' => $token,
             'email' => 'shopper@example.com',
             'reason' => 'Changed my mind',
         ]));
 
-        self::assertSame(200, $response->getStatusCode());
-        $cancelled = $this->orderRepository->findByUidIgnoringStoragePage(1);
-        self::assertInstanceOf(Order::class, $cancelled);
-        self::assertSame(OrderStatus::CANCELLED, $cancelled->getStatus());
+        $this->assertSame(200, $response->getStatusCode());
+        $cancelled = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
+        $this->assertInstanceOf(Order::class, $cancelled);
+        $this->assertSame(OrderStatus::CANCELLED, $cancelled->getStatus());
     }
 
-    private function orderUid(): int
+    /**
+     * The fixture's own order_date is irrelevant to what each test needs - "still within the
+     * withdrawal window" - so it's pinned to now, right before use, rather than relying on the
+     * CSV's static value staying valid as the withdrawal period setting changes over time.
+     */
+    private function fetchWithinWithdrawalPeriodOrder(): Order
     {
-        $uid = $this->order->getUid();
-        self::assertNotNull($uid);
+        $orderRepository = $this->get(OrderRepository::class);
+        $order = $orderRepository->findByUidIgnoringStoragePage(1);
+        $this->assertInstanceOf(Order::class, $order);
+        $order->setOrderDate(new \DateTime());
+        $orderRepository->update($order);
+        $this->get(PersistenceManagerInterface::class)->persistAll();
+        return $order;
+    }
+
+    private function orderUid(Order $order): int
+    {
+        $uid = $order->getUid();
+        $this->assertNotNull($uid);
         return $uid;
     }
 
