@@ -36,6 +36,15 @@ config.pageTitleProviders.products.before = record'
 // specifically would only ever break the feature, never protect anything real.
 $GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '^tx_products_productdetail[attributeValues]';
 $GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '=tx_products_productdetail[selectedArticle]';
+// f:form (unlike f:link.action/f:uri.action) never embeds a cHash - it only ever emits Extbase's
+// own __referrer/__trustedProperties bookkeeping fields alongside whatever arguments the form
+// itself declares. Those two aren't part of TYPO3 core's default excludedParameters list (only
+// tracking/marketing params like utm_* are), so without excluding them here every submission of
+// this GET form 404s with "Request parameters could not be validated (&cHash empty)" regardless
+// of the attributeValues/selectedArticle exclusions above - this was never caught because the
+// no-JS reload fallback had no E2E coverage until the acceptance suite's variant-add spec.
+$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '^tx_products_productdetail[__referrer]';
+$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '^tx_products_productdetail[__trustedProperties]';
 
 ExtensionUtility::configurePlugin(
     'Products',
