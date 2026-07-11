@@ -6,7 +6,7 @@ namespace GoldeneZeiten\Products\Service\Wishlist;
 
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
@@ -18,20 +18,9 @@ final class WishlistStorage
 {
     private const SESSION_KEY = 'tx_products_wishlist';
 
-    /**
-     * @var array<string, mixed>
-     */
-    private array $settings;
-
     public function __construct(
-        private readonly FrontendUserResolver $frontendUserResolver,
-        ConfigurationManagerInterface $configurationManager
-    ) {
-        $this->settings = $configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
-        );
-    }
+        private readonly FrontendUserResolver $frontendUserResolver
+    ) {}
 
     /**
      * @return int[]
@@ -61,7 +50,7 @@ final class WishlistStorage
         if (!$frontendUser instanceof FrontendUserAuthentication) {
             return;
         }
-        if ($this->requiresCookieConsent() && !$this->frontendUserResolver->hasConfirmedSessionCookie($request)) {
+        if ($this->requiresCookieConsent($request) && !$this->frontendUserResolver->hasConfirmedSessionCookie($request)) {
             return;
         }
 
@@ -69,9 +58,13 @@ final class WishlistStorage
         $frontendUser->storeSessionData();
     }
 
-    private function requiresCookieConsent(): bool
+    private function requiresCookieConsent(ServerRequestInterface $request): bool
     {
-        return (bool)($this->settings['session']['requireCookieConsent'] ?? false);
+        $site = $request->getAttribute('site');
+        if (!$site instanceof SiteInterface) {
+            return false;
+        }
+        return (bool)$site->getSettings()->get('products.session.requireCookieConsent', false);
     }
 
     public function add(ServerRequestInterface $request, int $productUid): void

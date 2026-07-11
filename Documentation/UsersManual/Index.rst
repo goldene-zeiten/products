@@ -43,6 +43,12 @@ checkout on insufficient stock — either the product's or the selected article'
 enough (there is no "override" precedence between the two, since a boolean has no way to represent
 "not set" separately from "false").
 
+:guilabel:`Min Quantity in Basket` / :guilabel:`Max Quantity in Basket` on both products and
+articles enforce an order-quantity limit at the basket (0 on either field means no limit). An
+article's own non-zero value overrides the product's; when it is 0, the product's own limit
+applies instead. A requested quantity outside the bounds is clamped into range, the same way it
+behaves when only a maximum (or only a minimum) is set.
+
 Product page titles
 --------------------
 
@@ -180,6 +186,12 @@ list, or via the :guilabel:`Products` backend module. Each article can then be t
     this reloads the page (`products.catalog.articleSwitchMode`); switch that setting to ``ajax``
     to swap the price/stock in place instead, without a full page reload.
 
+An article's :guilabel:`Price Mode` controls how its own :guilabel:`Price` field (when non-zero)
+combines with the product's: :guilabel:`Override` (the default) replaces the product's price
+entirely; :guilabel:`Surcharge` instead adds the article's price on top of the product's — useful
+for e.g. "+5.00 for size XL" variants without re-entering the full price on every article. A price
+of 0.00 always means "no override/surcharge, inherit the product's price", regardless of mode.
+
 ..  _users-manual-orders:
 
 Managing orders
@@ -249,6 +261,14 @@ dedicated notification (in addition to the customer's own status-change email) �
 cancellation specifically needs to alert the shop to act, unlike an ordinary backend-driven status
 change. Setting `products.checkout.withdrawalPeriodDays` to ``0`` disables the whole feature.
 
+The FE order-detail page (:rst:dir:`OrderHistory`'s ``show`` action, linked from the thank-you page
+and order history) works the same way as invoice download and withdrawal: a logged-in customer
+viewing their own order needs nothing extra, but a guest order (no fe_user account, matching this
+shop's guest-checkout-first design) can only be opened with the matching security token carried in
+its own "View Order" link — the plain order number/uid alone is never enough. This is deliberate: a
+guest order's account association is empty, the same as any anonymous visitor's, so the token is
+what actually proves the visitor is the order's rightful owner.
+
 ..  _users-manual-category-permissions:
 
 Category permissions
@@ -259,7 +279,9 @@ user/group can see at all), each category has an :guilabel:`Access` tab — the 
 owner-group/everybody permission model pages use, with Show/Edit/Delete/New Subcategories
 checkboxes per owner. This is *additive* to mounts: a category outside a user's mounts is invisible
 regardless of its permissions, and a category with permissions denying "Edit" cannot be changed by
-that user even though they can see it.
+that user even though they can see it. The "Delete" bit is enforced independently of "Edit" — a
+user granted Edit but not Delete on a category can change it but not remove it, the same
+show/edit/delete/new distinction TYPO3 pages themselves make.
 
 Leaving all :guilabel:`Access` checkboxes empty on a category means "no one but an admin can edit
 it" — set at least :guilabel:`Everybody` → :guilabel:`Edit` to keep the previous mounts-only
@@ -277,7 +299,11 @@ the discount shows there and carries through checkout.
 
 *   :guilabel:`Combinable with other vouchers` — off by default. A non-combinable voucher always
     applies alone: entering it removes any other codes already applied, and it cannot be added
-    alongside an existing one either. Combinable vouchers stack with each other freely.
+    alongside an existing one either. Combinable vouchers stack with each other freely. This also
+    covers non-code discounts: a non-combinable voucher is rejected outright (not just cleared
+    against other vouchers) when the basket is already reduced by a
+    :ref:`category-cascading <users-manual-category-discounts>` or
+    :ref:`FE-usergroup <users-manual-usergroup-discounts>` discount.
 *   :guilabel:`Usage limit` — the total number of times the code can be redeemed across all
     customers, 0 for unlimited. Once reached, the code stops working for everyone.
 *   :guilabel:`Minimum basket value` — the code is rejected below this basket total; 0 means no
@@ -479,9 +505,11 @@ link to a wishlist page manually without necessarily surfacing it everywhere.
 
 A logged-in customer's wishlist is stored against their account (visible as
 :guilabel:`Wishlist Item` records) and follows them across visits and devices. A guest's wishlist
-lives only in their browser session and is lost when it expires — logging in does **not** carry a
-guest's session wishlist over to their account; the two are entirely separate lists. If a
-wishlisted product is later deleted, it simply disappears from the list.
+lives only in their browser session and is lost when it expires — logging in **merges** any
+products from that session wishlist into the now-identified account's persisted one (deduplicated
+against anything already there) and clears the session copy, so a guest who builds a wishlist
+before creating an account or logging in does not lose it. If a wishlisted product is later
+deleted, it simply disappears from the list.
 
 Shoppers can reorder their own wishlist with move-up/move-down links next to each item — there is
 no drag-and-drop, just swapping a product's position with its neighbour, one step at a time. This
@@ -504,13 +532,27 @@ compliance.
 Recently-viewed products
 ==========================
 
-The :rst:dir:`RecentlyViewed` plugin shows the current visitor's most recently viewed products,
-most recent first, automatically — there is nothing to configure per product. Viewing a product
-already on the list moves it back to the front rather than showing it twice. It lives entirely in
-the visitor's session (nothing is stored in the database, and nothing is tied to their account even
-when logged in), so the list is lost when the session expires and never shared across devices.
-:guilabel:`Maximum number of recently-viewed products remembered per visitor` (default 10) caps how
-many products are kept.
+The :rst:dir:`RecentlyViewed` plugin's ``list`` action shows the current visitor's most recently
+viewed products, most recent first, automatically — there is nothing to configure per product.
+Viewing a product already on the list moves it back to the front rather than showing it twice. It
+lives entirely in the visitor's session (nothing is stored in the database, and nothing is tied to
+their account even when logged in), so the list is lost when the session expires and never shared
+across devices. :guilabel:`Maximum number of recently-viewed products remembered per visitor`
+(default 10) caps how many products are kept.
+
+..  _users-manual-most-viewed:
+
+Most-viewed products
+--------------------
+
+The same :rst:dir:`RecentlyViewed` plugin also offers two persisted, cross-session/cross-device
+listings, independent of the session-only recently-viewed one above: its ``mostViewed`` action
+shows a site-wide "most viewed" ranking (every product view counts, from any visitor), and its
+``myMostViewed`` action shows the current logged-in customer's own "your most viewed" ranking —
+empty for anonymous visitors, since per-shopper view tracking only ever applies to an identified
+account (no anonymous browsing behaviour is tracked beyond the session-only recently-viewed list).
+`products.mostViewed.limit` (default 10) caps both listings independently of
+`products.recentlyViewed.limit`.
 
 ..  _users-manual-search:
 
