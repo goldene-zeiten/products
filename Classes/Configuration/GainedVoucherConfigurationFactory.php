@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GoldeneZeiten\Products\Configuration;
+
+use GoldeneZeiten\Products\Domain\Enum\VoucherDiscountType;
+use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Site\Entity\Site;
+
+/**
+ * `products.vouchers.gained.*` are Site Settings (Configuration/Sets/Products/settings.
+ * definitions.yaml), read straight from the request's `site` attribute - see
+ * ProductsConfigurationFactory's docblock for why ConfigurationManagerInterface can't be used for
+ * these.
+ */
+final class GainedVoucherConfigurationFactory
+{
+    public function create(ServerRequestInterface $request): GainedVoucherConfiguration
+    {
+        $site = $request->getAttribute('site');
+        $settings = $site instanceof Site ? $site->getSettings() : null;
+        $rewardType = (string)($settings?->get('products.vouchers.gained.rewardType', 'fixed') ?? 'fixed');
+
+        return new GainedVoucherConfiguration(
+            (bool)($settings?->get('products.vouchers.gained.enabled', false) ?? false),
+            Money::fromDecimalString((string)($settings?->get('products.vouchers.gained.minimumOrderValue', '0.00') ?? '0.00')),
+            VoucherDiscountType::tryFrom($rewardType) ?? VoucherDiscountType::FIXED,
+            (string)($settings?->get('products.vouchers.gained.rewardValue', '5.00') ?? '5.00')
+        );
+    }
+}
