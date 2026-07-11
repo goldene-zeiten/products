@@ -19,7 +19,7 @@ final class BasketViewItemDepositTest extends UnitTestCase
     {
         $item = $this->item(new Product(), null, 3);
 
-        self::assertSame(0, $item->getDepositTotal()->getCents());
+        $this->assertSame(0, $item->getDepositTotal()->getCents());
     }
 
     #[Test]
@@ -30,7 +30,7 @@ final class BasketViewItemDepositTest extends UnitTestCase
 
         $item = $this->item($product, null, 4);
 
-        self::assertSame(100, $item->getDepositTotal()->getCents());
+        $this->assertSame(100, $item->getDepositTotal()->getCents());
     }
 
     #[Test]
@@ -43,7 +43,7 @@ final class BasketViewItemDepositTest extends UnitTestCase
 
         $item = $this->item($product, $article, 2);
 
-        self::assertSame(300, $item->getDepositTotal()->getCents());
+        $this->assertSame(300, $item->getDepositTotal()->getCents());
     }
 
     #[Test]
@@ -62,7 +62,7 @@ final class BasketViewItemDepositTest extends UnitTestCase
             'EUR'
         );
 
-        self::assertSame(100, $basket->getDepositTotal()->getCents());
+        $this->assertSame(100, $basket->getDepositTotal()->getCents());
     }
 
     private function item(Product $product, ?Article $article, int $quantity): BasketViewItem

@@ -17,7 +17,7 @@ final class VoucherTest extends UnitTestCase
     {
         $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
 
-        self::assertSame(1000, $voucher->calculateDiscount(Money::fromDecimalString('100.00'))->getCents());
+        $this->assertSame(1000, $voucher->calculateDiscount(Money::fromDecimalString('100.00'))->getCents());
     }
 
     #[Test]
@@ -25,7 +25,7 @@ final class VoucherTest extends UnitTestCase
     {
         $voucher = $this->voucher(VoucherDiscountType::FIXED, '5.00');
 
-        self::assertSame(500, $voucher->calculateDiscount(Money::fromDecimalString('100.00'))->getCents());
+        $this->assertSame(500, $voucher->calculateDiscount(Money::fromDecimalString('100.00'))->getCents());
     }
 
     #[Test]
@@ -33,7 +33,7 @@ final class VoucherTest extends UnitTestCase
     {
         $voucher = $this->voucher(VoucherDiscountType::FIXED, '50.00');
 
-        self::assertSame(2000, $voucher->calculateDiscount(Money::fromDecimalString('20.00'))->getCents());
+        $this->assertSame(2000, $voucher->calculateDiscount(Money::fromDecimalString('20.00'))->getCents());
     }
 
     #[Test]
@@ -41,7 +41,7 @@ final class VoucherTest extends UnitTestCase
     {
         $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
 
-        self::assertTrue($voucher->meetsMinimumBasketValue(Money::fromDecimalString('0.01')));
+        $this->assertTrue($voucher->meetsMinimumBasketValue(Money::fromDecimalString('0.01')));
     }
 
     #[Test]
@@ -50,8 +50,8 @@ final class VoucherTest extends UnitTestCase
         $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
         $voucher->setMinBasketValue(Money::fromDecimalString('50.00'));
 
-        self::assertFalse($voucher->meetsMinimumBasketValue(Money::fromDecimalString('49.99')));
-        self::assertTrue($voucher->meetsMinimumBasketValue(Money::fromDecimalString('50.00')));
+        $this->assertFalse($voucher->meetsMinimumBasketValue(Money::fromDecimalString('49.99')));
+        $this->assertTrue($voucher->meetsMinimumBasketValue(Money::fromDecimalString('50.00')));
     }
 
     #[Test]
@@ -59,8 +59,8 @@ final class VoucherTest extends UnitTestCase
     {
         $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
 
-        self::assertTrue($voucher->isAvailableToFrontendUser(0));
-        self::assertTrue($voucher->isAvailableToFrontendUser(42));
+        $this->assertTrue($voucher->isAvailableToFrontendUser(0));
+        $this->assertTrue($voucher->isAvailableToFrontendUser(42));
     }
 
     #[Test]
@@ -69,8 +69,8 @@ final class VoucherTest extends UnitTestCase
         $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
         $voucher->setBoundFrontendUser(42);
 
-        self::assertTrue($voucher->isAvailableToFrontendUser(42));
-        self::assertFalse($voucher->isAvailableToFrontendUser(1));
+        $this->assertTrue($voucher->isAvailableToFrontendUser(42));
+        $this->assertFalse($voucher->isAvailableToFrontendUser(1));
     }
 
     #[Test]
@@ -78,7 +78,7 @@ final class VoucherTest extends UnitTestCase
     {
         $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
 
-        self::assertFalse($voucher->isWaivingShippingCost());
+        $this->assertFalse($voucher->isWaivingShippingCost());
     }
 
     #[Test]
@@ -87,7 +87,7 @@ final class VoucherTest extends UnitTestCase
         $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
         $voucher->setWaivesShippingCost(true);
 
-        self::assertTrue($voucher->isWaivingShippingCost());
+        $this->assertTrue($voucher->isWaivingShippingCost());
     }
 
     #[Test]
@@ -95,7 +95,7 @@ final class VoucherTest extends UnitTestCase
     {
         $voucher = $this->voucher(VoucherDiscountType::PERCENTAGE, '10.00');
 
-        self::assertSame(0, $voucher->getGeneratedFromOrder());
+        $this->assertSame(0, $voucher->getGeneratedFromOrder());
     }
 
     private function voucher(VoucherDiscountType $type, string $discountValue): Voucher

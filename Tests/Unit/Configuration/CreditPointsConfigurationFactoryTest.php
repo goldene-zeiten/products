@@ -36,10 +36,10 @@ final class CreditPointsConfigurationFactoryTest extends UnitTestCase
 
         $configuration = $this->subject()->create($request);
 
-        self::assertTrue($configuration->isEnabled());
-        self::assertSame(25, $configuration->getMoneyPerPoint()->getCents());
-        self::assertSame('basketTiered', $configuration->getEarningMode());
-        self::assertSame(2.0, $configuration->getPriceFactor());
+        $this->assertTrue($configuration->isEnabled());
+        $this->assertSame(25, $configuration->getMoneyPerPoint()->getCents());
+        $this->assertSame('basketTiered', $configuration->getEarningMode());
+        $this->assertSame(2.0, $configuration->getPriceFactor());
     }
 
     #[Test]
@@ -47,11 +47,11 @@ final class CreditPointsConfigurationFactoryTest extends UnitTestCase
     {
         $configuration = $this->subject()->create(new ServerRequest('http://localhost/'));
 
-        self::assertFalse($configuration->isEnabled());
-        self::assertSame(10, $configuration->getMoneyPerPoint()->getCents());
-        self::assertSame('perProduct', $configuration->getEarningMode());
-        self::assertSame([], $configuration->getEarningTiers());
-        self::assertSame(0.0, $configuration->getPriceFactor());
+        $this->assertFalse($configuration->isEnabled());
+        $this->assertSame(10, $configuration->getMoneyPerPoint()->getCents());
+        $this->assertSame('perProduct', $configuration->getEarningMode());
+        $this->assertSame([], $configuration->getEarningTiers());
+        $this->assertSame(0.0, $configuration->getPriceFactor());
     }
 
     private function subject(): CreditPointsConfigurationFactory

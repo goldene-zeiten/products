@@ -35,10 +35,10 @@ final class CheckoutAddressPrefillTest extends AbstractFrontendTestCase
         $response = $this->executeFrontendSubRequest($request);
         $body = (string)$response->getBody();
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('Loop Street 42', $body);
-        self::assertStringContainsString('Repeatville', $body);
-        self::assertStringContainsString('returning@example.com', $body);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('Loop Street 42', $body);
+        $this->assertStringContainsString('Repeatville', $body);
+        $this->assertStringContainsString('returning@example.com', $body);
     }
 
     #[Test]
@@ -56,10 +56,10 @@ final class CheckoutAddressPrefillTest extends AbstractFrontendTestCase
         $response = $this->executeFrontendSubRequest($request);
         $body = (string)$response->getBody();
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('Profile Street 7', $body);
-        self::assertStringContainsString('Berlin', $body);
-        self::assertStringContainsString('new@example.com', $body);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('Profile Street 7', $body);
+        $this->assertStringContainsString('Berlin', $body);
+        $this->assertStringContainsString('new@example.com', $body);
     }
 
     #[Test]
@@ -76,8 +76,8 @@ final class CheckoutAddressPrefillTest extends AbstractFrontendTestCase
         $response = $this->executeFrontendSubRequest($request);
         $body = (string)$response->getBody();
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringNotContainsString('Loop Street 42', $body);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringNotContainsString('Loop Street 42', $body);
     }
 
     /**

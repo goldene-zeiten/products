@@ -39,16 +39,16 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
     #[Test]
     public function updateIsNecessaryInitially(): void
     {
-        self::assertTrue($this->subject->updateNecessary());
+        $this->assertTrue($this->subject->updateNecessary());
     }
 
     #[Test]
     public function executeUpdateMigratesVisibleProductsExcludingDeleted(): void
     {
-        self::assertTrue($this->subject->executeUpdate());
+        $this->assertTrue($this->subject->executeUpdate());
 
-        self::assertSame(3, $this->countRows(['sys_language_uid' => 0]));
-        self::assertNull($this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 4, self::LOCAL_TABLE));
+        $this->assertSame(3, $this->countRows(['sys_language_uid' => 0]));
+        $this->assertNull($this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 4, self::LOCAL_TABLE));
     }
 
     #[Test]
@@ -57,7 +57,7 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         $this->subject->executeUpdate();
 
         $productUid = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
-        self::assertSame('19.99', $this->fetchField((int)$productUid, 'price'));
+        $this->assertSame('19.99', $this->fetchField((int)$productUid, 'price'));
     }
 
     #[Test]
@@ -69,10 +69,10 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         $reducedProduct = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE);
         $unknownTaxcatProduct = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 3, self::LOCAL_TABLE);
 
-        self::assertSame(1, (int)$this->fetchField((int)$standardProduct, 'tax_class'));
-        self::assertSame(2, (int)$this->fetchField((int)$reducedProduct, 'tax_class'));
-        self::assertSame(1, (int)$this->fetchField((int)$unknownTaxcatProduct, 'tax_class'));
-        self::assertStringContainsString('unknown taxcat_id 9', $this->output->fetch());
+        $this->assertSame(1, (int)$this->fetchField((int)$standardProduct, 'tax_class'));
+        $this->assertSame(2, (int)$this->fetchField((int)$reducedProduct, 'tax_class'));
+        $this->assertSame(1, (int)$this->fetchField((int)$unknownTaxcatProduct, 'tax_class'));
+        $this->assertStringContainsString('unknown taxcat_id 9', $this->output->fetch());
     }
 
     #[Test]
@@ -81,7 +81,7 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         $this->subject->executeUpdate();
 
         $productUid = (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
-        self::assertSame(1, $this->countMmRows($productUid, 50));
+        $this->assertSame(1, $this->countMmRows($productUid, 50));
     }
 
     #[Test]
@@ -90,8 +90,8 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         $this->subject->executeUpdate();
 
         $productUid = (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE);
-        self::assertSame(0, $this->countMmRows($productUid, null));
-        self::assertStringContainsString('referenced missing category uid 999', $this->output->fetch());
+        $this->assertSame(0, $this->countMmRows($productUid, null));
+        $this->assertStringContainsString('referenced missing category uid 999', $this->output->fetch());
     }
 
     #[Test]
@@ -99,7 +99,7 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
     {
         $this->subject->executeUpdate();
 
-        self::assertStringContainsString('tt_products uid 2 had an image', $this->output->fetch());
+        $this->assertStringContainsString('tt_products uid 2 had an image', $this->output->fetch());
     }
 
     #[Test]
@@ -107,14 +107,14 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
     {
         $this->subject->executeUpdate();
 
-        self::assertSame(2, $this->countRows(['sys_language_uid' => 1]));
-        self::assertSame(1, $this->countRows(['title' => 'New DE']));
-        self::assertSame(0, $this->countRows(['title' => 'Old DE']));
-        self::assertSame(0, $this->countRows(['title' => 'Orphan overlay']));
+        $this->assertSame(2, $this->countRows(['sys_language_uid' => 1]));
+        $this->assertSame(1, $this->countRows(['title' => 'New DE']));
+        $this->assertSame(0, $this->countRows(['title' => 'Old DE']));
+        $this->assertSame(0, $this->countRows(['title' => 'Orphan overlay']));
 
         $output = $this->output->fetch();
-        self::assertStringContainsString('Skipped duplicate tt_products_language uid 20', $output);
-        self::assertStringContainsString('parent uid 999 was never migrated', $output);
+        $this->assertStringContainsString('Skipped duplicate tt_products_language uid 20', $output);
+        $this->assertStringContainsString('parent uid 999 was never migrated', $output);
     }
 
     #[Test]
@@ -123,9 +123,9 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         $this->subject->executeUpdate();
         $totalAfterFirstRun = $this->countRows([]);
 
-        self::assertFalse($this->subject->updateNecessary());
-        self::assertTrue($this->subject->executeUpdate());
-        self::assertSame($totalAfterFirstRun, $this->countRows([]));
+        $this->assertFalse($this->subject->updateNecessary());
+        $this->assertTrue($this->subject->executeUpdate());
+        $this->assertSame($totalAfterFirstRun, $this->countRows([]));
     }
 
     /**

@@ -39,7 +39,7 @@ final class BasketQuantityEnforcementTest extends AbstractFrontendTestCase
 
         $basketService->add($request, 1, null, 1);
 
-        self::assertSame(2, $this->get(BasketStorage::class)->load($request)->getItems()[0]->getQuantity());
+        $this->assertSame(2, $this->get(BasketStorage::class)->load($request)->getItems()[0]->getQuantity());
     }
 
     #[Test]
@@ -50,7 +50,7 @@ final class BasketQuantityEnforcementTest extends AbstractFrontendTestCase
 
         $basketService->add($request, 1, null, 99);
 
-        self::assertSame(5, $this->get(BasketStorage::class)->load($request)->getItems()[0]->getQuantity());
+        $this->assertSame(5, $this->get(BasketStorage::class)->load($request)->getItems()[0]->getQuantity());
     }
 
     #[Test]
@@ -61,7 +61,7 @@ final class BasketQuantityEnforcementTest extends AbstractFrontendTestCase
 
         $basketService->add($request, 2, 1, 99);
 
-        self::assertSame(2, $this->get(BasketStorage::class)->load($request)->getItems()[0]->getQuantity());
+        $this->assertSame(2, $this->get(BasketStorage::class)->load($request)->getItems()[0]->getQuantity());
     }
 
     #[Test]
@@ -73,7 +73,7 @@ final class BasketQuantityEnforcementTest extends AbstractFrontendTestCase
 
         $basketService->add($request, 1, null, -10);
 
-        self::assertGreaterThanOrEqual(3, $this->get(BasketStorage::class)->load($request)->getItems()[0]->getQuantity());
+        $this->assertGreaterThanOrEqual(3, $this->get(BasketStorage::class)->load($request)->getItems()[0]->getQuantity());
     }
 
     #[Test]
@@ -85,7 +85,7 @@ final class BasketQuantityEnforcementTest extends AbstractFrontendTestCase
 
         $basketService->update($request, 1, null, 0);
 
-        self::assertSame([], $this->get(BasketStorage::class)->load($request)->getItems());
+        $this->assertSame([], $this->get(BasketStorage::class)->load($request)->getItems());
     }
 
     #[Test]
@@ -97,7 +97,7 @@ final class BasketQuantityEnforcementTest extends AbstractFrontendTestCase
 
         $basketService->update($request, 1, null, 99);
 
-        self::assertSame(5, $this->get(BasketStorage::class)->load($request)->getItems()[0]->getQuantity());
+        $this->assertSame(5, $this->get(BasketStorage::class)->load($request)->getItems()[0]->getQuantity());
     }
 
     private function anonymousSessionRequest(): ServerRequestInterface

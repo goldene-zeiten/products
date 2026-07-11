@@ -23,9 +23,9 @@ final class ProductVariantSwitchingTest extends AbstractFrontendTestCase
         $response = $this->executeFrontendSubRequest($this->requestFor());
 
         $body = (string)$response->getBody();
-        self::assertStringContainsString('Please choose a variant', $body);
-        self::assertStringNotContainsString('15.00', $body);
-        self::assertStringNotContainsString('20.00', $body);
+        $this->assertStringContainsString('Please choose a variant', $body);
+        $this->assertStringNotContainsString('15.00', $body);
+        $this->assertStringNotContainsString('20.00', $body);
     }
 
     #[Test]
@@ -34,8 +34,8 @@ final class ProductVariantSwitchingTest extends AbstractFrontendTestCase
         $response = $this->executeFrontendSubRequest($this->requestFor([1]));
 
         $body = (string)$response->getBody();
-        self::assertStringContainsString('15.00', $body);
-        self::assertStringNotContainsString('20.00', $body);
+        $this->assertStringContainsString('15.00', $body);
+        $this->assertStringNotContainsString('20.00', $body);
     }
 
     #[Test]
@@ -44,9 +44,9 @@ final class ProductVariantSwitchingTest extends AbstractFrontendTestCase
         $response = $this->executeFrontendSubRequest($this->requestFor([2]));
 
         $body = (string)$response->getBody();
-        self::assertStringContainsString('20.00', $body);
-        self::assertStringNotContainsString('15.00', $body);
-        self::assertMatchesRegularExpression('/out.of.stock|Out of Stock/i', $body);
+        $this->assertStringContainsString('20.00', $body);
+        $this->assertStringNotContainsString('15.00', $body);
+        $this->assertMatchesRegularExpression('/out.of.stock|Out of Stock/i', $body);
     }
 
     /**

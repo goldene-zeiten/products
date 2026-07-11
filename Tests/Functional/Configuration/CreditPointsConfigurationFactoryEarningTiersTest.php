@@ -46,11 +46,11 @@ final class CreditPointsConfigurationFactoryEarningTiersTest extends AbstractFun
         ]));
 
         $tiers = $configuration->getEarningTiers();
-        self::assertCount(2, $tiers);
-        self::assertSame(5000, $tiers[0]->getThreshold()->getCents());
-        self::assertSame(10, $tiers[0]->getPoints());
-        self::assertSame(10000, $tiers[1]->getThreshold()->getCents());
-        self::assertSame(25, $tiers[1]->getPoints());
+        $this->assertCount(2, $tiers);
+        $this->assertSame(5000, $tiers[0]->getThreshold()->getCents());
+        $this->assertSame(10, $tiers[0]->getPoints());
+        $this->assertSame(10000, $tiers[1]->getThreshold()->getCents());
+        $this->assertSame(25, $tiers[1]->getPoints());
     }
 
     #[Test]
@@ -58,7 +58,7 @@ final class CreditPointsConfigurationFactoryEarningTiersTest extends AbstractFun
     {
         $configuration = $this->get(CreditPointsConfigurationFactory::class)->create($this->requestWithEarningTiers([]));
 
-        self::assertSame([], $configuration->getEarningTiers());
+        $this->assertSame([], $configuration->getEarningTiers());
     }
 
     /**

@@ -35,12 +35,12 @@ final class ProductArchiveServiceTest extends AbstractFunctionalTestCase
     {
         $this->archiveService->archive(sourcePid: 2, destinationPid: 3, ageDays: 1);
 
-        self::assertSame(3, $this->fetchPid('tx_products_domain_model_product', 100));
-        self::assertSame(3, $this->fetchPid('tx_products_domain_model_article', 200));
-        self::assertSame(2, $this->fetchPid('tx_products_domain_model_product', 101));
-        self::assertSame(2, $this->fetchPid('tx_products_domain_model_article', 201));
-        self::assertSame(4, $this->fetchPid('tx_products_domain_model_product', 102));
-        self::assertSame(4, $this->fetchPid('tx_products_domain_model_article', 202));
+        $this->assertSame(3, $this->fetchPid('tx_products_domain_model_product', 100));
+        $this->assertSame(3, $this->fetchPid('tx_products_domain_model_article', 200));
+        $this->assertSame(2, $this->fetchPid('tx_products_domain_model_product', 101));
+        $this->assertSame(2, $this->fetchPid('tx_products_domain_model_article', 201));
+        $this->assertSame(4, $this->fetchPid('tx_products_domain_model_product', 102));
+        $this->assertSame(4, $this->fetchPid('tx_products_domain_model_article', 202));
     }
 
     #[Test]
@@ -48,7 +48,7 @@ final class ProductArchiveServiceTest extends AbstractFunctionalTestCase
     {
         $counts = $this->archiveService->archive(sourcePid: 2, destinationPid: 3, ageDays: 1);
 
-        self::assertSame(['tx_products_domain_model_product' => 1, 'tx_products_domain_model_article' => 1], $counts);
+        $this->assertSame(['tx_products_domain_model_product' => 1, 'tx_products_domain_model_article' => 1], $counts);
     }
 
     #[Test]
@@ -56,8 +56,8 @@ final class ProductArchiveServiceTest extends AbstractFunctionalTestCase
     {
         $counts = $this->archiveService->archive(sourcePid: 2, destinationPid: 3, ageDays: 100_000);
 
-        self::assertSame([], $counts);
-        self::assertSame(2, $this->fetchPid('tx_products_domain_model_product', 100));
+        $this->assertSame([], $counts);
+        $this->assertSame(2, $this->fetchPid('tx_products_domain_model_product', 100));
     }
 
     #[Test]
@@ -65,8 +65,8 @@ final class ProductArchiveServiceTest extends AbstractFunctionalTestCase
     {
         $counts = $this->archiveService->archive(sourcePid: 2, destinationPid: 0, ageDays: 1);
 
-        self::assertSame([], $counts);
-        self::assertSame(2, $this->fetchPid('tx_products_domain_model_product', 100));
+        $this->assertSame([], $counts);
+        $this->assertSame(2, $this->fetchPid('tx_products_domain_model_product', 100));
     }
 
     private function fetchPid(string $table, int $uid): int

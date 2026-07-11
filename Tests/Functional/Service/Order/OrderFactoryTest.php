@@ -41,7 +41,7 @@ final class OrderFactoryTest extends AbstractFunctionalTestCase
             $this->placementDetails()
         );
 
-        self::assertStringStartsWith('CUSTOM-', $order->getOrderNumber());
+        $this->assertStringStartsWith('CUSTOM-', $order->getOrderNumber());
     }
 
     #[Test]
@@ -55,7 +55,7 @@ final class OrderFactoryTest extends AbstractFunctionalTestCase
             $this->placementDetails()
         );
 
-        self::assertStringStartsWith('ORD-', $order->getOrderNumber());
+        $this->assertStringStartsWith('ORD-', $order->getOrderNumber());
     }
 
     #[Test]
@@ -69,7 +69,7 @@ final class OrderFactoryTest extends AbstractFunctionalTestCase
             $this->placementDetails()
         );
 
-        self::assertSame(900, $order->getTotalGross()->getCents());
+        $this->assertSame(900, $order->getTotalGross()->getCents());
     }
 
     #[Test]
@@ -83,7 +83,7 @@ final class OrderFactoryTest extends AbstractFunctionalTestCase
             $this->placementDetails()
         );
 
-        self::assertSame(920, $order->getTotalGross()->getCents());
+        $this->assertSame(920, $order->getTotalGross()->getCents());
     }
 
     private function subject(): OrderFactory

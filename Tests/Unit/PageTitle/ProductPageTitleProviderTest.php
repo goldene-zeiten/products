@@ -25,7 +25,7 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     #[Test]
     public function returnsAnEmptyStringWithoutACurrentProduct(): void
     {
-        self::assertSame('', $this->subject('title')->getTitle());
+        $this->assertSame('', $this->subject('title')->getTitle());
     }
 
     #[Test]
@@ -33,7 +33,7 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Gadget', 'Deluxe Edition'));
 
-        self::assertSame('Gadget', $this->subject('title')->getTitle());
+        $this->assertSame('Gadget', $this->subject('title')->getTitle());
     }
 
     #[Test]
@@ -41,7 +41,7 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Gadget', 'Deluxe Edition'));
 
-        self::assertSame('', $this->subject('none')->getTitle());
+        $this->assertSame('', $this->subject('none')->getTitle());
     }
 
     #[Test]
@@ -49,7 +49,7 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Gadget', 'Deluxe Edition'));
 
-        self::assertSame('Deluxe Edition', $this->subject('subtitleOrTitle')->getTitle());
+        $this->assertSame('Deluxe Edition', $this->subject('subtitleOrTitle')->getTitle());
     }
 
     #[Test]
@@ -57,7 +57,7 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Widget', ''));
 
-        self::assertSame('Widget', $this->subject('subtitleOrTitle')->getTitle());
+        $this->assertSame('Widget', $this->subject('subtitleOrTitle')->getTitle());
     }
 
     #[Test]
@@ -65,7 +65,7 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Gadget', 'Deluxe Edition'));
 
-        self::assertSame('Gadget - Deluxe Edition', $this->subject('titleAndSubtitle')->getTitle());
+        $this->assertSame('Gadget - Deluxe Edition', $this->subject('titleAndSubtitle')->getTitle());
     }
 
     #[Test]
@@ -73,7 +73,7 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Widget', ''));
 
-        self::assertSame('Widget', $this->subject('titleAndSubtitle')->getTitle());
+        $this->assertSame('Widget', $this->subject('titleAndSubtitle')->getTitle());
     }
 
     #[Test]
@@ -81,7 +81,7 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Gadget', 'Deluxe Edition'));
 
-        self::assertSame('Deluxe Edition - Gadget', $this->subject('subtitleAndTitle')->getTitle());
+        $this->assertSame('Deluxe Edition - Gadget', $this->subject('subtitleAndTitle')->getTitle());
     }
 
     #[Test]
@@ -89,7 +89,7 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Widget', ''));
 
-        self::assertSame('Widget', $this->subject('subtitleAndTitle')->getTitle());
+        $this->assertSame('Widget', $this->subject('subtitleAndTitle')->getTitle());
     }
 
     #[Test]
@@ -97,7 +97,7 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Gadget', 'Deluxe Edition'));
 
-        self::assertSame('Gadget', $this->subject('not-a-real-mode')->getTitle());
+        $this->assertSame('Gadget', $this->subject('not-a-real-mode')->getTitle());
     }
 
     private function subject(string $mode): ProductPageTitleProvider

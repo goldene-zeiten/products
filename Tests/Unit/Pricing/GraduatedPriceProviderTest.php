@@ -30,7 +30,7 @@ final class GraduatedPriceProviderTest extends UnitTestCase
         $product = new Product();
         $product->setPrice(Money::fromDecimalString('19.99'));
 
-        self::assertSame(1999, $this->subject->getUnitPrice($product, null, 5)->getCents());
+        $this->assertSame(1999, $this->subject->getUnitPrice($product, null, 5)->getCents());
     }
 
     #[Test]
@@ -38,7 +38,7 @@ final class GraduatedPriceProviderTest extends UnitTestCase
     {
         $product = $this->productWithTiers();
 
-        self::assertSame(1999, $this->subject->getUnitPrice($product, null, 1)->getCents());
+        $this->assertSame(1999, $this->subject->getUnitPrice($product, null, 1)->getCents());
     }
 
     #[Test]
@@ -46,7 +46,7 @@ final class GraduatedPriceProviderTest extends UnitTestCase
     {
         $product = $this->productWithTiers();
 
-        self::assertSame(1500, $this->subject->getUnitPrice($product, null, 10)->getCents());
+        $this->assertSame(1500, $this->subject->getUnitPrice($product, null, 10)->getCents());
     }
 
     #[Test]
@@ -54,7 +54,7 @@ final class GraduatedPriceProviderTest extends UnitTestCase
     {
         $product = $this->productWithTiers();
 
-        self::assertSame(1200, $this->subject->getUnitPrice($product, null, 1000)->getCents());
+        $this->assertSame(1200, $this->subject->getUnitPrice($product, null, 1000)->getCents());
     }
 
     #[Test]
@@ -68,7 +68,7 @@ final class GraduatedPriceProviderTest extends UnitTestCase
         $articleTiers->attach($this->tier(10, '9.00'));
         $article->setPriceTiers($articleTiers);
 
-        self::assertSame(900, $this->subject->getUnitPrice($product, $article, 10)->getCents());
+        $this->assertSame(900, $this->subject->getUnitPrice($product, $article, 10)->getCents());
     }
 
     #[Test]
@@ -78,7 +78,7 @@ final class GraduatedPriceProviderTest extends UnitTestCase
         $article = new Article();
         $article->setProduct($product);
 
-        self::assertSame(1500, $this->subject->getUnitPrice($product, $article, 10)->getCents());
+        $this->assertSame(1500, $this->subject->getUnitPrice($product, $article, 10)->getCents());
     }
 
     private function productWithTiers(): Product

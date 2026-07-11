@@ -28,15 +28,15 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
     {
         $result = $this->subject()->search('', null, 1);
 
-        self::assertFalse($result->hasSearched());
-        self::assertSame(0, $result->getTotalCount());
-        self::assertSame([], $result->getProducts());
+        $this->assertFalse($result->hasSearched());
+        $this->assertSame(0, $result->getTotalCount());
+        $this->assertSame([], $result->getProducts());
     }
 
     #[Test]
     public function aWhitespaceOnlyTermIsTreatedAsBlank(): void
     {
-        self::assertFalse($this->subject()->search('   ', null, 1)->hasSearched());
+        $this->assertFalse($this->subject()->search('   ', null, 1)->hasSearched());
     }
 
     #[Test]
@@ -44,12 +44,12 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
     {
         $result = $this->subject(resultsPerPage: 1)->search('Shoes', null, 1);
 
-        self::assertTrue($result->hasSearched());
-        self::assertTrue($result->hasResults());
-        self::assertCount(1, $result->getProducts());
-        self::assertSame(2, $result->getTotalCount());
-        self::assertSame(2, $result->getTotalPages());
-        self::assertSame(1, $result->getCurrentPage());
+        $this->assertTrue($result->hasSearched());
+        $this->assertTrue($result->hasResults());
+        $this->assertCount(1, $result->getProducts());
+        $this->assertSame(2, $result->getTotalCount());
+        $this->assertSame(2, $result->getTotalPages());
+        $this->assertSame(1, $result->getCurrentPage());
     }
 
     #[Test]
@@ -57,8 +57,8 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
     {
         $result = $this->subject(resultsPerPage: 1)->search('Shoes', null, 2);
 
-        self::assertCount(1, $result->getProducts());
-        self::assertSame(2, $result->getCurrentPage());
+        $this->assertCount(1, $result->getProducts());
+        $this->assertSame(2, $result->getCurrentPage());
     }
 
     #[Test]
@@ -66,7 +66,7 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
     {
         $result = $this->subject(resultsPerPage: 1)->search('Shoes', null, 0);
 
-        self::assertSame(1, $result->getCurrentPage());
+        $this->assertSame(1, $result->getCurrentPage());
     }
 
     #[Test]
@@ -74,8 +74,8 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
     {
         $result = $this->subject()->search('doesnotexist', null, 1);
 
-        self::assertTrue($result->hasSearched());
-        self::assertFalse($result->hasResults());
+        $this->assertTrue($result->hasSearched());
+        $this->assertFalse($result->hasResults());
     }
 
     private function subject(int $resultsPerPage = 20): SearchService

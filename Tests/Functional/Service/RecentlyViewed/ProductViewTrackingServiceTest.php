@@ -35,7 +35,7 @@ final class ProductViewTrackingServiceTest extends AbstractFunctionalTestCase
         $this->subject->record($this->requestFor(0), 1);
         $this->subject->record($this->requestFor(0), 2);
 
-        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getMostViewed(10)));
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getMostViewed(10)));
     }
 
     #[Test]
@@ -45,7 +45,7 @@ final class ProductViewTrackingServiceTest extends AbstractFunctionalTestCase
         $this->subject->record($this->requestFor(0), 1);
         $this->subject->record($this->requestFor(0), 1);
 
-        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getMostViewed(10)));
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getMostViewed(10)));
     }
 
     #[Test]
@@ -53,7 +53,7 @@ final class ProductViewTrackingServiceTest extends AbstractFunctionalTestCase
     {
         $this->subject->record($this->requestFor(0), 1);
 
-        self::assertSame([], $this->subject->getMostViewedByUser($this->requestFor(0), 10));
+        $this->assertSame([], $this->subject->getMostViewedByUser($this->requestFor(0), 10));
     }
 
     #[Test]
@@ -63,7 +63,7 @@ final class ProductViewTrackingServiceTest extends AbstractFunctionalTestCase
         $this->subject->record($this->requestFor(5), 1);
         $this->subject->record($this->requestFor(5), 2);
 
-        self::assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getMostViewedByUser($this->requestFor(5), 10)));
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getMostViewedByUser($this->requestFor(5), 10)));
     }
 
     #[Test]
@@ -72,8 +72,8 @@ final class ProductViewTrackingServiceTest extends AbstractFunctionalTestCase
         $this->subject->record($this->requestFor(5), 1);
         $this->subject->record($this->requestFor(6), 2);
 
-        self::assertSame(['Product 1'], $this->titlesOf($this->subject->getMostViewedByUser($this->requestFor(5), 10)));
-        self::assertSame(['Product 2'], $this->titlesOf($this->subject->getMostViewedByUser($this->requestFor(6), 10)));
+        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getMostViewedByUser($this->requestFor(5), 10)));
+        $this->assertSame(['Product 2'], $this->titlesOf($this->subject->getMostViewedByUser($this->requestFor(6), 10)));
     }
 
     #[Test]
@@ -82,7 +82,7 @@ final class ProductViewTrackingServiceTest extends AbstractFunctionalTestCase
         $this->subject->record($this->requestFor(0), 1);
         $this->subject->record($this->requestFor(0), 2);
 
-        self::assertCount(1, $this->subject->getMostViewed(1));
+        $this->assertCount(1, $this->subject->getMostViewed(1));
     }
 
     /**

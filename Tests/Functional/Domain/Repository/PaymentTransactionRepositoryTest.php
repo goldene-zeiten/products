@@ -29,14 +29,14 @@ final class PaymentTransactionRepositoryTest extends AbstractFunctionalTestCase
     {
         $transaction = $this->subject->findOneNotYetApproved(100, 'invoice');
 
-        self::assertInstanceOf(PaymentTransaction::class, $transaction);
-        self::assertSame('EXT-1', $transaction->getExternalId());
+        $this->assertInstanceOf(PaymentTransaction::class, $transaction);
+        $this->assertSame('EXT-1', $transaction->getExternalId());
     }
 
     #[Test]
     public function ignoresAnAlreadyCompletedTransaction(): void
     {
-        self::assertNull($this->subject->findOneNotYetApproved(100, 'paypal'));
+        $this->assertNull($this->subject->findOneNotYetApproved(100, 'paypal'));
     }
 
     #[Test]
@@ -44,14 +44,14 @@ final class PaymentTransactionRepositoryTest extends AbstractFunctionalTestCase
     {
         $transaction = $this->subject->findOneNotYetApproved(101, 'invoice');
 
-        self::assertInstanceOf(PaymentTransaction::class, $transaction);
-        self::assertSame('EXT-3', $transaction->getExternalId());
+        $this->assertInstanceOf(PaymentTransaction::class, $transaction);
+        $this->assertSame('EXT-3', $transaction->getExternalId());
     }
 
     #[Test]
     public function returnsNullForAnUnknownOrderMethodPair(): void
     {
-        self::assertNull($this->subject->findOneNotYetApproved(999, 'invoice'));
+        $this->assertNull($this->subject->findOneNotYetApproved(999, 'invoice'));
     }
 
     #[Test]
@@ -59,19 +59,19 @@ final class PaymentTransactionRepositoryTest extends AbstractFunctionalTestCase
     {
         $transaction = $this->subject->findOneByExternalId('invoice', 'EXT-1');
 
-        self::assertInstanceOf(PaymentTransaction::class, $transaction);
-        self::assertSame(100, $transaction->getOrderUid());
+        $this->assertInstanceOf(PaymentTransaction::class, $transaction);
+        $this->assertSame(100, $transaction->getOrderUid());
     }
 
     #[Test]
     public function externalIdLookupIsScopedToThePaymentMethod(): void
     {
-        self::assertNull($this->subject->findOneByExternalId('paypal', 'EXT-1'));
+        $this->assertNull($this->subject->findOneByExternalId('paypal', 'EXT-1'));
     }
 
     #[Test]
     public function emptyExternalIdNeverMatches(): void
     {
-        self::assertNull($this->subject->findOneByExternalId('invoice', ''));
+        $this->assertNull($this->subject->findOneByExternalId('invoice', ''));
     }
 }

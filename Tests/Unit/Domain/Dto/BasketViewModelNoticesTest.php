@@ -19,7 +19,7 @@ final class BasketViewModelNoticesTest extends UnitTestCase
     {
         $basket = $this->basketOf($this->item(new Product(), null, 1));
 
-        self::assertFalse($basket->hasBulkyItem());
+        $this->assertFalse($basket->hasBulkyItem());
     }
 
     #[Test]
@@ -30,7 +30,7 @@ final class BasketViewModelNoticesTest extends UnitTestCase
 
         $basket = $this->basketOf($this->item($product, null, 1));
 
-        self::assertTrue($basket->hasBulkyItem());
+        $this->assertTrue($basket->hasBulkyItem());
     }
 
     #[Test]
@@ -41,7 +41,7 @@ final class BasketViewModelNoticesTest extends UnitTestCase
 
         $basket = $this->basketOf($this->item(new Product(), $article, 1));
 
-        self::assertTrue($basket->hasBulkyItem());
+        $this->assertTrue($basket->hasBulkyItem());
     }
 
     #[Test]
@@ -54,7 +54,7 @@ final class BasketViewModelNoticesTest extends UnitTestCase
 
         $basket = $this->basketOf($this->item($productA, null, 2), $this->item($productB, null, 3));
 
-        self::assertSame(1000 + 600, $basket->getTotalWeight());
+        $this->assertSame(1000 + 600, $basket->getTotalWeight());
     }
 
     #[Test]
@@ -65,7 +65,7 @@ final class BasketViewModelNoticesTest extends UnitTestCase
 
         $basket = $this->basketOf($this->item($product, new Article(), 2));
 
-        self::assertSame(600, $basket->getTotalWeight());
+        $this->assertSame(600, $basket->getTotalWeight());
     }
 
     private function basketOf(BasketViewItem ...$items): BasketViewModel

@@ -27,7 +27,7 @@ final class ProductPriceProviderTest extends UnitTestCase
         $product = new Product();
         $product->setPrice(Money::fromDecimalString('19.99'));
 
-        self::assertSame(1999, $this->subject->getUnitPrice($product, null, 1)->getCents());
+        $this->assertSame(1999, $this->subject->getUnitPrice($product, null, 1)->getCents());
     }
 
     #[Test]
@@ -38,7 +38,7 @@ final class ProductPriceProviderTest extends UnitTestCase
         $article = new Article();
         $article->setPrice(Money::fromDecimalString('24.99'));
 
-        self::assertSame(2499, $this->subject->getUnitPrice($product, $article, 1)->getCents());
+        $this->assertSame(2499, $this->subject->getUnitPrice($product, $article, 1)->getCents());
     }
 
     #[Test]
@@ -48,7 +48,7 @@ final class ProductPriceProviderTest extends UnitTestCase
         $product->setPrice(Money::fromDecimalString('19.99'));
         $article = new Article();
 
-        self::assertSame(1999, $this->subject->getUnitPrice($product, $article, 1)->getCents());
+        $this->assertSame(1999, $this->subject->getUnitPrice($product, $article, 1)->getCents());
     }
 
     #[Test]
@@ -60,7 +60,7 @@ final class ProductPriceProviderTest extends UnitTestCase
         $article->setPriceMode('surcharge');
         $article->setPrice(Money::fromDecimalString('5.00'));
 
-        self::assertSame(2499, $this->subject->getUnitPrice($product, $article, 1)->getCents());
+        $this->assertSame(2499, $this->subject->getUnitPrice($product, $article, 1)->getCents());
     }
 
     #[Test]
@@ -71,6 +71,6 @@ final class ProductPriceProviderTest extends UnitTestCase
         $article = new Article();
         $article->setPriceMode('surcharge');
 
-        self::assertSame(1999, $this->subject->getUnitPrice($product, $article, 1)->getCents());
+        $this->assertSame(1999, $this->subject->getUnitPrice($product, $article, 1)->getCents());
     }
 }

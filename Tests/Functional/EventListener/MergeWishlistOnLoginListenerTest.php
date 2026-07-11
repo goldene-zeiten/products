@@ -58,7 +58,7 @@ final class MergeWishlistOnLoginListenerTest extends AbstractFunctionalTestCase
         $listener(new AfterUserLoggedInEvent($frontendUser, $middlewareStageRequest));
 
         $persisted = $this->get(WishlistService::class)->getItems($middlewareStageRequest);
-        self::assertCount(1, $persisted);
-        self::assertSame([], $this->get(WishlistStorage::class)->load($middlewareStageRequest));
+        $this->assertCount(1, $persisted);
+        $this->assertSame([], $this->get(WishlistStorage::class)->load($middlewareStageRequest));
     }
 }

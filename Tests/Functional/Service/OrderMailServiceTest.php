@@ -36,10 +36,10 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->subject->sendOrderConfirmation($order);
 
         $sentEmails = TestMailer::getSentEmails();
-        self::assertCount(1, $sentEmails);
-        self::assertSame('shopper@example.com', $sentEmails[0]->getTo()[0]->getAddress());
-        self::assertStringContainsString('ORD-1', (string)$sentEmails[0]->getSubject());
-        self::assertStringContainsString('thank you for your order ORD-1', (string)$sentEmails[0]->getTextBody());
+        $this->assertCount(1, $sentEmails);
+        $this->assertSame('shopper@example.com', $sentEmails[0]->getTo()[0]->getAddress());
+        $this->assertStringContainsString('ORD-1', (string)$sentEmails[0]->getSubject());
+        $this->assertStringContainsString('thank you for your order ORD-1', (string)$sentEmails[0]->getTextBody());
     }
 
     #[Test]
@@ -47,7 +47,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     {
         $this->subject->sendOrderConfirmation($this->buildOrder());
 
-        self::assertCount(0, TestMailer::getSentEmails()[0]->getBcc());
+        $this->assertCount(0, TestMailer::getSentEmails()[0]->getBcc());
     }
 
     #[Test]
@@ -72,8 +72,8 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->subject->sendOrderConfirmation($order);
 
         $sentEmails = TestMailer::getSentEmails();
-        self::assertCount(1, $sentEmails);
-        self::assertSame('accounting@example.com', $sentEmails[0]->getBcc()[0]->getAddress());
+        $this->assertCount(1, $sentEmails);
+        $this->assertSame('accounting@example.com', $sentEmails[0]->getBcc()[0]->getAddress());
     }
 
     #[Test]
@@ -81,7 +81,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     {
         $this->subject->sendMerchantNotification($this->buildOrder());
 
-        self::assertCount(0, TestMailer::getSentEmails());
+        $this->assertCount(0, TestMailer::getSentEmails());
     }
 
     #[Test]
@@ -106,9 +106,9 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->subject->sendMerchantNotification($order);
 
         $sentEmails = TestMailer::getSentEmails();
-        self::assertCount(1, $sentEmails);
-        self::assertSame('merchant@example.com', $sentEmails[0]->getTo()[0]->getAddress());
-        self::assertStringContainsString('ORD-1', (string)$sentEmails[0]->getSubject());
+        $this->assertCount(1, $sentEmails);
+        $this->assertSame('merchant@example.com', $sentEmails[0]->getTo()[0]->getAddress());
+        $this->assertStringContainsString('ORD-1', (string)$sentEmails[0]->getSubject());
     }
 
     #[Test]
@@ -141,8 +141,8 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->subject->sendOrderConfirmation($order);
 
         $sentEmails = TestMailer::getSentEmails();
-        self::assertCount(1, $sentEmails);
-        self::assertStringContainsString('FIXTURE-OVERRIDDEN-SIGNATURE', (string)$sentEmails[0]->getHtmlBody());
+        $this->assertCount(1, $sentEmails);
+        $this->assertStringContainsString('FIXTURE-OVERRIDDEN-SIGNATURE', (string)$sentEmails[0]->getHtmlBody());
     }
 
     #[Test]
@@ -151,11 +151,11 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->subject->sendOrderStatusChanged($this->buildOrder(), OrderStatus::NEW, OrderStatus::CONFIRMED);
 
         $sentEmails = TestMailer::getSentEmails();
-        self::assertCount(1, $sentEmails);
-        self::assertSame('shopper@example.com', $sentEmails[0]->getTo()[0]->getAddress());
-        self::assertStringContainsString('ORD-1', (string)$sentEmails[0]->getSubject());
-        self::assertStringContainsString('new', (string)$sentEmails[0]->getTextBody());
-        self::assertStringContainsString('confirmed', (string)$sentEmails[0]->getTextBody());
+        $this->assertCount(1, $sentEmails);
+        $this->assertSame('shopper@example.com', $sentEmails[0]->getTo()[0]->getAddress());
+        $this->assertStringContainsString('ORD-1', (string)$sentEmails[0]->getSubject());
+        $this->assertStringContainsString('new', (string)$sentEmails[0]->getTextBody());
+        $this->assertStringContainsString('confirmed', (string)$sentEmails[0]->getTextBody());
     }
 
     #[Test]
@@ -179,7 +179,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
 
         $this->subject->sendOrderStatusChanged($order, OrderStatus::NEW, OrderStatus::CONFIRMED);
 
-        self::assertCount(0, TestMailer::getSentEmails());
+        $this->assertCount(0, TestMailer::getSentEmails());
     }
 
     #[Test]
@@ -187,7 +187,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     {
         $this->subject->sendWithdrawalNotification($this->buildOrder(), 'Changed my mind');
 
-        self::assertCount(0, TestMailer::getSentEmails());
+        $this->assertCount(0, TestMailer::getSentEmails());
     }
 
     #[Test]
@@ -212,10 +212,10 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->subject->sendWithdrawalNotification($order, 'Changed my mind');
 
         $sentEmails = TestMailer::getSentEmails();
-        self::assertCount(1, $sentEmails);
-        self::assertSame('merchant@example.com', $sentEmails[0]->getTo()[0]->getAddress());
-        self::assertStringContainsString('ORD-1', (string)$sentEmails[0]->getSubject());
-        self::assertStringContainsString('Changed my mind', (string)$sentEmails[0]->getTextBody());
+        $this->assertCount(1, $sentEmails);
+        $this->assertSame('merchant@example.com', $sentEmails[0]->getTo()[0]->getAddress());
+        $this->assertStringContainsString('ORD-1', (string)$sentEmails[0]->getSubject());
+        $this->assertStringContainsString('Changed my mind', (string)$sentEmails[0]->getTextBody());
     }
 
     #[Test]
@@ -223,7 +223,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     {
         $this->subject->sendLowStockWarning('Red Shoes', 2);
 
-        self::assertCount(0, TestMailer::getSentEmails());
+        $this->assertCount(0, TestMailer::getSentEmails());
     }
 
     #[Test]
@@ -249,10 +249,10 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->subject->sendLowStockWarning('Red Shoes', 2);
 
         $sentEmails = TestMailer::getSentEmails();
-        self::assertCount(1, $sentEmails);
-        self::assertSame('merchant@example.com', $sentEmails[0]->getTo()[0]->getAddress());
-        self::assertStringContainsString('Red Shoes', (string)$sentEmails[0]->getSubject());
-        self::assertStringContainsString('2', (string)$sentEmails[0]->getTextBody());
+        $this->assertCount(1, $sentEmails);
+        $this->assertSame('merchant@example.com', $sentEmails[0]->getTo()[0]->getAddress());
+        $this->assertStringContainsString('Red Shoes', (string)$sentEmails[0]->getSubject());
+        $this->assertStringContainsString('2', (string)$sentEmails[0]->getTextBody());
     }
 
     #[Test]
@@ -282,9 +282,9 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
 
         $sentEmails = TestMailer::getSentEmails();
         $recipients = array_map(static fn($email): string => $email->getTo()[0]->getAddress(), $sentEmails);
-        self::assertCount(2, $sentEmails);
-        self::assertContains('shop@example.com', $recipients);
-        self::assertContains('category@example.com', $recipients);
+        $this->assertCount(2, $sentEmails);
+        $this->assertContains('shop@example.com', $recipients);
+        $this->assertContains('category@example.com', $recipients);
     }
 
     #[Test]
@@ -312,7 +312,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
 
         $this->subject->sendMerchantNotification($order);
 
-        self::assertCount(1, TestMailer::getSentEmails());
+        $this->assertCount(1, TestMailer::getSentEmails());
     }
 
     #[Test]
@@ -342,9 +342,9 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
 
         $sentEmails = TestMailer::getSentEmails();
         $recipients = array_map(static fn($email): string => $email->getTo()[0]->getAddress(), $sentEmails);
-        self::assertCount(2, $sentEmails);
-        self::assertContains('shop@example.com', $recipients);
-        self::assertContains('shippingpoint@example.com', $recipients);
+        $this->assertCount(2, $sentEmails);
+        $this->assertContains('shop@example.com', $recipients);
+        $this->assertContains('shippingpoint@example.com', $recipients);
     }
 
     #[Test]
@@ -372,7 +372,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
 
         $this->subject->sendMerchantNotification($order);
 
-        self::assertCount(1, TestMailer::getSentEmails());
+        $this->assertCount(1, TestMailer::getSentEmails());
     }
 
     #[Test]
@@ -397,7 +397,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
 
         $this->subject->sendOrderConfirmation($order);
 
-        self::assertContains('agb.pdf', $this->attachmentFilenamesOfFirstSentEmail());
+        $this->assertContains('agb.pdf', $this->attachmentFilenamesOfFirstSentEmail());
     }
 
     #[Test]
@@ -405,7 +405,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     {
         $this->subject->sendOrderConfirmation($this->buildOrder());
 
-        self::assertNotContains('agb.pdf', $this->attachmentFilenamesOfFirstSentEmail());
+        $this->assertNotContains('agb.pdf', $this->attachmentFilenamesOfFirstSentEmail());
     }
 
     /**
@@ -414,7 +414,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     private function attachmentFilenamesOfFirstSentEmail(): array
     {
         $sentEmails = TestMailer::getSentEmails();
-        self::assertCount(1, $sentEmails);
+        $this->assertCount(1, $sentEmails);
         return array_map(static fn(DataPart $part): ?string => $part->getFilename(), $sentEmails[0]->getAttachments());
     }
 
@@ -427,7 +427,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
             'relative'
         );
         $storage = $storageRepository->findByUid($storageUid);
-        self::assertInstanceOf(ResourceStorage::class, $storage);
+        $this->assertInstanceOf(ResourceStorage::class, $storage);
         $folder = $storage->getRootLevelFolder();
         $file = $folder->createFile($fileName);
         $file->setContents($contents);

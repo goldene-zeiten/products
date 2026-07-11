@@ -38,8 +38,8 @@ final class ProductPageTitleProviderIntegrationTest extends AbstractFunctionalTe
 
         $response = $this->executeFrontendSubRequest(new InternalRequest('http://localhost/shop/gadget'));
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertMatchesRegularExpression('#<title>[^<]*Gadget[^<]*</title>#', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertMatchesRegularExpression('#<title>[^<]*Gadget[^<]*</title>#', (string)$response->getBody());
     }
 
     #[Test]
@@ -58,8 +58,8 @@ final class ProductPageTitleProviderIntegrationTest extends AbstractFunctionalTe
 
         $response = $this->executeFrontendSubRequest(new InternalRequest('http://localhost/'));
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertMatchesRegularExpression('#<title>[^<]*Root[^<]*</title>#', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertMatchesRegularExpression('#<title>[^<]*Root[^<]*</title>#', (string)$response->getBody());
     }
 
     private function bootstrapProductDetailFrontend(): void

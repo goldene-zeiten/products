@@ -47,13 +47,13 @@ final class CategoryMountAccessHookDeleteTest extends AbstractFunctionalTestCase
     #[Test]
     public function deleteIsDeniedWhenUserLacksCategoryDeletePermission(): void
     {
-        self::assertTrue($this->processDeleteCommand(200));
+        $this->assertTrue($this->processDeleteCommand(200));
     }
 
     #[Test]
     public function deleteIsAllowedWhenUserHasCategoryDeletePermission(): void
     {
-        self::assertFalse($this->processDeleteCommand(201));
+        $this->assertFalse($this->processDeleteCommand(201));
     }
 
     /**
