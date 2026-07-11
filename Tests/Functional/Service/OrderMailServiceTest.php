@@ -43,6 +43,40 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     }
 
     #[Test]
+    public function sendOrderConfirmationHasNoBccByDefault(): void
+    {
+        $this->subject->sendOrderConfirmation($this->buildOrder());
+
+        self::assertCount(0, TestMailer::getSentEmails()[0]->getBcc());
+    }
+
+    #[Test]
+    public function sendOrderConfirmationBccsTheConfiguredRecipient(): void
+    {
+        $this->writeSiteConfiguration(
+            'products-with-order-bcc',
+            $this->buildSiteConfiguration(2, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'settings' => [
+                    'products' => [
+                        'email' => ['orderBccRecipient' => 'accounting@example.com'],
+                    ],
+                ],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+
+        $order = $this->buildOrder();
+        $order->setSiteIdentifier('products-with-order-bcc');
+
+        $this->subject->sendOrderConfirmation($order);
+
+        $sentEmails = TestMailer::getSentEmails();
+        self::assertCount(1, $sentEmails);
+        self::assertSame('accounting@example.com', $sentEmails[0]->getBcc()[0]->getAddress());
+    }
+
+    #[Test]
     public function sendMerchantNotificationIsSkippedWithoutConfiguredRecipient(): void
     {
         $this->subject->sendMerchantNotification($this->buildOrder());

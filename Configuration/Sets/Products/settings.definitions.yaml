@@ -116,6 +116,11 @@ settings:
     default: ''
     label: 'AGB/terms PDF to attach to order confirmations - FAL combined file identifier (e.g. "1:/legal/agb.pdf"), empty disables the attachment'
     category: products
+  products.email.orderBccRecipient:
+    type: string
+    default: ''
+    label: 'Standing blind-copy recipient for order confirmation and merchant notification emails (empty disables it)'
+    category: products
   products.email.orderStatusChanged.enabled:
     type: bool
     default: true
