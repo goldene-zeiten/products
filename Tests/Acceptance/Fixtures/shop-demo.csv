@@ -129,6 +129,14 @@ plugin.tx_products.settings.shipping.enabled = 1"
 ,"uid","pid","frontend_user","points","type"
 ,1,2,1,100,"earn"
 
+"tx_products_domain_model_orderaddress",,,,,,,,,
+,"uid","pid","address_type","first_name","last_name","street","zip","city","country"
+,1,2,"billing","Sam","Shopper","Shop Street 5","54321","Hamburg","DE"
+
+"tx_products_domain_model_order",,,,,,,,,,,,,
+,"uid","pid","order_number","frontend_user","email","currency","total_gross","items","status","payment_status","order_date","billing_address","payment_method"
+,1,2,"ORD-EXPIRED-1",1,"shopper1@example.com","EUR",8999,0,"confirmed","paid",1700000000,1,"invoice"
+
 "tt_content",,,,,,,
 ,"uid","pid","sorting","deleted","colPos","CType","header"
 ,1,1,256,0,0,"products_productlist","Products"
