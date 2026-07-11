@@ -32,6 +32,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
@@ -59,8 +60,8 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     #[Test]
     public function aChosenAvailableMethodAddsItsRateToTheOrderTotal(): void
     {
-        $order = $this->subject(shippingEnabled: true)->create(
-            new ServerRequest('http://localhost/'),
+        $order = $this->subject()->create(
+            $this->requestWithShipping(enabled: true),
             $this->basketViewModel(),
             new CheckoutSelections([], 0, 1),
             $this->address(),
@@ -75,8 +76,8 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     #[Test]
     public function aFreeShippingVoucherZeroesTheShippingCost(): void
     {
-        $order = $this->subject(shippingEnabled: true)->create(
-            new ServerRequest('http://localhost/'),
+        $order = $this->subject()->create(
+            $this->requestWithShipping(enabled: true),
             $this->basketViewModel(),
             new CheckoutSelections(['FREESHIP'], 0, 1),
             $this->address(),
@@ -90,8 +91,8 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     #[Test]
     public function aRegularVoucherDoesNotWaiveTheShippingCost(): void
     {
-        $order = $this->subject(shippingEnabled: true)->create(
-            new ServerRequest('http://localhost/'),
+        $order = $this->subject()->create(
+            $this->requestWithShipping(enabled: true),
             $this->basketViewModel(),
             new CheckoutSelections(['REGULAR'], 0, 1),
             $this->address(),
@@ -104,8 +105,8 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     #[Test]
     public function shippingIsANoOpWhileTheFeatureIsDisabledEvenWithAMethodChosen(): void
     {
-        $order = $this->subject(shippingEnabled: false)->create(
-            new ServerRequest('http://localhost/'),
+        $order = $this->subject()->create(
+            $this->requestWithShipping(enabled: false),
             $this->basketViewModel(),
             new CheckoutSelections([], 0, 1),
             $this->address(),
@@ -120,8 +121,8 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     #[Test]
     public function shippingIsANoOpWhenNoMethodWasChosen(): void
     {
-        $order = $this->subject(shippingEnabled: true)->create(
-            new ServerRequest('http://localhost/'),
+        $order = $this->subject()->create(
+            $this->requestWithShipping(enabled: true),
             $this->basketViewModel(),
             new CheckoutSelections([], 0, 0),
             $this->address(),
@@ -139,8 +140,8 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
         $stockBefore = $this->currentStock();
 
         try {
-            $this->subject(shippingEnabled: true)->create(
-                new ServerRequest('http://localhost/'),
+            $this->subject()->create(
+                $this->requestWithShipping(enabled: true),
                 $this->basketViewModel(),
                 new CheckoutSelections([], 0, 999),
                 $this->address(),
@@ -155,7 +156,7 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
         self::assertSame($stockBefore, $this->currentStock());
     }
 
-    private function subject(bool $shippingEnabled): OrderCreationService
+    private function subject(): OrderCreationService
     {
         return new OrderCreationService(
             $this->get(StockService::class),
@@ -171,30 +172,16 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
             $this->get(ShippingCostService::class),
             $this->get(HandlingFeeService::class),
             $this->get(ConfigurationManagerInterface::class),
-            new ProductsConfigurationFactory($this->fakeConfigurationManager($shippingEnabled))
+            $this->get(ProductsConfigurationFactory::class)
         );
     }
 
-    private function fakeConfigurationManager(bool $enabled): ConfigurationManagerInterface
+    private function requestWithShipping(bool $enabled): ServerRequestInterface
     {
-        return new class ($enabled) implements ConfigurationManagerInterface {
-            public function __construct(private readonly bool $enabled) {}
-
-            /**
-             * @return array<string, mixed>
-             */
-            public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
-            {
-                return ['shipping' => ['enabled' => $this->enabled]];
-            }
-
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function setConfiguration(array $configuration = []): void {}
-
-            public function setRequest(ServerRequestInterface $request): void {}
-        };
+        $site = new Site('products', 1, ['settings' => ['products' => ['shipping' => ['enabled' => $enabled]]]]);
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
+            ->withAttribute('site', $site);
     }
 
     private function basketViewModel(): BasketViewModel
