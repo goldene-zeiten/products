@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Domain\Dto\Basket;
 use GoldeneZeiten\Products\Domain\Dto\BasketItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Domain\Model\Article;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ArticleRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
@@ -27,7 +28,8 @@ final class BasketService
         private readonly BasketStorage $basketStorage,
         private readonly PriceProviderInterface $priceProvider,
         private readonly ProductsConfigurationFactory $configurationFactory,
-        private readonly PriceRoundingService $priceRoundingService
+        private readonly PriceRoundingService $priceRoundingService,
+        private readonly BasketQuantityResolver $basketQuantityResolver
     ) {}
 
     public function add(ServerRequestInterface $request, int $productUid, ?int $articleUid, int $quantity): void
@@ -42,16 +44,40 @@ final class BasketService
             return;
         }
 
+        $article = $this->resolveArticle($articleUid);
+        $quantity = $this->basketQuantityResolver->clamp($product, $article, $quantity);
+
         $basket = $this->basketStorage->load($request);
         $basket->addItem(new BasketItem($productUid, $articleUid, $quantity));
         $this->basketStorage->save($request, $basket);
     }
 
+    /**
+     * A quantity of 0 or less keeps meaning "remove this line" (updateQuantity()'s existing
+     * behaviour); only a positive requested quantity gets clamped into the product's/article's
+     * basket min/max bounds.
+     */
     public function update(ServerRequestInterface $request, int $productUid, ?int $articleUid, int $quantity): void
     {
+        if ($quantity > 0) {
+            $product = $this->productRepository->findByUid($productUid);
+            if ($product instanceof Product) {
+                $quantity = $this->basketQuantityResolver->clamp($product, $this->resolveArticle($articleUid), $quantity);
+            }
+        }
+
         $basket = $this->basketStorage->load($request);
         $basket->updateQuantity($productUid, $articleUid, $quantity);
         $this->basketStorage->save($request, $basket);
+    }
+
+    private function resolveArticle(?int $articleUid): ?Article
+    {
+        if ($articleUid === null) {
+            return null;
+        }
+        $article = $this->articleRepository->findByUid($articleUid);
+        return $article instanceof Article ? $article : null;
     }
 
     public function remove(ServerRequestInterface $request, int $productUid, ?int $articleUid): void

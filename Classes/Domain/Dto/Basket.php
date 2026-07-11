@@ -32,18 +32,19 @@ final class Basket
         }
     }
 
+    /**
+     * The incoming quantity is floored at 1 regardless of caller - a negative/zero value must
+     * never be able to reduce or wipe out an existing line through this method (that's what
+     * updateQuantity()/removeItem() are for).
+     */
     public function addItem(BasketItem $item): void
     {
         $identifier = $this->calculateIdentifier($item->getProductUid(), $item->getArticleUid());
+        $quantity = max(1, $item->getQuantity());
         if (isset($this->items[$identifier])) {
-            $existingItem = $this->items[$identifier];
-            $item = new BasketItem(
-                $item->getProductUid(),
-                $item->getArticleUid(),
-                $existingItem->getQuantity() + $item->getQuantity()
-            );
+            $quantity += $this->items[$identifier]->getQuantity();
         }
-        $this->items[$identifier] = $item;
+        $this->items[$identifier] = new BasketItem($item->getProductUid(), $item->getArticleUid(), $quantity);
     }
 
     public function updateQuantity(int $productUid, ?int $articleUid, int $quantity): void

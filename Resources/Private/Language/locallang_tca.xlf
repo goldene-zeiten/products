@@ -414,6 +414,12 @@
 			<trans-unit id="tx_products_domain_model_article.unlimited_stock" resname="tx_products_domain_model_article.unlimited_stock">
 				<source>Always in stock (exempt from stock tracking/decrement; overrides the product's own setting)</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.basket_min_quantity" resname="tx_products_domain_model_article.basket_min_quantity">
+				<source>Min Quantity in Basket (0 = inherit product)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.basket_max_quantity" resname="tx_products_domain_model_article.basket_max_quantity">
+				<source>Max Quantity in Basket (0 = inherit product)</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_article.weight" resname="tx_products_domain_model_article.weight">
 				<source>Weight (g)</source>
 			</trans-unit>

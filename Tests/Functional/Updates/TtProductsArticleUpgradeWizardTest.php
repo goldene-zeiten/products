@@ -51,6 +51,8 @@ final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCas
         self::assertSame(80, (int)$this->fetchField((int)$articleUid, 'product'));
         self::assertSame('9.99', $this->fetchField((int)$articleUid, 'price'));
         self::assertSame(10, (int)$this->fetchField((int)$articleUid, 'in_stock'));
+        self::assertSame(2, (int)$this->fetchField((int)$articleUid, 'basket_min_quantity'));
+        self::assertSame(5, (int)$this->fetchField((int)$articleUid, 'basket_max_quantity'));
     }
 
     #[Test]

@@ -146,6 +146,8 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
             'item_number' => (string)$legacyRow['itemnumber'],
             'price' => $this->formatPrice((string)$legacyRow['price']),
             'in_stock' => (int)$legacyRow['inStock'],
+            'basket_min_quantity' => (int)round((float)($legacyRow['basketminquantity'] ?? 0)),
+            'basket_max_quantity' => (int)round((float)($legacyRow['basketmaxquantity'] ?? 0)),
             'weight' => (int)round((float)$legacyRow['weight']),
         ])->executeStatement();
         $localUid = (int)$this->connectionPool->getConnectionForTable(self::LOCAL_TABLE)->lastInsertId();
