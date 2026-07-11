@@ -174,6 +174,18 @@
 			<trans-unit id="recently_viewed_empty" resname="recently_viewed_empty">
 				<source>You haven't viewed any products yet.</source>
 			</trans-unit>
+			<trans-unit id="most_viewed" resname="most_viewed">
+				<source>Most Viewed</source>
+			</trans-unit>
+			<trans-unit id="most_viewed_empty" resname="most_viewed_empty">
+				<source>No products have been viewed yet.</source>
+			</trans-unit>
+			<trans-unit id="my_most_viewed" resname="my_most_viewed">
+				<source>Your Most Viewed</source>
+			</trans-unit>
+			<trans-unit id="my_most_viewed_empty" resname="my_most_viewed_empty">
+				<source>Log in to see the products you view most often.</source>
+			</trans-unit>
 			<trans-unit id="search" resname="search">
 				<source>Search</source>
 			</trans-unit>

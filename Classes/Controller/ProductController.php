@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Article;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\PageTitle\CurrentProductHolder;
+use GoldeneZeiten\Products\Service\RecentlyViewed\ProductViewTrackingService;
 use GoldeneZeiten\Products\Service\RecentlyViewed\RecentlyViewedStorage;
 use GoldeneZeiten\Products\Service\Variant\ArticleVariantResolver;
 use GoldeneZeiten\Products\Service\Wishlist\WishlistService;
@@ -20,6 +21,7 @@ final class ProductController extends ActionController
         private readonly ProductRepository $productRepository,
         private readonly WishlistService $wishlistService,
         private readonly RecentlyViewedStorage $recentlyViewedStorage,
+        private readonly ProductViewTrackingService $productViewTrackingService,
         private readonly ArticleVariantResolver $articleVariantResolver,
         private readonly CurrentProductHolder $currentProductHolder
     ) {}
@@ -51,6 +53,7 @@ final class ProductController extends ActionController
         $this->currentProductHolder->setProduct($product);
         if ($product->getUid() !== null) {
             $this->recentlyViewedStorage->record($this->request, $product->getUid());
+            $this->productViewTrackingService->record($this->request, $product->getUid());
         }
         $this->view->assignMultiple([
             'product' => $product,
