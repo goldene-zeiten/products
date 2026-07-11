@@ -121,7 +121,6 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
             $this->get(FrontendUserResolver::class),
             $this->get(ShippingCostService::class),
             $this->get(HandlingFeeService::class),
-            $this->get(ConfigurationManagerInterface::class),
             $this->get(ProductsConfigurationFactory::class)
         );
     }
