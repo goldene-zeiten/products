@@ -3,6 +3,11 @@
 /public
 /original
 /var
+# TYPO3 14's Environment/ClassLoadingInformation hardcode "packages/{ext,sysext,
+# PackageStates.php,autoload-tests}" next to composer.json whenever project path != public
+# path (true here, since web-dir is .Build/Web) - not redirectable via TYPO3_PATH_ROOT/
+# TYPO3_PATH_WEB or any composer.json setting, see Build/Scripts/runTests.sh's "unit" suite.
+/packages
 /.claude
 /Documentation-GENERATED-temp
 composer.lock
