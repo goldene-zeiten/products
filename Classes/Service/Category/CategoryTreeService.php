@@ -68,7 +68,10 @@ final class CategoryTreeService
     {
         $segments = array_map(
             fn(Category $ancestor): string => $this->ownSlugSegment($ancestor->getSlug()),
-            $this->getAncestorChain($category)
+            array_filter(
+                $this->getAncestorChain($category),
+                fn(Category $ancestor): bool => !$ancestor->isHideInSlugPath()
+            )
         );
         if ($product instanceof Product) {
             $segments[] = $this->ownSlugSegment($product->getSlug());
@@ -101,7 +104,9 @@ final class CategoryTreeService
         $nextRemainingLevels = $remainingLevels === null ? null : $remainingLevels - 1;
         $nodes = [];
         foreach ($groupedByParentUid[$parentUid] ?? [] as $category) {
-            $slugPath = $this->appendSegment($parentSlugPath, $this->ownSlugSegment($category->getSlug()));
+            $slugPath = $category->isHideInSlugPath()
+                ? $parentSlugPath
+                : $this->appendSegment($parentSlugPath, $this->ownSlugSegment($category->getSlug()));
             $nodes[] = new CategoryTreeNode(
                 $category,
                 $this->buildLevel((int)$category->getUid(), $groupedByParentUid, $depth + 1, $slugPath, $nextRemainingLevels),
@@ -117,7 +122,7 @@ final class CategoryTreeService
         return $path === '' ? $segment : $path . '/' . $segment;
     }
 
-    private function ownSlugSegment(string $storedSlug): string
+    public function ownSlugSegment(string $storedSlug): string
     {
         $segments = explode('/', trim($storedSlug, '/'));
         return (string)end($segments);

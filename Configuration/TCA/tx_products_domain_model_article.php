@@ -20,7 +20,24 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Article.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'product, title, item_number, ean, price, price_mode, direct_cost, deposit, price_tiers, attribute_values, in_stock, unlimited_stock, basket_min_quantity, basket_max_quantity, weight, bulky, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => '--div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_general, product, title, slug, --palette--;;identifiers, attribute_values, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_prices, --palette--;;pricing, price_tiers, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_stock, --palette--;;stock, --palette--;;basketLimits, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_shipping, --palette--;;shipping, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_media, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+    ],
+    'palettes' => [
+        'identifiers' => [
+            'showitem' => 'item_number, ean',
+        ],
+        'pricing' => [
+            'showitem' => 'price, price_mode, --linebreak--, direct_cost, deposit',
+        ],
+        'stock' => [
+            'showitem' => 'in_stock, unlimited_stock',
+        ],
+        'basketLimits' => [
+            'showitem' => 'basket_min_quantity, basket_max_quantity',
+        ],
+        'shipping' => [
+            'showitem' => 'weight, bulky',
+        ],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -66,6 +83,22 @@ return [
                 'size' => 30,
                 'eval' => 'trim',
                 'required' => true,
+            ],
+        ],
+        'slug' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.slug',
+            'config' => [
+                'type' => 'slug',
+                'generatorOptions' => [
+                    'fields' => ['title'],
+                    'fieldSeparator' => '/',
+                    'prefixParentPageSlug' => true,
+                    'replacements' => [
+                        '/' => '',
+                    ],
+                ],
+                'fallbackCharacter' => '-',
+                'eval' => 'uniqueInSite',
             ],
         ],
         'item_number' => [

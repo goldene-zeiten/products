@@ -19,6 +19,7 @@ class Category extends AbstractEntity
     protected string $notificationRecipientName = '';
     protected float $discountPercent = 0.0;
     protected bool $discountDisabled = false;
+    protected bool $hideInSlugPath = false;
     protected ?Category $parentCategory = null;
     /**
      * @var ObjectStorage<Category>
@@ -108,6 +109,16 @@ class Category extends AbstractEntity
     public function setDiscountDisabled(bool $discountDisabled): void
     {
         $this->discountDisabled = $discountDisabled;
+    }
+
+    public function isHideInSlugPath(): bool
+    {
+        return $this->hideInSlugPath;
+    }
+
+    public function setHideInSlugPath(bool $hideInSlugPath): void
+    {
+        $this->hideInSlugPath = $hideInSlugPath;
     }
 
     public function getParentCategory(): ?Category
