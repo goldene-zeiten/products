@@ -5,47 +5,6 @@
         <f:asset.module identifier="@typo3/backend/column-selector-button.js" />
     </f:if>
 
-    <div class="mb-3">
-        <f:for each="{actions}" as="action">
-            <a class="btn btn-default" href="{action.url}">
-                <f:if condition="{action.icon}">
-                    <core:icon identifier="{action.icon}" size="small" />
-                </f:if>
-                {action.label}
-            </a>
-        </f:for>
-        <f:if condition="{columnSelector}">
-            <typo3-backend-column-selector-button
-                class="btn btn-default"
-                data-url="{columnSelector.url}"
-                data-target="{columnSelector.target}"
-                data-title="{columnSelector.title}"
-                data-button-ok="{columnSelector.buttonOk}"
-                data-button-close="{columnSelector.buttonClose}"
-                data-error-message="{columnSelector.errorMessage}"
-            >
-                <core:icon identifier="actions-options" size="small" />
-                {columnSelector.label}
-            </typo3-backend-column-selector-button>
-        </f:if>
-        <f:if condition="{visibilityToggle}">
-            <button
-                type="button"
-                class="btn btn-default"
-                title="{visibilityToggle.title}"
-                data-products-visibility-toggle
-                data-table="{visibilityToggle.table}"
-                data-uid="{visibilityToggle.uid}"
-                data-field="{visibilityToggle.field}"
-                data-hidden="{visibilityToggle.hidden}"
-                data-error-message="{visibilityToggle.errorMessage}"
-            >
-                <core:icon identifier="{visibilityToggle.icon}" size="small" />
-                {visibilityToggle.title}
-            </button>
-        </f:if>
-    </div>
-
     <f:if condition="{selectedCategory}">
         <f:then>
             <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:labels.category" />: {selectedCategory.title}</h2>
@@ -91,9 +50,7 @@
                                 <f:for each="{extraColumns}" as="columnLabel">
                                     <th>{columnLabel}</th>
                                 </f:for>
-                                <f:if condition="{mode} == 'product'">
-                                    <th></th>
-                                </f:if>
+                                <th></th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -105,23 +62,21 @@
                                     <f:for each="{item.extraValues}" as="value">
                                         <td>{value}</td>
                                     </f:for>
-                                    <f:if condition="{mode} == 'product'">
-                                        <td>
-                                            <button
-                                                type="button"
-                                                class="btn btn-default btn-sm"
-                                                title="{item.visibilityToggle.title}"
-                                                data-products-visibility-toggle
-                                                data-table="{item.visibilityToggle.table}"
-                                                data-uid="{item.visibilityToggle.uid}"
-                                                data-field="{item.visibilityToggle.field}"
-                                                data-hidden="{item.visibilityToggle.hidden}"
-                                                data-error-message="{item.visibilityToggle.errorMessage}"
-                                            >
-                                                <core:icon identifier="{item.visibilityToggle.icon}" size="small" />
-                                            </button>
-                                        </td>
-                                    </f:if>
+                                    <td>
+                                        <button
+                                            type="button"
+                                            class="btn btn-default btn-sm"
+                                            title="{item.visibilityToggle.title}"
+                                            data-products-visibility-toggle
+                                            data-table="{item.visibilityToggle.table}"
+                                            data-uid="{item.visibilityToggle.uid}"
+                                            data-field="{item.visibilityToggle.field}"
+                                            data-hidden="{item.visibilityToggle.hidden}"
+                                            data-error-message="{item.visibilityToggle.errorMessage}"
+                                        >
+                                            <core:icon identifier="{item.visibilityToggle.icon}" size="small" />
+                                        </button>
+                                    </td>
                                     <td class="text-end">
                                         <a class="btn btn-default btn-sm" href="{item.editUrl}">
                                             <core:icon identifier="actions-open" size="small" />
