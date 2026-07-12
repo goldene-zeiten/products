@@ -133,25 +133,25 @@
 				<source>Order updated.</source>
 			</trans-unit>
 			<trans-unit id="actions.new_category" resname="actions.new_category">
-				<source>New category</source>
+				<source>New Category</source>
 			</trans-unit>
 			<trans-unit id="actions.new_subcategory" resname="actions.new_subcategory">
-				<source>New subcategory here</source>
+				<source>New Subcategory</source>
 			</trans-unit>
 			<trans-unit id="actions.new_product" resname="actions.new_product">
-				<source>New product in this category</source>
+				<source>New Product</source>
 			</trans-unit>
 			<trans-unit id="actions.new_article" resname="actions.new_article">
-				<source>New article for this product</source>
+				<source>New Article</source>
 			</trans-unit>
 			<trans-unit id="actions.edit_category" resname="actions.edit_category">
-				<source>Edit category</source>
+				<source>Edit Category</source>
 			</trans-unit>
 			<trans-unit id="actions.edit_product" resname="actions.edit_product">
-				<source>Edit product</source>
+				<source>Edit Product</source>
 			</trans-unit>
 			<trans-unit id="actions.edit_article" resname="actions.edit_article">
-				<source>Edit article</source>
+				<source>Edit Article</source>
 			</trans-unit>
 			<trans-unit id="column.products" resname="column.products">
 				<source>Products</source>

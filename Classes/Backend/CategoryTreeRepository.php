@@ -270,6 +270,40 @@ final class CategoryTreeRepository
     }
 
     /**
+     * Raw values for a set of TCA-validated product columns, for every product of a category, keyed by product uid.
+     * @param string[] $fields
+     * @return array<int, array<string, mixed>>
+     */
+    public function fetchProductsRawFieldsByCategory(int $categoryUid, array $fields): array
+    {
+        if ($fields === []) {
+            return [];
+        }
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_PRODUCT);
+        $this->applyRestrictions($queryBuilder);
+        $qualifiedFields = array_map(static fn(string $field): string => 'product.' . $field, $fields);
+        $rows = $queryBuilder->select('product.uid', ...$qualifiedFields)
+            ->from(self::TABLE_PRODUCT, 'product')
+            ->join(
+                'product',
+                self::TABLE_PRODUCT_CATEGORY_MM,
+                'mm',
+                $queryBuilder->expr()->eq('mm.uid_local', $queryBuilder->quoteIdentifier('product.uid'))
+            )
+            ->andWhere($queryBuilder->expr()->eq(
+                'mm.uid_foreign',
+                $queryBuilder->createNamedParameter($categoryUid, ParameterType::INTEGER)
+            ))
+            ->executeQuery()
+            ->fetchAllAssociative();
+        $indexed = [];
+        foreach ($rows as $row) {
+            $indexed[(int)$row['uid']] = $row;
+        }
+        return $indexed;
+    }
+
+    /**
      * First category of a product that is within the given mounts (or the first one at all when unrestricted).
      * @param int[]|null $mounts
      */

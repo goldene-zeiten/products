@@ -16,10 +16,14 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\RecordList\DatabaseRecordList;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Backend\Template\Components\ButtonBar;
+use TYPO3\CMS\Backend\Template\Components\Buttons\GenericButton;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
@@ -44,6 +48,7 @@ final class ProductManagementModuleController
         private readonly CategoryPermissionGuard $permissionGuard,
         private readonly StorageFolderResolver $storageFolderResolver,
         private readonly ProductArchiveService $archiveService,
+        private readonly IconFactory $iconFactory,
     ) {}
 
     public function mainAction(ServerRequestInterface $request): ResponseInterface
@@ -63,8 +68,88 @@ final class ProductManagementModuleController
         $articleUid = $this->resolveSelectedArticle($request, $mounts);
         $categoryUid = $articleUid > 0 ? 0 : $this->resolveSelectedCategory($request, $mounts);
         $productUid = ($articleUid > 0 || $categoryUid > 0) ? 0 : $this->resolveSelectedProduct($request, $mounts);
-        $moduleTemplate->assignMultiple($this->buildViewData($request, $moduleTemplate, $categoryUid, $productUid, $articleUid));
+        $viewData = $this->buildViewData($request, $moduleTemplate, $categoryUid, $productUid, $articleUid);
+        $this->addDocHeaderButtons($moduleTemplate, $viewData);
+        $moduleTemplate->assignMultiple($viewData);
         return $moduleTemplate->renderResponse('Backend/ProductManagement/Main');
+    }
+
+    /**
+     * Control buttons (new/edit/show-columns/hide-toggle) belong in the
+     * module's DocHeader, not inline in the content area - built here via
+     * ButtonBar rather than in the Fluid template, since DocHeader buttons
+     * are a PHP-side API on ModuleTemplate, not template markup.
+     * @param array<string, mixed> $viewData
+     */
+    private function addDocHeaderButtons(ModuleTemplate $moduleTemplate, array $viewData): void
+    {
+        $buttonBar = $moduleTemplate->getDocHeaderComponent()->getButtonBar();
+        foreach ($viewData['actions'] as $action) {
+            $this->addLinkButton($buttonBar, $action, 1);
+        }
+        if ($viewData['columnSelector'] !== null) {
+            $this->addColumnSelectorButton($buttonBar, $viewData['columnSelector'], 2);
+        }
+        if ($viewData['visibilityToggle'] !== null) {
+            $this->addVisibilityToggleButton($buttonBar, $viewData['visibilityToggle'], 2);
+        }
+    }
+
+    /**
+     * @param array{label: string, url: string, icon: string} $action
+     */
+    private function addLinkButton(ButtonBar $buttonBar, array $action, int $group): void
+    {
+        $button = $buttonBar->makeLinkButton()
+            ->setHref($action['url'])
+            ->setTitle($action['label'])
+            ->setShowLabelText(true)
+            ->setIcon($this->iconFactory->getIcon($action['icon'], IconSize::SMALL));
+        $buttonBar->addButton($button, ButtonBar::BUTTON_POSITION_LEFT, $group);
+    }
+
+    /**
+     * Mirrors DatabaseRecordList::createActionButtonColumnSelector() - same
+     * tag/data-attribute contract, so core's own already-loaded
+     * column-selector-button.js handles it with no extra JS of ours.
+     * @param array<string, string> $columnSelector
+     */
+    private function addColumnSelectorButton(ButtonBar $buttonBar, array $columnSelector, int $group): void
+    {
+        $button = GeneralUtility::makeInstance(GenericButton::class)
+            ->setTag('typo3-backend-column-selector-button')
+            ->setLabel($columnSelector['title'])
+            ->setShowLabelText(true)
+            ->setIcon($this->iconFactory->getIcon('actions-options', IconSize::SMALL))
+            ->setAttributes([
+                'data-url' => $columnSelector['url'],
+                'data-target' => $columnSelector['target'],
+                'data-title' => $columnSelector['title'],
+                'data-button-ok' => $columnSelector['buttonOk'],
+                'data-button-close' => $columnSelector['buttonClose'],
+                'data-error-message' => $columnSelector['errorMessage'],
+            ]);
+        $buttonBar->addButton($button, ButtonBar::BUTTON_POSITION_LEFT, $group);
+    }
+
+    /**
+     * @param array{table: string, uid: int, hidden: string, field: string, icon: string, title: string, errorMessage: string} $toggle
+     */
+    private function addVisibilityToggleButton(ButtonBar $buttonBar, array $toggle, int $group): void
+    {
+        $button = GeneralUtility::makeInstance(GenericButton::class)
+            ->setLabel($toggle['title'])
+            ->setShowLabelText(true)
+            ->setIcon($this->iconFactory->getIcon($toggle['icon'], IconSize::SMALL))
+            ->setAttributes([
+                'data-products-visibility-toggle' => '',
+                'data-table' => $toggle['table'],
+                'data-uid' => (string)$toggle['uid'],
+                'data-field' => $toggle['field'],
+                'data-hidden' => $toggle['hidden'],
+                'data-error-message' => $toggle['errorMessage'],
+            ]);
+        $buttonBar->addButton($button, ButtonBar::BUTTON_POSITION_LEFT, $group);
     }
 
     private function isArchiveRequest(ServerRequestInterface $request): bool
@@ -183,7 +268,7 @@ final class ProductManagementModuleController
         // dropped here specifically rather than in resolveDisplayFields() -
         // excluding it there would also wrongly hide it as a pickable field
         // in the detail view, where it isn't a duplicate.
-        $listFields = array_values(array_diff($this->resolveDisplayFields(), ['item_number']));
+        $listFields = array_values(array_diff($this->resolveDisplayFields(self::TABLE_ARTICLE), ['item_number']));
         $rawValuesByUid = $this->treeRepository->fetchArticlesRawFieldsByProduct($productUid, $listFields);
         $items = array_map(
             fn(array $article): array => $this->buildRow(
@@ -221,7 +306,7 @@ final class ProductManagementModuleController
     {
         $returnUrl = (string)$this->uriBuilder->buildUriFromRequest($request, ['article' => $articleUid]);
         $article = $this->treeRepository->fetchArticleByUid($articleUid);
-        $displayFields = $this->resolveDisplayFields();
+        $displayFields = $this->resolveDisplayFields(self::TABLE_ARTICLE);
         $rawValues = $this->treeRepository->fetchArticleRawFields($articleUid, $displayFields);
         return [
             'mode' => 'article',
@@ -265,8 +350,18 @@ final class ProductManagementModuleController
     {
         $returnUrl = (string)$this->uriBuilder->buildUriFromRequest($request, ['category' => $categoryUid]);
         $category = $this->treeRepository->fetchCategoryByUid($categoryUid);
+        // "item_number" is already its own fixed column in this list - same
+        // reasoning as buildProductScopedView()'s article list.
+        $listFields = array_values(array_diff($this->resolveDisplayFields(self::TABLE_PRODUCT), ['item_number']));
+        $rawValuesByUid = $this->treeRepository->fetchProductsRawFieldsByCategory($categoryUid, $listFields);
         $items = array_map(
-            fn(array $product): array => $this->buildRow(self::TABLE_PRODUCT, $product, $returnUrl),
+            fn(array $product): array => $this->buildRow(
+                self::TABLE_PRODUCT,
+                $product,
+                $returnUrl,
+                $listFields,
+                $rawValuesByUid[$product['uid']] ?? [],
+            ),
             $this->treeRepository->fetchProductsByCategory($categoryUid)
         );
         return [
@@ -275,10 +370,10 @@ final class ProductManagementModuleController
             'selectedProduct' => null,
             'selectedArticle' => null,
             'itemsLabel' => $this->translate('column.products'),
-            'extraColumns' => [],
+            'extraColumns' => $this->buildColumnHeaders(self::TABLE_PRODUCT, $listFields),
             'items' => $items,
             'fields' => [],
-            'columnSelector' => null,
+            'columnSelector' => $this->buildColumnSelectorData(self::TABLE_PRODUCT, $returnUrl),
             'visibilityToggle' => null,
             'actions' => $this->buildCategoryScopedActions($categoryUid, $returnUrl),
             'overviewHtml' => null,
@@ -323,7 +418,11 @@ final class ProductManagementModuleController
             'visibilityToggle' => null,
             'actions' => [
                 $this->buildAction('actions.new_category', self::TABLE_CATEGORY, ['parent_category' => 0], $returnUrl),
-                ['label' => $this->translate('actions.archive_old_products'), 'url' => (string)$this->uriBuilder->buildUriFromRoute('products_management', ['archive' => 1])],
+                [
+                    'label' => $this->translate('actions.archive_old_products'),
+                    'url' => (string)$this->uriBuilder->buildUriFromRoute('products_management', ['archive' => 1]),
+                    'icon' => 'actions-archive',
+                ],
             ],
             'overviewHtml' => $pid > 0 ? $this->renderOverviewRecordList($request, $pid) : '',
         ];
@@ -398,13 +497,13 @@ final class ProductManagementModuleController
      * store arbitrary strings) and gets used to build a SQL SELECT list.
      * @return string[]
      */
-    private function resolveDisplayFields(): array
+    private function resolveDisplayFields(string $table): array
     {
-        $selected = $this->getBackendUser()->getModuleData('list/displayFields')[self::TABLE_ARTICLE] ?? [];
+        $selected = $this->getBackendUser()->getModuleData('list/displayFields')[$table] ?? [];
         if (!is_array($selected)) {
             return [];
         }
-        $allowedFields = array_keys($GLOBALS['TCA'][self::TABLE_ARTICLE]['columns'] ?? []);
+        $allowedFields = array_keys($GLOBALS['TCA'][$table]['columns'] ?? []);
         // "title" is always shown first via buildTitleFieldRow() regardless
         // of this selection - core's own column picker locks its checkbox on
         // but still submits it, so without this it duplicates as soon as an
@@ -474,7 +573,7 @@ final class ProductManagementModuleController
 
     /**
      * @param array<string, int> $defaultValues
-     * @return array{label: string, url: string}
+     * @return array{label: string, url: string, icon: string}
      */
     private function buildAction(string $labelKey, string $table, array $defaultValues, string $returnUrl): array
     {
@@ -484,7 +583,17 @@ final class ProductManagementModuleController
             'defVals' => [$table => $defaultValues],
             'returnUrl' => $returnUrl,
         ]);
-        return ['label' => $this->translate($labelKey), 'url' => $url];
+        return ['label' => $this->translate($labelKey), 'url' => $url, 'icon' => $this->newRecordIcon($table)];
+    }
+
+    private function newRecordIcon(string $table): string
+    {
+        return match ($table) {
+            self::TABLE_CATEGORY => 'products-category',
+            self::TABLE_PRODUCT => 'products-product',
+            self::TABLE_ARTICLE => 'products-article',
+            default => 'actions-add',
+        };
     }
 
     /**
