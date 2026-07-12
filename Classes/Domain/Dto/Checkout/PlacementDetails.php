@@ -10,11 +10,6 @@ use GoldeneZeiten\Products\Domain\Model\Voucher;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
-/**
- * Everything OrderFactory needs beyond the basic request/basket/address/paymentMethod: the
- * resolved amounts that adjust the order's totals (vouchers and points reduce it, shipping adds
- * to it), plus an optional alternate delivery address/gift message it snapshots as-is.
- */
 #[Exclude]
 final readonly class PlacementDetails
 {

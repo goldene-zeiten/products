@@ -124,11 +124,7 @@ final class OrderCreationService
     }
 
     /**
-     * Unlike the price/images "article overrides product when set" convention, a boolean flag has
-     * no "unset" state distinct from false, so a strict override would let an unflagged article
-     * silently ignore its own always-in-stock product (the common case: a merchant flags the whole
-     * product, expecting every variant to inherit it). Either the product or the specific article
-     * being unlimited is enough to exempt the line from stock tracking.
+     * Either product or article unlimited exempts the line from stock tracking.
      */
     private function hasUnlimitedStock(BasketViewItem $viewItem): bool
     {
@@ -146,10 +142,6 @@ final class OrderCreationService
         ));
     }
 
-    /**
-     * `stock.lowStockThreshold` is a Site Setting - see ProductsConfigurationFactory's docblock
-     * for why ConfigurationManagerInterface can't be used for these.
-     */
     private function lowStockThreshold(ServerRequestInterface $request): int
     {
         $threshold = $request->getAttribute('site')?->getSettings()->get('products.stock.lowStockThreshold', self::DEFAULT_LOW_STOCK_THRESHOLD);
@@ -169,9 +161,6 @@ final class OrderCreationService
     }
 
     /**
-     * Waiving is a boolean gate: if any applied voucher grants free shipping, shipping is waived
-     * regardless of how many other (combinable) vouchers are stacked alongside it.
-     *
      * @param Voucher[] $vouchers
      */
     private function anyVoucherWaivesShipping(array $vouchers): bool
@@ -212,10 +201,7 @@ final class OrderCreationService
     }
 
     /**
-     * VoucherService::redeemAtomically() guards the usage limit with a single atomic SQL
-     * statement (mirroring StockService's stock decrement) instead of the plain count-based check
-     * already done earlier in resolveVoucherDiscount() - that earlier check is only a soft,
-     * early-feedback check; this is the real boundary that a concurrent redemption cannot bypass.
+     * Atomic guard prevents concurrent redemption bypass. {@see StockService::decrementForItem()}
      */
     private function redeemVoucherAtomically(Voucher $voucher): void
     {
@@ -238,11 +224,6 @@ final class OrderCreationService
         return $redemption;
     }
 
-    /**
-     * Guests (frontend_user 0) never touch the ledger, and nothing is written at all while the
-     * feature is disabled sitewide - existing installations see no behaviour change until an
-     * operator opts in.
-     */
     private function recordCreditPoints(BasketViewModel $basketViewModel, CreditPointsRedemption $pointsRedemption, Order $order, int $frontendUser, CreditPointsConfiguration $creditPointsConfiguration): void
     {
         if (!$creditPointsConfiguration->isEnabled() || $frontendUser === 0) {
@@ -263,11 +244,7 @@ final class OrderCreationService
     }
 
     /**
-     * CreditPointsBalanceService::debitIfAffordable() guards the maintained running balance with a
-     * single atomic SQL statement (mirroring StockService's stock decrement) instead of the
-     * earlier assertSpendable() check in OrderPlacementService::place(), which only reads a
-     * point-in-time balance - that earlier check is only a soft, early-feedback check; this is the
-     * real boundary that a concurrent redemption cannot bypass.
+     * Atomic guard prevents concurrent redemption bypass. {@see StockService::decrementForItem()}
      */
     private function redeemCreditPointsAtomically(int $frontendUser, int $points): void
     {

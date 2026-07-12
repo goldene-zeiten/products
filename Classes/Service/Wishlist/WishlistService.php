@@ -15,10 +15,7 @@ use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 /**
- * Picks a persisted (tx_products_domain_model_wishlistitem) or FE-session backend by login state.
- * A guest's session wishlist is merged into the account's persisted wishlist on login (see
- * mergeSessionIntoAccount(), invoked by MergeWishlistOnLoginListener) - legacy always did this via
- * tx_ttproducts_control_memo::copySession2Feuser(), so this is parity, not a new feature.
+ * Picks persisted or FE-session backend by login state; merges session wishlist on login.
  */
 final class WishlistService
 {
@@ -30,10 +27,6 @@ final class WishlistService
         private readonly PersistenceManagerInterface $persistenceManager
     ) {}
 
-    /**
-     * Gates only the "add/remove to wishlist" affordance on product list/detail templates - the
-     * plugin/controller itself works regardless, opt-in by placing it on a page.
-     */
     public function isEnabled(ServerRequestInterface $request): bool
     {
         $site = $request->getAttribute('site');
@@ -63,10 +56,6 @@ final class WishlistService
         $this->removePersisted($frontendUser, $productUid);
     }
 
-    /**
-     * Swaps a product's position with its predecessor in the shopper's own arrangement - a no-op
-     * if it is already first.
-     */
     public function moveUp(ServerRequestInterface $request, int $productUid): void
     {
         $frontendUser = $this->frontendUserResolver->getUid($request);
@@ -77,10 +66,6 @@ final class WishlistService
         $this->swapPersisted($frontendUser, $productUid, -1);
     }
 
-    /**
-     * Swaps a product's position with its successor in the shopper's own arrangement - a no-op
-     * if it is already last.
-     */
     public function moveDown(ServerRequestInterface $request, int $productUid): void
     {
         $frontendUser = $this->frontendUserResolver->getUid($request);
@@ -100,9 +85,6 @@ final class WishlistService
         return $this->wishlistItemRepository->findOneByFrontendUserAndProduct($frontendUser, $productUid) !== null;
     }
 
-    /**
-     * Nav-badge accessor - counts without hydrating Product entities, unlike getItems().
-     */
     public function count(ServerRequestInterface $request): int
     {
         $frontendUser = $this->frontendUserResolver->getUid($request);
@@ -124,11 +106,6 @@ final class WishlistService
         return $this->persistedProducts($frontendUser);
     }
 
-    /**
-     * A guest checkout has no persisted wishlist to purge - a guest's wishlist lives in the FE
-     * session instead, keyed to the browser, not to any identity an order could be matched
-     * against, so it is deliberately left untouched here.
-     */
     public function removeOrderedItems(Order $order): void
     {
         $frontendUser = $order->getFrontendUser();
@@ -140,11 +117,6 @@ final class WishlistService
         }
     }
 
-    /**
-     * Invoked once, right after a guest with an existing session wishlist logs in - merges those
-     * products into the now-identified account's persisted wishlist (addPersisted() already
-     * dedupes against anything the account already has) and clears the session copy.
-     */
     public function mergeSessionIntoAccount(ServerRequestInterface $request): void
     {
         $frontendUser = $this->frontendUserResolver->getUid($request);

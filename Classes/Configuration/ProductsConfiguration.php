@@ -7,13 +7,6 @@ namespace GoldeneZeiten\Products\Configuration;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
-/**
- * A single, already-resolved snapshot of every products.tax/pricing/shipping/handling setting
- * needed by TaxService/ShippingCostService/HandlingFeeService - see ProductsConfigurationFactory.
- * Passing this in explicitly instead of letting those services read
- * ConfigurationManagerInterface themselves keeps them pure functions of their inputs: trivially
- * constructable in a test with `new ProductsConfiguration(...)`, no request/site-context needed.
- */
 #[Exclude]
 final readonly class ProductsConfiguration
 {

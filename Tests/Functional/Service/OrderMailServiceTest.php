@@ -125,9 +125,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
                 'settings' => [
                     'products' => [
                         'email' => [
-                            // Fluid's TemplatePaths resolves partials by walking root paths from the
-                            // last entry to the first (later entries act as overlays), so the overriding
-                            // path must be listed last.
+                            // Later paths in TemplatePaths override earlier ones; list fixtures last.
                             'partialRootPaths' => [
                                 'EXT:products/Resources/Private/Partials/',
                                 'EXT:frontend_test/Resources/Private/Partials/',

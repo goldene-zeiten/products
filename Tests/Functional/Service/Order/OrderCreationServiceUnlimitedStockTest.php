@@ -34,8 +34,7 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/OrderCreationServiceUnlimitedStockTest/order_placement_unlimited_stock.csv');
-        // OrderFactory reads Extbase settings eagerly in its constructor, which requires a request
-        // to be resolvable via $GLOBALS['TYPO3_REQUEST'] outside of a real controller dispatch.
+        // Extbase setting reads in OrderFactory constructor need a request resolvable via globals.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }

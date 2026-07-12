@@ -24,12 +24,6 @@ use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
-/**
- * End-to-end coverage of the M3 checkout flow (per the M3 plan's verification section): a
- * related-product upsell visible on the basket, a combinable voucher replaced by a non-combinable
- * one, a partial credit-points spend, and a guest checkout that is rejected for the points step but
- * still completes for the voucher.
- */
 final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
@@ -40,8 +34,7 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/M3CheckoutFlowTest/m3_end_to_end.csv');
-        // CategoryDiscountPriceProvider still reads Extbase settings eagerly in its constructor,
-        // which requires a request resolvable via $GLOBALS['TYPO3_REQUEST'] outside a real dispatch.
+        // CategoryDiscountPriceProvider reads $GLOBALS['TYPO3_REQUEST'] eagerly in its constructor.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }

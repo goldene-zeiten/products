@@ -9,10 +9,6 @@ use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
- * Base class for repositories whose records are maintained exclusively
- * in the TYPO3 backend. All write operations fail with a descriptive
- * exception.
- *
  * @template T of DomainObjectInterface
  * @extends Repository<T>
  */

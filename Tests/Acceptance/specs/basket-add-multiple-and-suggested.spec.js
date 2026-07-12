@@ -8,12 +8,10 @@ test('user searches a product, adds it twice, then adds a suggested product from
   await results.getByRole('link', { name: 'Details' }).first().click();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Photon X100');
 
-  // Add-to-basket redirects to the basket page each time, so go back to the product between adds.
   await page.getByRole('button', { name: 'Add to Basket' }).click();
   await page.goto('/product/photon-x100-smartphone');
   await page.getByRole('button', { name: 'Add to Basket' }).click();
 
-  // The accessory product suggested on the same detail page.
   await page.goto('/product/photon-x100-smartphone');
   await page.getByRole('link', { name: 'Photon Phone Case' }).click();
   await page.getByRole('button', { name: 'Add to Basket' }).click();

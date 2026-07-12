@@ -37,8 +37,7 @@ final class RecentlyViewedController extends ActionController
     }
 
     /**
-     * The current shopper's own "most viewed by you" listing - empty for anonymous visitors
-     * (per-user view tracking never applies to a guest, see ProductViewTrackingService).
+     * Per-user "most viewed" listing (empty for guests).
      */
     public function myMostViewedAction(): ResponseInterface
     {

@@ -53,9 +53,7 @@ final class CheckoutService
     }
 
     /**
-     * Prefills the checkout with a returning customer's most recent billing address, so they
-     * don't have to retype it on every order - only relevant before anything has been entered
-     * into the current checkout session yet.
+     * Prefill checkout from returning customer's last order.
      */
     private function addressFromLastOrder(ServerRequestInterface $request): ?Address
     {
@@ -85,11 +83,7 @@ final class CheckoutService
     }
 
     /**
-     * Falls back to the logged-in fe_user's own profile fields when there is no prior order to
-     * prefill from (a first-time logged-in buyer) - lower priority than the last order's address,
-     * since a returning customer's most recent shipping choice is more likely correct than a
-     * possibly-stale profile field. fe_users has no structured street/house-number split, so its
-     * free-text `address` field maps onto Address's `street`.
+     * Fallback to fe_user profile for first-time buyers; address field maps to street.
      */
     private function addressFromProfile(ServerRequestInterface $request): ?Address
     {
@@ -146,10 +140,6 @@ final class CheckoutService
         return 0;
     }
 
-    /**
-     * Null clears any previously chosen alternate delivery address, e.g. when the shopper
-     * unchecks "ship to a different address" again.
-     */
     public function setDeliveryAddress(ServerRequestInterface $request, ?Address $deliveryAddress): void
     {
         $frontendUser = $request->getAttribute('frontend.user');
@@ -160,8 +150,7 @@ final class CheckoutService
     }
 
     /**
-     * Null means "ship to the billing address" - meaningfully different from an Address with
-     * blank fields, so no alternate address is ever returned as a real-but-empty Address.
+     * Null means "ship to billing address" (distinct from an empty Address).
      */
     public function getDeliveryAddress(ServerRequestInterface $request): ?Address
     {

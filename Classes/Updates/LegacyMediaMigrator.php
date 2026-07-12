@@ -14,16 +14,9 @@ use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 
 /**
- * Migrates one legacy FAL-ish field (a `<field>` filename list plus a `<field>_uid` FAL usage
- * counter, the `tt_products` convention) to a field on an already-migrated local record.
- *
- * `tx_products_migration_map` cannot track this: its unique key is `(legacy_table, legacy_uid)`
- * only, already claimed by the entity wizard (product/category/article) that created the local
- * row. Idempotency is instead based on the presence of `sys_file_reference` rows on the local
- * field, which is also the natural signal that a legacy install already ran its own FAL image
- * import (`image_uid` sys_file_reference rows exist): those are reused as-is (no re-import, same
- * `sys_file`), only re-pointing them at the local record. Only when no such reference exists at
- * all is a legacy filename list imported from disk.
+ * Migrates legacy FAL-ish fields (filename list + usage counter) to local records. Uses presence
+ * of sys_file_reference rows for idempotency (not migration_map, which is already claimed by
+ * entity wizards).
  */
 final class LegacyMediaMigrator
 {

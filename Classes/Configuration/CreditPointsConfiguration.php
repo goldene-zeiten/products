@@ -8,12 +8,6 @@ use GoldeneZeiten\Products\Domain\Dto\CreditPointsEarningTier;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
-/**
- * A single, already-resolved snapshot of every products.creditPoints Site Setting needed by
- * CreditPointsService - see CreditPointsConfigurationFactory. Passing this in explicitly instead
- * of letting CreditPointsService read Site Settings itself keeps it a pure function of its inputs,
- * same reasoning as ProductsConfiguration.
- */
 #[Exclude]
 final readonly class CreditPointsConfiguration
 {

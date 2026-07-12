@@ -21,9 +21,7 @@ final class ProductRepository extends AbstractReadOnlyRepository
     private const SEARCHABLE_PROPERTIES = ['title', 'subtitle', 'itemNumber', 'description', 'ean'];
 
     /**
-     * Without an explicit ORDER BY, row order is undefined and differs across DBMS/versions
-     * (observed to differ between PostgreSQL versions). "sorting" is the TCA-editable backend
-     * order; "uid" breaks ties deterministically for rows sharing the same sorting value.
+     * "uid" breaks ties for rows sharing the same "sorting" value.
      *
      * @var array<non-empty-string, QueryInterface::ORDER_*>
      */
@@ -33,8 +31,7 @@ final class ProductRepository extends AbstractReadOnlyRepository
     ];
 
     /**
-     * Direct members only - a category listing shows what is assigned to that exact category,
-     * not everything beneath it in the tree as well.
+     * Direct members only, not the whole subtree beneath the category.
      *
      * @return Product[]
      */
@@ -47,8 +44,7 @@ final class ProductRepository extends AbstractReadOnlyRepository
     }
 
     /**
-     * Direct members only, same scope as findByCategory() - a nav badge counts what is actually
-     * assigned to that category, not the whole subtree beneath it.
+     * Direct members only, same scope as {@see self::findByCategory()}.
      */
     public function countByCategory(Category $category): int
     {

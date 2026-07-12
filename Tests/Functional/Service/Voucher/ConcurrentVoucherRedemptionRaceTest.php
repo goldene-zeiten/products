@@ -13,11 +13,7 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /**
- * VoucherService::redeemAtomically() guards a voucher's usage limit with a single atomic SQL
- * statement (`UPDATE ... SET redemption_count = redemption_count + 1 WHERE redemption_count <
- * usage_limit`), the same pattern StockService already uses for stock - so, unlike the
- * count-then-insert sequence this replaced, calling it twice for a single-use voucher can never
- * let both calls succeed, regardless of call ordering or true concurrency.
+ * Atomic SQL UPDATE guards usage limits via {@see VoucherService::redeemAtomically()}.
  */
 final class ConcurrentVoucherRedemptionRaceTest extends AbstractFunctionalTestCase
 {
@@ -47,8 +43,7 @@ final class ConcurrentVoucherRedemptionRaceTest extends AbstractFunctionalTestCa
             $this->assertSame(1751850004, $exception->getCode());
         }
 
-        // Read the counter directly via the database, not through Extbase's identity map (which
-        // would still show the object's originally-fetched value, not the raw SQL update above).
+        // Bypass Extbase identity map to verify raw SQL update.
         $this->assertSame(1, $this->currentRedemptionCount($voucher->getUid() ?? 0));
     }
 

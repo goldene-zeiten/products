@@ -26,9 +26,7 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * "Products" backend module: a category/product/article tree on the left, and either a
- * relational listing (products in a selected category, articles of a selected product) or
- * the plain core record list (nothing selected) on the right.
+ * Backend module for product management: tree view with relational listings.
  */
 #[AsController]
 final class ProductManagementModuleController

@@ -15,10 +15,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 /**
- * Auto-issues a one-time reward voucher for any order that clears a configurable minimum value -
- * decoupled from gift orders (unlike legacy, which only rewarded placing a gift). Stateless by
- * design - takes an already-resolved GainedVoucherConfiguration rather than reading settings
- * itself, so it's a pure function of its inputs (see GainedVoucherConfiguration's docblock).
+ * Auto-issues one-time reward vouchers for qualifying orders.
  */
 final class GainedVoucherService
 {
@@ -31,10 +28,6 @@ final class GainedVoucherService
         private readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
-    /**
-     * No-op (returns null) while disabled or below the threshold - a disabled feature must never
-     * generate a code, same reasoning already applied to credit points.
-     */
     public function maybeIssue(Order $order, GainedVoucherConfiguration $configuration): ?Voucher
     {
         if (!$configuration->isEnabled() || !$this->meetsMinimumOrderValue($order, $configuration)) {
@@ -53,9 +46,7 @@ final class GainedVoucherService
     }
 
     /**
-     * Non-combinable and single-use, since a reward is meant to be one discrete perk, not a
-     * stackable discount. Bound to the ordering customer when known; guest orders (frontend_user
-     * 0) leave it unbound, matching Voucher::isAvailableToFrontendUser()'s "0 = anyone" semantics.
+     * Builds non-combinable, single-use reward bound to customer (unbound for guests).
      */
     private function buildVoucher(Order $order, GainedVoucherConfiguration $configuration): Voucher
     {

@@ -10,13 +10,6 @@ use GoldeneZeiten\Products\Domain\Dto\CreditPointsRedemption;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\CreditPoints\Exception\InsufficientCreditPointsException;
 
-/**
- * Balance reads/writes are delegated to CreditPointsBalanceService, which maintains a running
- * total atomically guarded against concurrent over-spend (see CreditPointsBalanceService's own
- * docblock) - the ledger table remains the permanent audit trail. Stateless by design - takes an
- * already-resolved CreditPointsConfiguration rather than reading settings itself, so it's a pure
- * function of its inputs (see CreditPointsConfiguration's docblock).
- */
 final class CreditPointsService
 {
     public function __construct(
@@ -29,12 +22,7 @@ final class CreditPointsService
     }
 
     /**
-     * Article inherits the product's earning rate, there is no per-article override. In
-     * "basketTiered" mode the whole order earns a single highest-qualifying tier's points
-     * instead, mirroring legacy tx_ttproducts_creditpoints_div::getCreditPoints() (krsort by
-     * threshold, first match at or below the basket total wins - not summed across tiers). In
-     * "autoPriceFactor" mode, a line without its own explicit creditPoints value earns points via
-     * a flat price->points conversion instead of 0, mirroring legacy's "auto" earning mode.
+     * Earning modes: per-product (default), tiered (highest-qualifying), or auto price factor.
      */
     public function calculateEarnedPoints(BasketViewModel $basket, CreditPointsConfiguration $configuration): int
     {
@@ -54,10 +42,6 @@ final class CreditPointsService
         return $points;
     }
 
-    /**
-     * A line's own explicit creditPoints value always wins, even in this mode - only lines with
-     * none (0) fall back to the price->points conversion.
-     */
     private function calculateAutoPriceFactorPoints(BasketViewModel $basket, CreditPointsConfiguration $configuration): int
     {
         $priceFactor = $configuration->getPriceFactor();
@@ -105,8 +89,7 @@ final class CreditPointsService
     }
 
     /**
-     * Clamps to whichever is lower: the current balance or what the basket total can absorb -
-     * the same double-cap idea as legacy's max1/max2. Guests (frontend_user 0) never redeem.
+     * Clamps to balance and basket capacity; guests (frontend_user 0) never redeem.
      */
     public function redeem(int $frontendUser, int $requestedPoints, Money $basketGoodsTotal, CreditPointsConfiguration $configuration): CreditPointsRedemption
     {

@@ -10,10 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 
 /**
- * `products.vouchers.gained.*` are Site Settings (Configuration/Sets/Products/settings.
- * definitions.yaml), read straight from the request's `site` attribute - see
- * ProductsConfigurationFactory's docblock for why ConfigurationManagerInterface can't be used for
- * these.
+ * Site Settings read from request's site attribute (not via ConfigurationManagerInterface).
  */
 final class GainedVoucherConfigurationFactory
 {

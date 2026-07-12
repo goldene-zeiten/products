@@ -16,9 +16,6 @@ final class CheckoutControllerTest extends AbstractFrontendTestCase
     {
         $this->importCSVDataSet(__DIR__ . '/Fixtures/checkout_content.csv');
 
-        // Production links to non-cacheable Extbase actions are always generated via
-        // the Extbase UriBuilder, which computes a valid cHash automatically. This
-        // mirrors that behaviour for the raw GET parameters used in this test request.
         $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
             '&id=2&tx_products_checkout[action]=payment'
         );

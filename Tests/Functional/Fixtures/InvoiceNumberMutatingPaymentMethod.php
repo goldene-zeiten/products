@@ -11,9 +11,7 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 
 /**
- * Test double for {@see PaymentMethodInterface} that mutates the order it's handed, mirroring
- * the shipped InvoicePaymentMethod::initiate() setting an invoice number - used to prove
- * PaymentInitiationService flushes such mutations regardless of which payment method caused them.
+ * Mutates the order like a real payment method would, to verify such mutations get flushed.
  */
 final class InvoiceNumberMutatingPaymentMethod implements PaymentMethodInterface
 {

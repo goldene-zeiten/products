@@ -118,10 +118,6 @@ final class OrderControllerTest extends AbstractFrontendTestCase
     }
 
     /**
-     * Simulates a logged-in frontend user for the next `executeFrontendSubRequest()` call
-     * by persisting a matching `fe_sessions` row and building a valid `fe_typo_user` cookie
-     * (a signed JWT wrapping the session identifier), without going through a real login flow.
-     *
      * @return string the value to use for the `fe_typo_user` cookie
      */
     private function loginFrontendUser(int $frontendUserUid): string

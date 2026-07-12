@@ -391,9 +391,6 @@ class Product extends AbstractEntity
         $this->priceTiers = $priceTiers;
     }
 
-    /**
-     * The cheapest configured tier, used for "from X" list-view pricing.
-     */
     public function getLowestPriceTier(): ?PriceTier
     {
         $lowest = null;
@@ -406,8 +403,6 @@ class Product extends AbstractEntity
     }
 
     /**
-     * Distinct attributes used by at least one article, for building a variant selector.
-     *
      * @return Attribute[]
      */
     public function getVariantAttributes(): array

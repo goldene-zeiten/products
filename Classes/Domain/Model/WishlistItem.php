@@ -7,10 +7,6 @@ namespace GoldeneZeiten\Products\Domain\Model;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
-/**
- * A logged-in shopper's saved product. Unlike Order/OrderItem, this is live user-mutable state, not
- * an audit snapshot, so it holds a real relation to Product rather than an informational FK.
- */
 #[Exclude]
 class WishlistItem extends AbstractEntity
 {

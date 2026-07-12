@@ -39,10 +39,6 @@ final class VoucherService
     }
 
     /**
-     * Strict counterpart to buildDiscountSummary(): used at order placement, where a code that
-     * became invalid since the basket was last viewed must fail the whole placement rather than
-     * be silently dropped.
-     *
      * @param string[] $codes
      * @throws VoucherNotFoundException|VoucherNotApplicableException
      */
@@ -68,10 +64,6 @@ final class VoucherService
     }
 
     /**
-     * Resolves every code, silently dropping ones that are no longer valid (expired, exhausted, ...)
-     * rather than failing the whole basket view - a stale code just stops contributing to the
-     * discount until the shopper removes it.
-     *
      * @param string[] $codes
      */
     public function buildDiscountSummary(array $codes, Money $basketGoodsTotal, int $frontendUser): BasketDiscountSummary
@@ -81,9 +73,6 @@ final class VoucherService
     }
 
     /**
-     * Whether $newVoucher may join $existingVouchers: a non-combinable voucher must always be alone,
-     * so any mix involving one requires clearing first.
-     *
      * @param Voucher[] $existingVouchers
      */
     public function canCoexist(array $existingVouchers, Voucher $newVoucher): bool
@@ -137,12 +126,6 @@ final class VoucherService
         $this->assertNotBlockedByExistingDiscount($voucher, $basketAlreadyDiscounted);
     }
 
-    /**
-     * Mirrors legacy's voucherCodeDiscountCombinable(), which also rejects a non-combinable
-     * voucher whenever the basket total is already reduced by a non-voucher discount source
-     * (there, any discount at all; here specifically the category-cascading/FE-usergroup pricing
-     * step - see BasketService::isAlreadyDiscounted()).
-     */
     private function assertNotBlockedByExistingDiscount(Voucher $voucher, bool $basketAlreadyDiscounted): void
     {
         if ($basketAlreadyDiscounted && !$voucher->isCombinable()) {
@@ -164,14 +147,10 @@ final class VoucherService
     }
 
     /**
-     * Atomically increments the voucher's redemption counter, but only if it is still under its
-     * usage limit (0 = unlimited) - the check and the increment happen in one SQL statement, exactly
-     * like StockService's stock decrement (see StockService.php), so two concurrent redemptions of
-     * the same single-use voucher cannot both succeed. This is the real enforcement boundary, called
-     * at actual order placement (OrderCreationService::redeemVouchers()) - assertUsageLimitNotExceeded()
-     * above is only an early, non-authoritative check shown when a voucher is applied to the basket.
+     * Atomic UPDATE...WHERE guard against concurrent over-redemption.
      *
      * @throws VoucherNotApplicableException
+     * @see \GoldeneZeiten\Products\Service\Order\StockService::decrementForItem()
      */
     public function redeemAtomically(Voucher $voucher): void
     {

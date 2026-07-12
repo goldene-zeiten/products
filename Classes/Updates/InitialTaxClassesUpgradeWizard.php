@@ -6,8 +6,7 @@ namespace GoldeneZeiten\Products\Updates;
 
 use GoldeneZeiten\Products\Backend\StorageFolderResolver;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-// EXT:install namespaces are valid through TYPO3 v14 (deprecated there); migrate to the
-// TYPO3\CMS\Core\Attribute\UpgradeWizard / TYPO3\CMS\Core\Updates\* equivalents once v13 support is dropped.
+// TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
 use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
 use TYPO3\CMS\Install\Updates\RepeatableInterface;

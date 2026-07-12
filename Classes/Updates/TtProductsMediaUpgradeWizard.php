@@ -10,8 +10,7 @@ use GoldeneZeiten\Products\Updates\Prerequisites\CategoryMigrationPrerequisite;
 use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-// EXT:install namespaces are valid through TYPO3 v14 (deprecated there); migrate to the
-// TYPO3\CMS\Core\Attribute\UpgradeWizard / TYPO3\CMS\Core\Updates\* equivalents once v13 support is dropped.
+// TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
 use TYPO3\CMS\Install\Updates\ChattyInterface;
 use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
@@ -19,17 +18,8 @@ use TYPO3\CMS\Install\Updates\RepeatableInterface;
 use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
- * Migrates the `tt_products`/`tt_products_cat`/`tt_products_articles` image and datasheet fields
- * to the FAL fields added in Milestone 2. Requires the corresponding entity wizards
- * (category/product/article) to have already fully run: executeUpdate() refuses to start
- * otherwise (see Category/Product/ArticleMigrationPrerequisite), since it works off
- * `tx_products_migration_map`.
- *
- * Out of scope, reported via a notice instead of migrated: `smallimage`/`sliderimage` (redundant
- * pre-generated thumbnails; FAL generates thumbnails on demand) and the separate
- * `tt_products_downloads` catalog entity linked via `tt_products_products_mm_downloads` (a
- * many-to-many "download library" concept this extension does not replicate; see the Milestone 2
- * plan). Operators are told to re-attach any such linked downloads to the product manually.
+ * Migrates media fields to FAL. Requires {@see ProductMigrationPrerequisite},
+ * {@see CategoryMigrationPrerequisite}, and {@see ArticleMigrationPrerequisite} to have run first.
  */
 #[UpgradeWizard('products_ttProductsMediaMigration')]
 final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, ChattyInterface, RepeatableInterface
@@ -148,10 +138,8 @@ final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, Chat
     }
 
     /**
-     * A row without a matching legacy sys_file_reference and without a resolvable on-disk file
-     * (see LegacyMediaMigrator) never gains a local sys_file_reference, so it would stay "pending"
-     * forever. Termination is therefore based on making progress (new legacy uids seen), not on
-     * the pending set becoming empty.
+     * A permanently-missing file never clears "pending", so the loop terminates on progress
+     * (new legacy uids seen), not on the pending set becoming empty.
      */
     private function migrateMapping(LegacyMediaFieldMapping $mapping): void
     {

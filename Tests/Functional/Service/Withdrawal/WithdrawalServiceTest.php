@@ -27,8 +27,7 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         parent::setUp();
         TestMailer::reset();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_with_items_and_addresses.csv');
-        // WithdrawalService reads Extbase settings eagerly in its constructor, which requires a
-        // request resolvable via $GLOBALS['TYPO3_REQUEST'] outside a real dispatch.
+        // WithdrawalService reads $GLOBALS['TYPO3_REQUEST'] eagerly in its constructor.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }

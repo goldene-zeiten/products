@@ -22,11 +22,6 @@ use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
-/**
- * End-to-end coverage of the M4 checkout flow: a shipping method chosen, a free-shipping voucher
- * applied, an alternate delivery address with a gift message, and a "gained" bonus voucher issued
- * afterward for clearing the reward threshold.
- */
 final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
@@ -37,8 +32,7 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/M4CheckoutFlowTest/m4_end_to_end.csv');
-        // CategoryDiscountPriceProvider still reads Extbase settings eagerly in its constructor,
-        // which requires a request resolvable via $GLOBALS['TYPO3_REQUEST'] outside a real dispatch.
+        // CategoryDiscountPriceProvider reads $GLOBALS['TYPO3_REQUEST'] eagerly in its constructor.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }

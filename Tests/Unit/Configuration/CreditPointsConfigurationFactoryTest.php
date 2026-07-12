@@ -11,13 +11,8 @@ use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
- * `products.creditPoints.*` are Site Settings - see ProductsConfigurationFactoryTest for the same
- * class of fix applied to ProductsConfigurationFactory. `earningTiers` (a `stringlist` Site
- * Setting) is deliberately not covered here: a bare `new Site(...)` bypasses TYPO3's typed
- * Settings/Sets resolution (falls back to `SiteSettings::createFromSettingsTree()`), which cannot
- * resolve an array-valued setting via its dotted path - only real Site Settings (backed by
- * `settings.definitions.yaml`) can. See CreditPointsConfigurationFactoryEarningTiersTest for that
- * coverage via a real Site.
+ * earningTiers is deliberately not covered here - a bare `new Site(...)` can't resolve array-valued
+ * settings; see {@see CreditPointsConfigurationFactoryEarningTiersTest}.
  */
 final class CreditPointsConfigurationFactoryTest extends UnitTestCase
 {

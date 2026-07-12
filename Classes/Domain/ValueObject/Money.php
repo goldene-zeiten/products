@@ -60,8 +60,6 @@ final readonly class Money
     }
 
     /**
-     * Reverse-calculates the net portion of a tax-inclusive gross amount.
-     *
      * @param float $taxRate a fraction (e.g. 0.19 for 19%), not a whole percentage
      */
     public function netFromGross(float $taxRate): self

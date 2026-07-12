@@ -9,9 +9,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 
 /**
- * Shared batch/idempotency plumbing for the `TtProducts*UpgradeWizard` classes:
- * tracks which legacy rows have already been migrated via `tx_products_migration_map`
- * so repeated wizard runs (RepeatableInterface) neither duplicate rows nor re-scan them.
+ * Tracks migrated rows via `tx_products_migration_map` to prevent duplication on repeated runs.
  */
 final class LegacyMigrationHelper
 {
@@ -81,8 +79,7 @@ final class LegacyMigrationHelper
     }
 
     /**
-     * Legacy rows (not soft-deleted) whose uid has no `tx_products_migration_map` row yet
-     * for this (legacyTable, localTable) pair, via a correlated NOT EXISTS subquery.
+     * Finds unmigrated legacy rows via NOT EXISTS subquery.
      */
     private function unmigratedQueryBuilder(string $legacyTable, string $localTable): QueryBuilder
     {

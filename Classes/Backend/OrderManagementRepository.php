@@ -14,9 +14,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 /**
- * Plain QueryBuilder listing/detail reads for the backend order module, plus the two Extbase
- * touch points (fetch-for-editing, persist) actions need to reuse OrderStatusManager. Deliberately
- * not Extbase-based for reading: backend modules are plain core, Extbase is a frontend concern.
+ * QueryBuilder reads for the backend order module, with Extbase persistence for editing.
  */
 final class OrderManagementRepository
 {
@@ -147,8 +145,7 @@ final class OrderManagementRepository
     }
 
     /**
-     * `persistAll()` only flushes objects registered as aggregate roots (`add()`/`update()`), not
-     * arbitrary fetched-and-mutated entities, so `update()` must be called explicitly here.
+     * Explicitly update() before persistAll() since the order was fetched, not add()'d.
      */
     public function persist(Order $order): void
     {

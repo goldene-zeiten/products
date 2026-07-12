@@ -8,17 +8,9 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /**
- * Maintains a running per-user balance in a dedicated table, atomically kept in sync with the
- * tx_products_domain_model_creditpointstransaction ledger (which stays the audit trail, unchanged
- * - every earn/redeem is still recorded there). Unlike summing the ledger on demand, a maintained
- * running total lets earn/redeem be guarded by a single atomic SQL statement (mirroring
- * StockService's stock decrement), so two concurrent redemptions can never both succeed against a
- * balance only one of them could actually afford.
+ * Atomic per-user balance guarded against concurrent over-spend.
  *
- * ensureRowExists() lazily adopts the ledger's current sum as the row's starting balance the first
- * time it's touched for a given user - this is what keeps pre-existing ledger data (including
- * historical or manually-inserted adjustments that never went through credit()/debitIfAffordable())
- * correctly reflected, rather than silently starting every unseen user at zero.
+ * @see \GoldeneZeiten\Products\Service\Order\StockService::decrementForItem()
  */
 final class CreditPointsBalanceService
 {
@@ -47,9 +39,6 @@ final class CreditPointsBalanceService
         return $balance === false ? 0 : (int)$balance;
     }
 
-    /**
-     * Adds earned points - always succeeds (earning never needs a guard).
-     */
     public function credit(int $frontendUser, int $points): void
     {
         $this->ensureRowExists($frontendUser);
@@ -61,9 +50,7 @@ final class CreditPointsBalanceService
     }
 
     /**
-     * Atomically subtracts points, but only if the balance can still afford it - the check and the
-     * write happen in one SQL statement, so two concurrent spends against the same balance cannot
-     * both succeed.
+     * Atomic UPDATE...WHERE guard against concurrent over-spend.
      *
      * @return bool false if the balance could not afford this many points
      */
@@ -83,9 +70,7 @@ final class CreditPointsBalanceService
     }
 
     /**
-     * Idempotent get-or-adopt: a concurrent double-insert for a brand-new user's first-ever
-     * transaction is harmless - the loser's insert fails the primary key constraint and is simply
-     * ignored, since the row it wanted to create already exists (created by the winner).
+     * Idempotent: concurrent double-insert is safe (loser's constraint violation ignored).
      */
     private function ensureRowExists(int $frontendUser): void
     {

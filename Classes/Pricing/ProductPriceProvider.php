@@ -10,9 +10,8 @@ use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * The base price rule: an article's own price overrides the product's, unless it is the
- * `0.00 = inherit` sentinel - or, in "surcharge" price mode, is added on top of the product's
- * price instead of replacing it (0.00 still means "no surcharge" either way).
+ * An article's own price overrides the product's (`0.00` means "inherit"), or in "surcharge"
+ * mode is added on top instead.
  */
 final class ProductPriceProvider implements PriceProviderInterface
 {

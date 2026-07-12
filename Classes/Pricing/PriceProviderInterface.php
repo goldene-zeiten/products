@@ -10,10 +10,8 @@ use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Resolves the unit price a basket line should use. Bound to `CategoryDiscountPriceProvider` by
- * default (see Services.yaml), which decorates `GraduatedPriceProvider` as its own fallback rather
- * than as an alternative binding, so quantity-based pricing is always considered before either the
- * category-cascading or per-shopper discount is applied on top.
+ * Resolves the unit price a basket line should use. Bound to {@see CategoryDiscountPriceProvider}
+ * by default (see Services.yaml).
  */
 interface PriceProviderInterface
 {

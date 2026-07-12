@@ -20,11 +20,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\Entity\Site;
 
-/**
- * `order.numberPrefix`/`pricing.roundingMode` are Site Settings - see
- * ProductsConfigurationFactoryTest for the same class of fix applied to
- * ProductsConfigurationFactory.
- */
 final class OrderFactoryTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [

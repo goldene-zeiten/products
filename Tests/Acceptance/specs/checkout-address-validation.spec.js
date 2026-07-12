@@ -1,10 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-// Checkout/Address.html has no `required` attributes and CheckoutController::submitAddressAction
-// has no validators wired up (grep confirms there isn't a single Validator class in Classes/) -
-// a blank address form is expected to sail straight through today. This pins that current
-// (surprising) behaviour so a future validation feature is an intentional test update, not a
-// silent regression nobody notices.
+// No address validators are wired up today; this pins that current behavior.
 test('checkout places the order even when every address field is left blank', async ({ page }) => {
   await page.goto('/product/blue-denim-jeans');
   await page.getByRole('button', { name: 'Add to Basket' }).click();

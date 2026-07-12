@@ -11,9 +11,7 @@ use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
 /**
- * Issuing a reward voucher is a bonus on top of a successful order, not a condition for one - a
- * failure here (e.g. code-generation exhaustion) must never roll back the placement, same
- * reasoning as SendOrderEmailsListener never failing the request over a mail error.
+ * A voucher-issuing failure must never roll back the order placement.
  */
 #[AsEventListener]
 final class IssueGainedVoucherListener

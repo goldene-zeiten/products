@@ -32,11 +32,6 @@ final class Basket
         }
     }
 
-    /**
-     * The incoming quantity is floored at 1 regardless of caller - a negative/zero value must
-     * never be able to reduce or wipe out an existing line through this method (that's what
-     * updateQuantity()/removeItem() are for).
-     */
     public function addItem(BasketItem $item): void
     {
         $identifier = $this->calculateIdentifier($item->getProductUid(), $item->getArticleUid());

@@ -14,10 +14,7 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 final class PaymentTransactionRepository extends Repository
 {
     /**
-     * A transaction already marked COMPLETED represents a finished payment attempt and is never
-     * reused; only a still-open one (pending/redirect_required/failed) gets updated in place on
-     * re-initiation instead of inserting a duplicate row, matching legacy's "update unless already
-     * approved" behaviour.
+     * Excludes COMPLETED transactions, which are never reused/updated in place.
      */
     public function findOneNotYetApproved(int $orderUid, string $paymentMethod): ?PaymentTransaction
     {
@@ -32,10 +29,7 @@ final class PaymentTransactionRepository extends Repository
     }
 
     /**
-     * Blessed lookup for a RedirectPaymentMethodInterface implementation's own
-     * handleReturn()/handleWebhook() idempotency check: "does a transaction for this gateway's own
-     * reference already exist" - call this before mutating anything so a replayed
-     * return/webhook call is a no-op rather than double-processing the same payment.
+     * Idempotency check for handleReturn()/handleWebhook(): a replayed call becomes a no-op.
      */
     public function findOneByExternalId(string $paymentMethod, string $externalId): ?PaymentTransaction
     {

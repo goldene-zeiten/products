@@ -20,10 +20,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
- * Regression coverage for a real (fixed) bug: OrderFinalizationService::finalize() unconditionally
- * re-dispatched events (and therefore re-sent confirmation emails, re-cleared the basket, ...) on
- * every call - latent today since redirect/webhook payment methods aren't wired in yet, but would
- * double-process the moment a real gateway calls back twice (sync return + async webhook).
+ * Regression: finalize() must be idempotent and not re-dispatch events on retry.
  */
 final class OrderFinalizationServiceIdempotencyTest extends AbstractFunctionalTestCase
 {
@@ -37,9 +34,7 @@ final class OrderFinalizationServiceIdempotencyTest extends AbstractFunctionalTe
         parent::setUp();
         TestMailer::reset();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/OrderFinalizationServiceIdempotencyTest/order_finalization_idempotency.csv');
-        // BasketService's pricing-chain dependencies read Extbase settings eagerly in their
-        // constructors, which requires a request resolvable via $GLOBALS['TYPO3_REQUEST'] outside
-        // a real dispatch.
+        // Extbase setting reads in constructors need a request resolvable via globals.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
@@ -53,8 +48,7 @@ final class OrderFinalizationServiceIdempotencyTest extends AbstractFunctionalTe
         $subject->finalize($order, PaymentResult::completed(PaymentStatus::PAID), $this->request());
 
         $this->assertSame(OrderStatus::CONFIRMED, $order->getStatus());
-        // One AfterOrderFinalizedEvent confirmation mail + one OrderStatusChangedEvent mail
-        // (the pending->confirmed transition itself).
+        // One finalization + one status-changed mail.
         $this->assertCount(2, TestMailer::getSentEmails());
     }
 
@@ -68,7 +62,6 @@ final class OrderFinalizationServiceIdempotencyTest extends AbstractFunctionalTe
         $subject->finalize($order, PaymentResult::completed(PaymentStatus::PAID), $this->request());
 
         $this->assertSame(OrderStatus::CONFIRMED, $order->getStatus());
-        // The second call must not re-dispatch anything - still exactly the first call's mails.
         $this->assertCount(2, TestMailer::getSentEmails());
     }
 

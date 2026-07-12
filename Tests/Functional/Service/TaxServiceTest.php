@@ -37,8 +37,7 @@ final class TaxServiceTest extends AbstractFunctionalTestCase
 
     public static function taxRateProvider(): \Generator
     {
-        // The fixture stores rate=19.00 (a 19% whole percentage, as edited in the backend) -
-        // getTaxRate() must convert it to 0.19 for direct "1 + rate" multiplication.
+        // Must convert whole percentage (19.00) from fixture to fraction (0.19) for multiplication.
         yield 'returns a fraction not the stored whole percentage' => ['requestedCountry' => 'DE', 'expected' => 0.19];
         yield 'falls back to the default country when the requested country has no rate' => ['requestedCountry' => 'FR', 'expected' => 0.19];
     }

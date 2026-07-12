@@ -10,13 +10,10 @@ use TYPO3\CMS\Core\PageTitle\PageTitleProviderInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
- * Substitutes the product's own title/subtitle for the page's default title on a product
- * single-view page, mirroring legacy tt_products' `substitutePagetitle` setting. Registered via
- * `config.pageTitleProviders` in ext_localconf.php (core's actual mechanism - not a DI tag; see
- * TYPO3\CMS\Core\PageTitle\PageTitleProviderManager, which resolves the configured provider FQCN
- * straight from the container, hence this class needing `public: true` in Services.yaml), ordered
- * `before` core's default `record` provider so returning an empty string here correctly falls
- * through to the page's own title on any non-product page.
+ * Substitutes the product's title/subtitle for the page title on a product single-view page.
+ * Registered via `config.pageTitleProviders` in ext_localconf.php (needs `public: true` in
+ * Services.yaml), ordered `before` core's `record` provider so an empty string here falls
+ * through to the page's own title.
  */
 final class ProductPageTitleProvider implements PageTitleProviderInterface
 {
@@ -36,9 +33,7 @@ final class ProductPageTitleProvider implements PageTitleProviderInterface
     }
 
     /**
-     * Part of PageTitleProviderInterface since TYPO3 14 (optional/dead code in v13, called via a
-     * method_exists() check either way) - unused here since the current product is bridged via
-     * CurrentProductHolder instead (see class docblock), not a request attribute.
+     * Unused; the current product is bridged via {@see CurrentProductHolder} instead.
      */
     public function setRequest(ServerRequestInterface $request): void {}
 

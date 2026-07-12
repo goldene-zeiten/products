@@ -9,8 +9,7 @@ use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-// EXT:install namespaces are valid through TYPO3 v14 (deprecated there); migrate to the
-// TYPO3\CMS\Core\Attribute\UpgradeWizard / TYPO3\CMS\Core\Updates\* equivalents once v13 support is dropped.
+// TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
 use TYPO3\CMS\Install\Updates\ChattyInterface;
 use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
@@ -18,12 +17,8 @@ use TYPO3\CMS\Install\Updates\RepeatableInterface;
 use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
- * Migrates `tt_products_articles` and its `tt_products_articles_language` overlays to
- * `tx_products_domain_model_article`. Requires the product wizard to have already fully run:
- * executeUpdate() refuses to start otherwise (see ProductMigrationPrerequisite). Once that holds,
- * an individual article whose product was still never migrated (a genuinely orphaned reference)
- * has nothing to attach to and is permanently skipped instead. Legacy article overlays were
- * BE-maintained data that the old frontend never actually rendered, but are migrated anyway.
+ * Migrates `tt_products_articles` and overlays to `tx_products_domain_model_article`. Requires
+ * {@see ProductMigrationPrerequisite} to have run first.
  */
 #[UpgradeWizard('products_ttProductsArticleMigration')]
 final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, ChattyInterface, RepeatableInterface
@@ -162,9 +157,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
     }
 
     /**
-     * The `isAddedPrice` flag lives inside the article's FlexForm `config` blob, not a plain
-     * column - defensively parsed, defaulting to false (override mode) for anything empty,
-     * unparseable, or without that field, rather than failing the migration over it.
+     * `isAddedPrice` lives inside the FlexForm `config` blob; defaults to false if unparseable.
      */
     private function isAddedPrice(string $flexFormXml): bool
     {
@@ -180,9 +173,8 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
     }
 
     /**
-     * price_mode is set explicitly rather than left to the column's TCA-derived schema default -
-     * that default isn't applied consistently by every supported core major, so relying on it
-     * left this overlay row with a core-version-dependent price_mode.
+     * price_mode is set explicitly; the TCA schema default isn't applied consistently across
+     * supported core majors.
      *
      * @param array<string, mixed> $winner
      * @return array<string, mixed>

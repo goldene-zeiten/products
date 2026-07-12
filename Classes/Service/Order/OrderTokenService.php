@@ -8,11 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use TYPO3\CMS\Core\Crypto\HashService;
 
 /**
- * Guest checkout has no login, so the order-detail page is secured by an HMAC token instead of a
- * frontend-user match - without it, a guest order's frontendUser is 0, same as an anonymous
- * visitor's, and the page would otherwise be reachable by any visitor guessing a sequential order
- * uid. Same shape as InvoiceTokenService/WithdrawalTokenService, distinct additional secret so the
- * token types stay non-interchangeable.
+ * HMAC token secures guest orders (frontendUser = 0 for all guests).
  */
 final class OrderTokenService
 {

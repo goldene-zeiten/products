@@ -15,9 +15,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->autoconfigure()
         ->private();
 
-    // Only the implementation matching the running core major version is
-    // registered; each one self-aliases to its interface via #[AsAlias],
-    // the same mechanism TYPO3 core itself uses (e.g. ServerRequestFactory).
     $services->load(
         sprintf('GoldeneZeiten\\Products\\Core%d\\', $majorVersion),
         sprintf(__DIR__ . '/../Core%d/', $majorVersion),

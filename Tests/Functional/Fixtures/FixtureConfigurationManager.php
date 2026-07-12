@@ -8,10 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
- * Test double for {@see ConfigurationManagerInterface} that returns a caller-chosen fixed
- * configuration array - used where a test needs to construct its subject with a specific
- * setting (e.g. pricing.discountFieldMode) without the real DI-wired configuration manager's
- * eager Extbase settings resolution getting in the way.
+ * Test double for {@see ConfigurationManagerInterface} returning a caller-chosen fixed configuration.
  */
 final class FixtureConfigurationManager implements ConfigurationManagerInterface
 {

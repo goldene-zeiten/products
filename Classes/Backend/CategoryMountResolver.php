@@ -11,9 +11,7 @@ use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Resolves the effective `tx_products_category_mounts` for a backend user, merged from the
- * user's own field and all of their groups' fields. Mirrors the semantics of page tree
- * webmounts: admins are unrestricted, non-admins without any configured mount see nothing.
+ * Resolves effective `tx_products_category_mounts` from user and group fields.
  */
 final class CategoryMountResolver
 {

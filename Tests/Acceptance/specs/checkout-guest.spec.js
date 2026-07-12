@@ -13,7 +13,6 @@ test('guest checks out with a billing address only', async ({ page }) => {
   await page.locator('input[name="tx_products_checkout[address][city]"]').fill('Berlin');
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 
-  // Shipping method step (products.shipping.enabled is on in the demo shop).
   await page.locator('input[name="tx_products_checkout[shippingMethod]"]').first().check();
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 

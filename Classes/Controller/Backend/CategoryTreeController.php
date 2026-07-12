@@ -32,10 +32,7 @@ final class CategoryTreeController
     ) {}
 
     /**
-     * Mirrors PageTree's own page_tree_configuration action: fetched once by
-     * the tree on connect. New-record creation needs a `pid` (DataHandler's
-     * physical storage location) distinct from our own `parent_category`
-     * tree-parent field, and the client has no other way to learn it.
+     * Provides the storage folder pid for new records created from the tree.
      */
     public function fetchConfigurationAction(): ResponseInterface
     {

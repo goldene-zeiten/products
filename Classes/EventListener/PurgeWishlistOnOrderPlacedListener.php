@@ -10,9 +10,7 @@ use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
 /**
- * Removing ordered items from the wishlist is a convenience cleanup, not a condition for a
- * successful order - a failure here must never roll back the placement, same reasoning as
- * SendOrderEmailsListener never failing the request over a mail error.
+ * A wishlist cleanup failure must never roll back the order placement.
  */
 #[AsEventListener]
 final class PurgeWishlistOnOrderPlacedListener

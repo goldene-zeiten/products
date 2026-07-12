@@ -8,8 +8,7 @@ use GoldeneZeiten\Products\Backend\StorageFolderResolver;
 use GoldeneZeiten\Products\Updates\Prerequisites\CategoryMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-// EXT:install namespaces are valid through TYPO3 v14 (deprecated there); migrate to the
-// TYPO3\CMS\Core\Attribute\UpgradeWizard / TYPO3\CMS\Core\Updates\* equivalents once v13 support is dropped.
+// TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
 use TYPO3\CMS\Install\Updates\ChattyInterface;
 use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
@@ -17,12 +16,8 @@ use TYPO3\CMS\Install\Updates\RepeatableInterface;
 use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
- * Migrates `tt_products` and its `tt_products_language` overlays to
- * `tx_products_domain_model_product`. Requires the category wizard to have already fully run:
- * executeUpdate() refuses to start otherwise (see CategoryMigrationPrerequisite). Once that holds,
- * an individual product referencing a genuinely orphaned category is still reported and left
- * unassigned rather than blocking that one product. Product images are out of scope for this
- * migration.
+ * Migrates `tt_products` and overlays to `tx_products_domain_model_product`. Requires
+ * {@see CategoryMigrationPrerequisite} to have run first.
  */
 #[UpgradeWizard('products_ttProductsProductMigration')]
 final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, ChattyInterface, RepeatableInterface
@@ -157,8 +152,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
     }
 
     /**
-     * taxcat_id is a legacy tinyint code: 0/1 mean standard VAT, 2 means reduced VAT, anything
-     * else is unexpected legacy data and defaults to standard (with a warning).
+     * Legacy taxcat_id code: 0/1 = standard VAT, 2 = reduced VAT, anything else defaults to standard.
      */
     private function resolveTaxClass(int $legacyUid, int $taxcatId): int
     {

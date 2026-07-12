@@ -29,7 +29,5 @@ test('a guest cannot cancel an order by entering a different email address', asy
   await page.getByRole('button', { name: 'Cancel this order' }).click();
 
   await expect(page.getByText('The email address does not match this order.')).toBeVisible();
-  // WithdrawalController::confirmAction redirects back to the form on any failure - the shopper
-  // stays on the cancellation form, not bounced to some generic error page.
   await expect(page.getByRole('heading', { name: /Cancel order/ })).toBeVisible();
 });

@@ -8,10 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 /**
- * Format-agnostic order export extension point - no concrete implementation ships with this
- * extension (which format/target ERP an installation needs is entirely installation-specific);
- * a third-party extension implements this the same way a third-party payment gateway implements
- * PaymentMethodInterface, and is picked up automatically via the tagged_iterator below.
+ * Extension point for order export; no concrete implementation ships with this extension.
  */
 #[AutoconfigureTag('products.order_export')]
 interface OrderExportInterface

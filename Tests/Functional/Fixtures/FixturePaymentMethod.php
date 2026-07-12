@@ -11,9 +11,7 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 
 /**
- * Test double for {@see PaymentMethodInterface} that returns a caller-chosen, otherwise
- * unremarkable {@see PaymentResult} without touching the order - used by tests that only care
- * about PaymentInitiationService's own transaction-bookkeeping behaviour.
+ * Test double for {@see PaymentMethodInterface} returning a caller-chosen {@see PaymentResult}.
  */
 final class FixturePaymentMethod implements PaymentMethodInterface
 {

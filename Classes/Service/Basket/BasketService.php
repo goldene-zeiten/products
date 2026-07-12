@@ -42,7 +42,6 @@ final class BasketService
         }
 
         if ($articleUid === null && $product->getArticles()->count() > 0) {
-            // A product with articles is purchasable only via one of its articles.
             return;
         }
 
@@ -54,11 +53,6 @@ final class BasketService
         $this->basketStorage->save($request, $basket);
     }
 
-    /**
-     * A quantity of 0 or less keeps meaning "remove this line" (updateQuantity()'s existing
-     * behaviour); only a positive requested quantity gets clamped into the product's/article's
-     * basket min/max bounds.
-     */
     public function update(ServerRequestInterface $request, int $productUid, ?int $articleUid, int $quantity): void
     {
         if ($quantity > 0) {
@@ -95,12 +89,7 @@ final class BasketService
     }
 
     /**
-     * Whether any basket line's price is already reduced by a category-cascading or FE-usergroup
-     * discount (comparing GraduatedPriceProvider's quantity-tier price, which never applies either
-     * discount, against the full PriceProviderInterface chain's result) - used to block stacking a
-     * non-combinable voucher on top of an already-discounted basket, matching legacy's
-     * `noDiscountPriceTax` vs `priceTax` comparison. Quantity-tier pricing itself never counts as a
-     * "discount" here, only the category/usergroup step does.
+     * Check if any line is already discounted (category/usergroup, not quantity-tiers).
      */
     public function isAlreadyDiscounted(ServerRequestInterface $request): bool
     {

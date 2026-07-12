@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Backend;
 
 /**
- * Checks whether a category or product is visible to a backend user given their
- * resolved category mounts (see CategoryMountResolver). Shared between the tree AJAX
- * endpoint and the module controller so both enforce identical access rules.
+ * Checks category/product visibility against resolved category mounts.
  */
 final class CategoryAccessGuard
 {

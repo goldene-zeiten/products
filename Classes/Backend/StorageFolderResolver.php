@@ -7,9 +7,7 @@ namespace GoldeneZeiten\Products\Backend;
 use TYPO3\CMS\Core\Site\SiteFinder;
 
 /**
- * Resolves the page uid new category/product/article records should be created in.
- * Read from the first configured site's `products.pids.storageFolder` setting, the same
- * setting the frontend plugins use to find the shop's records.
+ * Resolves the storage folder pid from site settings.
  */
 final class StorageFolderResolver
 {

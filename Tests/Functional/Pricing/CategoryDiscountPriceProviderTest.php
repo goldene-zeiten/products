@@ -36,10 +36,7 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/frontend_user_discounts.csv');
-        // CategoryDiscountPriceProvider's fake ConfigurationManagerInterface (used by most tests
-        // below) sidesteps this, but the DI-wired real one (used by the wiring test) reads Extbase
-        // settings eagerly in its constructor, which requires a request resolvable via
-        // $GLOBALS['TYPO3_REQUEST'] outside a real dispatch.
+        // The DI-wired ConfigurationManagerInterface (used by the wiring test) needs a resolvable request.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }

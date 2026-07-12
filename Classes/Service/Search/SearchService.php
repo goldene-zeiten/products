@@ -27,10 +27,6 @@ final class SearchService
         );
     }
 
-    /**
-     * A blank term never executes a query - the search form renders with no results section at all
-     * rather than a "0 results" state for a search that was never actually attempted.
-     */
     public function search(string $term, ?int $categoryUid, int $page): SearchResult
     {
         $term = trim($term);

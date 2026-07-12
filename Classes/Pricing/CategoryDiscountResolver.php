@@ -8,14 +8,8 @@ use GoldeneZeiten\Products\Domain\Model\Category;
 use GoldeneZeiten\Products\Domain\Model\Product;
 
 /**
- * Category-cascading flat-percentage discount, mirroring legacy tt_products' `discount`/
- * `discount_disable` fields and `discountFieldMode`: mode "maxAcrossTree" matches legacy mode 1's
- * `getMaxDiscount()` (highest discount found anywhere across every assigned category's full
- * ancestor chain, ignoring each category's own `discountDisabled` flag entirely); mode
- * "nearestCategory" matches legacy mode 2's `getFirstDiscount()` (walks from the product's own
- * category up to the root, stopping at - and zeroing the result for - the first disabled category,
- * or returning the first positive discount found). A product's own `discountDisabled`
- * unconditionally zeroes the result in both modes, matching legacy's shared `bDiscountDisable` gate.
+ * Category-cascading flat-percentage discount. "maxAcrossTree" takes the highest discount across
+ * the full ancestor chain; "nearestCategory" walks up and stops at the first disabled category.
  */
 final class CategoryDiscountResolver
 {
@@ -72,10 +66,7 @@ final class CategoryDiscountResolver
     }
 
     /**
-     * Root-first, including $category itself - same shape as
-     * CategoryTreeService::getAncestorChain(), reimplemented here (rather than injecting that
-     * service) so this resolver stays a pure, DI-free unit under test, matching
-     * GraduatedPriceProvider's testability.
+     * Root-first, including $category itself.
      *
      * @return Category[]
      */

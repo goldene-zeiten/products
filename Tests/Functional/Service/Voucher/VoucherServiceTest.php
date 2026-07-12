@@ -95,7 +95,6 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
     {
         // 10% of 20.00 (2.00) + 5.00 fixed = 7.00, well under the 20.00 cap
         yield 'calculates the combined discount below the cap' => ['basketTotal' => '20.00', 'expectedCents' => 700];
-        // the combined discount would otherwise exceed this tiny basket total and must be capped to it
         yield 'never exceeds the basket total' => ['basketTotal' => '4.00', 'expectedCents' => 400];
     }
 

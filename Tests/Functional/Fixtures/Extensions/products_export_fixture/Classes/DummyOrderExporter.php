@@ -8,8 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Export\OrderExportInterface;
 
 /**
- * Proves OrderExportRegistry's tagged_iterator wiring functionally - EXT:products itself ships
- * no real implementation, this is fixture-only and never loaded outside functional tests.
+ * Fixture-only exporter proving OrderExportRegistry's tagged_iterator wiring.
  */
 final class DummyOrderExporter implements OrderExportInterface
 {

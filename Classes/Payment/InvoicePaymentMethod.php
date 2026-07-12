@@ -16,9 +16,8 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * Invoice has no payment gateway to call back, so `cancel()`/`refund()` (RefundablePaymentMethodInterface)
- * just acknowledge the money movement happened outside the system and return the corresponding
- * result; the shipped payment method still exercises the same contract third-party gateways will.
+ * Invoice has no gateway to call back; `cancel()`/`refund()` just acknowledge the money movement
+ * happened outside the system.
  */
 final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePaymentMethodInterface
 {

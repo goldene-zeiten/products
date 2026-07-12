@@ -15,9 +15,7 @@ use TYPO3\CMS\Core\SysLog\Error as SystemLogErrorClassification;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Enforces CategoryAccessGuard's category-mount restrictions for every DataHandler
- * write to the category/product/article tables, regardless of entry point (this
- * extension's own tree AJAX endpoints, FormEngine's record_edit, the record list, ...).
+ * Enforces category-mount restrictions for every DataHandler write, regardless of entry point.
  *
  * @internal Registered as a classic DataHandler hook in ext_localconf.php.
  */

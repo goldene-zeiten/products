@@ -18,7 +18,6 @@ test('order placement fails visibly when the requested quantity exceeds availabl
   await page.locator('input[name="tx_products_checkout[address][city]"]').fill('Berlin');
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 
-  // Shipping method step (products.shipping.enabled is on in the demo shop).
   await page.locator('input[name="tx_products_checkout[shippingMethod]"]').first().check();
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 
@@ -27,10 +26,7 @@ test('order placement fails visibly when the requested quantity exceeds availabl
 
   await page.getByRole('button', { name: 'Place order' }).click();
 
-  // Stock is insufficient (1 available, 2 requested), so should see error message.
   await expect(page.getByText('Insufficient stock', { exact: false })).toBeVisible();
-  // Should NOT be redirected to thank-you page.
   await expect(page.getByText('Your order number is', { exact: false })).toHaveCount(0);
-  // Should still be on review page with Place order button visible.
   await expect(page.getByRole('button', { name: 'Place order' })).toBeVisible();
 });

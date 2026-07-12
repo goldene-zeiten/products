@@ -10,8 +10,7 @@ use GoldeneZeiten\Products\Updates\Prerequisites\OrderMigrationPrerequisite;
 use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-// EXT:install namespaces are valid through TYPO3 v14 (deprecated there); migrate to the
-// TYPO3\CMS\Core\Attribute\UpgradeWizard / TYPO3\CMS\Core\Updates\* equivalents once v13 support is dropped.
+// TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
 use TYPO3\CMS\Install\Updates\ChattyInterface;
 use TYPO3\CMS\Install\Updates\ConfirmableInterface;
@@ -20,22 +19,9 @@ use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
 use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
- * Drops the legacy `tt_products` tables this extension's entity wizards (category/product/
- * article/order) actually migrate data from, once every one of them reports nothing left to do.
- * Explicit opt-in (ConfirmableInterface), never runs unattended, and refuses to drop anything
- * while a prerequisite wizard still has pending work (see Category/Product/Article/
- * OrderMigrationPrerequisite, shared with those wizards' own ordering guards).
- *
- * Media migration completeness is deliberately NOT part of the automated guard: a legacy row that
- * never had an image and one whose media just hasn't been migrated yet look identical (no
- * `sys_file_reference` either way, see LegacyMediaMigrator), so there is no reliable per-row signal
- * to check. Operators must ensure the media wizard has already been run; the confirmation dialog
- * says so explicitly.
- *
- * Deliberately NOT dropped: tables this extension never migrates at all (gifts, vouchers, the old
- * per-quantity graduated-price mechanism, the separate downloads catalog, accounts/cards, visited
- * products) - their data was never moved anywhere, so removing them here would be pure data loss
- * with no migrated copy to fall back on. See the Milestone 2 plan for that scope decision.
+ * Drops legacy `tt_products` tables once all entity wizards report nothing left to migrate.
+ * Media migration completeness cannot be checked automatically (no reliable per-row signal),
+ * so operators must confirm the media wizard already ran.
  */
 #[UpgradeWizard('products_ttProductsLegacyCleanup')]
 final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterface, ConfirmableInterface, ChattyInterface

@@ -8,11 +8,6 @@ use GoldeneZeiten\Products\Domain\Model\ShippingMethod;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
-/**
- * The resolved outcome of a checkout's shipping-method choice: which method (if any - the
- * feature can be disabled sitewide, or no method chosen yet) and what it finally costs, after
- * any free-shipping voucher waiver has already been applied.
- */
 #[Exclude]
 final readonly class ShippingSelection
 {
@@ -43,8 +38,7 @@ final readonly class ShippingSelection
     }
 
     /**
-     * A fraction (e.g. 0.19 for 19%), the rate the gross shipping cost was/should be reverse-split
-     * with - see TaxService::getShippingTaxRate().
+     * A fraction (e.g. 0.19 for 19%). {@see \GoldeneZeiten\Products\Service\TaxService::getShippingTaxRate()}
      */
     public function getTaxRate(): float
     {

@@ -26,11 +26,6 @@ final class OrderRepository extends Repository
         return $query->execute();
     }
 
-    /**
-     * `findByUid()` respects the TypoScript-configured storage page by default, which is never
-     * set in a backend context - the backend order module needs this to fetch an order for
-     * editing regardless of any frontend persistence configuration.
-     */
     public function findByUidIgnoringStoragePage(int $uid): ?Order
     {
         $query = $this->createQuery();

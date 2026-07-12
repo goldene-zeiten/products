@@ -220,14 +220,7 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     }
 
     /**
-     * Regression test: fetching a real Extbase entity (not just the raw QueryBuilder row) for an
-     * order with a non-zero discount_total/shipping_total used to crash with "no such table:
-     * tx_products_domain_valueobject_money" - Extbase's reflection-based property typing fell back
-     * to the Money-typed setter parameter instead of the property's own native int type whenever a
-     * property lacked an explicit `@var int` docblock. Fixed by adding that docblock to
-     * Order::$discountTotal/$shippingTotal (matching the existing $totalNet/$totalTax/$totalGross
-     * pattern). This is exactly the code path the "mark paid"/"refund" backend actions exercise for
-     * any real order that has a discount or shipping cost.
+     * Regression: Money-backed fields need explicit @var int docblock for Extbase property reflection.
      */
     #[Test]
     public function findForEditingHydratesAnOrderWithNonZeroMoneyBackedFieldsWithoutCrashing(): void

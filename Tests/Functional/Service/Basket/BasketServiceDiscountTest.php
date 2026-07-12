@@ -18,9 +18,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
- * Proves the DI-wired pricing chain end-to-end: PriceProviderInterface is aliased to
- * CategoryDiscountPriceProvider (see Services.yaml), which must actually be reached via
- * BasketService::getBasketViewModel() for a real FE-usergroup discount to show up in the basket.
+ * DI-wired pricing chain: PriceProviderInterface must be reached via getBasketViewModel().
  */
 final class BasketServiceDiscountTest extends AbstractFunctionalTestCase
 {
@@ -32,8 +30,7 @@ final class BasketServiceDiscountTest extends AbstractFunctionalTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/BasketServiceDiscountTest/basket_discount.csv');
-        // TaxService reads Extbase settings eagerly in its constructor, which requires a request
-        // resolvable via $GLOBALS['TYPO3_REQUEST'] outside a real dispatch.
+        // Extbase setting reads in TaxService constructor need a request resolvable via globals.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }

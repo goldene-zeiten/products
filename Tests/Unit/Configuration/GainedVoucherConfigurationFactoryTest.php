@@ -11,10 +11,6 @@ use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
-/**
- * `products.vouchers.gained.*` are Site Settings - see ProductsConfigurationFactoryTest for the
- * same class of fix applied to ProductsConfigurationFactory.
- */
 final class GainedVoucherConfigurationFactoryTest extends UnitTestCase
 {
     #[Test]

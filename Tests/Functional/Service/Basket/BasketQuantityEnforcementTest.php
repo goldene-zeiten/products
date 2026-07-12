@@ -16,11 +16,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
- * Regression coverage for a real (fixed) bug: Product::$basketMinQuantity/$basketMaxQuantity were
- * stored and even migrated from tt_products, but BasketService/Basket never read them - a merchant
- * could configure an order-quantity limit in the backend and it silently did nothing on the
- * storefront. Also covers the accompanying negative-quantity floor (a crafted quantity=-N request
- * could reduce/zero an existing basket line's total instead of only ever adding to it).
+ * Regression: basketMinQuantity/basketMaxQuantity were stored but never enforced; also covers the
+ * negative-quantity floor.
  */
 final class BasketQuantityEnforcementTest extends AbstractFrontendTestCase
 {

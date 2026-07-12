@@ -14,13 +14,7 @@ use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\SiteFinder;
 
 /**
- * `products.creditPoints.earningTiers` is a `stringlist` Site Setting - CreditPointsConfiguration
- * FactoryTest deliberately does not cover it with a bare `new Site(...)`, since that bypasses
- * TYPO3's typed Settings/Sets resolution (falls back to `SiteSettings::createFromSettingsTree()`,
- * which cannot resolve an array-valued setting via its dotted path). Only a real Site, backed by
- * an actual `config.yaml`/`settings.yaml` and looked up through `SiteFinder`, exercises the real
- * resolution path - same mechanism OrderCreationServiceCreditPointsTest already relies on for its
- * own Site Settings coverage.
+ * A `stringlist` setting needs a real Site via SiteFinder; `new Site(...)` bypasses typed Settings/Sets resolution.
  */
 final class CreditPointsConfigurationFactoryEarningTiersTest extends AbstractFunctionalTestCase
 {

@@ -6,22 +6,13 @@ namespace GoldeneZeiten\Products\Updates\Prerequisites;
 
 use GoldeneZeiten\Products\Updates\LegacyMigrationHelper;
 use Symfony\Component\Console\Output\OutputInterface;
-// EXT:install namespaces are valid through TYPO3 v14 (deprecated there); migrate to the
-// TYPO3\CMS\Core\Attribute\UpgradeWizard / TYPO3\CMS\Core\Updates\* equivalents once v13 support is dropped.
+// TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Updates\ChattyInterface;
 use TYPO3\CMS\Install\Updates\PrerequisiteInterface;
 
 /**
- * Blocks a dependent upgrade wizard until an earlier entity migration has fully run. `ensure()`
- * deliberately never runs the dependency wizard itself - core's PrerequisiteInterface::ensure() is
- * meant for auto-fixing environment-level gates (e.g. DatabaseUpdatedPrerequisite), and silently
- * running another wizard's executeUpdate() here would hide migration order from the operator
- * instead of surfacing it.
- *
- * This only guards the CLI `upgrade:run` command, since that is the only place core calls
- * getPrerequisites()/ensure() (UpgradeWizardRunCommand::handlePrerequisites()); the backend Install
- * Tool UI never consults it. Dependent wizards therefore also call isFulfilled() directly from their
- * own executeUpdate() to stay guarded there too.
+ * Blocks a dependent upgrade wizard until an earlier entity migration has fully run.
+ * `ensure()` deliberately never auto-runs the dependency wizard; it only reports the gap.
  */
 abstract class AbstractEntityMigratedPrerequisite implements PrerequisiteInterface, ChattyInterface
 {

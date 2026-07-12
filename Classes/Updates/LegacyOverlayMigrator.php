@@ -9,10 +9,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /**
- * Generic `*_language` overlay migration shared by every TtProducts*UpgradeWizard: dedupe via
- * LegacyOverlayDeduplicator, resolve the already-migrated parent via the migration map, then insert
- * an l10n_parent-linked overlay row. A winner whose parent was never migrated (orphan FK) is recorded
- * with a sentinel local uid of 0 so it is treated as handled and not reconsidered on the next run.
+ * Migrates overlay rows: dedupe, resolve parent, insert l10n_parent link. Orphans recorded with
+ * sentinel uid 0 to avoid re-processing.
  */
 final class LegacyOverlayMigrator
 {

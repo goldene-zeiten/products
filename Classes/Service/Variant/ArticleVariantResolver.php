@@ -8,9 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Article;
 use GoldeneZeiten\Products\Domain\Model\Product;
 
 /**
- * Matches a selected set of attribute-value uids to the one article carrying exactly that
- * combination. Used as the no-JS fallback path; the JS-enhanced selector resolves the same
- * combination client-side from the page's own variant map instead of round-tripping here.
+ * Match attribute-value UIDs to an article (no-JS fallback).
  */
 final class ArticleVariantResolver
 {

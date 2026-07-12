@@ -7,11 +7,6 @@ namespace GoldeneZeiten\Products\Domain\Dto\Checkout;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
-/**
- * Bundles ShippingCostService::resolveSelection()'s basket-derived arguments into one object,
- * keeping the method's own parameter count within this project's 5-parameter limit alongside the
- * (also required) ProductsConfiguration and optional ServerRequestInterface.
- */
 #[Exclude]
 final readonly class ShippingSelectionCriteria
 {

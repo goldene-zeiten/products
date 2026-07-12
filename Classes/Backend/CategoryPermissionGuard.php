@@ -8,11 +8,7 @@ use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 
 /**
- * Per-category `perms_*` access (commerce/pages concept), additive to CategoryAccessGuard's
- * mount-based subtree visibility: mounts decide whether a category is visible at all, this
- * decides whether the current user may edit a category they can already see. Reuses core's
- * `Permission` bitmask class and bit values (show/edit/delete/new) for the same reason commerce
- * did - it is a generic 4-bit ACL, not actually specific to pages.
+ * Per-category edit/delete permission checks using core Permission bitmask.
  */
 final class CategoryPermissionGuard
 {

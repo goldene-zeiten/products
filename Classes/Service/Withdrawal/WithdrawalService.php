@@ -17,9 +17,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 /**
- * The EU/German statutory right-of-withdrawal self-service flow: a guest or logged-in customer
- * cancels their own order via an emailed/thank-you-page link, without needing BE access - see
- * WithdrawalController for the request-facing side.
+ * Guest/customer self-service order withdrawal (EU right of withdrawal).
  */
 final class WithdrawalService
 {
