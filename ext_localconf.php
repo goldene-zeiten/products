@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Controller\SearchController;
 use GoldeneZeiten\Products\Controller\WishlistController;
 use GoldeneZeiten\Products\Controller\WithdrawalController;
 use GoldeneZeiten\Products\Hooks\CategoryMountAccessHook;
+use GoldeneZeiten\Products\Hooks\PriceAuditHook;
 use GoldeneZeiten\Products\PageTitle\ProductPageTitleProvider;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
@@ -20,6 +21,8 @@ defined('TYPO3') or die();
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['checkRecordUpdateAccess'][] = CategoryMountAccessHook::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = CategoryMountAccessHook::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = CategoryMountAccessHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = PriceAuditHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = PriceAuditHook::class;
 
 ExtensionManagementUtility::addTypoScriptSetup(
     'config.pageTitleProviders.products.provider = ' . ProductPageTitleProvider::class . '

@@ -18,7 +18,10 @@ use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
  */
 final class GraduatedPriceProvider implements PriceProviderInterface
 {
-    public function __construct(private readonly ProductPriceProvider $fallbackPriceProvider) {}
+    public function __construct(
+        private readonly ProductPriceProvider $fallbackPriceProvider,
+        private readonly PricePeriodPriceProvider $pricePeriodPriceProvider,
+    ) {}
 
     public function getUnitPrice(Product $product, ?Article $article, int $quantity, ?ServerRequestInterface $request = null): Money
     {
@@ -26,10 +29,13 @@ final class GraduatedPriceProvider implements PriceProviderInterface
             ? $article->getPriceTiers()
             : $product->getPriceTiers();
         $bestTier = $this->findBestTier($tiers, $quantity);
-        if ($bestTier !== null) {
-            return $bestTier->getPrice();
+        $periodPrice = $this->pricePeriodPriceProvider->findActivePeriodPrice($product, $article, $request);
+
+        $candidates = array_filter([$bestTier?->getPrice(), $periodPrice]);
+        if ($candidates === []) {
+            return $this->fallbackPriceProvider->getUnitPrice($product, $article, $quantity, $request);
         }
-        return $this->fallbackPriceProvider->getUnitPrice($product, $article, $quantity, $request);
+        return Money::fromCents(min(array_map(static fn(Money $m): int => $m->getCents(), $candidates)));
     }
 
     /**

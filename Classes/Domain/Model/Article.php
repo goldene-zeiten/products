@@ -44,6 +44,10 @@ class Article extends AbstractEntity
      */
     protected ObjectStorage $priceTiers;
     /**
+     * @var ObjectStorage<PricePeriod>
+     */
+    protected ObjectStorage $pricePeriods;
+    /**
      * @var ObjectStorage<AttributeValue>
      */
     protected ObjectStorage $attributeValues;
@@ -58,6 +62,7 @@ class Article extends AbstractEntity
         $this->images = new ObjectStorage();
         $this->downloads = new ObjectStorage();
         $this->priceTiers = new ObjectStorage();
+        $this->pricePeriods = new ObjectStorage();
         $this->attributeValues = new ObjectStorage();
     }
 
@@ -273,6 +278,22 @@ class Article extends AbstractEntity
     public function setPriceTiers(ObjectStorage $priceTiers): void
     {
         $this->priceTiers = $priceTiers;
+    }
+
+    /**
+     * @return ObjectStorage<PricePeriod>
+     */
+    public function getPricePeriods(): ObjectStorage
+    {
+        return $this->pricePeriods;
+    }
+
+    /**
+     * @param ObjectStorage<PricePeriod> $pricePeriods
+     */
+    public function setPricePeriods(ObjectStorage $pricePeriods): void
+    {
+        $this->pricePeriods = $pricePeriods;
     }
 
     /**

@@ -59,6 +59,10 @@ class Product extends AbstractEntity
      */
     protected ObjectStorage $priceTiers;
     /**
+     * @var ObjectStorage<PricePeriod>
+     */
+    protected ObjectStorage $pricePeriods;
+    /**
      * @var ObjectStorage<Product>
      */
     protected ObjectStorage $relatedProducts;
@@ -79,6 +83,7 @@ class Product extends AbstractEntity
         $this->images = new ObjectStorage();
         $this->downloads = new ObjectStorage();
         $this->priceTiers = new ObjectStorage();
+        $this->pricePeriods = new ObjectStorage();
         $this->relatedProducts = new ObjectStorage();
         $this->accessoryProducts = new ObjectStorage();
     }
@@ -400,6 +405,22 @@ class Product extends AbstractEntity
             }
         }
         return $lowest;
+    }
+
+    /**
+     * @return ObjectStorage<PricePeriod>
+     */
+    public function getPricePeriods(): ObjectStorage
+    {
+        return $this->pricePeriods;
+    }
+
+    /**
+     * @param ObjectStorage<PricePeriod> $pricePeriods
+     */
+    public function setPricePeriods(ObjectStorage $pricePeriods): void
+    {
+        $this->pricePeriods = $pricePeriods;
     }
 
     /**
