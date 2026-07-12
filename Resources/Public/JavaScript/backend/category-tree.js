@@ -205,8 +205,8 @@ function label(key, fallback) {
  * and the page tree's own global .node/.node-treelines/.node-toggle CSS
  * classes for a matching look without any bespoke styling).
  *
- * Articles are read-only leaves here (see .claude/TREE.md: "Articles from
- * products are not part of the tree, yet.") - not draggable, no context menu.
+ * Articles are selectable leaves (opening the module's article-detail view),
+ * but otherwise read-only here - not draggable, no context menu.
  *
  * The context menu's own hide/copy actions (context-menu-actions.js) commit
  * straight through the content iframe or a raw AJAX call with no event this
@@ -318,7 +318,7 @@ class ProductsCategoryTree extends LitElement {
     }
     navigateContent(identifier) {
         const [type, uid] = identifier.split('-');
-        if (type !== 'category' && type !== 'product') {
+        if (type !== 'category' && type !== 'product' && type !== 'article') {
             return;
         }
         const moduleInfo = ModuleUtility.getFromName(MODULE_TYPE);
@@ -393,9 +393,6 @@ class ProductsCategoryTree extends LitElement {
         this.requestUpdate();
     }
     selectNode(node) {
-        if (node.type === 'article') {
-            return;
-        }
         this.selected = node.identifier;
         ModuleStateStorage.update(MODULE_TYPE, node.identifier);
         this.navigateContent(node.identifier);

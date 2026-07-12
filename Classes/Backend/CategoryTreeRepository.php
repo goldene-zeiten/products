@@ -221,6 +221,55 @@ final class CategoryTreeRepository
     }
 
     /**
+     * Raw values for a set of TCA-validated article columns, for a single article.
+     * @param string[] $fields
+     * @return array<string, mixed>
+     */
+    public function fetchArticleRawFields(int $uid, array $fields): array
+    {
+        if ($fields === []) {
+            return [];
+        }
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_ARTICLE);
+        $this->applyRestrictions($queryBuilder);
+        $row = $queryBuilder->select(...$fields)
+            ->from(self::TABLE_ARTICLE)
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, ParameterType::INTEGER)))
+            ->executeQuery()
+            ->fetchAssociative();
+        return $row === false ? [] : $row;
+    }
+
+    /**
+     * Raw values for a set of TCA-validated article columns, for every article of a product, keyed by article uid.
+     * @param string[] $fields
+     * @return array<int, array<string, mixed>>
+     */
+    public function fetchArticlesRawFieldsByProduct(int $productUid, array $fields): array
+    {
+        if ($fields === []) {
+            return [];
+        }
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_ARTICLE);
+        $this->applyRestrictions($queryBuilder);
+        $rows = $queryBuilder->select('uid', ...$fields)
+            ->from(self::TABLE_ARTICLE)
+            ->andWhere($queryBuilder->expr()->eq('sys_language_uid', 0))
+            ->andWhere($queryBuilder->expr()->eq(
+                'product',
+                $queryBuilder->createNamedParameter($productUid, ParameterType::INTEGER)
+            ))
+            ->orderBy('sorting')
+            ->executeQuery()
+            ->fetchAllAssociative();
+        $indexed = [];
+        foreach ($rows as $row) {
+            $indexed[(int)$row['uid']] = $row;
+        }
+        return $indexed;
+    }
+
+    /**
      * First category of a product that is within the given mounts (or the first one at all when unrestricted).
      * @param int[]|null $mounts
      */
