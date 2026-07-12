@@ -87,6 +87,6 @@ final class TaxServiceTest extends AbstractFunctionalTestCase
 
     private function configuration(string $defaultCountry): ProductsConfiguration
     {
-        return new ProductsConfiguration($defaultCountry, 'gross', 'EUR', false, Money::fromCents(0), false, 'none');
+        return new ProductsConfiguration($defaultCountry, 'gross', 'EUR', false, Money::fromCents(0), false, 'none', 900);
     }
 }

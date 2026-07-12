@@ -25,7 +25,8 @@ final class CheckoutService
     public function __construct(
         private readonly BasketService $basketService,
         private readonly OrderRepository $orderRepository,
-        private readonly FrontendUserResolver $frontendUserResolver
+        private readonly FrontendUserResolver $frontendUserResolver,
+        private readonly PriceQuoteService $priceQuoteService
     ) {}
 
     public function setAddress(ServerRequestInterface $request, Address $address): void
@@ -206,5 +207,6 @@ final class CheckoutService
             $frontendUser->setKey('ses', self::SESSION_KEY_GIFT_MESSAGE, null);
             $frontendUser->storeSessionData();
         }
+        $this->priceQuoteService->clear($request);
     }
 }

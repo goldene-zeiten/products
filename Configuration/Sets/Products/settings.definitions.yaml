@@ -274,6 +274,11 @@ settings:
     default: 14
     label: 'Days after order placement a customer may self-service withdraw/cancel (0 disables it)'
     category: products
+  products.checkout.priceQuoteValiditySeconds:
+    type: int
+    default: 900
+    label: 'How long a reviewed price quote remains valid before checkout forces a fresh review (seconds) - default 15 minutes'
+    category: products
   products.session.requireCookieConsent:
     type: bool
     default: false

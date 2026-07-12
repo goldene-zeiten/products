@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Service\Checkout\CheckoutService;
+use GoldeneZeiten\Products\Service\Checkout\PriceQuoteService;
 use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Invoice\InvoiceTokenService;
@@ -41,7 +42,8 @@ final class CheckoutController extends ActionController
         private readonly WithdrawalTokenService $withdrawalTokenService,
         private readonly OrderTokenService $orderTokenService,
         private readonly ProductsConfigurationFactory $configurationFactory,
-        private readonly CreditPointsConfigurationFactory $creditPointsConfigurationFactory
+        private readonly CreditPointsConfigurationFactory $creditPointsConfigurationFactory,
+        private readonly PriceQuoteService $priceQuoteService
     ) {}
 
     public function addressAction(): ResponseInterface
@@ -102,6 +104,7 @@ final class CheckoutController extends ActionController
     public function reviewAction(): ResponseInterface
     {
         $basket = $this->checkoutService->getBasketViewModel($this->request);
+        $this->priceQuoteService->freeze($this->request, $basket);
         $address = $this->checkoutService->getAddress($this->request);
         $paymentMethodIdentifier = $this->checkoutService->getPaymentMethod($this->request);
         $shippingMethodUid = $this->checkoutService->getShippingMethod($this->request);
