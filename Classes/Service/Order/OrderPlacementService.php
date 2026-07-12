@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service\Order;
 
+use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
@@ -17,6 +18,7 @@ use GoldeneZeiten\Products\Event\PaymentInitiatedEvent;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Service\Checkout\PriceQuoteService;
 use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Order\Exception\EmptyBasketException;
@@ -33,7 +35,9 @@ final class OrderPlacementService
         private readonly OrderFinalizationService $orderFinalizationService,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly CreditPointsService $creditPointsService,
-        private readonly FrontendUserResolver $frontendUserResolver
+        private readonly FrontendUserResolver $frontendUserResolver,
+        private readonly PriceQuoteService $priceQuoteService,
+        private readonly ProductsConfigurationFactory $configurationFactory
     ) {}
 
     public function place(
@@ -42,7 +46,9 @@ final class OrderPlacementService
         string $paymentMethodIdentifier,
         CheckoutChoices $choices = new CheckoutChoices()
     ): OrderPlacementResult {
-        $basketViewModel = $this->basketService->getBasketViewModel($request);
+        $liveBasketViewModel = $this->basketService->getBasketViewModel($request);
+        $configuration = $this->configurationFactory->create($request);
+        $basketViewModel = $this->priceQuoteService->resolve($request, $liveBasketViewModel, $configuration);
         $this->assertBasketNotEmpty($basketViewModel);
         if ($choices->getSpendPoints() > 0) {
             $this->creditPointsService->assertSpendable($this->frontendUserResolver->getUid($request), $choices->getSpendPoints());

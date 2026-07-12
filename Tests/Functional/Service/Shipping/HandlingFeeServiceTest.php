@@ -55,7 +55,7 @@ final class HandlingFeeServiceTest extends AbstractFunctionalTestCase
 
     private function configuration(bool $enabled): ProductsConfiguration
     {
-        return new ProductsConfiguration('DE', 'gross', 'EUR', false, Money::fromCents(0), $enabled, 'none');
+        return new ProductsConfiguration('DE', 'gross', 'EUR', false, Money::fromCents(0), $enabled, 'none', 900);
     }
 
     private function basketViewModel(Product $product): BasketViewModel

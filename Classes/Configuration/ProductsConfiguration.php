@@ -17,7 +17,8 @@ final readonly class ProductsConfiguration
         private bool $shippingEnabled,
         private Money $bulkySurcharge,
         private bool $handlingEnabled,
-        private string $roundingMode
+        private string $roundingMode,
+        private int $priceQuoteValiditySeconds
     ) {}
 
     public function getDefaultCountry(): string
@@ -53,5 +54,10 @@ final readonly class ProductsConfiguration
     public function getRoundingMode(): string
     {
         return $this->roundingMode;
+    }
+
+    public function getPriceQuoteValiditySeconds(): int
+    {
+        return $this->priceQuoteValiditySeconds;
     }
 }

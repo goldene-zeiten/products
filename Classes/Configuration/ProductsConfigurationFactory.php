@@ -36,7 +36,8 @@ final class ProductsConfigurationFactory
             (bool)($siteSettings?->get('products.shipping.enabled', false) ?? false),
             Money::fromDecimalString((string)($siteSettings?->get('products.shipping.bulkySurcharge', '0.00') ?? '0.00')),
             (bool)($siteSettings?->get('products.handling.enabled', false) ?? false),
-            (string)($siteSettings?->get('products.pricing.roundingMode', PriceRoundingService::MODE_NONE) ?? PriceRoundingService::MODE_NONE)
+            (string)($siteSettings?->get('products.pricing.roundingMode', PriceRoundingService::MODE_NONE) ?? PriceRoundingService::MODE_NONE),
+            (int)($siteSettings?->get('products.checkout.priceQuoteValiditySeconds', 900) ?? 900)
         );
     }
 }
