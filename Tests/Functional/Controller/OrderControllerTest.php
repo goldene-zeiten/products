@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Controller;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Service\Order\OrderTokenService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Session\SessionManager;
 use TYPO3\CMS\Core\Session\UserSession;
@@ -19,8 +20,8 @@ final class OrderControllerTest extends AbstractFrontendTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/orders_with_frontend_user.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/guest_order.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_history_content.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/OrderControllerTest/guest_order.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/OrderControllerTest/order_history_content.csv');
     }
 
     #[Test]
@@ -64,26 +65,36 @@ final class OrderControllerTest extends AbstractFrontendTestCase
     }
 
     #[Test]
-    public function showActionDeniesAnonymousVisitorForGuestOrderWithoutHash(): void
+    #[DataProvider('guestOrderAccessProvider')]
+    public function showActionHandlesGuestOrderAccessByHash(bool $useValidHash): void
     {
-        $request = $this->orderShowRequest(2, null);
-        $response = $this->executeFrontendSubRequest($request);
-
-        $this->assertStringNotContainsString('ORD-2', (string)$response->getBody());
-    }
-
-    #[Test]
-    public function showActionAllowsAnonymousVisitorForGuestOrderWithValidHash(): void
-    {
-        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(2);
-        $this->assertNotNull($order);
-        $hash = $this->get(OrderTokenService::class)->generateToken($order);
+        $hash = null;
+        if ($useValidHash) {
+            $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(2);
+            $this->assertNotNull($order);
+            $hash = $this->get(OrderTokenService::class)->generateToken($order);
+        }
 
         $request = $this->orderShowRequest(2, $hash);
         $response = $this->executeFrontendSubRequest($request);
 
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertStringContainsString('ORD-2', (string)$response->getBody());
+        if ($useValidHash) {
+            $this->assertSame(200, $response->getStatusCode());
+            $this->assertStringContainsString('ORD-2', (string)$response->getBody());
+        } else {
+            $this->assertStringNotContainsString('ORD-2', (string)$response->getBody());
+        }
+    }
+
+    public static function guestOrderAccessProvider(): \Generator
+    {
+        yield 'anonymous visitor denied without hash' => [
+            'useValidHash' => false,
+        ];
+
+        yield 'anonymous visitor allowed with valid hash' => [
+            'useValidHash' => true,
+        ];
     }
 
     private function orderShowRequest(int $order, ?string $hash): InternalRequest

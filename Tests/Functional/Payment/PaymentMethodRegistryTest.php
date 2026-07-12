@@ -15,26 +15,21 @@ final class PaymentMethodRegistryTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private PaymentMethodRegistry $subject;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->subject = $this->get(PaymentMethodRegistry::class);
-    }
-
     #[Test]
     public function invoicePaymentMethodIsRegistered(): void
     {
-        self::assertSame('invoice', $this->subject->get('invoice')->getIdentifier());
+        $subject = $this->get(PaymentMethodRegistry::class);
+
+        $this->assertSame('invoice', $subject->get('invoice')->getIdentifier());
     }
 
     #[Test]
     public function getThrowsExceptionForUnknownIdentifier(): void
     {
+        $subject = $this->get(PaymentMethodRegistry::class);
         $this->expectException(PaymentMethodNotFoundException::class);
         $this->expectExceptionCode(1751751010);
 
-        $this->subject->get('unknown-payment-method');
+        $subject->get('unknown-payment-method');
     }
 }

@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Domain\Repository;
 use GoldeneZeiten\Products\Domain\Model\PaymentTransaction;
 use GoldeneZeiten\Products\Domain\Repository\PaymentTransactionRepository;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class PaymentTransactionRepositoryTest extends AbstractFunctionalTestCase
@@ -15,63 +16,91 @@ final class PaymentTransactionRepositoryTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private PaymentTransactionRepository $subject;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/payment_transactions.csv');
-        $this->subject = $this->get(PaymentTransactionRepository::class);
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/PaymentTransactionRepositoryTest/payment_transactions.csv');
     }
 
     #[Test]
-    public function findsAPendingTransactionForTheSameOrderAndMethod(): void
+    #[DataProvider('findOneNotYetApprovedFindsAMatchProvider')]
+    public function findOneNotYetApprovedFindsAMatch(int $orderUid, string $method, string $expectedExternalId): void
     {
-        $transaction = $this->subject->findOneNotYetApproved(100, 'invoice');
+        $subject = $this->get(PaymentTransactionRepository::class);
+
+        $transaction = $subject->findOneNotYetApproved($orderUid, $method);
 
         $this->assertInstanceOf(PaymentTransaction::class, $transaction);
-        $this->assertSame('EXT-1', $transaction->getExternalId());
+        $this->assertSame($expectedExternalId, $transaction->getExternalId());
+    }
+
+    public static function findOneNotYetApprovedFindsAMatchProvider(): \Generator
+    {
+        yield 'finds a pending transaction for the same order and method' => [
+            'orderUid' => 100,
+            'method' => 'invoice',
+            'expectedExternalId' => 'EXT-1',
+        ];
+
+        yield 'finds a failed transaction as not yet approved' => [
+            'orderUid' => 101,
+            'method' => 'invoice',
+            'expectedExternalId' => 'EXT-3',
+        ];
     }
 
     #[Test]
-    public function ignoresAnAlreadyCompletedTransaction(): void
+    #[DataProvider('findOneNotYetApprovedReturnsNullProvider')]
+    public function findOneNotYetApprovedReturnsNull(int $orderUid, string $method): void
     {
-        $this->assertNull($this->subject->findOneNotYetApproved(100, 'paypal'));
+        $subject = $this->get(PaymentTransactionRepository::class);
+
+        $this->assertNull($subject->findOneNotYetApproved($orderUid, $method));
     }
 
-    #[Test]
-    public function findsAFailedTransactionAsNotYetApproved(): void
+    public static function findOneNotYetApprovedReturnsNullProvider(): \Generator
     {
-        $transaction = $this->subject->findOneNotYetApproved(101, 'invoice');
+        yield 'ignores an already completed transaction' => [
+            'orderUid' => 100,
+            'method' => 'paypal',
+        ];
 
-        $this->assertInstanceOf(PaymentTransaction::class, $transaction);
-        $this->assertSame('EXT-3', $transaction->getExternalId());
-    }
-
-    #[Test]
-    public function returnsNullForAnUnknownOrderMethodPair(): void
-    {
-        $this->assertNull($this->subject->findOneNotYetApproved(999, 'invoice'));
+        yield 'returns null for an unknown order/method pair' => [
+            'orderUid' => 999,
+            'method' => 'invoice',
+        ];
     }
 
     #[Test]
     public function findsATransactionByItsExternalId(): void
     {
-        $transaction = $this->subject->findOneByExternalId('invoice', 'EXT-1');
+        $subject = $this->get(PaymentTransactionRepository::class);
+
+        $transaction = $subject->findOneByExternalId('invoice', 'EXT-1');
 
         $this->assertInstanceOf(PaymentTransaction::class, $transaction);
         $this->assertSame(100, $transaction->getOrderUid());
     }
 
     #[Test]
-    public function externalIdLookupIsScopedToThePaymentMethod(): void
+    #[DataProvider('findOneByExternalIdReturnsNullProvider')]
+    public function findOneByExternalIdReturnsNull(string $method, string $externalId): void
     {
-        $this->assertNull($this->subject->findOneByExternalId('paypal', 'EXT-1'));
+        $subject = $this->get(PaymentTransactionRepository::class);
+
+        $this->assertNull($subject->findOneByExternalId($method, $externalId));
     }
 
-    #[Test]
-    public function emptyExternalIdNeverMatches(): void
+    public static function findOneByExternalIdReturnsNullProvider(): \Generator
     {
-        $this->assertNull($this->subject->findOneByExternalId('invoice', ''));
+        yield 'external id lookup is scoped to the payment method' => [
+            'method' => 'paypal',
+            'externalId' => 'EXT-1',
+        ];
+
+        yield 'empty external id never matches' => [
+            'method' => 'invoice',
+            'externalId' => '',
+        ];
     }
 }

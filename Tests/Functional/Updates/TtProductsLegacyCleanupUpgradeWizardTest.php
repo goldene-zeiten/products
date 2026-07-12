@@ -19,48 +19,55 @@ final class TtProductsLegacyCleanupUpgradeWizardTest extends AbstractFunctionalT
 
     private const LEGACY_TABLE = 'tt_products_cat';
 
-    private TtProductsLegacyCleanupUpgradeWizard $subject;
-    private BufferedOutput $output;
-    private LegacyMigrationHelper $migrationHelper;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/LegacyMigration/legacy_cleanup_complete.csv');
-        $this->migrationHelper = $this->get(LegacyMigrationHelper::class);
-        $this->output = new BufferedOutput();
-        $this->subject = $this->get(TtProductsLegacyCleanupUpgradeWizard::class);
-        $this->subject->setOutput($this->output);
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsLegacyCleanupUpgradeWizardTest/legacy_cleanup_complete.csv');
+    }
+
+    private function subject(BufferedOutput $output): TtProductsLegacyCleanupUpgradeWizard
+    {
+        $subject = $this->get(TtProductsLegacyCleanupUpgradeWizard::class);
+        $subject->setOutput($output);
+        return $subject;
     }
 
     #[Test]
     public function updateIsNecessaryWhileLegacyTablesExist(): void
     {
-        $this->assertTrue($this->subject->updateNecessary());
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
+        $this->assertTrue($subject->updateNecessary());
     }
 
     #[Test]
     public function refusesToDropTablesWhileMigrationIsIncomplete(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/LegacyMigration/legacy_cleanup_incomplete.csv');
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
+        $migrationHelper = $this->get(LegacyMigrationHelper::class);
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsLegacyCleanupUpgradeWizardTest/legacy_cleanup_incomplete.csv');
 
-        $this->assertFalse($this->subject->executeUpdate());
-        $this->assertTrue($this->migrationHelper->tablesExist(self::LEGACY_TABLE));
-        $this->assertStringContainsString('refusing to drop legacy tables', $this->output->fetch());
+        $this->assertFalse($subject->executeUpdate());
+        $this->assertTrue($migrationHelper->tablesExist(self::LEGACY_TABLE));
+        $this->assertStringContainsString('refusing to drop legacy tables', $output->fetch());
     }
 
     #[Test]
     public function dropsLegacyTablesOnceEveryEntityIsMigratedAndIsNoLongerNecessaryAfterwards(): void
     {
-        $this->assertTrue($this->subject->executeUpdate());
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
+        $migrationHelper = $this->get(LegacyMigrationHelper::class);
+        $this->assertTrue($subject->executeUpdate());
 
-        $this->assertFalse($this->migrationHelper->tablesExist(self::LEGACY_TABLE));
-        $this->assertFalse($this->migrationHelper->tablesExist('tt_products'));
-        $this->assertFalse($this->migrationHelper->tablesExist('tt_products_articles'));
-        $this->assertFalse($this->migrationHelper->tablesExist('sys_products_orders'));
-        $this->assertStringContainsString('Dropped legacy table', $this->output->fetch());
+        $this->assertFalse($migrationHelper->tablesExist(self::LEGACY_TABLE));
+        $this->assertFalse($migrationHelper->tablesExist('tt_products'));
+        $this->assertFalse($migrationHelper->tablesExist('tt_products_articles'));
+        $this->assertFalse($migrationHelper->tablesExist('sys_products_orders'));
+        $this->assertStringContainsString('Dropped legacy table', $output->fetch());
 
-        $this->assertFalse($this->subject->updateNecessary());
+        $this->assertFalse($subject->updateNecessary());
     }
 }

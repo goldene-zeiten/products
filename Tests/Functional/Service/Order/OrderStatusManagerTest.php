@@ -19,89 +19,88 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private OrderStatusManager $subject;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->subject = $this->get(OrderStatusManager::class);
-    }
-
     #[Test]
     public function transitionChangesStatusAndAppendsLog(): void
     {
+        $subject = $this->get(OrderStatusManager::class);
         $order = new Order();
 
-        $this->subject->transition($order, OrderStatus::PENDING);
+        $subject->transition($order, OrderStatus::PENDING);
 
-        self::assertSame(OrderStatus::PENDING, $order->getStatus());
-        self::assertCount(1, $order->getStatusLog());
-        self::assertSame('new', $order->getStatusLog()[0]['from']);
-        self::assertSame('pending', $order->getStatusLog()[0]['to']);
+        $this->assertSame(OrderStatus::PENDING, $order->getStatus());
+        $this->assertCount(1, $order->getStatusLog());
+        $this->assertSame('new', $order->getStatusLog()[0]['from']);
+        $this->assertSame('pending', $order->getStatusLog()[0]['to']);
     }
 
     #[Test]
     public function transitionWithANoteAppendsItToTheLogEntry(): void
     {
+        $subject = $this->get(OrderStatusManager::class);
         $order = new Order();
 
-        $this->subject->transition($order, OrderStatus::CANCELLED, 'Customer withdrew from the order.');
+        $subject->transition($order, OrderStatus::CANCELLED, 'Customer withdrew from the order.');
 
-        self::assertSame('Customer withdrew from the order.', $order->getStatusLog()[0]['note']);
+        $this->assertSame('Customer withdrew from the order.', $order->getStatusLog()[0]['note']);
     }
 
     #[Test]
     public function transitionWithoutANoteOmitsItFromTheLogEntry(): void
     {
+        $subject = $this->get(OrderStatusManager::class);
         $order = new Order();
 
-        $this->subject->transition($order, OrderStatus::PENDING);
+        $subject->transition($order, OrderStatus::PENDING);
 
-        self::assertArrayNotHasKey('note', $order->getStatusLog()[0]);
+        $this->assertArrayNotHasKey('note', $order->getStatusLog()[0]);
     }
 
     #[Test]
     public function transitionToSameStatusIsNoop(): void
     {
+        $subject = $this->get(OrderStatusManager::class);
         $order = new Order();
 
-        $this->subject->transition($order, OrderStatus::NEW);
+        $subject->transition($order, OrderStatus::NEW);
 
-        self::assertSame(OrderStatus::NEW, $order->getStatus());
-        self::assertCount(0, $order->getStatusLog());
+        $this->assertSame(OrderStatus::NEW, $order->getStatus());
+        $this->assertCount(0, $order->getStatusLog());
     }
 
     #[Test]
     public function transitionThrowsExceptionForInvalidTransition(): void
     {
+        $subject = $this->get(OrderStatusManager::class);
         $order = new Order();
         $order->setStatus(OrderStatus::CANCELLED);
 
         $this->expectException(InvalidOrderStatusTransitionException::class);
         $this->expectExceptionCode(1751751030);
 
-        $this->subject->transition($order, OrderStatus::CONFIRMED);
+        $subject->transition($order, OrderStatus::CONFIRMED);
     }
 
     #[Test]
     public function transitionPaymentChangesPaymentStatus(): void
     {
+        $subject = $this->get(OrderStatusManager::class);
         $order = new Order();
 
-        $this->subject->transitionPayment($order, PaymentStatus::PAID);
+        $subject->transitionPayment($order, PaymentStatus::PAID);
 
-        self::assertSame(PaymentStatus::PAID, $order->getPaymentStatus());
+        $this->assertSame(PaymentStatus::PAID, $order->getPaymentStatus());
     }
 
     #[Test]
     public function transitionPaymentThrowsExceptionForInvalidTransition(): void
     {
+        $subject = $this->get(OrderStatusManager::class);
         $order = new Order();
         $order->setPaymentStatus(PaymentStatus::REFUNDED);
 
         $this->expectException(InvalidPaymentStatusTransitionException::class);
         $this->expectExceptionCode(1751751031);
 
-        $this->subject->transitionPayment($order, PaymentStatus::PAID);
+        $subject->transitionPayment($order, PaymentStatus::PAID);
     }
 }

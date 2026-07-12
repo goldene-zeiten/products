@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Service\Wishlist;
 
 use GoldeneZeiten\Products\Service\Wishlist\WishlistStorage;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -19,37 +20,28 @@ final class WishlistStorageTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
+    /**
+     * @param int[] $expectedLoad
+     */
     #[Test]
-    public function addingSucceedsWhenCookieConsentIsNotRequired(): void
+    #[DataProvider('addProvider')]
+    public function addBehavesAccordingToCookieConsentState(bool $requireCookieConsent, bool $confirmedCookie, array $expectedLoad): void
     {
         $storage = $this->get(WishlistStorage::class);
-        $request = $this->request(requireCookieConsent: false);
+        $request = $confirmedCookie
+            ? $this->requestWithConfirmedCookie(requireCookieConsent: $requireCookieConsent)
+            : $this->request(requireCookieConsent: $requireCookieConsent);
 
         $storage->add($request, 1);
 
-        $this->assertSame([1], $storage->load($request));
+        $this->assertSame($expectedLoad, $storage->load($request));
     }
 
-    #[Test]
-    public function addingIsSkippedWhenCookieConsentIsRequiredButNotYetConfirmed(): void
+    public static function addProvider(): \Generator
     {
-        $storage = $this->get(WishlistStorage::class);
-        $request = $this->request(requireCookieConsent: true);
-
-        $storage->add($request, 1);
-
-        $this->assertSame([], $storage->load($request));
-    }
-
-    #[Test]
-    public function addingSucceedsWhenCookieConsentIsRequiredAndAlreadyConfirmed(): void
-    {
-        $storage = $this->get(WishlistStorage::class);
-        $request = $this->requestWithConfirmedCookie(requireCookieConsent: true);
-
-        $storage->add($request, 1);
-
-        $this->assertSame([1], $storage->load($request));
+        yield 'succeeds when cookie consent is not required' => ['requireCookieConsent' => false, 'confirmedCookie' => false, 'expectedLoad' => [1]];
+        yield 'skipped when cookie consent is required but not yet confirmed' => ['requireCookieConsent' => true, 'confirmedCookie' => false, 'expectedLoad' => []];
+        yield 'succeeds when cookie consent is required and already confirmed' => ['requireCookieConsent' => true, 'confirmedCookie' => true, 'expectedLoad' => [1]];
     }
 
     private function request(bool $requireCookieConsent): ServerRequestInterface

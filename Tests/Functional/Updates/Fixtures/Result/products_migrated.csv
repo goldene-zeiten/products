@@ -1,0 +1,7 @@
+"tx_products_domain_model_product",,,,,,
+,"uid","sys_language_uid","title","price","tax_class"
+,1,0,"Product One","19.99",1
+,2,0,"Product Two","29.99",2
+,3,0,"Product Three","9.99",1
+,4,1,"Product One DE","0.00",0
+,5,1,"New DE","0.00",0

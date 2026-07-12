@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Tests\Functional\Controller;
 
 use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Session\SessionManager;
 use TYPO3\CMS\Core\Session\UserSession;
@@ -16,18 +17,19 @@ final class CheckoutAddressPrefillTest extends AbstractFrontendTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/checkout_content.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/checkout_address_prefill.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/checkout_content.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/CheckoutAddressPrefillTest/checkout_address_prefill.csv');
     }
 
     #[Test]
-    public function addressActionPrefillsFromReturningCustomersLastOrder(): void
+    #[DataProvider('addressActionPrefillProvider')]
+    public function addressActionPrefillsFromCustomerData(int $frontendUserUid, string $expectedStreet, string $expectedCity, string $expectedEmail): void
     {
         $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
             '&id=2&tx_products_checkout[action]=address'
         );
         $request = (new InternalRequest('http://localhost/shop'))
-            ->withCookieParams(['fe_typo_user' => $this->loginFrontendUser(1)])
+            ->withCookieParams(['fe_typo_user' => $this->loginFrontendUser($frontendUserUid)])
             ->withQueryParameters([
                 'tx_products_checkout[action]' => 'address',
                 'cHash' => $cHash,
@@ -36,30 +38,26 @@ final class CheckoutAddressPrefillTest extends AbstractFrontendTestCase
         $body = (string)$response->getBody();
 
         $this->assertSame(200, $response->getStatusCode());
-        $this->assertStringContainsString('Loop Street 42', $body);
-        $this->assertStringContainsString('Repeatville', $body);
-        $this->assertStringContainsString('returning@example.com', $body);
+        $this->assertStringContainsString($expectedStreet, $body);
+        $this->assertStringContainsString($expectedCity, $body);
+        $this->assertStringContainsString($expectedEmail, $body);
     }
 
-    #[Test]
-    public function addressActionPrefillsFromProfileWhenThereIsNoPriorOrder(): void
+    public static function addressActionPrefillProvider(): \Generator
     {
-        $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
-            '&id=2&tx_products_checkout[action]=address'
-        );
-        $request = (new InternalRequest('http://localhost/shop'))
-            ->withCookieParams(['fe_typo_user' => $this->loginFrontendUser(2)])
-            ->withQueryParameters([
-                'tx_products_checkout[action]' => 'address',
-                'cHash' => $cHash,
-            ]);
-        $response = $this->executeFrontendSubRequest($request);
-        $body = (string)$response->getBody();
+        yield 'returning customer uses last order' => [
+            'frontendUserUid' => 1,
+            'expectedStreet' => 'Loop Street 42',
+            'expectedCity' => 'Repeatville',
+            'expectedEmail' => 'returning@example.com',
+        ];
 
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertStringContainsString('Profile Street 7', $body);
-        $this->assertStringContainsString('Berlin', $body);
-        $this->assertStringContainsString('new@example.com', $body);
+        yield 'new customer uses profile data' => [
+            'frontendUserUid' => 2,
+            'expectedStreet' => 'Profile Street 7',
+            'expectedCity' => 'Berlin',
+            'expectedEmail' => 'new@example.com',
+        ];
     }
 
     #[Test]

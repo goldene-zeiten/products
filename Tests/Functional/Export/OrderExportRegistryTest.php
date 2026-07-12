@@ -17,26 +17,22 @@ final class OrderExportRegistryTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products-export-fixture',
     ];
 
-    private OrderExportRegistry $subject;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->subject = $this->get(OrderExportRegistry::class);
-    }
-
     #[Test]
     public function aThirdPartyExporterIsAutoRegisteredViaTheTaggedIterator(): void
     {
-        $this->assertSame('dummy', $this->subject->get('dummy')->getIdentifier());
+        $subject = $this->get(OrderExportRegistry::class);
+
+        $this->assertSame('dummy', $subject->get('dummy')->getIdentifier());
     }
 
     #[Test]
     public function getAvailableReturnsTheRegisteredExporter(): void
     {
+        $subject = $this->get(OrderExportRegistry::class);
+
         $identifiers = array_map(
             static fn($exporter): string => $exporter->getIdentifier(),
-            $this->subject->getAvailable()
+            $subject->getAvailable()
         );
 
         $this->assertContains('dummy', $identifiers);
@@ -45,18 +41,20 @@ final class OrderExportRegistryTest extends AbstractFunctionalTestCase
     #[Test]
     public function theDummyExporterProducesTheExpectedContent(): void
     {
+        $subject = $this->get(OrderExportRegistry::class);
         $order = new Order();
         $order->setOrderNumber('ORD-42');
 
-        $this->assertSame('order:ORD-42', $this->subject->get('dummy')->export($order));
+        $this->assertSame('order:ORD-42', $subject->get('dummy')->export($order));
     }
 
     #[Test]
     public function getThrowsExceptionForUnknownIdentifier(): void
     {
+        $subject = $this->get(OrderExportRegistry::class);
         $this->expectException(OrderExporterNotFoundException::class);
         $this->expectExceptionCode(1783900000);
 
-        $this->subject->get('unknown-exporter');
+        $subject->get('unknown-exporter');
     }
 }

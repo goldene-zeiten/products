@@ -14,6 +14,8 @@ use GoldeneZeiten\Products\Pricing\GraduatedPriceProvider;
 use GoldeneZeiten\Products\Pricing\PriceProviderInterface;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Tests\Functional\Fixtures\FixtureConfigurationManager;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -48,78 +50,91 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
         $this->assertInstanceOf(CategoryDiscountPriceProvider::class, $this->get(PriceProviderInterface::class));
     }
 
+    /**
+     * @param array{minQuantity: int, price: string}|null $priceTier
+     */
     #[Test]
-    public function withoutARequestTheUndiscountedPricePassesThrough(): void
-    {
-        $product = new Product();
+    #[DataProvider('unitPriceDataProvider')]
+    public function getUnitPriceAppliesTheExpectedDiscount(
+        ?float $categoryDiscountPercent,
+        ?array $priceTier,
+        int $quantity,
+        ?int $frontendUserUid,
+        int $expectedCents
+    ): void {
+        $product = $categoryDiscountPercent !== null ? $this->productInCategory($categoryDiscountPercent) : new Product();
         $product->setPrice(Money::fromDecimalString('100.00'));
 
-        $this->assertSame(10000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1)->getCents());
+        if ($priceTier !== null) {
+            /** @var ObjectStorage<PriceTier> $tiers */
+            $tiers = new ObjectStorage();
+            $tier = new PriceTier();
+            $tier->setMinQuantity($priceTier['minQuantity']);
+            $tier->setPrice(Money::fromDecimalString($priceTier['price']));
+            $tiers->attach($tier);
+            $product->setPriceTiers($tiers);
+        }
+
+        $request = $frontendUserUid !== null ? $this->requestFor($frontendUserUid) : null;
+
+        $this->assertSame($expectedCents, $this->subject('maxAcrossTree')->getUnitPrice($product, null, $quantity, $request)->getCents());
     }
 
-    #[Test]
-    public function anAnonymousVisitorGetsTheUndiscountedPrice(): void
+    public static function unitPriceDataProvider(): \Generator
     {
-        $product = new Product();
-        $product->setPrice(Money::fromDecimalString('100.00'));
-
-        $this->assertSame(10000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(0))->getCents());
-    }
-
-    #[Test]
-    public function aDiscountedGroupsShopperGetsTheReducedPrice(): void
-    {
-        $product = new Product();
-        $product->setPrice(Money::fromDecimalString('100.00'));
-
+        yield 'without a request the undiscounted price passes through' => [
+            'categoryDiscountPercent' => null,
+            'priceTier' => null,
+            'quantity' => 1,
+            'frontendUserUid' => null,
+            'expectedCents' => 10000,
+        ];
+        yield 'an anonymous visitor gets the undiscounted price' => [
+            'categoryDiscountPercent' => null,
+            'priceTier' => null,
+            'quantity' => 1,
+            'frontendUserUid' => 0,
+            'expectedCents' => 10000,
+        ];
         // user 2 belongs to group 1, which carries a 10% discount (see frontend_user_discounts.csv)
-        $this->assertSame(9000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(2))->getCents());
-    }
-
-    #[Test]
-    public function theUserGroupDiscountAppliesOnTopOfAGraduatedTierPrice(): void
-    {
-        $product = new Product();
-        $product->setPrice(Money::fromDecimalString('100.00'));
-        /** @var ObjectStorage<PriceTier> $tiers */
-        $tiers = new ObjectStorage();
-        $tier = new PriceTier();
-        $tier->setMinQuantity(10);
-        $tier->setPrice(Money::fromDecimalString('50.00'));
-        $tiers->attach($tier);
-        $product->setPriceTiers($tiers);
-
+        yield 'a discounted groups shopper gets the reduced price' => [
+            'categoryDiscountPercent' => null,
+            'priceTier' => null,
+            'quantity' => 1,
+            'frontendUserUid' => 2,
+            'expectedCents' => 9000,
+        ];
         // user 3 has a personal 15% discount (see frontend_user_discounts.csv)
-        $this->assertSame(4250, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 10, $this->requestFor(3))->getCents());
-    }
-
-    #[Test]
-    public function aCategoryDiscountAppliesWithoutAnyFrontendUser(): void
-    {
-        $product = $this->productInCategory(20.0);
-        $product->setPrice(Money::fromDecimalString('100.00'));
-
-        $this->assertSame(8000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(0))->getCents());
-    }
-
-    #[Test]
-    public function theBiggerCategoryDiscountWinsOverASmallerUserGroupDiscount(): void
-    {
-        $product = $this->productInCategory(30.0);
-        $product->setPrice(Money::fromDecimalString('100.00'));
-
+        yield 'the user group discount applies on top of a graduated tier price' => [
+            'categoryDiscountPercent' => null,
+            'priceTier' => ['minQuantity' => 10, 'price' => '50.00'],
+            'quantity' => 10,
+            'frontendUserUid' => 3,
+            'expectedCents' => 4250,
+        ];
+        yield 'a category discount applies without any frontend user' => [
+            'categoryDiscountPercent' => 20.0,
+            'priceTier' => null,
+            'quantity' => 1,
+            'frontendUserUid' => 0,
+            'expectedCents' => 8000,
+        ];
         // user 2's group discount (10%) is smaller than the category discount (30%) - not stacked
-        $this->assertSame(7000, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(2))->getCents());
-    }
-
-    #[Test]
-    public function theBiggerUserGroupDiscountWinsOverASmallerCategoryDiscount(): void
-    {
-        $product = $this->productInCategory(5.0);
-        $product->setPrice(Money::fromDecimalString('100.00'));
-
+        yield 'the bigger category discount wins over a smaller user group discount' => [
+            'categoryDiscountPercent' => 30.0,
+            'priceTier' => null,
+            'quantity' => 1,
+            'frontendUserUid' => 2,
+            'expectedCents' => 7000,
+        ];
         // user 3's personal discount (15%) is bigger than the category discount (5%) - not stacked
-        $this->assertSame(8500, $this->subject('maxAcrossTree')->getUnitPrice($product, null, 1, $this->requestFor(3))->getCents());
+        yield 'the bigger user group discount wins over a smaller category discount' => [
+            'categoryDiscountPercent' => 5.0,
+            'priceTier' => null,
+            'quantity' => 1,
+            'frontendUserUid' => 3,
+            'expectedCents' => 8500,
+        ];
     }
 
     #[Test]
@@ -165,24 +180,7 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
 
     private function fakeConfigurationManager(string $discountFieldMode): ConfigurationManagerInterface
     {
-        return new class ($discountFieldMode) implements ConfigurationManagerInterface {
-            public function __construct(private readonly string $discountFieldMode) {}
-
-            /**
-             * @return array<string, mixed>
-             */
-            public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
-            {
-                return ['pricing' => ['discountFieldMode' => $this->discountFieldMode]];
-            }
-
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function setConfiguration(array $configuration = []): void {}
-
-            public function setRequest(ServerRequestInterface $request): void {}
-        };
+        return new FixtureConfigurationManager(['pricing' => ['discountFieldMode' => $discountFieldMode]]);
     }
 
     private function requestFor(int $frontendUserUid): ServerRequestInterface

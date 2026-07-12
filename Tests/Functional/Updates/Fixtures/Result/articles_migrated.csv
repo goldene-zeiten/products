@@ -1,0 +1,5 @@
+"tx_products_domain_model_article",,,,,,,
+,"uid","product","price","in_stock","basket_min_quantity","basket_max_quantity","price_mode","title"
+,1,80,"9.99",10,2,5,"override","Article One"
+,2,80,"5.00",1,0,0,"surcharge","Added Price Article"
+,3,0,"0.00",0,0,0,"override","New DE"

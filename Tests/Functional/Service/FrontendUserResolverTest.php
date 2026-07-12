@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Service;
 
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -19,51 +20,31 @@ final class FrontendUserResolverTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private FrontendUserResolver $subject;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/frontend_user_discounts.csv');
-        $this->subject = $this->get(FrontendUserResolver::class);
     }
 
     #[Test]
-    public function anonymousVisitorHasNoDiscount(): void
+    #[DataProvider('discountPercentProvider')]
+    public function getDiscountPercentResolvesTheApplicableDiscount(int $frontendUserUid, float $expectedPercent): void
     {
-        $this->assertSame(0.0, $this->subject->getDiscountPercent($this->requestFor(0)));
+        $subject = $this->get(FrontendUserResolver::class);
+
+        $this->assertSame($expectedPercent, $subject->getDiscountPercent($this->requestFor($frontendUserUid)));
     }
 
-    #[Test]
-    public function userWithoutAnyDiscountConfiguredGetsZero(): void
+    public static function discountPercentProvider(): \Generator
     {
-        $this->assertSame(0.0, $this->subject->getDiscountPercent($this->requestFor(1)));
-    }
-
-    #[Test]
-    public function userInheritsTheirGroupsDiscount(): void
-    {
-        $this->assertSame(10.0, $this->subject->getDiscountPercent($this->requestFor(2)));
-    }
-
-    #[Test]
-    public function personalDiscountAppliesWithoutAnyGroup(): void
-    {
-        $this->assertSame(15.0, $this->subject->getDiscountPercent($this->requestFor(3)));
-    }
-
-    #[Test]
-    public function theBestOfPersonalAndGroupDiscountWinsRatherThanStacking(): void
-    {
+        yield 'anonymous visitor has no discount' => ['frontendUserUid' => 0, 'expectedPercent' => 0.0];
+        yield 'user without any discount configured gets zero' => ['frontendUserUid' => 1, 'expectedPercent' => 0.0];
+        yield 'user inherits their group\'s discount' => ['frontendUserUid' => 2, 'expectedPercent' => 10.0];
+        yield 'personal discount applies without any group' => ['frontendUserUid' => 3, 'expectedPercent' => 15.0];
         // user 4: 20% personal vs. 10% from group 1 - personal wins as the higher rate.
-        $this->assertSame(20.0, $this->subject->getDiscountPercent($this->requestFor(4)));
-    }
-
-    #[Test]
-    public function theHighestOfMultipleGroupDiscountsWinsRatherThanStacking(): void
-    {
+        yield 'the best of personal and group discount wins rather than stacking' => ['frontendUserUid' => 4, 'expectedPercent' => 20.0];
         // user 5: group 1 = 10%, group 2 = 25% - the higher rate wins, they are never summed.
-        $this->assertSame(25.0, $this->subject->getDiscountPercent($this->requestFor(5)));
+        yield 'the highest of multiple group discounts wins rather than stacking' => ['frontendUserUid' => 5, 'expectedPercent' => 25.0];
     }
 
     private function requestFor(int $frontendUserUid): ServerRequestInterface

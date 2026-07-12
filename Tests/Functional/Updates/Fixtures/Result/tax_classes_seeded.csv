@@ -1,0 +1,5 @@
+"tx_products_domain_model_taxclass",,,
+,"uid","code","title"
+,1,"standard","Standard rate"
+,2,"reduced","Reduced rate"
+,3,"zero","Zero rate"

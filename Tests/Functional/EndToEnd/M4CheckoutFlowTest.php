@@ -9,7 +9,6 @@ use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Domain\Repository\VoucherRepository;
 use GoldeneZeiten\Products\Event\AfterOrderPlacedEvent;
 use GoldeneZeiten\Products\EventListener\IssueGainedVoucherListener;
 use GoldeneZeiten\Products\Service\Basket\BasketService;
@@ -34,38 +33,30 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private OrderPlacementService $orderPlacementService;
-    private BasketService $basketService;
-    private Product $mainProduct;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/m4_end_to_end.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/M4CheckoutFlowTest/m4_end_to_end.csv');
         // CategoryDiscountPriceProvider still reads Extbase settings eagerly in its constructor,
         // which requires a request resolvable via $GLOBALS['TYPO3_REQUEST'] outside a real dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-
-        $this->basketService = $this->get(BasketService::class);
-        $this->orderPlacementService = $this->get(OrderPlacementService::class);
-
-        $product = $this->get(ProductRepository::class)->findByUid(1);
-        $this->assertInstanceOf(Product::class, $product);
-        $this->mainProduct = $product;
     }
 
     #[Test]
     public function shippingIsWaivedByAFreeShippingVoucherAndTheGiftAddressIsSnapshotted(): void
     {
+        $basketService = $this->get(BasketService::class);
+        $orderPlacementService = $this->get(OrderPlacementService::class);
+        $mainProduct = $this->mainProduct();
         $request = $this->requestFor(9);
-        $this->basketService->add($request, $this->mainProduct->getUid() ?? 0, null, 1);
-        $this->basketService->addVoucherCode($request, 'FREESHIP');
+        $basketService->add($request, $mainProduct->getUid() ?? 0, null, 1);
+        $basketService->addVoucherCode($request, 'FREESHIP');
 
         $delivery = new Address(firstName: 'Jane', lastName: 'Doe', street: 'Gift Lane 1', zip: '54321', city: 'Giftville', country: 'DE');
         $choices = new CheckoutChoices(spendPoints: 0, shippingMethodUid: 1, deliveryAddress: $delivery, giftMessage: 'Happy birthday!');
 
-        $order = $this->orderPlacementService->place($request, $this->address(), 'invoice', $choices)->getOrder();
+        $order = $orderPlacementService->place($request, $this->address(), 'invoice', $choices)->getOrder();
 
         $this->assertSame(1, $order->getShippingMethod());
         $this->assertSame(0, $order->getShippingTotal()->getCents(), 'The free-shipping voucher must waive the shipping cost.');
@@ -78,26 +69,20 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
 
         $this->issueGainedVoucherFor($order, $request);
 
-        $voucher = $this->get(VoucherRepository::class)->findOneByCode($this->gainedVoucherCodeFor($order->getUid() ?? 0));
-        $this->assertNotNull($voucher, 'A gained voucher must have been issued for clearing the reward threshold.');
-        $this->assertFalse($voucher->isCombinable());
-        $this->assertSame(1, $voucher->getUsageLimit());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/m4_gained_voucher_issued.csv');
+    }
+
+    private function mainProduct(): Product
+    {
+        $product = $this->get(ProductRepository::class)->findByUid(1);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
     }
 
     private function issueGainedVoucherFor(Order $order, ServerRequestInterface $request): void
     {
         $listener = $this->get(IssueGainedVoucherListener::class);
         $listener(new AfterOrderPlacedEvent($order, $request));
-    }
-
-    private function gainedVoucherCodeFor(int $orderUid): string
-    {
-        $row = $this->getConnectionPool()
-            ->getConnectionForTable('tx_products_domain_model_voucher')
-            ->select(['code'], 'tx_products_domain_model_voucher', ['generated_from_order' => $orderUid])
-            ->fetchAssociative();
-        $this->assertIsArray($row, 'No gained voucher row was written for this order.');
-        return (string)$row['code'];
     }
 
     private function requestFor(int $frontendUserUid): ServerRequestInterface

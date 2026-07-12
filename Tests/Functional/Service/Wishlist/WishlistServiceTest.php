@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Service\Wishlist\WishlistService;
 use GoldeneZeiten\Products\Service\Wishlist\WishlistStorage;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -24,269 +25,238 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private WishlistService $subject;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/wishlist.csv');
-        $this->subject = $this->get(WishlistService::class);
     }
 
     #[Test]
-    public function aGuestsWishlistRoundTripsThroughTheSession(): void
+    #[DataProvider('frontendUserProvider')]
+    public function aWishlistRoundTripsThroughItsBackingStorage(int $frontendUserUid): void
     {
-        $request = $this->requestFor(0);
+        $subject = $this->get(WishlistService::class);
+        $request = $this->requestFor($frontendUserUid);
 
-        $this->assertFalse($this->subject->contains($request, 1));
-        $this->subject->add($request, 1);
-        $this->assertTrue($this->subject->contains($request, 1));
-        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertFalse($subject->contains($request, 1));
+        $subject->add($request, 1);
+        $this->assertTrue($subject->contains($request, 1));
+        $this->assertSame(['Product 1'], $this->titlesOf($subject->getItems($request)));
 
-        $this->subject->remove($request, 1);
-        $this->assertFalse($this->subject->contains($request, 1));
-        $this->assertSame([], $this->subject->getItems($request));
+        $subject->remove($request, 1);
+        $this->assertFalse($subject->contains($request, 1));
+        $this->assertSame([], $subject->getItems($request));
+    }
+
+    public static function frontendUserProvider(): \Generator
+    {
+        yield 'a guest' => ['frontendUserUid' => 0];
+        yield 'an identified customer' => ['frontendUserUid' => 5];
     }
 
     #[Test]
-    public function anIdentifiedCustomersWishlistRoundTripsThroughPersistedStorage(): void
+    #[DataProvider('frontendUserProvider')]
+    public function addingTheSameProductTwiceIsIdempotent(int $frontendUserUid): void
     {
-        $request = $this->requestFor(5);
+        $subject = $this->get(WishlistService::class);
+        $request = $this->requestFor($frontendUserUid);
 
-        $this->assertFalse($this->subject->contains($request, 1));
-        $this->subject->add($request, 1);
-        $this->assertTrue($this->subject->contains($request, 1));
-        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
+        $subject->add($request, 1);
+        $subject->add($request, 1);
 
-        $this->subject->remove($request, 1);
-        $this->assertFalse($this->subject->contains($request, 1));
-        $this->assertSame([], $this->subject->getItems($request));
-    }
-
-    #[Test]
-    public function addingTheSameProductTwiceIsIdempotentForGuests(): void
-    {
-        $request = $this->requestFor(0);
-
-        $this->subject->add($request, 1);
-        $this->subject->add($request, 1);
-
-        $this->assertCount(1, $this->subject->getItems($request));
-    }
-
-    #[Test]
-    public function addingTheSameProductTwiceIsIdempotentForIdentifiedCustomers(): void
-    {
-        $request = $this->requestFor(5);
-
-        $this->subject->add($request, 1);
-        $this->subject->add($request, 1);
-
-        $this->assertCount(1, $this->subject->getItems($request));
+        $this->assertCount(1, $subject->getItems($request));
     }
 
     #[Test]
     public function removingAnAbsentProductIsANoOp(): void
     {
+        $subject = $this->get(WishlistService::class);
         $guestRequest = $this->requestFor(0);
         $identifiedRequest = $this->requestFor(5);
 
-        $this->subject->remove($guestRequest, 999);
-        $this->subject->remove($identifiedRequest, 999);
+        $subject->remove($guestRequest, 999);
+        $subject->remove($identifiedRequest, 999);
 
-        $this->assertSame([], $this->subject->getItems($guestRequest));
-        $this->assertSame([], $this->subject->getItems($identifiedRequest));
+        $this->assertSame([], $subject->getItems($guestRequest));
+        $this->assertSame([], $subject->getItems($identifiedRequest));
     }
 
     #[Test]
     public function guestAndIdentifiedWishlistsAreNeverMerged(): void
     {
+        $subject = $this->get(WishlistService::class);
         $guestRequest = $this->requestFor(0);
-        $this->subject->add($guestRequest, 1);
+        $subject->add($guestRequest, 1);
 
         $identifiedRequest = $this->requestFor(5);
-        $this->subject->add($identifiedRequest, 2);
+        $subject->add($identifiedRequest, 2);
 
-        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($guestRequest)));
-        $this->assertSame(['Product 2'], $this->titlesOf($this->subject->getItems($identifiedRequest)));
+        $this->assertSame(['Product 1'], $this->titlesOf($subject->getItems($guestRequest)));
+        $this->assertSame(['Product 2'], $this->titlesOf($subject->getItems($identifiedRequest)));
     }
 
     #[Test]
     public function twoDifferentIdentifiedCustomersHaveIndependentWishlists(): void
     {
+        $subject = $this->get(WishlistService::class);
         $customerA = $this->requestFor(5);
         $customerB = $this->requestFor(6);
 
-        $this->subject->add($customerA, 1);
+        $subject->add($customerA, 1);
 
-        $this->assertTrue($this->subject->contains($customerA, 1));
-        $this->assertFalse($this->subject->contains($customerB, 1));
+        $this->assertTrue($subject->contains($customerA, 1));
+        $this->assertFalse($subject->contains($customerB, 1));
     }
 
     #[Test]
-    public function moveUpAndMoveDownReorderAGuestsSessionWishlist(): void
+    #[DataProvider('frontendUserProvider')]
+    public function moveUpAndMoveDownReorderTheWishlist(int $frontendUserUid): void
     {
-        $request = $this->requestFor(0);
-        $this->subject->add($request, 1);
-        $this->subject->add($request, 2);
-        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+        $subject = $this->get(WishlistService::class);
+        $request = $this->requestFor($frontendUserUid);
+        $subject->add($request, 1);
+        $subject->add($request, 2);
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($subject->getItems($request)));
 
-        $this->subject->moveUp($request, 2);
-        $this->assertSame(['Product 2', 'Product 1'], $this->titlesOf($this->subject->getItems($request)));
+        $subject->moveUp($request, 2);
+        $this->assertSame(['Product 2', 'Product 1'], $this->titlesOf($subject->getItems($request)));
 
-        $this->subject->moveDown($request, 2);
-        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+        $subject->moveDown($request, 2);
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($subject->getItems($request)));
     }
 
     #[Test]
     public function movingTheFirstItemUpIsANoOpForGuests(): void
     {
+        $subject = $this->get(WishlistService::class);
         $request = $this->requestFor(0);
-        $this->subject->add($request, 1);
-        $this->subject->add($request, 2);
+        $subject->add($request, 1);
+        $subject->add($request, 2);
 
-        $this->subject->moveUp($request, 1);
+        $subject->moveUp($request, 1);
 
-        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
-    }
-
-    #[Test]
-    public function moveUpAndMoveDownReorderAnIdentifiedCustomersPersistedWishlist(): void
-    {
-        $request = $this->requestFor(5);
-        $this->subject->add($request, 1);
-        $this->subject->add($request, 2);
-        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
-
-        $this->subject->moveUp($request, 2);
-        $this->assertSame(['Product 2', 'Product 1'], $this->titlesOf($this->subject->getItems($request)));
-
-        $this->subject->moveDown($request, 2);
-        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($subject->getItems($request)));
     }
 
     #[Test]
     public function movingTheLastItemDownIsANoOpForIdentifiedCustomers(): void
     {
+        $subject = $this->get(WishlistService::class);
         $request = $this->requestFor(5);
-        $this->subject->add($request, 1);
-        $this->subject->add($request, 2);
+        $subject->add($request, 1);
+        $subject->add($request, 2);
 
-        $this->subject->moveDown($request, 2);
+        $subject->moveDown($request, 2);
 
-        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($subject->getItems($request)));
     }
 
     #[Test]
     public function removeOrderedItemsPurgesOrderedProductsFromThePersistedWishlist(): void
     {
+        $subject = $this->get(WishlistService::class);
         $request = $this->requestFor(5);
-        $this->subject->add($request, 1);
-        $this->subject->add($request, 2);
+        $subject->add($request, 1);
+        $subject->add($request, 2);
 
-        $this->subject->removeOrderedItems($this->orderFor(5, [1]));
+        $subject->removeOrderedItems($this->orderFor(5, [1]));
 
-        $this->assertSame(['Product 2'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 2'], $this->titlesOf($subject->getItems($request)));
     }
 
     #[Test]
     public function removeOrderedItemsIsANoOpForGuestOrders(): void
     {
+        $subject = $this->get(WishlistService::class);
         $request = $this->requestFor(5);
-        $this->subject->add($request, 1);
+        $subject->add($request, 1);
 
-        $this->subject->removeOrderedItems($this->orderFor(0, [1]));
+        $subject->removeOrderedItems($this->orderFor(0, [1]));
 
-        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 1'], $this->titlesOf($subject->getItems($request)));
     }
 
     #[Test]
-    public function countReflectsAGuestsSessionWishlistWithoutHydratingProducts(): void
+    #[DataProvider('frontendUserProvider')]
+    public function countReflectsTheWishlistSize(int $frontendUserUid): void
     {
-        $request = $this->requestFor(0);
-        $this->assertSame(0, $this->subject->count($request));
+        $subject = $this->get(WishlistService::class);
+        $request = $this->requestFor($frontendUserUid);
+        $this->assertSame(0, $subject->count($request));
 
-        $this->subject->add($request, 1);
-        $this->subject->add($request, 2);
+        $subject->add($request, 1);
+        $subject->add($request, 2);
 
-        $this->assertSame(2, $this->subject->count($request));
-    }
-
-    #[Test]
-    public function countReflectsAnIdentifiedCustomersPersistedWishlist(): void
-    {
-        $request = $this->requestFor(5);
-        $this->assertSame(0, $this->subject->count($request));
-
-        $this->subject->add($request, 1);
-        $this->subject->add($request, 2);
-
-        $this->assertSame(2, $this->subject->count($request));
+        $this->assertSame(2, $subject->count($request));
     }
 
     #[Test]
     public function mergeSessionIntoAccountMovesGuestWishlistItemsIntoThePersistedAccount(): void
     {
+        $subject = $this->get(WishlistService::class);
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
         $frontendUser->initializeUserSessionManager();
         $guestRequest = (new ServerRequest('http://localhost/'))
             ->withAttribute('frontend.user', $frontendUser)
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $this->subject->add($guestRequest, 1);
+        $subject->add($guestRequest, 1);
 
         $frontendUser->user = ['uid' => 5];
         $identifiedRequest = (new ServerRequest('http://localhost/'))
             ->withAttribute('frontend.user', $frontendUser)
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $this->subject->mergeSessionIntoAccount($identifiedRequest);
+        $subject->mergeSessionIntoAccount($identifiedRequest);
 
-        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($identifiedRequest)));
+        $this->assertSame(['Product 1'], $this->titlesOf($subject->getItems($identifiedRequest)));
         $this->assertSame([], $this->get(WishlistStorage::class)->load($identifiedRequest));
     }
 
     #[Test]
     public function mergeSessionIntoAccountDeduplicatesAgainstItemsAlreadyInTheAccount(): void
     {
+        $subject = $this->get(WishlistService::class);
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
         $frontendUser->initializeUserSessionManager();
         $guestRequest = (new ServerRequest('http://localhost/'))
             ->withAttribute('frontend.user', $frontendUser)
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $this->subject->add($guestRequest, 1);
+        $subject->add($guestRequest, 1);
 
         $frontendUser->user = ['uid' => 5];
         $identifiedRequest = (new ServerRequest('http://localhost/'))
             ->withAttribute('frontend.user', $frontendUser)
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $this->subject->add($identifiedRequest, 1);
+        $subject->add($identifiedRequest, 1);
 
-        $this->subject->mergeSessionIntoAccount($identifiedRequest);
+        $subject->mergeSessionIntoAccount($identifiedRequest);
 
-        $this->assertCount(1, $this->subject->getItems($identifiedRequest));
+        $this->assertCount(1, $subject->getItems($identifiedRequest));
     }
 
     #[Test]
     public function mergeSessionIntoAccountIsANoOpForAnonymousVisitors(): void
     {
+        $subject = $this->get(WishlistService::class);
         $request = $this->requestFor(0);
-        $this->subject->add($request, 1);
+        $subject->add($request, 1);
 
-        $this->subject->mergeSessionIntoAccount($request);
+        $subject->mergeSessionIntoAccount($request);
 
-        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getItems($request)));
+        $this->assertSame(['Product 1'], $this->titlesOf($subject->getItems($request)));
     }
 
     #[Test]
     public function isEnabledReflectsTheSiteSetting(): void
     {
+        $subject = $this->get(WishlistService::class);
         $requestWithoutSite = $this->requestFor(0);
-        $this->assertFalse($this->subject->isEnabled($requestWithoutSite));
+        $this->assertFalse($subject->isEnabled($requestWithoutSite));
 
         $enabledSite = new Site('products', 1, ['settings' => ['products' => ['wishlist' => ['enabled' => true]]]]);
-        $this->assertTrue($this->subject->isEnabled($requestWithoutSite->withAttribute('site', $enabledSite)));
+        $this->assertTrue($subject->isEnabled($requestWithoutSite->withAttribute('site', $enabledSite)));
 
         $disabledSite = new Site('products', 1, ['settings' => ['products' => ['wishlist' => ['enabled' => false]]]]);
-        $this->assertFalse($this->subject->isEnabled($requestWithoutSite->withAttribute('site', $disabledSite)));
+        $this->assertFalse($subject->isEnabled($requestWithoutSite->withAttribute('site', $disabledSite)));
     }
 
     /**

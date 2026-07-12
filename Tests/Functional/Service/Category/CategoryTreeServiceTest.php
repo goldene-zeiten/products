@@ -18,21 +18,18 @@ final class CategoryTreeServiceTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private CategoryTreeService $subject;
-    private CategoryRepository $categoryRepository;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/category_tree.csv');
-        $this->categoryRepository = $this->get(CategoryRepository::class);
-        $this->subject = new CategoryTreeService($this->categoryRepository);
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/CategoryTreeServiceTest/category_tree.csv');
     }
 
     #[Test]
     public function theTreeHasTwoTopLevelMainCategoriesAtDepthZero(): void
     {
-        $tree = $this->subject->getTree();
+        $subject = $this->get(CategoryTreeService::class);
+
+        $tree = $subject->getTree();
 
         $this->assertCount(2, $tree);
         $this->assertSame('Main Category 1', $tree[0]->getCategory()->getTitle());
@@ -43,7 +40,9 @@ final class CategoryTreeServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function mainCategoryOneHasFiveSubCategoriesAtDepthOne(): void
     {
-        $tree = $this->subject->getTree();
+        $subject = $this->get(CategoryTreeService::class);
+
+        $tree = $subject->getTree();
 
         $subCategories = $tree[0]->getChildren();
         $this->assertCount(5, $subCategories);
@@ -55,7 +54,9 @@ final class CategoryTreeServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function subCategoryFiveHasThreeLeafCategoriesAtDepthTwoWithNoChildrenOfTheirOwn(): void
     {
-        $tree = $this->subject->getTree();
+        $subject = $this->get(CategoryTreeService::class);
+
+        $tree = $subject->getTree();
 
         $subCategoryFive = $tree[0]->getChildren()[4];
         $this->assertSame('Sub Category 5', $subCategoryFive->getCategory()->getTitle());
@@ -70,9 +71,10 @@ final class CategoryTreeServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function ancestorChainIsRootFirstIncludingTheCategoryItself(): void
     {
+        $subject = $this->get(CategoryTreeService::class);
         $lastCategoryThree = $this->findCategory(22);
 
-        $chain = $this->subject->getAncestorChain($lastCategoryThree);
+        $chain = $subject->getAncestorChain($lastCategoryThree);
 
         $this->assertSame(
             ['Main Category 1', 'Sub Category 5', 'Last Category 3'],
@@ -83,10 +85,11 @@ final class CategoryTreeServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function resolveSlugPathBuildsTheFullNestedPathForACategoryAndProduct(): void
     {
+        $subject = $this->get(CategoryTreeService::class);
         $lastCategoryThree = $this->findCategory(22);
         $productTwo = $this->findProduct(102);
 
-        $path = $this->subject->resolveSlugPath($lastCategoryThree, $productTwo);
+        $path = $subject->resolveSlugPath($lastCategoryThree, $productTwo);
 
         $this->assertSame('main-category-1/sub-category-5/last-category-3/product-2', $path);
     }
@@ -94,9 +97,10 @@ final class CategoryTreeServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function resolveSlugPathWithoutAProductReturnsOnlyTheCategoryAncestorPath(): void
     {
+        $subject = $this->get(CategoryTreeService::class);
         $lastCategoryThree = $this->findCategory(22);
 
-        $path = $this->subject->resolveSlugPath($lastCategoryThree);
+        $path = $subject->resolveSlugPath($lastCategoryThree);
 
         $this->assertSame('main-category-1/sub-category-5/last-category-3', $path);
     }
@@ -104,12 +108,13 @@ final class CategoryTreeServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function siblingLeavesSharingTheSameOwnSlugSegmentResolveToDistinctFullPaths(): void
     {
+        $subject = $this->get(CategoryTreeService::class);
         $leafUnderMainOne = $this->findCategory(22);
         $leafUnderMainTwo = $this->findCategory(23);
         $this->assertSame($leafUnderMainOne->getTitle(), $leafUnderMainTwo->getTitle());
 
-        $pathOne = $this->subject->resolveSlugPath($leafUnderMainOne);
-        $pathTwo = $this->subject->resolveSlugPath($leafUnderMainTwo);
+        $pathOne = $subject->resolveSlugPath($leafUnderMainOne);
+        $pathTwo = $subject->resolveSlugPath($leafUnderMainTwo);
 
         $this->assertNotSame($pathOne, $pathTwo);
         $this->assertSame('main-category-1/sub-category-5/last-category-3', $pathOne);
@@ -118,7 +123,7 @@ final class CategoryTreeServiceTest extends AbstractFunctionalTestCase
 
     private function findCategory(int $uid): Category
     {
-        $category = $this->categoryRepository->findByUid($uid);
+        $category = $this->get(CategoryRepository::class)->findByUid($uid);
         $this->assertInstanceOf(Category::class, $category);
         return $category;
     }

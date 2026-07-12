@@ -40,7 +40,7 @@ final class LowStockWarningIntegrationTest extends AbstractFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_placement_low_stock.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/LowStockWarningIntegrationTest/order_placement_low_stock.csv');
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [

@@ -1,0 +1,4 @@
+"tx_products_domain_model_order",,,,,,,,,,
+,"uid","order_number","payment_method","payment_status","status","invoice_number","total_gross","tax_country","legacy_country_name","terms_accepted_at","billing_address"
+,1,"TRACK1","invoice","paid","confirmed","INV-001",9999,"DE","",1700000000,1
+,2,"LEGACY-2","invoice","open","new","",4950,"","Wonderland",0,2

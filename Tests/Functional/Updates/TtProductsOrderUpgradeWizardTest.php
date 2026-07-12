@@ -19,81 +19,69 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
 
     private const LEGACY_TABLE = 'sys_products_orders';
     private const LOCAL_TABLE = 'tx_products_domain_model_order';
-    private const LOCAL_ADDRESS_TABLE = 'tx_products_domain_model_orderaddress';
-    private const LOCAL_ITEM_TABLE = 'tx_products_domain_model_orderitem';
-
-    private TtProductsOrderUpgradeWizard $subject;
-    private BufferedOutput $output;
-    private LegacyMigrationHelper $migrationHelper;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/LegacyMigration/sys_products_orders.csv');
-        $this->migrationHelper = $this->get(LegacyMigrationHelper::class);
-        $this->output = new BufferedOutput();
-        $this->subject = $this->get(TtProductsOrderUpgradeWizard::class);
-        $this->subject->setOutput($this->output);
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsOrderUpgradeWizardTest/sys_products_orders.csv');
+    }
+
+    private function subject(BufferedOutput $output): TtProductsOrderUpgradeWizard
+    {
+        $subject = $this->get(TtProductsOrderUpgradeWizard::class);
+        $subject->setOutput($output);
+        return $subject;
     }
 
     #[Test]
     public function updateIsNecessaryInitially(): void
     {
-        $this->assertTrue($this->subject->updateNecessary());
+        $subject = $this->subject(new BufferedOutput());
+
+        $this->assertTrue($subject->updateNecessary());
     }
 
     #[Test]
     public function deletedOrderIsNeverMigrated(): void
     {
-        $this->subject->executeUpdate();
+        $subject = $this->subject(new BufferedOutput());
+        $migrationHelper = $this->get(LegacyMigrationHelper::class);
 
-        $this->assertNull($this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 3, self::LOCAL_TABLE));
+        $subject->executeUpdate();
+
+        $this->assertNull($migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 3, self::LOCAL_TABLE));
     }
 
     #[Test]
     public function normalOrderIsMigratedWithResolvedStatusAndCountry(): void
     {
-        $this->subject->executeUpdate();
+        $subject = $this->subject(new BufferedOutput());
 
-        $orderUid = (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
-        $order = $this->fetchOrder($orderUid);
+        $subject->executeUpdate();
 
-        $this->assertSame('TRACK1', $order['order_number']);
-        $this->assertSame('invoice', $order['payment_method']);
-        $this->assertSame('paid', $order['payment_status']);
-        $this->assertSame('confirmed', $order['status']);
-        $this->assertSame('INV-001', $order['invoice_number']);
-        $this->assertSame(9999, (int)$order['total_gross']);
-        $this->assertSame('DE', $order['tax_country']);
-        $this->assertSame('', $order['legacy_country_name']);
-        $this->assertNotSame(0, (int)$order['terms_accepted_at']);
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/orders_migrated.csv');
     }
 
     #[Test]
     public function billingAddressIsCreatedAndLinked(): void
     {
-        $this->subject->executeUpdate();
+        $subject = $this->subject(new BufferedOutput());
 
-        $orderUid = (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
-        $order = $this->fetchOrder($orderUid);
-        $address = $this->fetchAddress((int)$order['billing_address']);
+        $subject->executeUpdate();
 
-        $this->assertSame('billing', $address['address_type']);
-        $this->assertSame('Jane', $address['first_name']);
-        $this->assertSame('Doe', $address['last_name']);
-        $this->assertSame('Mrs.', $address['salutation']);
-        $this->assertSame('Main St', $address['street']);
-        $this->assertSame('1', $address['house_number']);
-        $this->assertSame('DE', $address['country']);
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/order_addresses_migrated.csv');
     }
 
     #[Test]
     public function parsedOrderDataIsStoredAsJson(): void
     {
-        $this->subject->executeUpdate();
+        $subject = $this->subject(new BufferedOutput());
+        $migrationHelper = $this->get(LegacyMigrationHelper::class);
 
-        $orderUid = (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
+        $subject->executeUpdate();
+
+        $orderUid = (int)$migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
         $order = $this->fetchOrder($orderUid);
         $legacyOrderData = json_decode($order['legacy_order_data'], true);
 
@@ -104,72 +92,63 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
     #[Test]
     public function unknownStatusUnrecognizedCountryAndUnparseableBlobAreHandledConservatively(): void
     {
-        $this->subject->executeUpdate();
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
+        $migrationHelper = $this->get(LegacyMigrationHelper::class);
 
-        $orderUid = (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE);
+        $subject->executeUpdate();
+
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/orders_migrated.csv');
+
+        $orderUid = (int)$migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE);
         $order = $this->fetchOrder($orderUid);
-
-        $this->assertSame('LEGACY-2', $order['order_number']);
-        $this->assertSame('new', $order['status']);
-        $this->assertSame('open', $order['payment_status']);
-        $this->assertSame('', $order['tax_country']);
-        $this->assertSame('Wonderland', $order['legacy_country_name']);
         $this->assertNull(json_decode($order['legacy_order_data'], true)['order_data']);
 
-        $output = $this->output->fetch();
-        $this->assertStringContainsString('had unknown status 999', $output);
-        $this->assertStringContainsString('country "Wonderland" not recognized', $output);
-        $this->assertStringContainsString('unparseable orderData blob', $output);
-        $this->assertStringContainsString('used electronic pay_mode 4', $output);
+        $outputText = $output->fetch();
+        $this->assertStringContainsString('had unknown status 999', $outputText);
+        $this->assertStringContainsString('country "Wonderland" not recognized', $outputText);
+        $this->assertStringContainsString('unparseable orderData blob', $outputText);
+        $this->assertStringContainsString('used electronic pay_mode 4', $outputText);
     }
 
     #[Test]
     public function lineItemWithResolvableProductIsMigratedWithCurrentPrice(): void
     {
-        $this->subject->executeUpdate();
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
 
-        $orderUid = (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
-        $items = $this->fetchItems($orderUid);
+        $subject->executeUpdate();
 
-        $this->assertCount(1, $items);
-        $this->assertSame('Existing Product', $items[0]['title']);
-        $this->assertSame(2, (int)$items[0]['quantity']);
-        $this->assertSame(1000, (int)$items[0]['unit_price_gross']);
-        $this->assertSame(2000, (int)$items[0]['line_total_gross']);
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/order_items_migrated.csv');
 
         $this->assertStringContainsString(
             'sys_products_orders_mm_tt_products uid 2 referenced missing product uid 999, item dropped',
-            $this->output->fetch()
+            $output->fetch()
         );
     }
 
     #[Test]
     public function lineItemWithResolvableArticleUsesArticlePrice(): void
     {
-        $this->subject->executeUpdate();
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
 
-        $orderUid = (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE);
-        $items = $this->fetchItems($orderUid);
-        $itemsByItemNumber = array_column($items, null, 'item_number');
+        $subject->executeUpdate();
 
-        $this->assertCount(2, $items);
-        $this->assertSame(1250, (int)$itemsByItemNumber['ART1']['unit_price_gross']);
-        $this->assertSame(1000, (int)$itemsByItemNumber['PROD1']['unit_price_gross']);
-        $this->assertSame(0, (int)$itemsByItemNumber['PROD1']['article']);
-        $this->assertStringContainsString('referenced missing article uid 999, kept as product-only', $this->output->fetch());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/order_items_migrated.csv');
+        $this->assertStringContainsString('referenced missing article uid 999, kept as product-only', $output->fetch());
     }
 
     #[Test]
     public function executeUpdateIsIdempotent(): void
     {
-        $this->subject->executeUpdate();
-        $ordersAfterFirstRun = $this->countRows(self::LOCAL_TABLE);
-        $itemsAfterFirstRun = $this->countRows(self::LOCAL_ITEM_TABLE);
+        $subject = $this->subject(new BufferedOutput());
+        $subject->executeUpdate();
 
-        $this->assertFalse($this->subject->updateNecessary());
-        $this->assertTrue($this->subject->executeUpdate());
-        $this->assertSame($ordersAfterFirstRun, $this->countRows(self::LOCAL_TABLE));
-        $this->assertSame($itemsAfterFirstRun, $this->countRows(self::LOCAL_ITEM_TABLE));
+        $this->assertFalse($subject->updateNecessary());
+        $this->assertTrue($subject->executeUpdate());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/orders_migrated.csv');
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/order_items_migrated.csv');
     }
 
     /**
@@ -183,26 +162,6 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
     /**
      * @return array<string, mixed>
      */
-    private function fetchAddress(int $uid): array
-    {
-        return $this->fetchRow(self::LOCAL_ADDRESS_TABLE, $uid);
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function fetchItems(int $orderUid): array
-    {
-        $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable(self::LOCAL_ITEM_TABLE);
-        $queryBuilder->getRestrictions()->removeAll();
-        return $queryBuilder->select('*')->from(self::LOCAL_ITEM_TABLE)
-            ->where($queryBuilder->expr()->eq('parent_order', $queryBuilder->createNamedParameter($orderUid)))
-            ->executeQuery()->fetchAllAssociative();
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
     private function fetchRow(string $table, int $uid): array
     {
         $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable($table);
@@ -211,12 +170,5 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid)))
             ->executeQuery()->fetchAssociative();
         return $row === false ? [] : $row;
-    }
-
-    private function countRows(string $table): int
-    {
-        $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable($table);
-        $queryBuilder->getRestrictions()->removeAll();
-        return (int)$queryBuilder->count('uid')->from($table)->executeQuery()->fetchOne();
     }
 }

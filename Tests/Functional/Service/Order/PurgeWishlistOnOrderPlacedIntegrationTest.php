@@ -42,7 +42,7 @@ final class PurgeWishlistOnOrderPlacedIntegrationTest extends AbstractFunctional
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_placement_wishlist_purge.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/PurgeWishlistOnOrderPlacedIntegrationTest/order_placement_wishlist_purge.csv');
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [

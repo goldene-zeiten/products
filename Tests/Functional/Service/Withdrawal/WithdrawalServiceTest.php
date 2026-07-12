@@ -15,15 +15,13 @@ use GoldeneZeiten\Products\Service\Withdrawal\WithdrawalService;
 use GoldeneZeiten\Products\Service\Withdrawal\WithdrawalTokenService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
 use GoldeneZeiten\Products\Tests\Functional\Fixtures\TestMailer;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
 
 final class WithdrawalServiceTest extends AbstractFrontendTestCase
 {
-    private WithdrawalService $subject;
-    private OrderRepository $orderRepository;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -33,61 +31,55 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         // request resolvable via $GLOBALS['TYPO3_REQUEST'] outside a real dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $this->subject = $this->get(WithdrawalService::class);
-        $this->orderRepository = $this->get(OrderRepository::class);
     }
 
     #[Test]
     public function resolveOrderReturnsTheOrderForAValidToken(): void
     {
+        $subject = $this->get(WithdrawalService::class);
         $order = $this->fetchOrder();
         $token = $this->get(WithdrawalTokenService::class)->generateToken($order);
 
-        $resolved = $this->subject->resolveOrder(1, $token);
+        $resolved = $subject->resolveOrder(1, $token);
 
-        self::assertSame($order->getUid(), $resolved->getUid());
+        $this->assertSame($order->getUid(), $resolved->getUid());
     }
 
     #[Test]
     public function resolveOrderThrowsForAnInvalidToken(): void
     {
+        $subject = $this->get(WithdrawalService::class);
         $this->expectException(InvalidWithdrawalTokenException::class);
         $this->expectExceptionCode(1752100000);
 
-        $this->subject->resolveOrder(1, 'not-a-valid-token');
+        $subject->resolveOrder(1, 'not-a-valid-token');
     }
 
     #[Test]
-    public function isStillWithdrawableIsTrueWithinTheDefaultPeriodForACancellableStatus(): void
+    #[DataProvider('isStillWithdrawableProvider')]
+    public function isStillWithdrawableReflectsThePeriodAndStatus(string $orderDateModifier, ?OrderStatus $status, bool $expected): void
     {
+        $subject = $this->get(WithdrawalService::class);
         $order = $this->fetchOrder();
-        $order->setOrderDate(new \DateTime());
+        $order->setOrderDate((new \DateTime())->modify($orderDateModifier));
+        if ($status !== null) {
+            $order->setStatus($status);
+        }
 
-        self::assertTrue($this->subject->isStillWithdrawable($order));
+        $this->assertSame($expected, $subject->isStillWithdrawable($order));
     }
 
-    #[Test]
-    public function isStillWithdrawableIsFalseAfterThePeriodExpired(): void
+    public static function isStillWithdrawableProvider(): \Generator
     {
-        $order = $this->fetchOrder();
-        $order->setOrderDate((new \DateTime())->modify('-30 days'));
-
-        self::assertFalse($this->subject->isStillWithdrawable($order));
-    }
-
-    #[Test]
-    public function isStillWithdrawableIsFalseForANonCancellableStatus(): void
-    {
-        $order = $this->fetchOrder();
-        $order->setOrderDate(new \DateTime());
-        $order->setStatus(OrderStatus::SHIPPED);
-
-        self::assertFalse($this->subject->isStillWithdrawable($order));
+        yield 'true within the default period for a cancellable status' => ['orderDateModifier' => 'now', 'status' => null, 'expected' => true];
+        yield 'false after the period expired' => ['orderDateModifier' => '-30 days', 'status' => null, 'expected' => false];
+        yield 'false for a non-cancellable status' => ['orderDateModifier' => 'now', 'status' => OrderStatus::SHIPPED, 'expected' => false];
     }
 
     #[Test]
     public function withdrawCancelsTheOrderAndNotifiesCustomerAndMerchant(): void
     {
+        $subject = $this->get(WithdrawalService::class);
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1, additionalRootConfiguration: [
@@ -103,56 +95,56 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         $order = $this->fetchOrder();
         $order->setOrderDate(new \DateTime());
 
-        $this->subject->withdraw($order, 'shopper@example.com', 'Changed my mind');
+        $subject->withdraw($order, 'shopper@example.com', 'Changed my mind');
 
-        self::assertSame(OrderStatus::CANCELLED, $order->getStatus());
-        self::assertCount(1, $order->getStatusLog());
-        self::assertSame('Changed my mind', $order->getStatusLog()[0]['note']);
+        $this->assertSame(OrderStatus::CANCELLED, $order->getStatus());
+        $this->assertCount(1, $order->getStatusLog());
+        $this->assertSame('Changed my mind', $order->getStatusLog()[0]['note']);
         $recipients = array_map(static fn($email): string => $email->getTo()[0]->getAddress(), TestMailer::getSentEmails());
-        self::assertContains('merchant@example.com', $recipients);
-        self::assertContains('shopper@example.com', $recipients);
+        $this->assertContains('merchant@example.com', $recipients);
+        $this->assertContains('shopper@example.com', $recipients);
     }
 
+    /**
+     * @param class-string<\Throwable> $expectedExceptionClass
+     */
     #[Test]
-    public function withdrawThrowsWhenTheEmailDoesNotMatch(): void
+    #[DataProvider('withdrawThrowsProvider')]
+    public function withdrawThrowsInVariousScenarios(string $orderDateModifier, ?OrderStatus $status, string $email, string $expectedExceptionClass, int $expectedExceptionCode): void
     {
+        $subject = $this->get(WithdrawalService::class);
         $order = $this->fetchOrder();
+        $order->setOrderDate((new \DateTime())->modify($orderDateModifier));
+        if ($status !== null) {
+            $order->setStatus($status);
+        }
 
-        $this->expectException(WithdrawalEmailMismatchException::class);
-        $this->expectExceptionCode(1752100001);
+        $this->expectException($expectedExceptionClass);
+        $this->expectExceptionCode($expectedExceptionCode);
 
-        $this->subject->withdraw($order, 'someone-else@example.com', '');
+        $subject->withdraw($order, $email, '');
     }
 
-    #[Test]
-    public function withdrawThrowsWhenThePeriodHasExpired(): void
+    public static function withdrawThrowsProvider(): \Generator
     {
-        $order = $this->fetchOrder();
-        $order->setOrderDate((new \DateTime())->modify('-30 days'));
-
-        $this->expectException(WithdrawalPeriodExpiredException::class);
-        $this->expectExceptionCode(1752100002);
-
-        $this->subject->withdraw($order, 'shopper@example.com', '');
-    }
-
-    #[Test]
-    public function withdrawThrowsWhenTheOrderIsNoLongerCancellable(): void
-    {
-        $order = $this->fetchOrder();
-        $order->setOrderDate(new \DateTime());
-        $order->setStatus(OrderStatus::SHIPPED);
-
-        $this->expectException(OrderNotWithdrawableException::class);
-        $this->expectExceptionCode(1752100003);
-
-        $this->subject->withdraw($order, 'shopper@example.com', '');
+        yield 'the email does not match' => [
+            'orderDateModifier' => 'now', 'status' => null, 'email' => 'someone-else@example.com',
+            'expectedExceptionClass' => WithdrawalEmailMismatchException::class, 'expectedExceptionCode' => 1752100001,
+        ];
+        yield 'the period has expired' => [
+            'orderDateModifier' => '-30 days', 'status' => null, 'email' => 'shopper@example.com',
+            'expectedExceptionClass' => WithdrawalPeriodExpiredException::class, 'expectedExceptionCode' => 1752100002,
+        ];
+        yield 'the order is no longer cancellable' => [
+            'orderDateModifier' => 'now', 'status' => OrderStatus::SHIPPED, 'email' => 'shopper@example.com',
+            'expectedExceptionClass' => OrderNotWithdrawableException::class, 'expectedExceptionCode' => 1752100003,
+        ];
     }
 
     private function fetchOrder(): Order
     {
-        $order = $this->orderRepository->findByUidIgnoringStoragePage(1);
-        self::assertInstanceOf(Order::class, $order);
+        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
+        $this->assertInstanceOf(Order::class, $order);
         return $order;
     }
 }

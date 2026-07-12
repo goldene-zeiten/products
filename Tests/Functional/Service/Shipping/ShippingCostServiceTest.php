@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\Shipping\Exception\NoShippingMethodAvailableException;
 use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -26,95 +27,91 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private Product $lightProduct;
-    private Product $heavyProduct;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shipping_methods.csv');
-        $productRepository = $this->get(ProductRepository::class);
-        $lightProduct = $productRepository->findByUid(1);
-        $heavyProduct = $productRepository->findByUid(2);
-        $this->assertInstanceOf(Product::class, $lightProduct);
-        $this->assertInstanceOf(Product::class, $heavyProduct);
-        $this->lightProduct = $lightProduct;
-        $this->heavyProduct = $heavyProduct;
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/ShippingCostServiceTest/shipping_methods.csv');
     }
 
+    /**
+     * @param string[] $expectedPresentTitles
+     * @param string[] $expectedAbsentTitles
+     */
     #[Test]
-    public function countrySpecificMethodsTakePrecedenceOverTheFallback(): void
+    #[DataProvider('resolveAvailableProvider')]
+    public function resolveAvailableReturnsTheApplicableMethods(string $productKind, string $country, array $expectedPresentTitles, array $expectedAbsentTitles, ?int $expectedCount): void
     {
-        $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(true), $this->basketViewModel($this->lightProduct, 1), 'DE');
+        $subject = $this->get(ShippingCostService::class);
+        $product = $productKind === 'heavy' ? $this->heavyProduct() : $this->lightProduct();
+
+        $methods = $subject->resolveAvailable($this->configuration(true), $this->basketViewModel($product, 1), $country);
 
         $titles = array_map(static fn($method): string => $method->getTitle(), $methods);
-        $this->assertContains('Standard DE', $titles);
-        $this->assertNotContains('Fallback', $titles);
+        foreach ($expectedPresentTitles as $expectedPresentTitle) {
+            $this->assertContains($expectedPresentTitle, $titles);
+        }
+        foreach ($expectedAbsentTitles as $expectedAbsentTitle) {
+            $this->assertNotContains($expectedAbsentTitle, $titles);
+        }
+        if ($expectedCount !== null) {
+            $this->assertCount($expectedCount, $methods);
+        }
     }
 
-    #[Test]
-    public function theFallbackIsUsedWhenNoCountrySpecificMethodExists(): void
+    public static function resolveAvailableProvider(): \Generator
     {
-        $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(true), $this->basketViewModel($this->lightProduct, 1), 'AT');
-
-        $this->assertCount(1, $methods);
-        $this->assertSame('Fallback', $methods[0]->getTitle());
-    }
-
-    #[Test]
-    public function aBasketAboveTheWeightTierGetsOnlyTheHeavyMethod(): void
-    {
-        $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(true), $this->basketViewModel($this->heavyProduct, 1), 'DE');
-
-        $titles = array_map(static fn($method): string => $method->getTitle(), $methods);
-        $this->assertContains('Heavy DE', $titles);
-        $this->assertNotContains('Standard DE', $titles);
-    }
-
-    #[Test]
-    public function aBasketBelowTheMinimumOrderValueExcludesThatMethod(): void
-    {
-        $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(true), $this->basketViewModel($this->lightProduct, 1), 'DE');
-
-        $titles = array_map(static fn($method): string => $method->getTitle(), $methods);
-        $this->assertNotContains('Big Orders Only DE', $titles);
+        yield 'country specific methods take precedence over the fallback' => [
+            'productKind' => 'light', 'country' => 'DE', 'expectedPresentTitles' => ['Standard DE'], 'expectedAbsentTitles' => ['Fallback'], 'expectedCount' => null,
+        ];
+        yield 'the fallback is used when no country specific method exists' => [
+            'productKind' => 'light', 'country' => 'AT', 'expectedPresentTitles' => ['Fallback'], 'expectedAbsentTitles' => [], 'expectedCount' => 1,
+        ];
+        yield 'a basket above the weight tier gets only the heavy method' => [
+            'productKind' => 'heavy', 'country' => 'DE', 'expectedPresentTitles' => ['Heavy DE'], 'expectedAbsentTitles' => ['Standard DE'], 'expectedCount' => null,
+        ];
+        yield 'a basket below the minimum order value excludes that method' => [
+            'productKind' => 'light', 'country' => 'DE', 'expectedPresentTitles' => [], 'expectedAbsentTitles' => ['Big Orders Only DE'], 'expectedCount' => null,
+        ];
     }
 
     #[Test]
     public function nothingIsAvailableWhenTheFeatureIsDisabled(): void
     {
-        $methods = $this->get(ShippingCostService::class)->resolveAvailable($this->configuration(false), $this->basketViewModel($this->lightProduct, 1), 'DE');
+        $subject = $this->get(ShippingCostService::class);
+
+        $methods = $subject->resolveAvailable($this->configuration(false), $this->basketViewModel($this->lightProduct(), 1), 'DE');
 
         $this->assertSame([], $methods);
     }
 
     #[Test]
-    public function resolveSelectionReturnsNoneWhenTheFeatureIsDisabled(): void
+    #[DataProvider('resolveSelectionNoneProvider')]
+    public function resolveSelectionReturnsNoneInVariousScenarios(bool $enabled, int $chosenMethodUid, int $expectedShippingMethodUid, ?int $expectedCostCents): void
     {
-        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
+        $subject = $this->get(ShippingCostService::class);
+        $criteria = new ShippingSelectionCriteria($chosenMethodUid, $this->basketViewModel($this->lightProduct(), 1), 'DE', false);
 
-        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(false), $criteria);
+        $selection = $subject->resolveSelection($this->configuration($enabled), $criteria);
 
-        $this->assertSame(0, $selection->getShippingMethodUid());
-        $this->assertSame(0, $selection->getCost()->getCents());
+        $this->assertSame($expectedShippingMethodUid, $selection->getShippingMethodUid());
+        if ($expectedCostCents !== null) {
+            $this->assertSame($expectedCostCents, $selection->getCost()->getCents());
+        }
     }
 
-    #[Test]
-    public function resolveSelectionReturnsNoneWhenNoMethodWasChosen(): void
+    public static function resolveSelectionNoneProvider(): \Generator
     {
-        $criteria = new ShippingSelectionCriteria(0, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
-
-        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
-
-        $this->assertSame(0, $selection->getShippingMethodUid());
+        yield 'returns none when the feature is disabled' => ['enabled' => false, 'chosenMethodUid' => 1, 'expectedShippingMethodUid' => 0, 'expectedCostCents' => 0];
+        yield 'returns none when no method was chosen' => ['enabled' => true, 'chosenMethodUid' => 0, 'expectedShippingMethodUid' => 0, 'expectedCostCents' => null];
     }
 
     #[Test]
     public function resolveSelectionResolvesTheChosenMethodsRate(): void
     {
-        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
+        $subject = $this->get(ShippingCostService::class);
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct(), 1), 'DE', false);
 
-        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
+        $selection = $subject->resolveSelection($this->configuration(true), $criteria);
 
         $this->assertSame(1, $selection->getShippingMethodUid());
         $this->assertSame(500, $selection->getCost()->getCents());
@@ -123,9 +120,10 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function resolveSelectionZeroesTheCostWhenWaived(): void
     {
-        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', true);
+        $subject = $this->get(ShippingCostService::class);
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct(), 1), 'DE', true);
 
-        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
+        $selection = $subject->resolveSelection($this->configuration(true), $criteria);
 
         $this->assertSame(0, $selection->getCost()->getCents());
     }
@@ -136,74 +134,82 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $this->expectException(NoShippingMethodAvailableException::class);
         $this->expectExceptionCode(1783600000);
 
+        $subject = $this->get(ShippingCostService::class);
         // Method 1 (Standard DE) is capped at 1000g, the heavy basket weighs 1500g.
-        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->heavyProduct, 1), 'DE', false);
-        $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->heavyProduct(), 1), 'DE', false);
+        $subject->resolveSelection($this->configuration(true), $criteria);
     }
 
     #[Test]
-    public function resolveSelectionAddsTheBulkySurchargeOncePerBulkyUnit(): void
+    #[DataProvider('bulkySurchargeProvider')]
+    public function resolveSelectionAppliesTheBulkySurchargeCorrectly(bool $bulky, int $quantity, bool $waived, int $expectedCostCents): void
     {
-        $this->lightProduct->setBulky(true);
+        $subject = $this->get(ShippingCostService::class);
+        $lightProduct = $this->lightProduct();
+        $lightProduct->setBulky($bulky);
 
         // Quantity 2 keeps the basket at exactly method 1's 1000g cap (500g each).
-        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 2), 'DE', false);
-        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true, '2.50'), $criteria);
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($lightProduct, $quantity), 'DE', $waived);
+        $selection = $subject->resolveSelection($this->configuration(true, '2.50'), $criteria);
 
-        $this->assertSame(500 + 500, $selection->getCost()->getCents());
+        $this->assertSame($expectedCostCents, $selection->getCost()->getCents());
     }
 
-    #[Test]
-    public function resolveSelectionBulkySurchargeStillAppliesWhenShippingIsWaived(): void
+    public static function bulkySurchargeProvider(): \Generator
     {
-        $this->lightProduct->setBulky(true);
-
-        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', true);
-        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true, '2.50'), $criteria);
-
-        $this->assertSame(250, $selection->getCost()->getCents());
+        yield 'adds the surcharge once per bulky unit' => ['bulky' => true, 'quantity' => 2, 'waived' => false, 'expectedCostCents' => 500 + 500];
+        yield 'surcharge still applies when shipping is waived' => ['bulky' => true, 'quantity' => 1, 'waived' => true, 'expectedCostCents' => 250];
+        yield 'no surcharge for non-bulky items' => ['bulky' => false, 'quantity' => 2, 'waived' => false, 'expectedCostCents' => 500];
     }
 
     #[Test]
-    public function resolveSelectionHasNoSurchargeForNonBulkyItems(): void
+    #[DataProvider('resolveSelectionTaxRateProvider')]
+    public function resolveSelectionResolvesTheApplicableTaxRate(int $methodUid, string $productKind, float $expectedTaxRate): void
     {
-        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 2), 'DE', false);
-        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true, '2.50'), $criteria);
+        $subject = $this->get(ShippingCostService::class);
+        $product = $productKind === 'heavy' ? $this->heavyProduct() : $this->lightProduct();
+        $criteria = new ShippingSelectionCriteria($methodUid, $this->basketViewModel($product, 1), 'DE', false);
 
-        $this->assertSame(500, $selection->getCost()->getCents());
+        $selection = $subject->resolveSelection($this->configuration(true), $criteria);
+
+        $this->assertSame($expectedTaxRate, $selection->getTaxRate());
     }
 
-    #[Test]
-    public function resolveSelectionResolvesTheStandardTaxClassRateByDefault(): void
+    public static function resolveSelectionTaxRateProvider(): \Generator
     {
         // Method 1 has no tax override; the fixture's "standard" tax class carries 19% for DE.
-        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
-        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
-
-        $this->assertSame(0.19, $selection->getTaxRate());
-    }
-
-    #[Test]
-    public function resolveSelectionUsesTheMethodsTaxRateOverrideWhenEnabled(): void
-    {
+        yield 'resolves the standard tax class rate by default' => ['methodUid' => 1, 'productKind' => 'light', 'expectedTaxRate' => 0.19];
         // Method 2 (Heavy DE) has an enabled override of 7% instead of the standard 19%.
-        $criteria = new ShippingSelectionCriteria(2, $this->basketViewModel($this->heavyProduct, 1), 'DE', false);
-        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true), $criteria);
-
-        $this->assertSame(0.07, $selection->getTaxRate());
+        yield 'uses the method\'s tax rate override when enabled' => ['methodUid' => 2, 'productKind' => 'heavy', 'expectedTaxRate' => 0.07];
     }
 
     #[Test]
     public function resolveSelectionAppliesTheShoppersDiscountToTheMethodsRateButNotTheSurcharge(): void
     {
-        $this->lightProduct->setBulky(true);
+        $subject = $this->get(ShippingCostService::class);
+        $lightProduct = $this->lightProduct();
+        $lightProduct->setBulky(true);
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/frontend_user_discounts.csv');
 
         // user 3 has a personal 15% discount (see frontend_user_discounts.csv): 5.00 * 0.85 = 4.25, plus the untouched 2.50 surcharge.
-        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($this->lightProduct, 1), 'DE', false);
-        $selection = $this->get(ShippingCostService::class)->resolveSelection($this->configuration(true, '2.50'), $criteria, $this->requestFor(3));
+        $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($lightProduct, 1), 'DE', false);
+        $selection = $subject->resolveSelection($this->configuration(true, '2.50'), $criteria, $this->requestFor(3));
 
         $this->assertSame(425 + 250, $selection->getCost()->getCents());
+    }
+
+    private function lightProduct(): Product
+    {
+        $product = $this->get(ProductRepository::class)->findByUid(1);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
+    }
+
+    private function heavyProduct(): Product
+    {
+        $product = $this->get(ProductRepository::class)->findByUid(2);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
     }
 
     private function configuration(bool $shippingEnabled, string $bulkySurcharge = '0.00'): ProductsConfiguration

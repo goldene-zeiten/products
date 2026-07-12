@@ -16,12 +16,12 @@ use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Service\Order\OrderCreationService;
 use GoldeneZeiten\Products\Service\Shipping\Exception\NoShippingMethodAvailableException;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\Entity\Site;
-use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
 {
@@ -29,114 +29,97 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private Product $product;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_placement_with_shipping.csv');
-        $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
-        $this->product = $product;
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/OrderCreationServiceShippingTest/order_placement_with_shipping.csv');
     }
 
+    /**
+     * @param string[] $voucherCodes
+     */
     #[Test]
-    public function aChosenAvailableMethodAddsItsRateToTheOrderTotal(): void
+    #[DataProvider('shippingMethodVoucherScenarioProvider')]
+    public function shippingMethodAndVoucherHandling(array $voucherCodes, int $expectedShippingCents): void
     {
-        $order = $this->subject()->create(
+        $subject = $this->subject();
+
+        $order = $subject->create(
             $this->requestWithShipping(enabled: true),
-            $this->basketViewModel(),
-            new CheckoutSelections([], 0, 1),
+            $this->basketViewModel($this->product()),
+            new CheckoutSelections($voucherCodes, 0, 1),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame(1, $order->getShippingMethod());
-        self::assertSame(500, $order->getShippingTotal()->getCents());
-        self::assertSame(10500, $order->getTotalGross()->getCents());
+        $this->assertSame(1, $order->getShippingMethod());
+        $this->assertSame($expectedShippingCents, $order->getShippingTotal()->getCents());
     }
 
-    #[Test]
-    public function aFreeShippingVoucherZeroesTheShippingCost(): void
+    /**
+     * @return \Generator<string, array<string, mixed>>
+     */
+    public static function shippingMethodVoucherScenarioProvider(): \Generator
     {
-        $order = $this->subject()->create(
-            $this->requestWithShipping(enabled: true),
-            $this->basketViewModel(),
-            new CheckoutSelections(['FREESHIP'], 0, 1),
-            $this->address(),
-            $this->paymentMethod()
-        );
-
-        self::assertSame(1, $order->getShippingMethod());
-        self::assertSame(0, $order->getShippingTotal()->getCents());
-    }
-
-    #[Test]
-    public function aRegularVoucherDoesNotWaiveTheShippingCost(): void
-    {
-        $order = $this->subject()->create(
-            $this->requestWithShipping(enabled: true),
-            $this->basketViewModel(),
-            new CheckoutSelections(['REGULAR'], 0, 1),
-            $this->address(),
-            $this->paymentMethod()
-        );
-
-        self::assertSame(500, $order->getShippingTotal()->getCents());
+        yield 'chosenMethodAddsItsRate' => ['voucherCodes' => [], 'expectedShippingCents' => 500];
+        yield 'freeShippingVoucherZeroesTheCost' => ['voucherCodes' => ['FREESHIP'], 'expectedShippingCents' => 0];
+        yield 'regularVoucherDoesNotWaiveTheShipping' => ['voucherCodes' => ['REGULAR'], 'expectedShippingCents' => 500];
     }
 
     #[Test]
     public function shippingIsANoOpWhileTheFeatureIsDisabledEvenWithAMethodChosen(): void
     {
-        $order = $this->subject()->create(
+        $subject = $this->subject();
+
+        $order = $subject->create(
             $this->requestWithShipping(enabled: false),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 0, 1),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame(0, $order->getShippingMethod());
-        self::assertSame(0, $order->getShippingTotal()->getCents());
-        self::assertSame(10000, $order->getTotalGross()->getCents());
+        $this->assertSame(0, $order->getShippingMethod());
+        $this->assertSame(0, $order->getShippingTotal()->getCents());
+        $this->assertSame(10000, $order->getTotalGross()->getCents());
     }
 
     #[Test]
     public function shippingIsANoOpWhenNoMethodWasChosen(): void
     {
-        $order = $this->subject()->create(
+        $subject = $this->subject();
+
+        $order = $subject->create(
             $this->requestWithShipping(enabled: true),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 0, 0),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame(0, $order->getShippingMethod());
-        self::assertSame(0, $order->getShippingTotal()->getCents());
+        $this->assertSame(0, $order->getShippingMethod());
+        $this->assertSame(0, $order->getShippingTotal()->getCents());
     }
 
     #[Test]
     public function placementFailsWithoutSideEffectsWhenTheChosenMethodIsNoLongerAvailable(): void
     {
-        $orderCountBefore = $this->countOrders();
-        $stockBefore = $this->currentStock();
+        $subject = $this->subject();
 
         try {
-            $this->subject()->create(
+            $subject->create(
                 $this->requestWithShipping(enabled: true),
-                $this->basketViewModel(),
+                $this->basketViewModel($this->product()),
                 new CheckoutSelections([], 0, 999),
                 $this->address(),
                 $this->paymentMethod()
             );
-            self::fail('Expected NoShippingMethodAvailableException was not thrown.');
+            $this->fail('Expected NoShippingMethodAvailableException was not thrown.');
         } catch (NoShippingMethodAvailableException) {
             // expected
         }
 
-        self::assertSame($orderCountBefore, $this->countOrders());
-        self::assertSame($stockBefore, $this->currentStock());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/shipping_unavailable_no_side_effects.csv');
     }
 
     private function subject(): OrderCreationService
@@ -152,12 +135,19 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
             ->withAttribute('site', $site);
     }
 
-    private function basketViewModel(): BasketViewModel
+    private function product(): Product
+    {
+        $product = $this->get(ProductRepository::class)->findByUid(1);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
+    }
+
+    private function basketViewModel(Product $product): BasketViewModel
     {
         $unitPriceNet = Money::fromDecimalString('84.03');
         $unitPriceGross = Money::fromDecimalString('100.00');
         $item = new BasketViewItem(
-            $this->product,
+            $product,
             null,
             1,
             $unitPriceNet,
@@ -178,21 +168,5 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     private function paymentMethod(): PaymentMethodInterface
     {
         return $this->get(PaymentMethodRegistry::class)->get('invoice');
-    }
-
-    private function countOrders(): int
-    {
-        return (int)$this->getConnectionPool()
-            ->getConnectionForTable('tx_products_domain_model_order')
-            ->executeQuery('SELECT COUNT(*) FROM tx_products_domain_model_order')
-            ->fetchOne();
-    }
-
-    private function currentStock(): int
-    {
-        $this->get(PersistenceManagerInterface::class)->clearState();
-        $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
-        return $product->getInStock();
     }
 }

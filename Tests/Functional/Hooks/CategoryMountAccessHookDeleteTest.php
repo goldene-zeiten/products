@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Hooks;
 
 use GoldeneZeiten\Products\Hooks\CategoryMountAccessHook;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
@@ -29,40 +30,37 @@ final class CategoryMountAccessHookDeleteTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private CategoryMountAccessHook $hook;
-    private DataHandler $dataHandler;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/category_delete_permission.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/CategoryMountAccessHookDeleteTest/category_delete_permission.csv');
+    }
+
+    #[Test]
+    #[DataProvider('deleteCommandDataProvider')]
+    public function processCmdmapEnforcesCategoryDeletePermission(int $categoryUid, bool $expectedCommandIsProcessed): void
+    {
         $backendUser = $this->setUpBackendUser(10);
         $GLOBALS['LANG'] = $this->get(LanguageServiceFactory::class)->createFromUserPreferences($backendUser);
-        $this->hook = $this->get(CategoryMountAccessHook::class);
-        $this->dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $this->dataHandler->start([], []);
-        $this->dataHandler->BE_USER = $backendUser;
-    }
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start([], []);
+        $dataHandler->BE_USER = $backendUser;
 
-    #[Test]
-    public function deleteIsDeniedWhenUserLacksCategoryDeletePermission(): void
-    {
-        $this->assertTrue($this->processDeleteCommand(200));
-    }
-
-    #[Test]
-    public function deleteIsAllowedWhenUserHasCategoryDeletePermission(): void
-    {
-        $this->assertFalse($this->processDeleteCommand(201));
-    }
-
-    /**
-     * @return bool whether the hook marked the command as processed (i.e. denied it)
-     */
-    private function processDeleteCommand(int $categoryUid): bool
-    {
         $commandIsProcessed = false;
-        $this->hook->processCmdmap('delete', self::TABLE, $categoryUid, 1, $commandIsProcessed, $this->dataHandler, false);
-        return $commandIsProcessed;
+        $this->get(CategoryMountAccessHook::class)->processCmdmap('delete', self::TABLE, $categoryUid, 1, $commandIsProcessed, $dataHandler, false);
+
+        $this->assertSame($expectedCommandIsProcessed, $commandIsProcessed);
+    }
+
+    public static function deleteCommandDataProvider(): \Generator
+    {
+        yield 'delete is denied when user lacks category delete permission' => [
+            'categoryUid' => 200,
+            'expectedCommandIsProcessed' => true,
+        ];
+        yield 'delete is allowed when user has category delete permission' => [
+            'categoryUid' => 201,
+            'expectedCommandIsProcessed' => false,
+        ];
     }
 }

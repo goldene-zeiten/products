@@ -7,8 +7,9 @@ namespace GoldeneZeiten\Products\Tests\Functional\Service\Search;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Service\Search\SearchService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Tests\Functional\Fixtures\FixtureConfigurationManager;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 final class SearchServiceTest extends AbstractFunctionalTestCase
@@ -24,49 +25,41 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
-    public function aBlankTermNeverExecutesAQuery(): void
+    #[DataProvider('blankTermProvider')]
+    public function blankTermsNeverExecuteAQuery(string $term): void
     {
-        $result = $this->subject()->search('', null, 1);
+        $result = $this->subject()->search($term, null, 1);
 
         $this->assertFalse($result->hasSearched());
         $this->assertSame(0, $result->getTotalCount());
         $this->assertSame([], $result->getProducts());
     }
 
-    #[Test]
-    public function aWhitespaceOnlyTermIsTreatedAsBlank(): void
+    public static function blankTermProvider(): \Generator
     {
-        $this->assertFalse($this->subject()->search('   ', null, 1)->hasSearched());
+        yield 'blank term' => ['term' => ''];
+        yield 'whitespace only term' => ['term' => '   '];
     }
 
     #[Test]
-    public function resultsAreSplitAcrossPagesAccordingToTheSiteSetting(): void
+    #[DataProvider('paginationProvider')]
+    public function paginationBehavior(int $resultsPerPage, string $term, int $requestedPage, int $expectedCount, int $expectedCurrentPage, int $expectedTotalPages): void
     {
-        $result = $this->subject(resultsPerPage: 1)->search('Shoes', null, 1);
+        $result = $this->subject(resultsPerPage: $resultsPerPage)->search($term, null, $requestedPage);
 
         $this->assertTrue($result->hasSearched());
         $this->assertTrue($result->hasResults());
-        $this->assertCount(1, $result->getProducts());
+        $this->assertCount($expectedCount, $result->getProducts());
         $this->assertSame(2, $result->getTotalCount());
-        $this->assertSame(2, $result->getTotalPages());
-        $this->assertSame(1, $result->getCurrentPage());
+        $this->assertSame($expectedTotalPages, $result->getTotalPages());
+        $this->assertSame($expectedCurrentPage, $result->getCurrentPage());
     }
 
-    #[Test]
-    public function theSecondPageReturnsTheRemainingResult(): void
+    public static function paginationProvider(): \Generator
     {
-        $result = $this->subject(resultsPerPage: 1)->search('Shoes', null, 2);
-
-        $this->assertCount(1, $result->getProducts());
-        $this->assertSame(2, $result->getCurrentPage());
-    }
-
-    #[Test]
-    public function aPageBelowOneIsClampedToTheFirstPage(): void
-    {
-        $result = $this->subject(resultsPerPage: 1)->search('Shoes', null, 0);
-
-        $this->assertSame(1, $result->getCurrentPage());
+        yield 'first page' => ['resultsPerPage' => 1, 'term' => 'Shoes', 'requestedPage' => 1, 'expectedCount' => 1, 'expectedCurrentPage' => 1, 'expectedTotalPages' => 2];
+        yield 'second page' => ['resultsPerPage' => 1, 'term' => 'Shoes', 'requestedPage' => 2, 'expectedCount' => 1, 'expectedCurrentPage' => 2, 'expectedTotalPages' => 2];
+        yield 'page below one clamped to first' => ['resultsPerPage' => 1, 'term' => 'Shoes', 'requestedPage' => 0, 'expectedCount' => 1, 'expectedCurrentPage' => 1, 'expectedTotalPages' => 2];
     }
 
     #[Test]
@@ -85,25 +78,6 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
 
     private function fakeConfigurationManager(int $resultsPerPage): ConfigurationManagerInterface
     {
-        return new class ($resultsPerPage) implements ConfigurationManagerInterface {
-            public function __construct(
-                private readonly int $resultsPerPage
-            ) {}
-
-            /**
-             * @return array<string, mixed>
-             */
-            public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
-            {
-                return ['search' => ['resultsPerPage' => $this->resultsPerPage]];
-            }
-
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function setConfiguration(array $configuration = []): void {}
-
-            public function setRequest(ServerRequestInterface $request): void {}
-        };
+        return new FixtureConfigurationManager(['search' => ['resultsPerPage' => $resultsPerPage]]);
     }
 }

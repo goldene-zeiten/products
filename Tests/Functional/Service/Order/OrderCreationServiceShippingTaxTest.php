@@ -15,6 +15,7 @@ use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Service\Order\OrderCreationService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -36,65 +37,58 @@ final class OrderCreationServiceShippingTaxTest extends AbstractFunctionalTestCa
         'goldene-zeiten/products',
     ];
 
-    private Product $product;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_shipping_tax_and_discount.csv');
-        $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
-        $this->product = $product;
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/OrderCreationServiceShippingTaxTest/order_shipping_tax_and_discount.csv');
     }
 
     #[Test]
-    public function shippingCostUsesTheStandardTaxClassRateByDefault(): void
+    #[DataProvider('shippingCostTaxCalculationProvider')]
+    public function shippingCostUsesTaxRateCorrectly(int $methodId, int $expectedNetAddition, int $expectedTaxAddition): void
     {
-        $order = $this->subject()->create(
+        $subject = $this->subject();
+
+        $order = $subject->create(
             $this->requestFor(0),
-            $this->basketViewModel(),
-            new CheckoutSelections([], 0, 1),
+            $this->basketViewModel($this->product()),
+            new CheckoutSelections([], 0, $methodId),
             $this->address(),
             $this->paymentMethod()
         );
 
+        $this->assertSame(500, $order->getShippingTotal()->getCents());
+        $this->assertSame(8403 + $expectedNetAddition, $order->getTotalNet()->getCents());
+        $this->assertSame(1597 + $expectedTaxAddition, $order->getTotalTax()->getCents());
+    }
+
+    /**
+     * @return \Generator<string, array<string, int>>
+     */
+    public static function shippingCostTaxCalculationProvider(): \Generator
+    {
         // 5.00 gross shipping at 19% standard rate: net = round(500 / 1.19) = 420, tax = 80.
-        self::assertSame(500, $order->getShippingTotal()->getCents());
-        self::assertSame(8403 + 420, $order->getTotalNet()->getCents());
-        self::assertSame(1597 + 80, $order->getTotalTax()->getCents());
-    }
-
-    #[Test]
-    public function shippingCostUsesTheMethodsTaxRateOverrideWhenEnabled(): void
-    {
-        $order = $this->subject()->create(
-            $this->requestFor(0),
-            $this->basketViewModel(),
-            new CheckoutSelections([], 0, 2),
-            $this->address(),
-            $this->paymentMethod()
-        );
-
+        yield 'standardTaxRate' => ['methodId' => 1, 'expectedNetAddition' => 420, 'expectedTaxAddition' => 80];
         // 5.00 gross shipping at the method's 7% override: net = round(500 / 1.07) = 467, tax = 33.
-        self::assertSame(500, $order->getShippingTotal()->getCents());
-        self::assertSame(8403 + 467, $order->getTotalNet()->getCents());
-        self::assertSame(1597 + 33, $order->getTotalTax()->getCents());
+        yield 'methodTaxRateOverride' => ['methodId' => 2, 'expectedNetAddition' => 467, 'expectedTaxAddition' => 33];
     }
 
     #[Test]
     public function shippingCostReflectsTheShoppersFeUsergroupDiscount(): void
     {
+        $subject = $this->subject();
+
         // user 1 belongs to group 1, which carries a 15% discount (see fixture).
-        $order = $this->subject()->create(
+        $order = $subject->create(
             $this->requestFor(1),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 0, 1),
             $this->address(),
             $this->paymentMethod()
         );
 
         // 5.00 * 0.85 = 4.25 gross shipping.
-        self::assertSame(425, $order->getShippingTotal()->getCents());
+        $this->assertSame(425, $order->getShippingTotal()->getCents());
     }
 
     private function subject(): OrderCreationService
@@ -122,12 +116,19 @@ final class OrderCreationServiceShippingTaxTest extends AbstractFunctionalTestCa
         return $request->withAttribute('frontend.user', $frontendUser);
     }
 
-    private function basketViewModel(): BasketViewModel
+    private function product(): Product
+    {
+        $product = $this->get(ProductRepository::class)->findByUid(1);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
+    }
+
+    private function basketViewModel(Product $product): BasketViewModel
     {
         $unitPriceNet = Money::fromDecimalString('84.03');
         $unitPriceGross = Money::fromDecimalString('100.00');
         $item = new BasketViewItem(
-            $this->product,
+            $product,
             null,
             1,
             $unitPriceNet,

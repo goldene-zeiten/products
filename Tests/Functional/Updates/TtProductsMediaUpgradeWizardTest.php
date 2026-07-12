@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Updates;
 
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Updates\TtProductsMediaUpgradeWizard;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -16,94 +17,94 @@ final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products-legacy-fixture',
     ];
 
-    private TtProductsMediaUpgradeWizard $subject;
-    private BufferedOutput $output;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/LegacyMigration/tt_products_media.csv');
-        $this->output = new BufferedOutput();
-        $this->subject = $this->get(TtProductsMediaUpgradeWizard::class);
-        $this->subject->setOutput($this->output);
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsMediaUpgradeWizardTest/tt_products_media.csv');
+    }
+
+    private function subject(BufferedOutput $output): TtProductsMediaUpgradeWizard
+    {
+        $subject = $this->get(TtProductsMediaUpgradeWizard::class);
+        $subject->setOutput($output);
+        return $subject;
     }
 
     #[Test]
     public function updateIsNecessaryInitially(): void
     {
-        $this->assertTrue($this->subject->updateNecessary());
+        $subject = $this->subject(new BufferedOutput());
+
+        $this->assertTrue($subject->updateNecessary());
     }
 
     #[Test]
     public function existingFalReferencesAreCopiedToLocalRecords(): void
     {
-        $this->assertTrue($this->subject->executeUpdate());
+        $subject = $this->subject(new BufferedOutput());
 
-        $this->assertSame(500, $this->fetchReferenceFileUid('tx_products_domain_model_product', 'images', 80));
-        $this->assertSame(501, $this->fetchReferenceFileUid('tx_products_domain_model_product', 'downloads', 80));
-        $this->assertSame(502, $this->fetchReferenceFileUid('tx_products_domain_model_category', 'image', 50));
-        $this->assertSame(503, $this->fetchReferenceFileUid('tx_products_domain_model_article', 'images', 60));
+        $this->assertTrue($subject->executeUpdate());
+
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/media_references_migrated.csv');
     }
 
+    /**
+     * @param string[] $expectedOutputStrings
+     */
     #[Test]
-    public function secondaryThumbnailsAndSliderImagesAreReportedNotMigrated(): void
+    #[DataProvider('outOfScopeMediaWarningProvider')]
+    public function outOfScopeMediaIsReportedNotMigrated(array $expectedOutputStrings): void
     {
-        $this->subject->executeUpdate();
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
 
-        $output = $this->output->fetch();
-        $this->assertStringContainsString('tt_products uid 1: "smallimage" is a redundant thumbnail', $output);
-        $this->assertStringContainsString('tt_products_cat uid 1: "sliderimage" is a redundant thumbnail', $output);
+        $subject->executeUpdate();
+
+        $outputText = $output->fetch();
+        foreach ($expectedOutputStrings as $expectedOutputString) {
+            $this->assertStringContainsString($expectedOutputString, $outputText);
+        }
     }
 
-    #[Test]
-    public function linkedDownloadsCatalogIsReportedNotMigrated(): void
+    /**
+     * @return \Generator<string, array{expectedOutputStrings: string[]}>
+     */
+    public static function outOfScopeMediaWarningProvider(): \Generator
     {
-        $this->subject->executeUpdate();
-
-        $this->assertStringContainsString('tt_products uid 1 had catalog downloads linked', $this->output->fetch());
+        yield 'secondary thumbnails and slider images' => [
+            'expectedOutputStrings' => [
+                'tt_products uid 1: "smallimage" is a redundant thumbnail',
+                'tt_products_cat uid 1: "sliderimage" is a redundant thumbnail',
+            ],
+        ];
+        yield 'linked downloads catalog' => [
+            'expectedOutputStrings' => [
+                'tt_products uid 1 had catalog downloads linked',
+            ],
+        ];
     }
 
     #[Test]
     public function missingRawFilenameFileIsWarnedAndSkipped(): void
     {
-        $this->subject->executeUpdate();
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
 
-        $this->assertNull($this->fetchReferenceFileUid('tx_products_domain_model_product', 'images', 81));
-        $this->assertStringContainsString('media file "missing.jpg" not found on disk, skipped', $this->output->fetch());
+        $subject->executeUpdate();
+
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/media_references_migrated.csv');
+        $this->assertStringContainsString('media file "missing.jpg" not found on disk, skipped', $output->fetch());
     }
 
     #[Test]
     public function executeUpdateIsIdempotentForMigratedRows(): void
     {
-        $this->subject->executeUpdate();
-        $countAfterFirstRun = $this->countReferences('tx_products_domain_model_product', 'images', 80);
+        $subject = $this->subject(new BufferedOutput());
+        $subject->executeUpdate();
 
-        $this->assertTrue($this->subject->executeUpdate());
+        $this->assertTrue($subject->executeUpdate());
 
-        $this->assertSame($countAfterFirstRun, $this->countReferences('tx_products_domain_model_product', 'images', 80));
-    }
-
-    private function fetchReferenceFileUid(string $localTable, string $localField, int $localUid): ?int
-    {
-        $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable('sys_file_reference');
-        $queryBuilder->getRestrictions()->removeAll();
-        $fileUid = $queryBuilder->select('uid_local')->from('sys_file_reference')
-            ->andWhere($queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter($localTable)))
-            ->andWhere($queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($localField)))
-            ->andWhere($queryBuilder->expr()->eq('uid_foreign', $queryBuilder->createNamedParameter($localUid)))
-            ->executeQuery()->fetchOne();
-        return $fileUid === false ? null : (int)$fileUid;
-    }
-
-    private function countReferences(string $localTable, string $localField, int $localUid): int
-    {
-        $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable('sys_file_reference');
-        $queryBuilder->getRestrictions()->removeAll();
-        return (int)$queryBuilder->count('uid')->from('sys_file_reference')
-            ->andWhere($queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter($localTable)))
-            ->andWhere($queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($localField)))
-            ->andWhere($queryBuilder->expr()->eq('uid_foreign', $queryBuilder->createNamedParameter($localUid)))
-            ->executeQuery()->fetchOne();
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/media_references_migrated.csv');
     }
 }

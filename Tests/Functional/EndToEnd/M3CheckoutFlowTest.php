@@ -36,46 +36,38 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private OrderPlacementService $orderPlacementService;
-    private BasketService $basketService;
-    private Product $mainProduct;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/m3_end_to_end.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/M3CheckoutFlowTest/m3_end_to_end.csv');
         // CategoryDiscountPriceProvider still reads Extbase settings eagerly in its constructor,
         // which requires a request resolvable via $GLOBALS['TYPO3_REQUEST'] outside a real dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-
-        $this->basketService = $this->get(BasketService::class);
-        $this->orderPlacementService = $this->get(OrderPlacementService::class);
-
-        $product = $this->get(ProductRepository::class)->findByUid(1);
-        $this->assertInstanceOf(Product::class, $product);
-        $this->mainProduct = $product;
     }
 
     #[Test]
     public function identifiedCustomerReplacesVoucherAndSpendsPartialPoints(): void
     {
+        $basketService = $this->get(BasketService::class);
+        $orderPlacementService = $this->get(OrderPlacementService::class);
+        $mainProduct = $this->mainProduct();
         $request = $this->requestFor(7);
-        $this->basketService->add($request, $this->mainProduct->getUid() ?? 0, null, 1);
+        $basketService->add($request, $mainProduct->getUid() ?? 0, null, 1);
 
         $relatedTitles = array_map(
             static fn(Product $related): string => $related->getTitle(),
-            $this->mainProduct->getRelatedProducts()->toArray()
+            $mainProduct->getRelatedProducts()->toArray()
         );
         $this->assertSame(['Related Product'], $relatedTitles);
 
-        $this->applyVoucher($request, 'COMBO1');
-        $this->assertSame(['COMBO1'], $this->basketService->getAppliedVoucherCodes($request));
+        $this->applyVoucher($basketService, $request, 'COMBO1');
+        $this->assertSame(['COMBO1'], $basketService->getAppliedVoucherCodes($request));
 
-        $this->applyVoucher($request, 'SOLO');
-        $this->assertSame(['SOLO'], $this->basketService->getAppliedVoucherCodes($request), 'A non-combinable voucher must replace, not join, an existing code.');
+        $this->applyVoucher($basketService, $request, 'SOLO');
+        $this->assertSame(['SOLO'], $basketService->getAppliedVoucherCodes($request), 'A non-combinable voucher must replace, not join, an existing code.');
 
-        $order = $this->orderPlacementService->place($request, $this->address(), 'invoice', new CheckoutChoices(30))->getOrder();
+        $order = $orderPlacementService->place($request, $this->address(), 'invoice', new CheckoutChoices(30))->getOrder();
 
         $this->assertSame(9200, $order->getTotalGross()->getCents());
         $this->assertSame(800, $order->getDiscountTotal()->getCents());
@@ -85,51 +77,56 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
         $this->assertNotNull($voucher);
         $this->assertSame(1, $this->get(VoucherRedemptionRepository::class)->countFor($voucher));
 
-        $ledgerRows = $this->ledgerRows($order->getUid() ?? 0);
-        $this->assertCount(2, $ledgerRows);
-        $this->assertContainsEquals(['frontend_user' => 7, 'points' => 10, 'type' => 'earn'], $ledgerRows);
-        $this->assertContainsEquals(['frontend_user' => 7, 'points' => -30, 'type' => 'redeem'], $ledgerRows);
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/m3_ledger_partial_points_redemption.csv');
 
-        $this->assertSame([], $this->basketService->getAppliedVoucherCodes($request), 'A finalized order clears the basket, including its voucher codes.');
+        $this->assertSame([], $basketService->getAppliedVoucherCodes($request), 'A finalized order clears the basket, including its voucher codes.');
     }
 
     #[Test]
     public function guestCheckoutIsRejectedForPointsButStillCompletesForTheVoucher(): void
     {
+        $basketService = $this->get(BasketService::class);
+        $orderPlacementService = $this->get(OrderPlacementService::class);
         $request = $this->requestFor(0);
-        $this->basketService->add($request, $this->mainProduct->getUid() ?? 0, null, 1);
-        $this->applyVoucher($request, 'COMBO1');
+        $basketService->add($request, $this->mainProduct()->getUid() ?? 0, null, 1);
+        $this->applyVoucher($basketService, $request, 'COMBO1');
 
-        $orderCountBefore = $this->countOrders();
         try {
-            $this->orderPlacementService->place($request, $this->address(), 'invoice', new CheckoutChoices(10));
+            $orderPlacementService->place($request, $this->address(), 'invoice', new CheckoutChoices(10));
             $this->fail('Expected InsufficientCreditPointsException was not thrown for a guest requesting points.');
         } catch (InsufficientCreditPointsException) {
             // expected: guests always have a zero balance
         }
-        $this->assertSame($orderCountBefore, $this->countOrders(), 'A rejected points request must not place an order.');
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/m3_no_orders_after_rejected_points_request.csv');
 
-        $order = $this->orderPlacementService->place($request, $this->address(), 'invoice')->getOrder();
+        $order = $orderPlacementService->place($request, $this->address(), 'invoice')->getOrder();
 
         $this->assertSame(9000, $order->getTotalGross()->getCents());
         $this->assertSame(1000, $order->getDiscountTotal()->getCents());
         $this->assertSame(['COMBO1'], $order->getVoucherCodes());
-        $this->assertSame([], $this->ledgerRows($order->getUid() ?? 0), 'Guests never touch the credit points ledger.');
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/m3_ledger_untouched_by_guest.csv');
     }
 
-    private function applyVoucher(ServerRequestInterface $request, string $code): void
+    private function mainProduct(): Product
+    {
+        $product = $this->get(ProductRepository::class)->findByUid(1);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
+    }
+
+    private function applyVoucher(BasketService $basketService, ServerRequestInterface $request, string $code): void
     {
         $voucherService = $this->get(VoucherService::class);
         $frontendUser = $this->get(FrontendUserResolver::class)->getUid($request);
-        $basketGoodsTotal = $this->basketService->getBasketViewModel($request)->getTotalGross();
+        $basketGoodsTotal = $basketService->getBasketViewModel($request)->getTotalGross();
 
         $newVoucher = $voucherService->resolve($code, $basketGoodsTotal, $frontendUser);
-        $existingCodes = $this->basketService->getAppliedVoucherCodes($request);
+        $existingCodes = $basketService->getAppliedVoucherCodes($request);
         $existingVouchers = $voucherService->buildDiscountSummary($existingCodes, $basketGoodsTotal, $frontendUser)->getAppliedVouchers();
         if (!$voucherService->canCoexist($existingVouchers, $newVoucher)) {
-            $this->basketService->clearVoucherCodes($request);
+            $basketService->clearVoucherCodes($request);
         }
-        $this->basketService->addVoucherCode($request, $newVoucher->getCode());
+        $basketService->addVoucherCode($request, $newVoucher->getCode());
     }
 
     private function requestFor(int $frontendUserUid): ServerRequestInterface
@@ -151,24 +148,5 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
     private function address(): Address
     {
         return new Address(email: 'buyer@example.com', country: 'DE');
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function ledgerRows(int $orderUid): array
-    {
-        return $this->getConnectionPool()
-            ->getConnectionForTable('tx_products_domain_model_creditpointstransaction')
-            ->select(['frontend_user', 'points', 'type'], 'tx_products_domain_model_creditpointstransaction', ['order_uid' => $orderUid])
-            ->fetchAllAssociative();
-    }
-
-    private function countOrders(): int
-    {
-        return (int)$this->getConnectionPool()
-            ->getConnectionForTable('tx_products_domain_model_order')
-            ->executeQuery('SELECT COUNT(*) FROM tx_products_domain_model_order')
-            ->fetchOne();
     }
 }

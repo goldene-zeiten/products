@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\OrderMailService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
 use GoldeneZeiten\Products\Tests\Functional\Fixtures\TestMailer;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Mime\Part\DataPart;
 use TYPO3\CMS\Core\Resource\File;
@@ -19,21 +20,19 @@ use TYPO3\CMS\Core\Resource\StorageRepository;
 
 final class OrderMailServiceTest extends AbstractFrontendTestCase
 {
-    private OrderMailService $subject;
-
     protected function setUp(): void
     {
         parent::setUp();
         TestMailer::reset();
-        $this->subject = $this->get(OrderMailService::class);
     }
 
     #[Test]
     public function sendOrderConfirmationSendsMailToCustomer(): void
     {
+        $subject = $this->get(OrderMailService::class);
         $order = $this->buildOrder();
 
-        $this->subject->sendOrderConfirmation($order);
+        $subject->sendOrderConfirmation($order);
 
         $sentEmails = TestMailer::getSentEmails();
         $this->assertCount(1, $sentEmails);
@@ -45,7 +44,8 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     #[Test]
     public function sendOrderConfirmationHasNoBccByDefault(): void
     {
-        $this->subject->sendOrderConfirmation($this->buildOrder());
+        $subject = $this->get(OrderMailService::class);
+        $subject->sendOrderConfirmation($this->buildOrder());
 
         $this->assertCount(0, TestMailer::getSentEmails()[0]->getBcc());
     }
@@ -53,6 +53,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     #[Test]
     public function sendOrderConfirmationBccsTheConfiguredRecipient(): void
     {
+        $subject = $this->get(OrderMailService::class);
         $this->writeSiteConfiguration(
             'products-with-order-bcc',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
@@ -69,7 +70,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $order = $this->buildOrder();
         $order->setSiteIdentifier('products-with-order-bcc');
 
-        $this->subject->sendOrderConfirmation($order);
+        $subject->sendOrderConfirmation($order);
 
         $sentEmails = TestMailer::getSentEmails();
         $this->assertCount(1, $sentEmails);
@@ -79,7 +80,8 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     #[Test]
     public function sendMerchantNotificationIsSkippedWithoutConfiguredRecipient(): void
     {
-        $this->subject->sendMerchantNotification($this->buildOrder());
+        $subject = $this->get(OrderMailService::class);
+        $subject->sendMerchantNotification($this->buildOrder());
 
         $this->assertCount(0, TestMailer::getSentEmails());
     }
@@ -87,6 +89,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     #[Test]
     public function sendMerchantNotificationSendsMailWhenRecipientIsConfigured(): void
     {
+        $subject = $this->get(OrderMailService::class);
         $this->writeSiteConfiguration(
             'products-with-merchant-notification',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
@@ -103,7 +106,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $order = $this->buildOrder();
         $order->setSiteIdentifier('products-with-merchant-notification');
 
-        $this->subject->sendMerchantNotification($order);
+        $subject->sendMerchantNotification($order);
 
         $sentEmails = TestMailer::getSentEmails();
         $this->assertCount(1, $sentEmails);
@@ -114,6 +117,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     #[Test]
     public function sendOrderConfirmationUsesOverriddenPartialFromFixtureExtension(): void
     {
+        $subject = $this->get(OrderMailService::class);
         $this->writeSiteConfiguration(
             'products-with-partial-override',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
@@ -138,7 +142,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $order = $this->buildOrder();
         $order->setSiteIdentifier('products-with-partial-override');
 
-        $this->subject->sendOrderConfirmation($order);
+        $subject->sendOrderConfirmation($order);
 
         $sentEmails = TestMailer::getSentEmails();
         $this->assertCount(1, $sentEmails);
@@ -148,7 +152,8 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     #[Test]
     public function sendOrderStatusChangedSendsMailToCustomerByDefault(): void
     {
-        $this->subject->sendOrderStatusChanged($this->buildOrder(), OrderStatus::NEW, OrderStatus::CONFIRMED);
+        $subject = $this->get(OrderMailService::class);
+        $subject->sendOrderStatusChanged($this->buildOrder(), OrderStatus::NEW, OrderStatus::CONFIRMED);
 
         $sentEmails = TestMailer::getSentEmails();
         $this->assertCount(1, $sentEmails);
@@ -161,6 +166,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     #[Test]
     public function sendOrderStatusChangedIsSkippedWhenDisabled(): void
     {
+        $subject = $this->get(OrderMailService::class);
         $this->writeSiteConfiguration(
             'products-with-status-changed-disabled',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
@@ -177,7 +183,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $order = $this->buildOrder();
         $order->setSiteIdentifier('products-with-status-changed-disabled');
 
-        $this->subject->sendOrderStatusChanged($order, OrderStatus::NEW, OrderStatus::CONFIRMED);
+        $subject->sendOrderStatusChanged($order, OrderStatus::NEW, OrderStatus::CONFIRMED);
 
         $this->assertCount(0, TestMailer::getSentEmails());
     }
@@ -185,7 +191,8 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     #[Test]
     public function sendWithdrawalNotificationIsSkippedWithoutConfiguredRecipient(): void
     {
-        $this->subject->sendWithdrawalNotification($this->buildOrder(), 'Changed my mind');
+        $subject = $this->get(OrderMailService::class);
+        $subject->sendWithdrawalNotification($this->buildOrder(), 'Changed my mind');
 
         $this->assertCount(0, TestMailer::getSentEmails());
     }
@@ -193,6 +200,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     #[Test]
     public function sendWithdrawalNotificationSendsMailWithTheReasonWhenRecipientIsConfigured(): void
     {
+        $subject = $this->get(OrderMailService::class);
         $this->writeSiteConfiguration(
             'products-with-withdrawal-notification',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
@@ -209,7 +217,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $order = $this->buildOrder();
         $order->setSiteIdentifier('products-with-withdrawal-notification');
 
-        $this->subject->sendWithdrawalNotification($order, 'Changed my mind');
+        $subject->sendWithdrawalNotification($order, 'Changed my mind');
 
         $sentEmails = TestMailer::getSentEmails();
         $this->assertCount(1, $sentEmails);
@@ -221,7 +229,8 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     #[Test]
     public function sendLowStockWarningIsSkippedWithoutConfiguredRecipient(): void
     {
-        $this->subject->sendLowStockWarning('Red Shoes', 2);
+        $subject = $this->get(OrderMailService::class);
+        $subject->sendLowStockWarning('Red Shoes', 2);
 
         $this->assertCount(0, TestMailer::getSentEmails());
     }
@@ -229,6 +238,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     #[Test]
     public function sendLowStockWarningSendsMailWhenRecipientIsConfigured(): void
     {
+        $subject = $this->get(OrderMailService::class);
         // sendLowStockWarning() has no order/site context of its own, so it always resolves
         // settings from the first configured site - overwrite the base "products" site (written
         // by AbstractFrontendTestCase::setUp()) rather than adding a second site that might not
@@ -246,7 +256,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
 
-        $this->subject->sendLowStockWarning('Red Shoes', 2);
+        $subject->sendLowStockWarning('Red Shoes', 2);
 
         $sentEmails = TestMailer::getSentEmails();
         $this->assertCount(1, $sentEmails);
@@ -255,12 +265,17 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->assertStringContainsString('2', (string)$sentEmails[0]->getTextBody());
     }
 
+    /**
+     * @param non-empty-string $siteIdentifier
+     */
     #[Test]
-    public function sendMerchantNotificationRoutesToCategoryRecipientInAdditionToTheGlobalOne(): void
+    #[DataProvider('secondaryRecipientRoutingProvider')]
+    public function sendMerchantNotificationRoutesToSecondaryRecipientInAdditionToTheGlobalOne(string $fixturePath, string $siteIdentifier, string $secondaryRecipient): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/category_notification.csv');
+        $subject = $this->get(OrderMailService::class);
+        $this->importCSVDataSet($fixturePath);
         $this->writeSiteConfiguration(
-            'products-with-category-notification',
+            $siteIdentifier,
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
                 'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
                 'settings' => [
@@ -273,31 +288,53 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         );
 
         $order = $this->buildOrder();
-        $order->setSiteIdentifier('products-with-category-notification');
+        $order->setSiteIdentifier($siteIdentifier);
         $item = new OrderItem();
         $item->setProduct(1);
         $order->getItems()->attach($item);
 
-        $this->subject->sendMerchantNotification($order);
+        $subject->sendMerchantNotification($order);
 
         $sentEmails = TestMailer::getSentEmails();
         $recipients = array_map(static fn($email): string => $email->getTo()[0]->getAddress(), $sentEmails);
         $this->assertCount(2, $sentEmails);
         $this->assertContains('shop@example.com', $recipients);
-        $this->assertContains('category@example.com', $recipients);
+        $this->assertContains($secondaryRecipient, $recipients);
     }
 
-    #[Test]
-    public function sendMerchantNotificationSendsOnlyOnceWhenCategoryRecipientMatchesTheGlobalOne(): void
+    /**
+     * @return \Generator<string, array<string, string>>
+     */
+    public static function secondaryRecipientRoutingProvider(): \Generator
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/category_notification.csv');
+        yield 'categoryRecipient' => [
+            'fixturePath' => __DIR__ . '/Fixtures/OrderMailServiceTest/category_notification.csv',
+            'siteIdentifier' => 'products-with-category-notification',
+            'secondaryRecipient' => 'category@example.com',
+        ];
+        yield 'shippingPointRecipient' => [
+            'fixturePath' => __DIR__ . '/Fixtures/OrderMailServiceTest/shipping_point_notification.csv',
+            'siteIdentifier' => 'products-with-shipping-point-notification',
+            'secondaryRecipient' => 'shippingpoint@example.com',
+        ];
+    }
+
+    /**
+     * @param non-empty-string $siteIdentifier
+     */
+    #[Test]
+    #[DataProvider('secondaryRecipientMatchingGlobalOneProvider')]
+    public function sendMerchantNotificationSendsOnlyOnceWhenSecondaryRecipientMatchesTheGlobalOne(string $fixturePath, string $siteIdentifier, string $merchantRecipient): void
+    {
+        $subject = $this->get(OrderMailService::class);
+        $this->importCSVDataSet($fixturePath);
         $this->writeSiteConfiguration(
-            'products-with-matching-category-notification',
+            $siteIdentifier,
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
                 'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
                 'settings' => [
                     'products' => [
-                        'email' => ['merchantRecipient' => 'category@example.com'],
+                        'email' => ['merchantRecipient' => $merchantRecipient],
                     ],
                 ],
             ]),
@@ -305,79 +342,37 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         );
 
         $order = $this->buildOrder();
-        $order->setSiteIdentifier('products-with-matching-category-notification');
+        $order->setSiteIdentifier($siteIdentifier);
         $item = new OrderItem();
         $item->setProduct(1);
         $order->getItems()->attach($item);
 
-        $this->subject->sendMerchantNotification($order);
+        $subject->sendMerchantNotification($order);
 
         $this->assertCount(1, TestMailer::getSentEmails());
     }
 
-    #[Test]
-    public function sendMerchantNotificationRoutesToShippingPointRecipientInAdditionToTheGlobalOne(): void
+    /**
+     * @return \Generator<string, array<string, string>>
+     */
+    public static function secondaryRecipientMatchingGlobalOneProvider(): \Generator
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shipping_point_notification.csv');
-        $this->writeSiteConfiguration(
-            'products-with-shipping-point-notification',
-            $this->buildSiteConfiguration(2, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
-                'settings' => [
-                    'products' => [
-                        'email' => ['merchantRecipient' => 'shop@example.com'],
-                    ],
-                ],
-            ]),
-            [$this->buildDefaultLanguageConfiguration('en', '/')]
-        );
-
-        $order = $this->buildOrder();
-        $order->setSiteIdentifier('products-with-shipping-point-notification');
-        $item = new OrderItem();
-        $item->setProduct(1);
-        $order->getItems()->attach($item);
-
-        $this->subject->sendMerchantNotification($order);
-
-        $sentEmails = TestMailer::getSentEmails();
-        $recipients = array_map(static fn($email): string => $email->getTo()[0]->getAddress(), $sentEmails);
-        $this->assertCount(2, $sentEmails);
-        $this->assertContains('shop@example.com', $recipients);
-        $this->assertContains('shippingpoint@example.com', $recipients);
-    }
-
-    #[Test]
-    public function sendMerchantNotificationSendsOnlyOnceWhenShippingPointRecipientMatchesTheGlobalOne(): void
-    {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shipping_point_notification.csv');
-        $this->writeSiteConfiguration(
-            'products-with-matching-shipping-point-notification',
-            $this->buildSiteConfiguration(2, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
-                'settings' => [
-                    'products' => [
-                        'email' => ['merchantRecipient' => 'shippingpoint@example.com'],
-                    ],
-                ],
-            ]),
-            [$this->buildDefaultLanguageConfiguration('en', '/')]
-        );
-
-        $order = $this->buildOrder();
-        $order->setSiteIdentifier('products-with-matching-shipping-point-notification');
-        $item = new OrderItem();
-        $item->setProduct(1);
-        $order->getItems()->attach($item);
-
-        $this->subject->sendMerchantNotification($order);
-
-        $this->assertCount(1, TestMailer::getSentEmails());
+        yield 'categoryRecipientMatchesGlobal' => [
+            'fixturePath' => __DIR__ . '/Fixtures/OrderMailServiceTest/category_notification.csv',
+            'siteIdentifier' => 'products-with-matching-category-notification',
+            'merchantRecipient' => 'category@example.com',
+        ];
+        yield 'shippingPointRecipientMatchesGlobal' => [
+            'fixturePath' => __DIR__ . '/Fixtures/OrderMailServiceTest/shipping_point_notification.csv',
+            'siteIdentifier' => 'products-with-matching-shipping-point-notification',
+            'merchantRecipient' => 'shippingpoint@example.com',
+        ];
     }
 
     #[Test]
     public function sendOrderConfirmationAttachesTheConfiguredAgbFile(): void
     {
+        $subject = $this->get(OrderMailService::class);
         $file = $this->createFileInNewLocalStorage('agb.pdf', '%PDF-1.4 fixture content');
         $this->writeSiteConfiguration(
             'products-with-agb-attachment',
@@ -395,7 +390,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $order = $this->buildOrder();
         $order->setSiteIdentifier('products-with-agb-attachment');
 
-        $this->subject->sendOrderConfirmation($order);
+        $subject->sendOrderConfirmation($order);
 
         $this->assertContains('agb.pdf', $this->attachmentFilenamesOfFirstSentEmail());
     }
@@ -403,7 +398,8 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     #[Test]
     public function sendOrderConfirmationSkipsTheAgbAttachmentWhenNotConfigured(): void
     {
-        $this->subject->sendOrderConfirmation($this->buildOrder());
+        $subject = $this->get(OrderMailService::class);
+        $subject->sendOrderConfirmation($this->buildOrder());
 
         $this->assertNotContains('agb.pdf', $this->attachmentFilenamesOfFirstSentEmail());
     }

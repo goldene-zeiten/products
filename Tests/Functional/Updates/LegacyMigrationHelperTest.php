@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Updates;
 
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Updates\LegacyMigrationHelper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class LegacyMigrationHelperTest extends AbstractFunctionalTestCase
@@ -18,61 +19,77 @@ final class LegacyMigrationHelperTest extends AbstractFunctionalTestCase
     private const LEGACY_TABLE = 'tt_products_cat';
     private const LOCAL_TABLE = 'tx_products_domain_model_category';
 
-    private LegacyMigrationHelper $subject;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->subject = $this->get(LegacyMigrationHelper::class);
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/LegacyMigration/legacy_migration_helper.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/LegacyMigrationHelperTest/legacy_migration_helper.csv');
     }
 
+    /**
+     * @param string[] $legacyTables
+     */
     #[Test]
-    public function tablesExistIsTrueForExistingTable(): void
+    #[DataProvider('tablesExistProvider')]
+    public function tablesExistReflectsWhetherAllGivenTablesArePresent(array $legacyTables, bool $expectedResult): void
     {
-        $this->assertTrue($this->subject->tablesExist(self::LEGACY_TABLE));
+        $subject = $this->get(LegacyMigrationHelper::class);
+        $this->assertSame($expectedResult, $subject->tablesExist(...$legacyTables));
     }
 
-    #[Test]
-    public function tablesExistIsFalseWhenAnyTableIsMissing(): void
+    /**
+     * @return \Generator<string, array{legacyTables: string[], expectedResult: bool}>
+     */
+    public static function tablesExistProvider(): \Generator
     {
-        $this->assertFalse($this->subject->tablesExist(self::LEGACY_TABLE, 'tt_products_does_not_exist'));
+        yield 'existing table' => ['legacyTables' => [self::LEGACY_TABLE], 'expectedResult' => true];
+        yield 'any missing table' => [
+            'legacyTables' => [self::LEGACY_TABLE, 'tt_products_does_not_exist'],
+            'expectedResult' => false,
+        ];
     }
 
     #[Test]
     public function countUnmigratedExcludesDeletedAndAlreadyMappedRows(): void
     {
-        $this->assertSame(1, $this->subject->countUnmigrated(self::LEGACY_TABLE, self::LOCAL_TABLE));
+        $subject = $this->get(LegacyMigrationHelper::class);
+        $this->assertSame(1, $subject->countUnmigrated(self::LEGACY_TABLE, self::LOCAL_TABLE));
     }
 
     #[Test]
     public function fetchUnmigratedBatchReturnsOnlyTheRemainingRow(): void
     {
-        $rows = $this->subject->fetchUnmigratedBatch(self::LEGACY_TABLE, self::LOCAL_TABLE);
+        $subject = $this->get(LegacyMigrationHelper::class);
+        $rows = $subject->fetchUnmigratedBatch(self::LEGACY_TABLE, self::LOCAL_TABLE);
 
         $this->assertCount(1, $rows);
         $this->assertSame(2, (int)$rows[0]['uid']);
     }
 
     #[Test]
-    public function resolveLocalUidReturnsNullForUnmappedRow(): void
+    #[DataProvider('legacyUidToResolvedLocalUidProvider')]
+    public function resolveLocalUidResolvesOrReturnsNull(int $legacyUid, ?int $expectedLocalUid): void
     {
-        $this->assertNull($this->subject->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE));
+        $subject = $this->get(LegacyMigrationHelper::class);
+        $this->assertSame($expectedLocalUid, $subject->resolveLocalUid(self::LEGACY_TABLE, $legacyUid, self::LOCAL_TABLE));
     }
 
-    #[Test]
-    public function resolveLocalUidReturnsMappedUid(): void
+    /**
+     * @return \Generator<string, array{legacyUid: int, expectedLocalUid: int|null}>
+     */
+    public static function legacyUidToResolvedLocalUidProvider(): \Generator
     {
-        $this->assertSame(100, $this->subject->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE));
+        yield 'unmapped row resolves to null' => ['legacyUid' => 2, 'expectedLocalUid' => null];
+        yield 'mapped row resolves to local uid' => ['legacyUid' => 1, 'expectedLocalUid' => 100];
     }
 
     #[Test]
     public function recordMappingMakesRowResolvableAndExcludedFromUnmigratedBatch(): void
     {
-        $this->subject->recordMapping(self::LEGACY_TABLE, 2, self::LOCAL_TABLE, 200);
+        $subject = $this->get(LegacyMigrationHelper::class);
+        $subject->recordMapping(self::LEGACY_TABLE, 2, self::LOCAL_TABLE, 200);
 
-        $this->assertSame(200, $this->subject->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE));
-        $this->assertSame(0, $this->subject->countUnmigrated(self::LEGACY_TABLE, self::LOCAL_TABLE));
+        $this->assertSame(200, $subject->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE));
+        $this->assertSame(0, $subject->countUnmigrated(self::LEGACY_TABLE, self::LOCAL_TABLE));
     }
 }

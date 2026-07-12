@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Service\Withdrawal\WithdrawalTokenService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class WithdrawalTokenServiceTest extends AbstractFunctionalTestCase
@@ -16,38 +17,34 @@ final class WithdrawalTokenServiceTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private WithdrawalTokenService $subject;
-    private Order $order;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_with_items_and_addresses.csv');
-        $this->subject = $this->get(WithdrawalTokenService::class);
+    }
+
+    #[Test]
+    #[DataProvider('tokenValidationProvider')]
+    public function tokenValidationBehavior(bool $useGeneratedToken, string $tokenModifier, bool $shouldBeValid): void
+    {
+        $subject = $this->get(WithdrawalTokenService::class);
+        $order = $this->fetchOrder();
+        $token = $useGeneratedToken ? $subject->generateToken($order) . $tokenModifier : $tokenModifier;
+
+        $this->assertSame($shouldBeValid, $subject->isValid($order, $token));
+    }
+
+    public static function tokenValidationProvider(): \Generator
+    {
+        yield 'generated token is valid' => ['useGeneratedToken' => true, 'tokenModifier' => '', 'shouldBeValid' => true];
+        yield 'tampered token is rejected' => ['useGeneratedToken' => true, 'tokenModifier' => 'x', 'shouldBeValid' => false];
+        yield 'empty token is rejected' => ['useGeneratedToken' => false, 'tokenModifier' => '', 'shouldBeValid' => false];
+    }
+
+    private function fetchOrder(): Order
+    {
         $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
-        self::assertInstanceOf(Order::class, $order);
-        $this->order = $order;
-    }
-
-    #[Test]
-    public function aGeneratedTokenIsValidForTheSameOrder(): void
-    {
-        $token = $this->subject->generateToken($this->order);
-
-        self::assertTrue($this->subject->isValid($this->order, $token));
-    }
-
-    #[Test]
-    public function aTamperedTokenIsRejected(): void
-    {
-        $token = $this->subject->generateToken($this->order);
-
-        self::assertFalse($this->subject->isValid($this->order, $token . 'x'));
-    }
-
-    #[Test]
-    public function anEmptyTokenIsRejected(): void
-    {
-        self::assertFalse($this->subject->isValid($this->order, ''));
+        $this->assertInstanceOf(Order::class, $order);
+        return $order;
     }
 }

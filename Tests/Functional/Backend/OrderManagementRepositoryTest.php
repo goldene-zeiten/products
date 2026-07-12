@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Service\Order\OrderStatusManager;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
@@ -18,45 +19,53 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private OrderManagementRepository $subject;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/orders_for_management.csv');
-        $this->subject = $this->get(OrderManagementRepository::class);
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/OrderManagementRepositoryTest/orders_for_management.csv');
     }
 
     #[Test]
-    public function fetchFilteredExcludesDeletedOrders(): void
+    #[DataProvider('fetchFilteredProvider')]
+    public function fetchFilteredAppliesTheGivenFilter(OrderListFilter $filter, int $expectedCount, ?string $expectedFirstOrderNumber): void
     {
-        $orders = $this->subject->fetchFiltered(new OrderListFilter());
+        $subject = $this->get(OrderManagementRepository::class);
 
-        $this->assertCount(2, $orders);
+        $orders = $subject->fetchFiltered($filter);
+
+        $this->assertCount($expectedCount, $orders);
+        if ($expectedFirstOrderNumber !== null) {
+            $this->assertSame($expectedFirstOrderNumber, $orders[0]['orderNumber']);
+        }
     }
 
-    #[Test]
-    public function fetchFilteredByStatus(): void
+    public static function fetchFilteredProvider(): \Generator
     {
-        $orders = $this->subject->fetchFiltered(new OrderListFilter(status: 'confirmed'));
+        yield 'excludes deleted orders' => [
+            'filter' => new OrderListFilter(),
+            'expectedCount' => 2,
+            'expectedFirstOrderNumber' => null,
+        ];
 
-        $this->assertCount(1, $orders);
-        $this->assertSame('ORD-2', $orders[0]['orderNumber']);
-    }
+        yield 'filters by status' => [
+            'filter' => new OrderListFilter(status: 'confirmed'),
+            'expectedCount' => 1,
+            'expectedFirstOrderNumber' => 'ORD-2',
+        ];
 
-    #[Test]
-    public function fetchFilteredByEmail(): void
-    {
-        $orders = $this->subject->fetchFiltered(new OrderListFilter(email: 'alice'));
-
-        $this->assertCount(1, $orders);
-        $this->assertSame('ORD-1', $orders[0]['orderNumber']);
+        yield 'filters by email' => [
+            'filter' => new OrderListFilter(email: 'alice'),
+            'expectedCount' => 1,
+            'expectedFirstOrderNumber' => 'ORD-1',
+        ];
     }
 
     #[Test]
     public function fetchRowMapsFields(): void
     {
-        $row = $this->subject->fetchRow(1);
+        $subject = $this->get(OrderManagementRepository::class);
+
+        $row = $subject->fetchRow(1);
 
         $this->assertNotNull($row);
         $this->assertSame('ORD-1', $row['orderNumber']);
@@ -67,90 +76,147 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     #[Test]
     public function fetchRowReturnsNullForDeletedOrder(): void
     {
-        $this->assertNull($this->subject->fetchRow(3));
+        $subject = $this->get(OrderManagementRepository::class);
+
+        $this->assertNull($subject->fetchRow(3));
     }
 
     #[Test]
-    public function fetchRowMapsShippingFields(): void
+    #[DataProvider('fetchRowShippingFieldsProvider')]
+    public function fetchRowMapsShippingFields(int $orderUid, int $expectedShippingMethodUid, int $expectedShippingTotalCents): void
     {
-        $row = $this->subject->fetchRow(1);
+        $subject = $this->get(OrderManagementRepository::class);
+
+        $row = $subject->fetchRow($orderUid);
 
         $this->assertNotNull($row);
-        $this->assertSame(1, $row['shippingMethodUid']);
-        $this->assertSame(500, $row['shippingTotalCents']);
+        $this->assertSame($expectedShippingMethodUid, $row['shippingMethodUid']);
+        $this->assertSame($expectedShippingTotalCents, $row['shippingTotalCents']);
+    }
+
+    public static function fetchRowShippingFieldsProvider(): \Generator
+    {
+        yield 'shipping fields are mapped' => [
+            'orderUid' => 1,
+            'expectedShippingMethodUid' => 1,
+            'expectedShippingTotalCents' => 500,
+        ];
+
+        yield 'absent shipping is mapped as zero' => [
+            'orderUid' => 2,
+            'expectedShippingMethodUid' => 0,
+            'expectedShippingTotalCents' => 0,
+        ];
     }
 
     #[Test]
-    public function fetchRowMapsAbsentShippingAsZero(): void
+    #[DataProvider('fetchVoucherRedemptionsProvider')]
+    public function fetchVoucherRedemptions(int $orderUid, ?string $expectedVoucherCode, ?int $expectedDiscountTotalCents): void
     {
-        $row = $this->subject->fetchRow(2);
+        $subject = $this->get(OrderManagementRepository::class);
 
-        $this->assertNotNull($row);
-        $this->assertSame(0, $row['shippingMethodUid']);
-        $this->assertSame(0, $row['shippingTotalCents']);
-    }
+        $redemptions = $subject->fetchVoucherRedemptions($orderUid);
 
-    #[Test]
-    public function fetchVoucherRedemptionsReturnsRowsForThatOrder(): void
-    {
-        $redemptions = $this->subject->fetchVoucherRedemptions(1);
-
+        if ($expectedVoucherCode === null) {
+            $this->assertSame([], $redemptions);
+            return;
+        }
         $this->assertCount(1, $redemptions);
-        $this->assertSame('SAVE10', $redemptions[0]['voucherCode']);
-        $this->assertSame(199, $redemptions[0]['discountTotalCents']);
+        $this->assertSame($expectedVoucherCode, $redemptions[0]['voucherCode']);
+        $this->assertSame($expectedDiscountTotalCents, $redemptions[0]['discountTotalCents']);
+    }
+
+    public static function fetchVoucherRedemptionsProvider(): \Generator
+    {
+        yield 'returns rows for that order' => [
+            'orderUid' => 1,
+            'expectedVoucherCode' => 'SAVE10',
+            'expectedDiscountTotalCents' => 199,
+        ];
+
+        yield 'is empty for an order with none' => [
+            'orderUid' => 2,
+            'expectedVoucherCode' => null,
+            'expectedDiscountTotalCents' => null,
+        ];
     }
 
     #[Test]
-    public function fetchVoucherRedemptionsIsEmptyForAnOrderWithNone(): void
+    #[DataProvider('fetchGainedVoucherProvider')]
+    public function fetchGainedVoucher(int $orderUid, ?string $expectedCode): void
     {
-        $this->assertSame([], $this->subject->fetchVoucherRedemptions(2));
-    }
+        $subject = $this->get(OrderManagementRepository::class);
 
-    #[Test]
-    public function fetchGainedVoucherReturnsTheGeneratedCode(): void
-    {
-        $gainedVoucher = $this->subject->fetchGainedVoucher(1);
+        $gainedVoucher = $subject->fetchGainedVoucher($orderUid);
 
+        if ($expectedCode === null) {
+            $this->assertNull($gainedVoucher);
+            return;
+        }
         $this->assertNotNull($gainedVoucher);
-        $this->assertSame('GAINED-ABC123', $gainedVoucher['code']);
+        $this->assertSame($expectedCode, $gainedVoucher['code']);
         $this->assertFalse($gainedVoucher['used']);
     }
 
-    #[Test]
-    public function fetchGainedVoucherIsNullWhenTheOrderGeneratedNone(): void
+    public static function fetchGainedVoucherProvider(): \Generator
     {
-        $this->assertNull($this->subject->fetchGainedVoucher(2));
+        yield 'returns the generated code' => [
+            'orderUid' => 1,
+            'expectedCode' => 'GAINED-ABC123',
+        ];
+
+        yield 'is null when the order generated none' => [
+            'orderUid' => 2,
+            'expectedCode' => null,
+        ];
     }
 
     #[Test]
-    public function fetchCreditPointsLedgerReturnsRowsForThatOrder(): void
+    #[DataProvider('fetchCreditPointsLedgerProvider')]
+    public function fetchCreditPointsLedger(int $orderUid, ?int $expectedFrontendUser, ?int $expectedPoints, ?string $expectedType): void
     {
-        $ledger = $this->subject->fetchCreditPointsLedger(1);
+        $subject = $this->get(OrderManagementRepository::class);
 
+        $ledger = $subject->fetchCreditPointsLedger($orderUid);
+
+        if ($expectedFrontendUser === null) {
+            $this->assertSame([], $ledger);
+            return;
+        }
         $this->assertCount(1, $ledger);
-        $this->assertSame(5, $ledger[0]['frontendUser']);
-        $this->assertSame(20, $ledger[0]['points']);
-        $this->assertSame('earn', $ledger[0]['type']);
+        $this->assertSame($expectedFrontendUser, $ledger[0]['frontendUser']);
+        $this->assertSame($expectedPoints, $ledger[0]['points']);
+        $this->assertSame($expectedType, $ledger[0]['type']);
     }
 
-    #[Test]
-    public function fetchCreditPointsLedgerIsEmptyForAnOrderWithNone(): void
+    public static function fetchCreditPointsLedgerProvider(): \Generator
     {
-        $this->assertSame([], $this->subject->fetchCreditPointsLedger(2));
+        yield 'returns rows for that order' => [
+            'orderUid' => 1,
+            'expectedFrontendUser' => 5,
+            'expectedPoints' => 20,
+            'expectedType' => 'earn',
+        ];
+
+        yield 'is empty for an order with none' => [
+            'orderUid' => 2,
+            'expectedFrontendUser' => null,
+            'expectedPoints' => null,
+            'expectedType' => null,
+        ];
     }
 
     #[Test]
     public function findForEditingAndPersistWritesTheTransitionToTheDatabase(): void
     {
-        $order = $this->subject->findForEditing(1);
+        $subject = $this->get(OrderManagementRepository::class);
+        $order = $subject->findForEditing(1);
         $this->assertInstanceOf(Order::class, $order);
 
         $this->get(OrderStatusManager::class)->transitionPayment($order, PaymentStatus::PAID);
-        $this->subject->persist($order);
+        $subject->persist($order);
 
-        $row = $this->subject->fetchRow(1);
-        $this->assertNotNull($row);
-        $this->assertSame('paid', $row['paymentStatus']);
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/order_management_payment_transition.csv');
     }
 
     /**
@@ -166,7 +232,9 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     #[Test]
     public function findForEditingHydratesAnOrderWithNonZeroMoneyBackedFieldsWithoutCrashing(): void
     {
-        $order = $this->subject->findForEditing(1);
+        $subject = $this->get(OrderManagementRepository::class);
+
+        $order = $subject->findForEditing(1);
 
         $this->assertInstanceOf(Order::class, $order);
         $this->assertSame(1999, $order->getTotalGross()->getCents());

@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Backend;
 
 use GoldeneZeiten\Products\Backend\CategoryPermissionGuard;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
@@ -14,101 +15,102 @@ final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private CategoryPermissionGuard $subject;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/category_permissions.csv');
-        $this->subject = $this->get(CategoryPermissionGuard::class);
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/CategoryPermissionGuardTest/category_permissions.csv');
     }
 
     #[Test]
-    public function adminIsAlwaysAllowed(): void
+    #[DataProvider('isCategoryEditableProvider')]
+    public function isCategoryEditable(int $backendUserUid, int $categoryUid, bool $expected): void
     {
-        $backendUser = $this->setUpBackendUser(1);
+        $subject = $this->get(CategoryPermissionGuard::class);
+        $backendUser = $this->setUpBackendUser($backendUserUid);
 
-        $this->assertTrue($this->subject->isCategoryEditable(100, $backendUser));
+        $this->assertSame($expected, $subject->isCategoryEditable($categoryUid, $backendUser));
+    }
+
+    public static function isCategoryEditableProvider(): \Generator
+    {
+        yield 'admin is always allowed' => [
+            'backendUserUid' => 1,
+            'categoryUid' => 100,
+            'expected' => true,
+        ];
+
+        yield 'owner user is granted their own permission' => [
+            'backendUserUid' => 2,
+            'categoryUid' => 100,
+            'expected' => true,
+        ];
+
+        yield 'non-owner is denied without group or everybody grant' => [
+            'backendUserUid' => 3,
+            'categoryUid' => 100,
+            'expected' => false,
+        ];
+
+        yield 'everybody grant allows any user' => [
+            'backendUserUid' => 3,
+            'categoryUid' => 101,
+            'expected' => true,
+        ];
+
+        yield 'group grant allows member user' => [
+            'backendUserUid' => 4,
+            'categoryUid' => 102,
+            'expected' => true,
+        ];
+
+        yield 'group grant denies non-member user' => [
+            'backendUserUid' => 3,
+            'categoryUid' => 102,
+            'expected' => false,
+        ];
+
+        yield 'missing category is denied' => [
+            'backendUserUid' => 3,
+            'categoryUid' => 999999,
+            'expected' => false,
+        ];
     }
 
     #[Test]
-    public function ownerUserIsGrantedTheirOwnPermission(): void
+    #[DataProvider('isCategoryDeletableProvider')]
+    public function isCategoryDeletable(int $backendUserUid, int $categoryUid, bool $expected): void
     {
-        $backendUser = $this->setUpBackendUser(2);
+        $subject = $this->get(CategoryPermissionGuard::class);
+        $backendUser = $this->setUpBackendUser($backendUserUid);
 
-        $this->assertTrue($this->subject->isCategoryEditable(100, $backendUser));
+        $this->assertSame($expected, $subject->isCategoryDeletable($categoryUid, $backendUser));
     }
 
-    #[Test]
-    public function nonOwnerIsDeniedWithoutGroupOrEverybodyGrant(): void
+    public static function isCategoryDeletableProvider(): \Generator
     {
-        $backendUser = $this->setUpBackendUser(3);
+        yield 'admin is always allowed to delete' => [
+            'backendUserUid' => 1,
+            'categoryUid' => 100,
+            'expected' => true,
+        ];
 
-        $this->assertFalse($this->subject->isCategoryEditable(100, $backendUser));
-    }
+        yield 'owner with edit-only permission cannot delete' => [
+            'backendUserUid' => 2,
+            'categoryUid' => 100,
+            'expected' => false,
+        ];
 
-    #[Test]
-    public function everybodyGrantAllowsAnyUser(): void
-    {
-        $backendUser = $this->setUpBackendUser(3);
+        yield 'owner with edit and delete permission can delete' => [
+            'backendUserUid' => 2,
+            'categoryUid' => 103,
+            'expected' => true,
+        ];
 
-        $this->assertTrue($this->subject->isCategoryEditable(101, $backendUser));
-    }
-
-    #[Test]
-    public function groupGrantAllowsMemberUser(): void
-    {
-        $backendUser = $this->setUpBackendUser(4);
-
-        $this->assertTrue($this->subject->isCategoryEditable(102, $backendUser));
-    }
-
-    #[Test]
-    public function groupGrantDeniesNonMemberUser(): void
-    {
-        $backendUser = $this->setUpBackendUser(3);
-
-        $this->assertFalse($this->subject->isCategoryEditable(102, $backendUser));
-    }
-
-    #[Test]
-    public function missingCategoryIsDenied(): void
-    {
-        $backendUser = $this->setUpBackendUser(3);
-
-        $this->assertFalse($this->subject->isCategoryEditable(999999, $backendUser));
-    }
-
-    #[Test]
-    public function adminIsAlwaysAllowedToDelete(): void
-    {
-        $backendUser = $this->setUpBackendUser(1);
-
-        $this->assertTrue($this->subject->isCategoryDeletable(100, $backendUser));
-    }
-
-    #[Test]
-    public function ownerWithEditOnlyPermissionCannotDelete(): void
-    {
-        $backendUser = $this->setUpBackendUser(2);
-
-        $this->assertFalse($this->subject->isCategoryDeletable(100, $backendUser));
-    }
-
-    #[Test]
-    public function ownerWithEditAndDeletePermissionCanDelete(): void
-    {
-        $backendUser = $this->setUpBackendUser(2);
-
-        $this->assertTrue($this->subject->isCategoryDeletable(103, $backendUser));
-    }
-
-    #[Test]
-    public function missingCategoryIsDeniedForDelete(): void
-    {
-        $backendUser = $this->setUpBackendUser(3);
-
-        $this->assertFalse($this->subject->isCategoryDeletable(999999, $backendUser));
+        yield 'missing category is denied for delete' => [
+            'backendUserUid' => 3,
+            'categoryUid' => 999999,
+            'expected' => false,
+        ];
     }
 }
