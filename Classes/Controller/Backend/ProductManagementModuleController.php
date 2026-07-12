@@ -178,14 +178,19 @@ final class ProductManagementModuleController
     {
         $returnUrl = (string)$this->uriBuilder->buildUriFromRequest($request, ['product' => $productUid]);
         $product = $this->treeRepository->fetchProductByUid($productUid);
-        $displayFields = $this->resolveDisplayFields();
-        $rawValuesByUid = $this->treeRepository->fetchArticlesRawFieldsByProduct($productUid, $displayFields);
+        // "item_number" is already its own fixed column in this list (unlike
+        // the article detail view, which has no such column), so it's
+        // dropped here specifically rather than in resolveDisplayFields() -
+        // excluding it there would also wrongly hide it as a pickable field
+        // in the detail view, where it isn't a duplicate.
+        $listFields = array_values(array_diff($this->resolveDisplayFields(), ['item_number']));
+        $rawValuesByUid = $this->treeRepository->fetchArticlesRawFieldsByProduct($productUid, $listFields);
         $items = array_map(
             fn(array $article): array => $this->buildRow(
                 self::TABLE_ARTICLE,
                 $article,
                 $returnUrl,
-                $displayFields,
+                $listFields,
                 $rawValuesByUid[$article['uid']] ?? [],
             ),
             $this->treeRepository->fetchArticlesByProduct($productUid)
@@ -196,7 +201,7 @@ final class ProductManagementModuleController
             'selectedProduct' => $product,
             'selectedArticle' => null,
             'itemsLabel' => $this->translate('column.articles'),
-            'extraColumns' => $this->buildColumnHeaders(self::TABLE_ARTICLE, $displayFields),
+            'extraColumns' => $this->buildColumnHeaders(self::TABLE_ARTICLE, $listFields),
             'items' => $items,
             'fields' => [],
             'columnSelector' => $this->buildColumnSelectorData(self::TABLE_ARTICLE, $returnUrl),
