@@ -150,6 +150,9 @@
 			<trans-unit id="actions.edit_product" resname="actions.edit_product">
 				<source>Edit product</source>
 			</trans-unit>
+			<trans-unit id="actions.edit_article" resname="actions.edit_article">
+				<source>Edit article</source>
+			</trans-unit>
 			<trans-unit id="column.products" resname="column.products">
 				<source>Products</source>
 			</trans-unit>
@@ -164,6 +167,9 @@
 			</trans-unit>
 			<trans-unit id="labels.product" resname="labels.product">
 				<source>Product</source>
+			</trans-unit>
+			<trans-unit id="labels.article" resname="labels.article">
+				<source>Article</source>
 			</trans-unit>
 			<trans-unit id="message.no_records" resname="message.no_records">
 				<source>No records found.</source>

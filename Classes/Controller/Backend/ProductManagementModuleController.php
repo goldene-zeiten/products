@@ -60,9 +60,10 @@ final class ProductManagementModuleController
         }
 
         $mounts = $this->mountResolver->resolveMountUids($this->getBackendUser());
-        $categoryUid = $this->resolveSelectedCategory($request, $mounts);
-        $productUid = $categoryUid > 0 ? 0 : $this->resolveSelectedProduct($request, $mounts);
-        $moduleTemplate->assignMultiple($this->buildViewData($request, $moduleTemplate, $categoryUid, $productUid));
+        $articleUid = $this->resolveSelectedArticle($request, $mounts);
+        $categoryUid = $articleUid > 0 ? 0 : $this->resolveSelectedCategory($request, $mounts);
+        $productUid = ($articleUid > 0 || $categoryUid > 0) ? 0 : $this->resolveSelectedProduct($request, $mounts);
+        $moduleTemplate->assignMultiple($this->buildViewData($request, $moduleTemplate, $categoryUid, $productUid, $articleUid));
         return $moduleTemplate->renderResponse('Backend/ProductManagement/Main');
     }
 
@@ -138,10 +139,29 @@ final class ProductManagementModuleController
     }
 
     /**
+     * @param int[]|null $mounts
+     */
+    private function resolveSelectedArticle(ServerRequestInterface $request, ?array $mounts): int
+    {
+        $uid = (int)($request->getQueryParams()['article'] ?? 0);
+        if ($uid <= 0) {
+            return 0;
+        }
+        $article = $this->treeRepository->fetchArticleByUid($uid);
+        if ($article === null || !$this->accessGuard->isProductAccessible($article['product'], $mounts)) {
+            return 0;
+        }
+        return $uid;
+    }
+
+    /**
      * @return array<string, mixed>
      */
-    private function buildViewData(ServerRequestInterface $request, ModuleTemplate $moduleTemplate, int $categoryUid, int $productUid): array
+    private function buildViewData(ServerRequestInterface $request, ModuleTemplate $moduleTemplate, int $categoryUid, int $productUid, int $articleUid): array
     {
+        if ($articleUid > 0) {
+            return $this->buildArticleScopedView($request, $articleUid);
+        }
         if ($productUid > 0) {
             return $this->buildProductScopedView($request, $productUid);
         }
@@ -158,19 +178,57 @@ final class ProductManagementModuleController
     {
         $returnUrl = (string)$this->uriBuilder->buildUriFromRequest($request, ['product' => $productUid]);
         $product = $this->treeRepository->fetchProductByUid($productUid);
+        $displayFields = $this->resolveDisplayFields();
+        $rawValuesByUid = $this->treeRepository->fetchArticlesRawFieldsByProduct($productUid, $displayFields);
         $items = array_map(
-            fn(array $article): array => $this->buildRow(self::TABLE_ARTICLE, $article, $returnUrl),
+            fn(array $article): array => $this->buildRow(
+                self::TABLE_ARTICLE,
+                $article,
+                $returnUrl,
+                $displayFields,
+                $rawValuesByUid[$article['uid']] ?? [],
+            ),
             $this->treeRepository->fetchArticlesByProduct($productUid)
         );
         return [
             'mode' => 'product',
             'selectedCategory' => null,
             'selectedProduct' => $product,
+            'selectedArticle' => null,
             'itemsLabel' => $this->translate('column.articles'),
+            'extraColumns' => $this->buildColumnHeaders(self::TABLE_ARTICLE, $displayFields),
             'items' => $items,
+            'fields' => [],
+            'columnSelector' => $this->buildColumnSelectorData(self::TABLE_ARTICLE, $returnUrl),
             'actions' => [
                 $this->buildAction('actions.new_article', self::TABLE_ARTICLE, ['product' => $productUid], $returnUrl),
                 $this->buildEditAction('actions.edit_product', self::TABLE_PRODUCT, $productUid, $returnUrl),
+            ],
+            'overviewHtml' => null,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildArticleScopedView(ServerRequestInterface $request, int $articleUid): array
+    {
+        $returnUrl = (string)$this->uriBuilder->buildUriFromRequest($request, ['article' => $articleUid]);
+        $article = $this->treeRepository->fetchArticleByUid($articleUid);
+        $displayFields = $this->resolveDisplayFields();
+        $rawValues = $this->treeRepository->fetchArticleRawFields($articleUid, $displayFields);
+        return [
+            'mode' => 'article',
+            'selectedCategory' => null,
+            'selectedProduct' => null,
+            'selectedArticle' => $article,
+            'itemsLabel' => '',
+            'extraColumns' => [],
+            'items' => [],
+            'fields' => $this->buildFieldRows(self::TABLE_ARTICLE, $displayFields, $rawValues, $articleUid),
+            'columnSelector' => $this->buildColumnSelectorData(self::TABLE_ARTICLE, $returnUrl),
+            'actions' => [
+                $this->buildEditAction('actions.edit_article', self::TABLE_ARTICLE, $articleUid, $returnUrl),
             ],
             'overviewHtml' => null,
         ];
@@ -191,8 +249,12 @@ final class ProductManagementModuleController
             'mode' => 'category',
             'selectedCategory' => $category,
             'selectedProduct' => null,
+            'selectedArticle' => null,
             'itemsLabel' => $this->translate('column.products'),
+            'extraColumns' => [],
             'items' => $items,
+            'fields' => [],
+            'columnSelector' => null,
             'actions' => $this->buildCategoryScopedActions($categoryUid, $returnUrl),
             'overviewHtml' => null,
         ];
@@ -227,8 +289,12 @@ final class ProductManagementModuleController
             'mode' => 'overview',
             'selectedCategory' => null,
             'selectedProduct' => null,
+            'selectedArticle' => null,
             'itemsLabel' => '',
+            'extraColumns' => [],
             'items' => [],
+            'fields' => [],
+            'columnSelector' => null,
             'actions' => [
                 $this->buildAction('actions.new_category', self::TABLE_CATEGORY, ['parent_category' => 0], $returnUrl),
                 ['label' => $this->translate('actions.archive_old_products'), 'url' => (string)$this->uriBuilder->buildUriFromRoute('products_management', ['archive' => 1])],
@@ -252,9 +318,11 @@ final class ProductManagementModuleController
 
     /**
      * @param array{uid: int, title: string, hidden: bool, itemNumber?: string} $item
+     * @param string[] $extraFields
+     * @param array<string, mixed> $rawValues
      * @return array<string, mixed>
      */
-    private function buildRow(string $table, array $item, string $returnUrl): array
+    private function buildRow(string $table, array $item, string $returnUrl, array $extraFields = [], array $rawValues = []): array
     {
         return [
             'uid' => $item['uid'],
@@ -262,6 +330,88 @@ final class ProductManagementModuleController
             'hidden' => $item['hidden'],
             'itemNumber' => $item['itemNumber'] ?? '',
             'editUrl' => $this->buildEditUrl($table, $item['uid'], $returnUrl),
+            'extraValues' => array_map(
+                fn(string $field): string => $this->formatFieldValue($table, $field, $rawValues[$field] ?? null, $item['uid']),
+                $extraFields
+            ),
+        ];
+    }
+
+    /**
+     * Editor-chosen extra columns for a table, read from the same $BE_USER->uc
+     * slot ("list/displayFields") TYPO3's own record-list column selector
+     * writes to - validated against real TCA columns, since that uc value is
+     * attacker-reachable (a tampered POST to the core AJAX endpoint could
+     * store arbitrary strings) and gets used to build a SQL SELECT list.
+     * @return string[]
+     */
+    private function resolveDisplayFields(): array
+    {
+        $selected = $this->getBackendUser()->getModuleData('list/displayFields')[self::TABLE_ARTICLE] ?? [];
+        if (!is_array($selected)) {
+            return [];
+        }
+        $allowedFields = array_keys($GLOBALS['TCA'][self::TABLE_ARTICLE]['columns'] ?? []);
+        return array_values(array_intersect($selected, $allowedFields));
+    }
+
+    /**
+     * @param string[] $fields
+     * @return string[]
+     */
+    private function buildColumnHeaders(string $table, array $fields): array
+    {
+        return array_map(
+            fn(string $field): string => $this->getLanguageService()->sL(BackendUtility::getItemLabel($table, $field) ?? $field),
+            $fields
+        );
+    }
+
+    /**
+     * @param string[] $fields
+     * @param array<string, mixed> $rawValues
+     * @return array<int, array{label: string, value: string}>
+     */
+    private function buildFieldRows(string $table, array $fields, array $rawValues, int $uid): array
+    {
+        return array_map(
+            fn(string $field): array => [
+                'label' => $this->getLanguageService()->sL(BackendUtility::getItemLabel($table, $field) ?? $field),
+                'value' => $this->formatFieldValue($table, $field, $rawValues[$field] ?? null, $uid),
+            ],
+            $fields
+        );
+    }
+
+    private function formatFieldValue(string $table, string $field, mixed $rawValue, int $uid): string
+    {
+        return (string)(BackendUtility::getProcessedValue($table, $field, $rawValue, 0, true, false, $uid) ?? '');
+    }
+
+    /**
+     * Reuses TYPO3 core's own "Show columns" button/modal/AJAX endpoints
+     * (TYPO3\CMS\Backend\Controller\ColumnSelectorController) as-is, so the
+     * editor's column choice persists in $BE_USER->uc without this
+     * extension building any settings UI or storage of its own.
+     * @return array<string, string>
+     */
+    private function buildColumnSelectorData(string $table, string $returnUrl): array
+    {
+        $lang = $this->getLanguageService();
+        return [
+            'url' => (string)$this->uriBuilder->buildUriFromRoute('ajax_show_columns_selector', [
+                'id' => $this->storageFolderResolver->resolve(),
+                'table' => $table,
+            ]),
+            'target' => $returnUrl,
+            'title' => sprintf(
+                $lang->sL('LLL:EXT:backend/Resources/Private/Language/locallang_column_selector.xlf:showColumnsSelection'),
+                $lang->sL($GLOBALS['TCA'][$table]['ctrl']['title'] ?? '') ?: $table,
+            ),
+            'buttonOk' => $lang->sL('LLL:EXT:backend/Resources/Private/Language/locallang_column_selector.xlf:updateColumnView'),
+            'buttonClose' => $lang->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.cancel'),
+            'errorMessage' => $lang->sL('LLL:EXT:backend/Resources/Private/Language/locallang_column_selector.xlf:updateColumnView.error'),
+            'label' => $lang->sL('LLL:EXT:backend/Resources/Private/Language/locallang_column_selector.xlf:showColumns'),
         ];
     }
 

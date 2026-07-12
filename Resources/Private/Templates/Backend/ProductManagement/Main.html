@@ -1,9 +1,27 @@
 <f:layout name="Module" />
 <f:section name="Content">
+    <f:if condition="{columnSelector}">
+        <f:asset.module identifier="@typo3/backend/column-selector-button.js" />
+    </f:if>
+
     <div class="mb-3">
         <f:for each="{actions}" as="action">
             <a class="btn btn-default" href="{action.url}">{action.label}</a>
         </f:for>
+        <f:if condition="{columnSelector}">
+            <typo3-backend-column-selector-button
+                class="btn btn-default"
+                data-url="{columnSelector.url}"
+                data-target="{columnSelector.target}"
+                data-title="{columnSelector.title}"
+                data-button-ok="{columnSelector.buttonOk}"
+                data-button-close="{columnSelector.buttonClose}"
+                data-error-message="{columnSelector.errorMessage}"
+            >
+                <core:icon identifier="actions-options" size="small" />
+                {columnSelector.label}
+            </typo3-backend-column-selector-button>
+        </f:if>
     </div>
 
     <f:if condition="{selectedCategory}">
@@ -16,11 +34,28 @@
             <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:labels.product" />: {selectedProduct.title}</h2>
         </f:then>
     </f:if>
+    <f:if condition="{selectedArticle}">
+        <f:then>
+            <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:labels.article" />: {selectedArticle.title}</h2>
+        </f:then>
+    </f:if>
 
     <f:if condition="{mode} == 'overview'">
         <f:then>
             <f:format.raw>{overviewHtml}</f:format.raw>
         </f:then>
+        <f:else if="{mode} == 'article'">
+            <table class="table table-striped w-auto">
+                <tbody>
+                    <f:for each="{fields}" as="field">
+                        <tr>
+                            <th>{field.label}</th>
+                            <td>{field.value}</td>
+                        </tr>
+                    </f:for>
+                </tbody>
+            </table>
+        </f:else>
         <f:else>
             <f:if condition="{items}">
                 <f:then>
@@ -29,6 +64,9 @@
                             <tr>
                                 <th>{itemsLabel}</th>
                                 <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:column.item_number" /></th>
+                                <f:for each="{extraColumns}" as="columnLabel">
+                                    <th>{columnLabel}</th>
+                                </f:for>
                                 <th></th>
                             </tr>
                         </thead>
@@ -37,6 +75,9 @@
                                 <tr>
                                     <td class="{f:if(condition: item.hidden, then: 'text-body-secondary fst-italic')}">{item.title}</td>
                                     <td>{item.itemNumber}</td>
+                                    <f:for each="{item.extraValues}" as="value">
+                                        <td>{value}</td>
+                                    </f:for>
                                     <td class="text-end">
                                         <a class="btn btn-default btn-sm" href="{item.editUrl}">
                                             <core:icon identifier="actions-open" size="small" />
