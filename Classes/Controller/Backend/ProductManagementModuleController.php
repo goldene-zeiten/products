@@ -225,12 +225,29 @@ final class ProductManagementModuleController
             'itemsLabel' => '',
             'extraColumns' => [],
             'items' => [],
-            'fields' => $this->buildFieldRows(self::TABLE_ARTICLE, $displayFields, $rawValues, $articleUid),
+            'fields' => array_merge(
+                [$this->buildTitleFieldRow(self::TABLE_ARTICLE, $article['title'] ?? '')],
+                $this->buildFieldRows(self::TABLE_ARTICLE, $displayFields, $rawValues, $articleUid)
+            ),
             'columnSelector' => $this->buildColumnSelectorData(self::TABLE_ARTICLE, $returnUrl),
             'actions' => [
                 $this->buildEditAction('actions.edit_article', self::TABLE_ARTICLE, $articleUid, $returnUrl),
             ],
             'overviewHtml' => null,
+        ];
+    }
+
+    /**
+     * The title/label field is shown unconditionally and first, regardless of
+     * the editor's "Show columns" selection - so the field list is never
+     * empty (and looks broken) before an editor has configured anything.
+     * @return array{label: string, value: string}
+     */
+    private function buildTitleFieldRow(string $table, string $title): array
+    {
+        return [
+            'label' => $this->getLanguageService()->sL(BackendUtility::getItemLabel($table, 'title') ?? 'title'),
+            'value' => $title,
         ];
     }
 
