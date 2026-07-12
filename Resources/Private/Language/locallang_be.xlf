@@ -168,6 +168,9 @@
 			<trans-unit id="message.no_records" resname="message.no_records">
 				<source>No records found.</source>
 			</trans-unit>
+			<trans-unit id="tree.tree_label" resname="tree.tree_label">
+				<source>Categories and products</source>
+			</trans-unit>
 			<trans-unit id="tree.expand" resname="tree.expand">
 				<source>Expand</source>
 			</trans-unit>
