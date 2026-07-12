@@ -27,9 +27,6 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         parent::setUp();
         TestMailer::reset();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_with_items_and_addresses.csv');
-        // WithdrawalService reads $GLOBALS['TYPO3_REQUEST'] eagerly in its constructor.
-        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
     #[Test]
@@ -65,7 +62,8 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
             $order->setStatus($status);
         }
 
-        $this->assertSame($expected, $subject->isStillWithdrawable($order));
+        $request = (new ServerRequest('http://localhost/'))->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
+        $this->assertSame($expected, $subject->isStillWithdrawable($order, $request));
     }
 
     public static function isStillWithdrawableProvider(): \Generator
@@ -94,7 +92,8 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         $order = $this->fetchOrder();
         $order->setOrderDate(new \DateTime());
 
-        $subject->withdraw($order, 'shopper@example.com', 'Changed my mind');
+        $request = (new ServerRequest('http://localhost/'))->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
+        $subject->withdraw($order, 'shopper@example.com', 'Changed my mind', $request);
 
         $this->assertSame(OrderStatus::CANCELLED, $order->getStatus());
         $this->assertCount(1, $order->getStatusLog());
@@ -121,7 +120,8 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         $this->expectException($expectedExceptionClass);
         $this->expectExceptionCode($expectedExceptionCode);
 
-        $subject->withdraw($order, $email, '');
+        $request = (new ServerRequest('http://localhost/'))->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
+        $subject->withdraw($order, $email, '', $request);
     }
 
     public static function withdrawThrowsProvider(): \Generator

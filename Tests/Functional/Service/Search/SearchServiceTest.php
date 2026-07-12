@@ -10,6 +10,8 @@ use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Tests\Functional\Fixtures\FixtureConfigurationManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 final class SearchServiceTest extends AbstractFunctionalTestCase
@@ -28,7 +30,7 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
     #[DataProvider('blankTermProvider')]
     public function blankTermsNeverExecuteAQuery(string $term): void
     {
-        $result = $this->subject()->search($term, null, 1);
+        $result = $this->subject()->search($term, null, 1, $this->createRequest());
 
         $this->assertFalse($result->hasSearched());
         $this->assertSame(0, $result->getTotalCount());
@@ -45,7 +47,7 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
     #[DataProvider('paginationProvider')]
     public function paginationBehavior(int $resultsPerPage, string $term, int $requestedPage, int $expectedCount, int $expectedCurrentPage, int $expectedTotalPages): void
     {
-        $result = $this->subject(resultsPerPage: $resultsPerPage)->search($term, null, $requestedPage);
+        $result = $this->subject(resultsPerPage: $resultsPerPage)->search($term, null, $requestedPage, $this->createRequest());
 
         $this->assertTrue($result->hasSearched());
         $this->assertTrue($result->hasResults());
@@ -65,7 +67,7 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function noResultsIsReportedDistinctlyFromNeverHavingSearched(): void
     {
-        $result = $this->subject()->search('doesnotexist', null, 1);
+        $result = $this->subject()->search('doesnotexist', null, 1, $this->createRequest());
 
         $this->assertTrue($result->hasSearched());
         $this->assertFalse($result->hasResults());
@@ -79,5 +81,10 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
     private function fakeConfigurationManager(int $resultsPerPage): ConfigurationManagerInterface
     {
         return new FixtureConfigurationManager(['search' => ['resultsPerPage' => $resultsPerPage]]);
+    }
+
+    private function createRequest(): ServerRequestInterface
+    {
+        return new ServerRequest('http://example.com/');
     }
 }

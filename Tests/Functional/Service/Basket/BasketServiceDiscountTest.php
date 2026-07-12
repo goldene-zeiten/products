@@ -30,9 +30,6 @@ final class BasketServiceDiscountTest extends AbstractFunctionalTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/BasketServiceDiscountTest/basket_discount.csv');
-        // Extbase setting reads in TaxService constructor need a request resolvable via globals.
-        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
     #[Test]

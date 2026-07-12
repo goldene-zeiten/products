@@ -50,8 +50,6 @@ final class PurgeWishlistOnOrderPlacedIntegrationTest extends AbstractFunctional
             ]),
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
-        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
     #[Test]

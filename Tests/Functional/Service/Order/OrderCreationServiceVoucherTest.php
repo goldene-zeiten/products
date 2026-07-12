@@ -31,9 +31,6 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/order_placement_with_voucher.csv');
-        // Extbase setting reads in OrderFactory constructor need a request resolvable via globals.
-        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
     #[Test]

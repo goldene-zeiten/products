@@ -20,22 +20,21 @@ final class ProductPageTitleProvider implements PageTitleProviderInterface
     /**
      * @var array<string, mixed>
      */
-    private array $settings;
+    private array $settings = [];
 
     public function __construct(
         private readonly CurrentProductHolder $currentProductHolder,
-        ConfigurationManagerInterface $configurationManager
-    ) {
-        $this->settings = $configurationManager->getConfiguration(
+        private readonly ConfigurationManagerInterface $configurationManager
+    ) {}
+
+    public function setRequest(ServerRequestInterface $request): void
+    {
+        $this->configurationManager->setRequest($request);
+        $this->settings = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
             'Products'
         );
     }
-
-    /**
-     * Unused; the current product is bridged via {@see CurrentProductHolder} instead.
-     */
-    public function setRequest(ServerRequestInterface $request): void {}
 
     public function getTitle(): string
     {

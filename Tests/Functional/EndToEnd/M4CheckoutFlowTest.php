@@ -32,9 +32,6 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/M4CheckoutFlowTest/m4_end_to_end.csv');
-        // CategoryDiscountPriceProvider reads $GLOBALS['TYPO3_REQUEST'] eagerly in its constructor.
-        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
     #[Test]

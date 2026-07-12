@@ -25,8 +25,6 @@ final class BasketQuantityEnforcementTest extends AbstractFrontendTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/BasketQuantityEnforcementTest/basket_service_quantity.csv');
-        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
     #[Test]

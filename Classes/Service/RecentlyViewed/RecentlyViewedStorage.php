@@ -18,26 +18,16 @@ final class RecentlyViewedStorage
     private const SESSION_KEY = 'tx_products_recentlyViewed';
     private const DEFAULT_LIMIT = 10;
 
-    /**
-     * @var array<string, mixed>
-     */
-    private array $settings;
-
     public function __construct(
         private readonly FrontendUserResolver $frontendUserResolver,
-        ConfigurationManagerInterface $configurationManager
-    ) {
-        $this->settings = $configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
-        );
-    }
+        private readonly ConfigurationManagerInterface $configurationManager
+    ) {}
 
     public function record(ServerRequestInterface $request, int $productUid): void
     {
         $productUids = $this->withoutUid($this->load($request), $productUid);
         array_unshift($productUids, $productUid);
-        $this->save($request, array_slice($productUids, 0, $this->limit()));
+        $this->save($request, array_slice($productUids, 0, $this->limit($request)));
     }
 
     /**
@@ -68,7 +58,7 @@ final class RecentlyViewedStorage
         if (!$frontendUser instanceof FrontendUserAuthentication) {
             return;
         }
-        if ($this->requiresCookieConsent() && !$this->frontendUserResolver->hasConfirmedSessionCookie($request)) {
+        if ($this->requiresCookieConsent($request) && !$this->frontendUserResolver->hasConfirmedSessionCookie($request)) {
             return;
         }
 
@@ -76,9 +66,14 @@ final class RecentlyViewedStorage
         $frontendUser->storeSessionData();
     }
 
-    private function requiresCookieConsent(): bool
+    private function requiresCookieConsent(ServerRequestInterface $request): bool
     {
-        return (bool)($this->settings['session']['requireCookieConsent'] ?? false);
+        $this->configurationManager->setRequest($request);
+        $settings = $this->configurationManager->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            'Products'
+        );
+        return (bool)($settings['session']['requireCookieConsent'] ?? false);
     }
 
     /**
@@ -90,8 +85,13 @@ final class RecentlyViewedStorage
         return array_values(array_filter($productUids, static fn(int $uid): bool => $uid !== $productUid));
     }
 
-    private function limit(): int
+    private function limit(ServerRequestInterface $request): int
     {
-        return max(1, (int)($this->settings['recentlyViewed']['limit'] ?? self::DEFAULT_LIMIT));
+        $this->configurationManager->setRequest($request);
+        $settings = $this->configurationManager->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            'Products'
+        );
+        return max(1, (int)($settings['recentlyViewed']['limit'] ?? self::DEFAULT_LIMIT));
     }
 }
