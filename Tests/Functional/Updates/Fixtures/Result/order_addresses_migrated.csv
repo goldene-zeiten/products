@@ -1,0 +1,4 @@
+"tx_products_domain_model_orderaddress",,,,,,,
+,"uid","address_type","first_name","last_name","salutation","street","house_number","country"
+,1,"billing","Jane","Doe","Mrs.","Main St",1,"DE"
+,2,"billing","John","Smith","Mr.","Side St",2,""

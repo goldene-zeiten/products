@@ -26,93 +26,92 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private OrderCreationService $subject;
-    private Product $product;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_placement_with_voucher.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/order_placement_with_voucher.csv');
         // OrderFactory reads Extbase settings eagerly in its constructor, which requires a request
         // to be resolvable via $GLOBALS['TYPO3_REQUEST'] outside of a real controller dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $this->subject = $this->get(OrderCreationService::class);
-        $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
-        $this->product = $product;
     }
 
     #[Test]
     public function anOrderWithoutAGiftChoiceStaysBillingOnly(): void
     {
-        $order = $this->subject->create(
+        $subject = $this->get(OrderCreationService::class);
+
+        $order = $subject->create(
             $this->request(),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 0),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertNull($order->getDeliveryAddress());
-        self::assertSame('', $order->getGiftMessage());
+        $this->assertNull($order->getDeliveryAddress());
+        $this->assertSame('', $order->getGiftMessage());
     }
 
     #[Test]
     public function anAlternateDeliveryAddressIsSnapshottedOntoTheOrder(): void
     {
+        $subject = $this->get(OrderCreationService::class);
         $delivery = new Address(firstName: 'Jane', lastName: 'Doe', street: 'Gift Lane 1', zip: '54321', city: 'Giftville', country: 'AT');
 
-        $order = $this->subject->create(
+        $order = $subject->create(
             $this->request(),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 0, 0, $delivery),
             $this->address(),
             $this->paymentMethod()
         );
 
         $deliveryAddress = $order->getDeliveryAddress();
-        self::assertNotNull($deliveryAddress);
-        self::assertSame('delivery', $deliveryAddress->getAddressType());
-        self::assertSame('Jane', $deliveryAddress->getFirstName());
-        self::assertSame('Doe', $deliveryAddress->getLastName());
-        self::assertSame('Gift Lane 1', $deliveryAddress->getStreet());
-        self::assertSame('54321', $deliveryAddress->getZip());
-        self::assertSame('Giftville', $deliveryAddress->getCity());
-        self::assertSame('AT', $deliveryAddress->getCountry());
+        $this->assertNotNull($deliveryAddress);
+        $this->assertSame('delivery', $deliveryAddress->getAddressType());
+        $this->assertSame('Jane', $deliveryAddress->getFirstName());
+        $this->assertSame('Doe', $deliveryAddress->getLastName());
+        $this->assertSame('Gift Lane 1', $deliveryAddress->getStreet());
+        $this->assertSame('54321', $deliveryAddress->getZip());
+        $this->assertSame('Giftville', $deliveryAddress->getCity());
+        $this->assertSame('AT', $deliveryAddress->getCountry());
     }
 
     #[Test]
     public function billingAddressIsUnaffectedByAnAlternateDeliveryAddress(): void
     {
+        $subject = $this->get(OrderCreationService::class);
         $delivery = new Address(firstName: 'Jane', lastName: 'Doe', country: 'AT');
 
-        $order = $this->subject->create(
+        $order = $subject->create(
             $this->request(),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 0, 0, $delivery),
             $this->address(),
             $this->paymentMethod()
         );
 
         $billingAddress = $order->getBillingAddress();
-        self::assertNotNull($billingAddress);
-        self::assertSame('billing', $billingAddress->getAddressType());
-        self::assertSame('DE', $billingAddress->getCountry());
+        $this->assertNotNull($billingAddress);
+        $this->assertSame('billing', $billingAddress->getAddressType());
+        $this->assertSame('DE', $billingAddress->getCountry());
     }
 
     #[Test]
     public function aGiftMessageIsPersistedOntoTheOrder(): void
     {
-        $order = $this->subject->create(
+        $subject = $this->get(OrderCreationService::class);
+
+        $order = $subject->create(
             $this->request(),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             new CheckoutSelections([], 0, 0, null, 'Happy birthday!'),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame('Happy birthday!', $order->getGiftMessage());
+        $this->assertSame('Happy birthday!', $order->getGiftMessage());
     }
 
     private function request(): ServerRequestInterface
@@ -121,12 +120,19 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
-    private function basketViewModel(): BasketViewModel
+    private function product(): Product
+    {
+        $product = $this->get(ProductRepository::class)->findByUid(1);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
+    }
+
+    private function basketViewModel(Product $product): BasketViewModel
     {
         $unitPriceNet = Money::fromDecimalString('84.03');
         $unitPriceGross = Money::fromDecimalString('100.00');
         $item = new BasketViewItem(
-            $this->product,
+            $product,
             null,
             1,
             $unitPriceNet,

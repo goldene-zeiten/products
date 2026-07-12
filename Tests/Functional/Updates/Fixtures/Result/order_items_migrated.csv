@@ -1,0 +1,5 @@
+"tx_products_domain_model_orderitem",,,,,,
+,"uid","item_number","title","quantity","unit_price_gross","line_total_gross","article"
+,1,"PROD1","Existing Product",2,1000,2000,0
+,2,"ART1","Existing Product",1,1250,1250,90
+,3,"PROD1","Existing Product",1,1000,1000,0

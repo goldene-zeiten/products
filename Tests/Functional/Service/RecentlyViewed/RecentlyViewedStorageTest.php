@@ -7,6 +7,8 @@ namespace GoldeneZeiten\Products\Tests\Functional\Service\RecentlyViewed;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\RecentlyViewed\RecentlyViewedStorage;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Tests\Functional\Fixtures\FixtureConfigurationManager;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -20,70 +22,48 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
+    /**
+     * @param int[] $recordedUids
+     * @param int[] $expectedOrder
+     */
     #[Test]
-    public function loadIsEmptyByDefault(): void
+    #[DataProvider('loadOrderProvider')]
+    public function loadReflectsTheRecordedOrder(int $limit, array $recordedUids, array $expectedOrder): void
     {
-        $this->assertSame([], $this->subject()->load($this->request()));
-    }
-
-    #[Test]
-    public function recordingAProductAddsItToTheFront(): void
-    {
-        $storage = $this->subject();
+        $storage = $this->subject(limit: $limit);
         $request = $this->request();
 
-        $storage->record($request, 1);
-        $storage->record($request, 2);
+        foreach ($recordedUids as $uid) {
+            $storage->record($request, $uid);
+        }
 
-        $this->assertSame([2, 1], $storage->load($request));
+        $this->assertSame($expectedOrder, $storage->load($request));
+    }
+
+    public static function loadOrderProvider(): \Generator
+    {
+        yield 'empty by default' => ['limit' => 10, 'recordedUids' => [], 'expectedOrder' => []];
+        yield 'recording a product adds it to the front' => ['limit' => 10, 'recordedUids' => [1, 2], 'expectedOrder' => [2, 1]];
+        yield 'reviewing an already present product moves it to the front without duplicating' => ['limit' => 10, 'recordedUids' => [1, 2, 1], 'expectedOrder' => [1, 2]];
+        yield 'the list is capped at the configured limit' => ['limit' => 2, 'recordedUids' => [1, 2, 3], 'expectedOrder' => [3, 2]];
     }
 
     #[Test]
-    public function reviewingAnAlreadyPresentProductMovesItToTheFrontWithoutDuplicating(): void
+    #[DataProvider('recordingIsSkippedProvider')]
+    public function recordingIsSkippedInVariousScenarios(bool $requireCookieConsent, bool $sessionlessRequest): void
     {
-        $storage = $this->subject();
-        $request = $this->request();
-
-        $storage->record($request, 1);
-        $storage->record($request, 2);
-        $storage->record($request, 1);
-
-        $this->assertSame([1, 2], $storage->load($request));
-    }
-
-    #[Test]
-    public function theListIsCappedAtTheConfiguredLimit(): void
-    {
-        $storage = $this->subject(limit: 2);
-        $request = $this->request();
-
-        $storage->record($request, 1);
-        $storage->record($request, 2);
-        $storage->record($request, 3);
-
-        $this->assertSame([3, 2], $storage->load($request));
-    }
-
-    #[Test]
-    public function aGuestWithoutASessionRecordsNothingAndCrashesNothing(): void
-    {
-        $storage = $this->subject();
-        $request = new ServerRequest('http://localhost/');
+        $storage = $this->subject(requireCookieConsent: $requireCookieConsent);
+        $request = $sessionlessRequest ? new ServerRequest('http://localhost/') : $this->request();
 
         $storage->record($request, 1);
 
         $this->assertSame([], $storage->load($request));
     }
 
-    #[Test]
-    public function recordingIsSkippedWhenCookieConsentIsRequiredButNotYetConfirmed(): void
+    public static function recordingIsSkippedProvider(): \Generator
     {
-        $storage = $this->subject(requireCookieConsent: true);
-        $request = $this->request();
-
-        $storage->record($request, 1);
-
-        $this->assertSame([], $storage->load($request));
+        yield 'guest without a session records nothing and crashes nothing' => ['requireCookieConsent' => false, 'sessionlessRequest' => true];
+        yield 'recording is skipped when cookie consent is required but not yet confirmed' => ['requireCookieConsent' => true, 'sessionlessRequest' => false];
     }
 
     #[Test]
@@ -107,30 +87,10 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
 
     private function fakeConfigurationManager(int $limit, bool $requireCookieConsent): ConfigurationManagerInterface
     {
-        return new class ($limit, $requireCookieConsent) implements ConfigurationManagerInterface {
-            public function __construct(
-                private readonly int $limit,
-                private readonly bool $requireCookieConsent
-            ) {}
-
-            /**
-             * @return array<string, mixed>
-             */
-            public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
-            {
-                return [
-                    'recentlyViewed' => ['limit' => $this->limit],
-                    'session' => ['requireCookieConsent' => $this->requireCookieConsent],
-                ];
-            }
-
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function setConfiguration(array $configuration = []): void {}
-
-            public function setRequest(ServerRequestInterface $request): void {}
-        };
+        return new FixtureConfigurationManager([
+            'recentlyViewed' => ['limit' => $limit],
+            'session' => ['requireCookieConsent' => $requireCookieConsent],
+        ]);
     }
 
     private function request(): ServerRequestInterface

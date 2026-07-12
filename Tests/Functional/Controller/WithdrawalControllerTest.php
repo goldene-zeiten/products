@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Service\Withdrawal\WithdrawalTokenService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
 use GoldeneZeiten\Products\Tests\Functional\Fixtures\TestMailer;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
@@ -17,73 +17,86 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 
 final class WithdrawalControllerTest extends AbstractFrontendTestCase
 {
-    private OrderRepository $orderRepository;
-    private Order $order;
-
     protected function setUp(): void
     {
         parent::setUp();
         TestMailer::reset();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_with_items_and_addresses.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/withdrawal_content.csv');
-        $this->orderRepository = $this->get(OrderRepository::class);
-
-        $order = $this->orderRepository->findByUidIgnoringStoragePage(1);
-        self::assertInstanceOf(Order::class, $order);
-        $order->setOrderDate(new \DateTime());
-        $this->orderRepository->update($order);
-        $this->get(PersistenceManagerInterface::class)->persistAll();
-        $this->order = $order;
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/WithdrawalControllerTest/withdrawal_content.csv');
     }
 
     #[Test]
-    public function formActionRendersTheFormForAValidToken(): void
+    #[DataProvider('formActionTokenProvider')]
+    public function formActionRendersOrHidesTheFormDependingOnTokenValidity(bool $useValidToken, bool $expectFormVisible): void
     {
-        $token = $this->get(WithdrawalTokenService::class)->generateToken($this->order);
+        $order = $this->fetchWithinWithdrawalPeriodOrder();
+        $hash = $useValidToken
+            ? $this->get(WithdrawalTokenService::class)->generateToken($order)
+            : 'not-a-valid-token';
 
         $response = $this->executeFrontendSubRequest($this->requestFor('form', [
-            'order' => $this->orderUid(),
-            'hash' => $token,
+            'order' => $this->orderUid($order),
+            'hash' => $hash,
         ]));
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('tx_products_withdrawal[email]', (string)$response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        if ($expectFormVisible) {
+            $this->assertStringContainsString('tx_products_withdrawal[email]', (string)$response->getBody());
+        } else {
+            $this->assertStringNotContainsString('tx_products_withdrawal[email]', (string)$response->getBody());
+        }
     }
 
-    #[Test]
-    public function formActionShowsTheInvalidLinkMessageForATamperedToken(): void
+    public static function formActionTokenProvider(): \Generator
     {
-        $response = $this->executeFrontendSubRequest($this->requestFor('form', [
-            'order' => $this->orderUid(),
-            'hash' => 'not-a-valid-token',
-        ]));
+        yield 'valid token renders the form' => [
+            'useValidToken' => true,
+            'expectFormVisible' => true,
+        ];
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertStringNotContainsString('tx_products_withdrawal[email]', (string)$response->getBody());
+        yield 'tampered token shows the invalid link message' => [
+            'useValidToken' => false,
+            'expectFormVisible' => false,
+        ];
     }
 
     #[Test]
     public function confirmActionCancelsTheOrderForValidInput(): void
     {
-        $token = $this->get(WithdrawalTokenService::class)->generateToken($this->order);
+        $order = $this->fetchWithinWithdrawalPeriodOrder();
+        $token = $this->get(WithdrawalTokenService::class)->generateToken($order);
 
         $response = $this->executeFrontendSubRequest($this->requestFor('confirm', [
-            'order' => $this->orderUid(),
+            'order' => $this->orderUid($order),
             'hash' => $token,
             'email' => 'shopper@example.com',
             'reason' => 'Changed my mind',
         ]));
 
-        self::assertSame(200, $response->getStatusCode());
-        $cancelled = $this->orderRepository->findByUidIgnoringStoragePage(1);
-        self::assertInstanceOf(Order::class, $cancelled);
-        self::assertSame(OrderStatus::CANCELLED, $cancelled->getStatus());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/withdrawal_confirm_cancels_order.csv');
     }
 
-    private function orderUid(): int
+    /**
+     * The fixture's own order_date is irrelevant to what each test needs - "still within the
+     * withdrawal window" - so it's pinned to now, right before use, rather than relying on the
+     * CSV's static value staying valid as the withdrawal period setting changes over time.
+     */
+    private function fetchWithinWithdrawalPeriodOrder(): Order
     {
-        $uid = $this->order->getUid();
-        self::assertNotNull($uid);
+        $orderRepository = $this->get(OrderRepository::class);
+        $order = $orderRepository->findByUidIgnoringStoragePage(1);
+        $this->assertInstanceOf(Order::class, $order);
+        $order->setOrderDate(new \DateTime());
+        $orderRepository->update($order);
+        $this->get(PersistenceManagerInterface::class)->persistAll();
+        return $order;
+    }
+
+    private function orderUid(Order $order): int
+    {
+        $uid = $order->getUid();
+        $this->assertNotNull($uid);
         return $uid;
     }
 

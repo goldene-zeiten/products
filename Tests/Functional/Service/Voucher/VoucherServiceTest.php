@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherNotApplicableExcepti
 use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherNotFoundException;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class VoucherServiceTest extends AbstractFunctionalTestCase
@@ -17,145 +18,128 @@ final class VoucherServiceTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private VoucherService $subject;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/vouchers.csv');
-        $this->subject = $this->get(VoucherService::class);
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/VoucherServiceTest/vouchers.csv');
     }
 
     #[Test]
-    public function resolvesAValidVoucher(): void
+    #[DataProvider('resolvesValidVoucherProvider')]
+    public function resolveReturnsTheVoucherForValidCodes(string $code, int $frontendUserUid): void
     {
-        $voucher = $this->subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1);
+        $subject = $this->get(VoucherService::class);
+        $voucher = $subject->resolve($code, Money::fromDecimalString('100.00'), $frontendUserUid);
 
-        $this->assertSame('SAVE10', $voucher->getCode());
+        $this->assertSame($code, $voucher->getCode());
+    }
+
+    public static function resolvesValidVoucherProvider(): \Generator
+    {
+        yield 'resolves a valid voucher' => ['code' => 'SAVE10', 'frontendUserUid' => 1];
+        yield 'resolves for the bound customer' => ['code' => 'VIPONLY', 'frontendUserUid' => 42];
     }
 
     #[Test]
-    public function throwsForAnUnknownCode(): void
+    #[DataProvider('notFoundProvider')]
+    public function resolveThrowsNotFoundInVariousScenarios(string $code, ?int $expectedExceptionCode): void
     {
+        $subject = $this->get(VoucherService::class);
         $this->expectException(VoucherNotFoundException::class);
-        $this->expectExceptionCode(1751850000);
+        if ($expectedExceptionCode !== null) {
+            $this->expectExceptionCode($expectedExceptionCode);
+        }
 
-        $this->subject->resolve('DOES-NOT-EXIST', Money::fromDecimalString('100.00'), 1);
+        $subject->resolve($code, Money::fromDecimalString('100.00'), 1);
+    }
+
+    public static function notFoundProvider(): \Generator
+    {
+        yield 'an unknown code' => ['code' => 'DOES-NOT-EXIST', 'expectedExceptionCode' => 1751850000];
+        yield 'an expired voucher is treated as not found' => ['code' => 'EXPIRED', 'expectedExceptionCode' => null];
     }
 
     #[Test]
-    public function anExpiredVoucherIsTreatedAsNotFound(): void
+    #[DataProvider('notApplicableProvider')]
+    public function resolveThrowsNotApplicableInVariousScenarios(string $code, int $frontendUserUid, bool $basketAlreadyDiscounted, int $expectedExceptionCode): void
     {
-        $this->expectException(VoucherNotFoundException::class);
-
-        $this->subject->resolve('EXPIRED', Money::fromDecimalString('100.00'), 1);
-    }
-
-    #[Test]
-    public function throwsWhenBoundToADifferentCustomer(): void
-    {
+        $subject = $this->get(VoucherService::class);
         $this->expectException(VoucherNotApplicableException::class);
-        $this->expectExceptionCode(1751850001);
+        $this->expectExceptionCode($expectedExceptionCode);
 
-        $this->subject->resolve('VIPONLY', Money::fromDecimalString('100.00'), 1);
+        $subject->resolve($code, Money::fromDecimalString('100.00'), $frontendUserUid, basketAlreadyDiscounted: $basketAlreadyDiscounted);
+    }
+
+    public static function notApplicableProvider(): \Generator
+    {
+        yield 'bound to a different customer' => ['code' => 'VIPONLY', 'frontendUserUid' => 1, 'basketAlreadyDiscounted' => false, 'expectedExceptionCode' => 1751850001];
+        yield 'below the minimum basket value' => ['code' => 'BIGORDER', 'frontendUserUid' => 1, 'basketAlreadyDiscounted' => false, 'expectedExceptionCode' => 1751850002];
+        yield 'usage limit is already reached' => ['code' => 'LIMITED', 'frontendUserUid' => 1, 'basketAlreadyDiscounted' => false, 'expectedExceptionCode' => 1751850003];
+        yield 'non-combinable voucher is blocked when basket already has a discount' => ['code' => 'FLAT5', 'frontendUserUid' => 1, 'basketAlreadyDiscounted' => true, 'expectedExceptionCode' => 1783760128];
     }
 
     #[Test]
-    public function resolvesForTheBoundCustomer(): void
+    #[DataProvider('combinedDiscountProvider')]
+    public function combinedDiscountIsCappedAtTheBasketTotal(string $basketTotal, int $expectedCents): void
     {
-        $voucher = $this->subject->resolve('VIPONLY', Money::fromDecimalString('100.00'), 42);
+        $subject = $this->get(VoucherService::class);
+        $save10 = $subject->resolve('SAVE10', Money::fromDecimalString($basketTotal), 1);
+        $flat5 = $subject->resolve('FLAT5', Money::fromDecimalString($basketTotal), 1);
 
-        $this->assertSame('VIPONLY', $voucher->getCode());
+        $discount = $subject->calculateCombinedDiscount([$save10, $flat5], Money::fromDecimalString($basketTotal));
+
+        $this->assertSame($expectedCents, $discount->getCents());
     }
 
-    #[Test]
-    public function throwsWhenBelowTheMinimumBasketValue(): void
+    public static function combinedDiscountProvider(): \Generator
     {
-        $this->expectException(VoucherNotApplicableException::class);
-        $this->expectExceptionCode(1751850002);
-
-        $this->subject->resolve('BIGORDER', Money::fromDecimalString('100.00'), 1);
-    }
-
-    #[Test]
-    public function throwsWhenUsageLimitIsAlreadyReached(): void
-    {
-        $this->expectException(VoucherNotApplicableException::class);
-        $this->expectExceptionCode(1751850003);
-
-        $this->subject->resolve('LIMITED', Money::fromDecimalString('100.00'), 1);
-    }
-
-    #[Test]
-    public function calculatesCombinedDiscountCappedAtBasketTotal(): void
-    {
-        $save10 = $this->subject->resolve('SAVE10', Money::fromDecimalString('20.00'), 1);
-        $flat5 = $this->subject->resolve('FLAT5', Money::fromDecimalString('20.00'), 1);
-
-        $discount = $this->subject->calculateCombinedDiscount([$save10, $flat5], Money::fromDecimalString('20.00'));
-
         // 10% of 20.00 (2.00) + 5.00 fixed = 7.00, well under the 20.00 cap
-        $this->assertSame(700, $discount->getCents());
+        yield 'calculates the combined discount below the cap' => ['basketTotal' => '20.00', 'expectedCents' => 700];
+        // the combined discount would otherwise exceed this tiny basket total and must be capped to it
+        yield 'never exceeds the basket total' => ['basketTotal' => '4.00', 'expectedCents' => 400];
     }
 
     #[Test]
-    public function combinedDiscountNeverExceedsBasketTotal(): void
+    #[DataProvider('resolveAllowedWithDiscountStateProvider')]
+    public function resolveSucceedsAccordingToCombinabilityAndExistingDiscount(string $code, bool $basketAlreadyDiscounted): void
     {
-        $save10 = $this->subject->resolve('SAVE10', Money::fromDecimalString('4.00'), 1);
-        $flat5 = $this->subject->resolve('FLAT5', Money::fromDecimalString('4.00'), 1);
+        $subject = $this->get(VoucherService::class);
+        $voucher = $subject->resolve($code, Money::fromDecimalString('100.00'), 1, basketAlreadyDiscounted: $basketAlreadyDiscounted);
 
-        $discount = $this->subject->calculateCombinedDiscount([$save10, $flat5], Money::fromDecimalString('4.00'));
-
-        $this->assertSame(400, $discount->getCents());
+        $this->assertSame($code, $voucher->getCode());
     }
 
-    #[Test]
-    public function nonCombinableVoucherIsBlockedWhenBasketAlreadyHasADiscount(): void
+    public static function resolveAllowedWithDiscountStateProvider(): \Generator
     {
-        $this->expectException(VoucherNotApplicableException::class);
-        $this->expectExceptionCode(1783760128);
-
-        $this->subject->resolve('FLAT5', Money::fromDecimalString('100.00'), 1, basketAlreadyDiscounted: true);
-    }
-
-    #[Test]
-    public function combinableVoucherIsNotBlockedWhenBasketAlreadyHasADiscount(): void
-    {
-        $voucher = $this->subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1, basketAlreadyDiscounted: true);
-
-        $this->assertSame('SAVE10', $voucher->getCode());
-    }
-
-    #[Test]
-    public function nonCombinableVoucherIsAllowedWhenBasketHasNoExistingDiscount(): void
-    {
-        $voucher = $this->subject->resolve('FLAT5', Money::fromDecimalString('100.00'), 1, basketAlreadyDiscounted: false);
-
-        $this->assertSame('FLAT5', $voucher->getCode());
+        yield 'combinable voucher is not blocked when basket already has a discount' => ['code' => 'SAVE10', 'basketAlreadyDiscounted' => true];
+        yield 'non-combinable voucher is allowed when basket has no existing discount' => ['code' => 'FLAT5', 'basketAlreadyDiscounted' => false];
     }
 
     #[Test]
     public function combinableVouchersCanCoexist(): void
     {
-        $save10 = $this->subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1);
+        $subject = $this->get(VoucherService::class);
+        $save10 = $subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1);
 
-        $this->assertTrue($this->subject->canCoexist([$save10], $save10));
+        $this->assertTrue($subject->canCoexist([$save10], $save10));
     }
 
     #[Test]
     public function nonCombinableVoucherCannotJoinExistingOnes(): void
     {
-        $save10 = $this->subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1);
-        $flat5 = $this->subject->resolve('FLAT5', Money::fromDecimalString('100.00'), 1);
+        $subject = $this->get(VoucherService::class);
+        $save10 = $subject->resolve('SAVE10', Money::fromDecimalString('100.00'), 1);
+        $flat5 = $subject->resolve('FLAT5', Money::fromDecimalString('100.00'), 1);
 
-        $this->assertFalse($this->subject->canCoexist([$save10], $flat5));
+        $this->assertFalse($subject->canCoexist([$save10], $flat5));
     }
 
     #[Test]
     public function anythingCoexistsWithAnEmptyList(): void
     {
-        $flat5 = $this->subject->resolve('FLAT5', Money::fromDecimalString('100.00'), 1);
+        $subject = $this->get(VoucherService::class);
+        $flat5 = $subject->resolve('FLAT5', Money::fromDecimalString('100.00'), 1);
 
-        $this->assertTrue($this->subject->canCoexist([], $flat5));
+        $this->assertTrue($subject->canCoexist([], $flat5));
     }
 }

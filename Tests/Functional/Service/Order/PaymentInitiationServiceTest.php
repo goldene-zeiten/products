@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
 
 use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Model\PaymentTransaction;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Domain\Repository\PaymentTransactionRepository;
+use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Service\Order\PaymentInitiationService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Tests\Functional\Fixtures\FixturePaymentMethod;
 use GoldeneZeiten\Products\Tests\Functional\Fixtures\InvoiceNumberMutatingPaymentMethod;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Core\Database\Connection;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /**
  * Regression coverage for a real (fixed) bug: PaymentInitiationService unconditionally inserted a
@@ -34,36 +32,40 @@ final class PaymentInitiationServiceTest extends AbstractFunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/orders_with_frontend_user.csv');
     }
 
+    /**
+     * @param PaymentMethodInterface[] $paymentMethods
+     */
     #[Test]
-    public function initiateCreatesOneTransaction(): void
-    {
-        $this->get(PaymentInitiationService::class)->initiate($this->fetchOrder(), FixturePaymentMethod::pending());
-
-        $this->assertCount(1, $this->allTransactions());
-    }
-
-    #[Test]
-    public function repeatedInitiateReusesTheStillOpenTransactionInstead(): void
+    #[DataProvider('initiateTransactionCountProvider')]
+    public function initiateCreatesExpectedTransactionCount(array $paymentMethods, string $resultFixturePath): void
     {
         $subject = $this->get(PaymentInitiationService::class);
         $order = $this->fetchOrder();
 
-        $subject->initiate($order, FixturePaymentMethod::pending());
-        $subject->initiate($order, FixturePaymentMethod::pending());
+        foreach ($paymentMethods as $paymentMethod) {
+            $subject->initiate($order, $paymentMethod);
+        }
 
-        $this->assertCount(1, $this->allTransactions());
+        $this->assertCSVDataSet($resultFixturePath);
     }
 
-    #[Test]
-    public function initiateAfterCompletionCreatesANewDistinctAttempt(): void
+    /**
+     * @return \Generator<string, array<string, mixed>>
+     */
+    public static function initiateTransactionCountProvider(): \Generator
     {
-        $subject = $this->get(PaymentInitiationService::class);
-        $order = $this->fetchOrder();
-
-        $subject->initiate($order, FixturePaymentMethod::completed());
-        $subject->initiate($order, FixturePaymentMethod::completed());
-
-        $this->assertCount(2, $this->allTransactions());
+        yield 'singleInitiateCreatesOneTransaction' => [
+            'paymentMethods' => [FixturePaymentMethod::pending()],
+            'resultFixturePath' => __DIR__ . '/Fixtures/Result/payment_transactions_count_1.csv',
+        ];
+        yield 'repeatedInitiateReusesTheStillOpenTransaction' => [
+            'paymentMethods' => [FixturePaymentMethod::pending(), FixturePaymentMethod::pending()],
+            'resultFixturePath' => __DIR__ . '/Fixtures/Result/payment_transactions_count_1.csv',
+        ];
+        yield 'initiateAfterCompletionCreatesANewDistinctAttempt' => [
+            'paymentMethods' => [FixturePaymentMethod::completed(), FixturePaymentMethod::completed()],
+            'resultFixturePath' => __DIR__ . '/Fixtures/Result/payment_transactions_count_2.csv',
+        ];
     }
 
     /**
@@ -77,11 +79,12 @@ final class PaymentInitiationServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function initiateFlushesOrderMutationsMadeByThePaymentMethod(): void
     {
+        $subject = $this->get(PaymentInitiationService::class);
         $order = $this->fetchOrder();
 
-        $this->get(PaymentInitiationService::class)->initiate($order, new InvoiceNumberMutatingPaymentMethod());
+        $subject->initiate($order, new InvoiceNumberMutatingPaymentMethod());
 
-        $this->assertSame(InvoiceNumberMutatingPaymentMethod::INVOICE_NUMBER, $this->persistedInvoiceNumber($order));
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/payment_initiation_mutated_invoice_number.csv');
     }
 
     private function fetchOrder(): Order
@@ -89,24 +92,5 @@ final class PaymentInitiationServiceTest extends AbstractFunctionalTestCase
         $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
         $this->assertInstanceOf(Order::class, $order);
         return $order;
-    }
-
-    /**
-     * @return PaymentTransaction[]
-     */
-    private function allTransactions(): array
-    {
-        return iterator_to_array($this->get(PaymentTransactionRepository::class)->findAll());
-    }
-
-    private function persistedInvoiceNumber(Order $order): string
-    {
-        $queryBuilder = $this->get(ConnectionPool::class)->getQueryBuilderForTable('tx_products_domain_model_order');
-        return (string)$queryBuilder
-            ->select('invoice_number')
-            ->from('tx_products_domain_model_order')
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($order->getUid(), Connection::PARAM_INT)))
-            ->executeQuery()
-            ->fetchOne();
     }
 }

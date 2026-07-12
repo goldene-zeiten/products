@@ -10,8 +10,6 @@ use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Domain\Repository\VoucherRedemptionRepository;
-use GoldeneZeiten\Products\Domain\Repository\VoucherRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
@@ -22,7 +20,6 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
-use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
 {
@@ -30,65 +27,58 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private OrderCreationService $subject;
-    private VoucherRedemptionRepository $voucherRedemptionRepository;
-    private Product $product;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_placement_with_voucher.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/order_placement_with_voucher.csv');
         // OrderFactory reads Extbase settings eagerly in its constructor, which requires a request
         // to be resolvable via $GLOBALS['TYPO3_REQUEST'] outside of a real controller dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $this->subject = $this->get(OrderCreationService::class);
-        $this->voucherRedemptionRepository = $this->get(VoucherRedemptionRepository::class);
-        $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
-        $this->product = $product;
     }
 
     #[Test]
     public function voucherDiscountReducesTotalGrossButNotNetOrTax(): void
     {
-        $order = $this->subject->create(
+        $subject = $this->get(OrderCreationService::class);
+
+        $order = $subject->create(
             $this->request(),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             $this->discountRequest('SAVE10'),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame(1000, $order->getDiscountTotal()->getCents());
-        self::assertSame(['SAVE10'], $order->getVoucherCodes());
-        self::assertSame(9000, $order->getTotalGross()->getCents());
-        self::assertSame(8403, $order->getTotalNet()->getCents());
+        $this->assertSame(1000, $order->getDiscountTotal()->getCents());
+        $this->assertSame(['SAVE10'], $order->getVoucherCodes());
+        $this->assertSame(9000, $order->getTotalGross()->getCents());
+        $this->assertSame(8403, $order->getTotalNet()->getCents());
     }
 
     #[Test]
     public function appliedVoucherWritesARedemptionRow(): void
     {
-        $voucher = $this->get(VoucherRepository::class)->findOneByCode('SAVE10');
-        self::assertNotNull($voucher);
+        $subject = $this->get(OrderCreationService::class);
 
-        $order = $this->subject->create(
+        $subject->create(
             $this->request(),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             $this->discountRequest('SAVE10'),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertSame(1, $this->voucherRedemptionRepository->countFor($voucher));
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/voucher_redemption_save10_added.csv');
     }
 
     #[Test]
     public function usageLimitIsEnforcedAcrossTwoPlacements(): void
     {
-        $this->subject->create(
+        $subject = $this->get(OrderCreationService::class);
+        $subject->create(
             $this->request(),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             $this->discountRequest('ONETIME'),
             $this->address(),
             $this->paymentMethod()
@@ -97,9 +87,9 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
         $this->expectException(VoucherRedemptionFailedException::class);
         $this->expectExceptionCode(1783426407);
 
-        $this->subject->create(
+        $subject->create(
             $this->request(),
-            $this->basketViewModel(),
+            $this->basketViewModel($this->product()),
             $this->discountRequest('ONETIME'),
             $this->address(),
             $this->paymentMethod()
@@ -109,24 +99,22 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
     #[Test]
     public function placementFailsWithoutSideEffectsWhenVoucherIsAlreadyExhausted(): void
     {
-        $orderCountBefore = $this->countOrders();
-        $stockBefore = $this->currentStock();
+        $subject = $this->get(OrderCreationService::class);
 
         try {
-            $this->subject->create(
+            $subject->create(
                 $this->request(),
-                $this->basketViewModel(),
+                $this->basketViewModel($this->product()),
                 $this->discountRequest('EXHAUSTED'),
                 $this->address(),
                 $this->paymentMethod()
             );
-            self::fail('Expected VoucherRedemptionFailedException was not thrown.');
+            $this->fail('Expected VoucherRedemptionFailedException was not thrown.');
         } catch (VoucherRedemptionFailedException) {
             // expected
         }
 
-        self::assertSame($orderCountBefore, $this->countOrders());
-        self::assertSame($stockBefore, $this->currentStock());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/voucher_exhausted_no_side_effects.csv');
     }
 
     private function request(): ServerRequestInterface
@@ -135,12 +123,19 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
-    private function basketViewModel(): BasketViewModel
+    private function product(): Product
+    {
+        $product = $this->get(ProductRepository::class)->findByUid(1);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
+    }
+
+    private function basketViewModel(Product $product): BasketViewModel
     {
         $unitPriceNet = Money::fromDecimalString('84.03');
         $unitPriceGross = Money::fromDecimalString('100.00');
         $item = new BasketViewItem(
-            $this->product,
+            $product,
             null,
             1,
             $unitPriceNet,
@@ -166,21 +161,5 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
     private function paymentMethod(): PaymentMethodInterface
     {
         return $this->get(PaymentMethodRegistry::class)->get('invoice');
-    }
-
-    private function countOrders(): int
-    {
-        return (int)$this->getConnectionPool()
-            ->getConnectionForTable('tx_products_domain_model_order')
-            ->executeQuery('SELECT COUNT(*) FROM tx_products_domain_model_order')
-            ->fetchOne();
-    }
-
-    private function currentStock(): int
-    {
-        $this->get(PersistenceManagerInterface::class)->clearState();
-        $product = $this->get(ProductRepository::class)->findByUid(1);
-        self::assertInstanceOf(Product::class, $product);
-        return $product->getInStock();
     }
 }

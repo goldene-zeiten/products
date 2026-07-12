@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Backend;
 
-use Doctrine\DBAL\ParameterType;
 use GoldeneZeiten\Products\Backend\ProductArchiveService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 
 final class ProductArchiveServiceTest extends AbstractFunctionalTestCase
@@ -17,15 +16,10 @@ final class ProductArchiveServiceTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private ProductArchiveService $archiveService;
-    private ConnectionPool $connectionPool;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->archiveService = $this->get(ProductArchiveService::class);
-        $this->connectionPool = $this->get(ConnectionPool::class);
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/product_archive.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/ProductArchiveServiceTest/product_archive.csv');
         $backendUser = $this->setUpBackendUser(1);
         $GLOBALS['LANG'] = $this->get(LanguageServiceFactory::class)->createFromUserPreferences($backendUser);
     }
@@ -33,50 +27,47 @@ final class ProductArchiveServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function archiveMovesOnlyOldProductsAndArticlesFromTheGivenSourcePid(): void
     {
-        $this->archiveService->archive(sourcePid: 2, destinationPid: 3, ageDays: 1);
+        $subject = $this->get(ProductArchiveService::class);
 
-        $this->assertSame(3, $this->fetchPid('tx_products_domain_model_product', 100));
-        $this->assertSame(3, $this->fetchPid('tx_products_domain_model_article', 200));
-        $this->assertSame(2, $this->fetchPid('tx_products_domain_model_product', 101));
-        $this->assertSame(2, $this->fetchPid('tx_products_domain_model_article', 201));
-        $this->assertSame(4, $this->fetchPid('tx_products_domain_model_product', 102));
-        $this->assertSame(4, $this->fetchPid('tx_products_domain_model_article', 202));
+        $subject->archive(sourcePid: 2, destinationPid: 3, ageDays: 1);
+
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/product_archive_moved.csv');
     }
 
     #[Test]
     public function archiveReturnsMovedRowCountsPerTable(): void
     {
-        $counts = $this->archiveService->archive(sourcePid: 2, destinationPid: 3, ageDays: 1);
+        $subject = $this->get(ProductArchiveService::class);
+
+        $counts = $subject->archive(sourcePid: 2, destinationPid: 3, ageDays: 1);
 
         $this->assertSame(['tx_products_domain_model_product' => 1, 'tx_products_domain_model_article' => 1], $counts);
     }
 
     #[Test]
-    public function archiveReturnsEmptyArrayWhenNothingIsOldEnough(): void
+    #[DataProvider('archiveNoOpProvider')]
+    public function archiveIsANoOp(int $sourcePid, int $destinationPid, int $ageDays): void
     {
-        $counts = $this->archiveService->archive(sourcePid: 2, destinationPid: 3, ageDays: 100_000);
+        $subject = $this->get(ProductArchiveService::class);
+
+        $counts = $subject->archive(sourcePid: $sourcePid, destinationPid: $destinationPid, ageDays: $ageDays);
 
         $this->assertSame([], $counts);
-        $this->assertSame(2, $this->fetchPid('tx_products_domain_model_product', 100));
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/product_archive_no_op.csv');
     }
 
-    #[Test]
-    public function archiveDoesNothingForAnInvalidDestinationPid(): void
+    public static function archiveNoOpProvider(): \Generator
     {
-        $counts = $this->archiveService->archive(sourcePid: 2, destinationPid: 0, ageDays: 1);
+        yield 'nothing is old enough' => [
+            'sourcePid' => 2,
+            'destinationPid' => 3,
+            'ageDays' => 100_000,
+        ];
 
-        $this->assertSame([], $counts);
-        $this->assertSame(2, $this->fetchPid('tx_products_domain_model_product', 100));
-    }
-
-    private function fetchPid(string $table, int $uid): int
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
-        $pid = $queryBuilder->select('pid')
-            ->from($table)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, ParameterType::INTEGER)))
-            ->executeQuery()
-            ->fetchOne();
-        return (int)$pid;
+        yield 'invalid destination pid' => [
+            'sourcePid' => 2,
+            'destinationPid' => 0,
+            'ageDays' => 1,
+        ];
     }
 }

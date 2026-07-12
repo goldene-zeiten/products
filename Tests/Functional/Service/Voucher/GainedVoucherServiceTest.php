@@ -12,6 +12,7 @@ use GoldeneZeiten\Products\Domain\Repository\VoucherRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\Voucher\GainedVoucherService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
@@ -22,19 +23,21 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
     ];
 
     #[Test]
-    public function nothingIsIssuedWhileTheFeatureIsDisabled(): void
+    #[DataProvider('nothingIssuedProvider')]
+    public function nothingIsIssuedInVariousScenarios(bool $enabled, string $totalGross, string $minimumOrderValue): void
     {
-        $voucher = $this->subject()->maybeIssue($this->order(frontendUser: 5, totalGross: '100.00'), $this->configuration(enabled: false));
+        $voucher = $this->subject()->maybeIssue(
+            $this->order(frontendUser: 5, totalGross: $totalGross),
+            $this->configuration(enabled: $enabled, minimumOrderValue: $minimumOrderValue)
+        );
 
         $this->assertNull($voucher);
     }
 
-    #[Test]
-    public function nothingIsIssuedBelowTheMinimumOrderValue(): void
+    public static function nothingIssuedProvider(): \Generator
     {
-        $voucher = $this->subject()->maybeIssue($this->order(frontendUser: 5, totalGross: '49.99'), $this->configuration(enabled: true, minimumOrderValue: '50.00'));
-
-        $this->assertNull($voucher);
+        yield 'feature is disabled' => ['enabled' => false, 'totalGross' => '100.00', 'minimumOrderValue' => '0.00'];
+        yield 'below the minimum order value' => ['enabled' => true, 'totalGross' => '49.99', 'minimumOrderValue' => '50.00'];
     }
 
     #[Test]

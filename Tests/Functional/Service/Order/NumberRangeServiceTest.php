@@ -14,35 +14,33 @@ final class NumberRangeServiceTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private NumberRangeService $subject;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->subject = $this->get(NumberRangeService::class);
-    }
-
     #[Test]
     public function nextStartsAtOneForNewScope(): void
     {
-        self::assertSame(1, $this->subject->next('order'));
+        $subject = $this->get(NumberRangeService::class);
+
+        $this->assertSame(1, $subject->next('order'));
     }
 
     #[Test]
     public function nextIncrementsSequentiallyForSameScope(): void
     {
-        self::assertSame(1, $this->subject->next('order'));
-        self::assertSame(2, $this->subject->next('order'));
-        self::assertSame(3, $this->subject->next('order'));
+        $subject = $this->get(NumberRangeService::class);
+
+        $this->assertSame(1, $subject->next('order'));
+        $this->assertSame(2, $subject->next('order'));
+        $this->assertSame(3, $subject->next('order'));
     }
 
     #[Test]
     public function nextKeepsIndependentCountersPerScope(): void
     {
-        self::assertSame(1, $this->subject->next('order'));
-        self::assertSame(2, $this->subject->next('order'));
-        self::assertSame(1, $this->subject->next('invoice'));
-        self::assertSame(3, $this->subject->next('order'));
-        self::assertSame(2, $this->subject->next('invoice'));
+        $subject = $this->get(NumberRangeService::class);
+
+        $this->assertSame(1, $subject->next('order'));
+        $this->assertSame(2, $subject->next('order'));
+        $this->assertSame(1, $subject->next('invoice'));
+        $this->assertSame(3, $subject->next('order'));
+        $this->assertSame(2, $subject->next('invoice'));
     }
 }

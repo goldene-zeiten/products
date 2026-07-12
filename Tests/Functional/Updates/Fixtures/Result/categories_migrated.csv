@@ -1,0 +1,9 @@
+"tx_products_domain_model_category",,,,
+,"uid","sys_language_uid","title","parent_category"
+,1,0,"Root",0
+,2,0,"Child",1
+,3,0,"Orphaned",0
+,4,0,"Hidden root",0
+,5,1,"Root DE",0
+,6,1,"Child DE visible",0
+,7,2,"Child FR hidden 2",0

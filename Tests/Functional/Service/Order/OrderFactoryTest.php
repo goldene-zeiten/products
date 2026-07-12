@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\Order\OrderFactory;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -30,60 +31,63 @@ final class OrderFactoryTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
+    /**
+     * @param non-empty-string $expectedPrefix
+     */
     #[Test]
-    public function orderNumberUsesThePrefixConfiguredInSiteSettings(): void
+    #[DataProvider('orderNumberPrefixProvider')]
+    public function orderNumberUsesCorrectPrefix(?string $sitePrefix, string $expectedPrefix): void
     {
+        $request = $sitePrefix !== null
+            ? $this->requestWithSite(['order' => ['numberPrefix' => $sitePrefix]])
+            : new ServerRequest('http://localhost/');
+
         $order = $this->subject()->create(
-            $this->requestWithSite(['order' => ['numberPrefix' => 'CUSTOM-']]),
+            $request,
             $this->basketViewModel('9.20'),
             $this->address(),
             'invoice',
             $this->placementDetails()
         );
 
-        $this->assertStringStartsWith('CUSTOM-', $order->getOrderNumber());
+        $this->assertStringStartsWith($expectedPrefix, $order->getOrderNumber());
+    }
+
+    /**
+     * @return \Generator<string, array<string, ?string>>
+     */
+    public static function orderNumberPrefixProvider(): \Generator
+    {
+        yield 'customPrefix' => ['sitePrefix' => 'CUSTOM-', 'expectedPrefix' => 'CUSTOM-'];
+        yield 'defaultWithoutSite' => ['sitePrefix' => null, 'expectedPrefix' => 'ORD-'];
     }
 
     #[Test]
-    public function orderNumberDefaultsToOrdWithoutASite(): void
+    #[DataProvider('totalGrossRoundingProvider')]
+    public function totalGrossRoundingUsesCorrectMode(?string $roundingMode, int $expectedCents): void
     {
+        $request = $roundingMode !== null
+            ? $this->requestWithSite(['pricing' => ['roundingMode' => $roundingMode]])
+            : new ServerRequest('http://localhost/');
+
         $order = $this->subject()->create(
-            new ServerRequest('http://localhost/'),
+            $request,
             $this->basketViewModel('9.20'),
             $this->address(),
             'invoice',
             $this->placementDetails()
         );
 
-        $this->assertStringStartsWith('ORD-', $order->getOrderNumber());
+        $this->assertSame($expectedCents, $order->getTotalGross()->getCents());
     }
 
-    #[Test]
-    public function totalGrossIsRoundedUsingTheSiteConfiguredRoundingMode(): void
+    /**
+     * @return \Generator<string, array<string, mixed>>
+     */
+    public static function totalGrossRoundingProvider(): \Generator
     {
-        $order = $this->subject()->create(
-            $this->requestWithSite(['pricing' => ['roundingMode' => 'nearestInteger']]),
-            $this->basketViewModel('9.20'),
-            $this->address(),
-            'invoice',
-            $this->placementDetails()
-        );
-
-        $this->assertSame(900, $order->getTotalGross()->getCents());
-    }
-
-    #[Test]
-    public function totalGrossIsNotRoundedWithoutASite(): void
-    {
-        $order = $this->subject()->create(
-            new ServerRequest('http://localhost/'),
-            $this->basketViewModel('9.20'),
-            $this->address(),
-            'invoice',
-            $this->placementDetails()
-        );
-
-        $this->assertSame(920, $order->getTotalGross()->getCents());
+        yield 'roundedToNearestInteger' => ['roundingMode' => 'nearestInteger', 'expectedCents' => 900];
+        yield 'notRoundedWithoutSite' => ['roundingMode' => null, 'expectedCents' => 920];
     }
 
     private function subject(): OrderFactory

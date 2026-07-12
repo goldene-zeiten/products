@@ -1,0 +1,11 @@
+"tx_products_domain_model_product",,
+,"uid","pid"
+,100,3
+,101,2
+,102,4
+
+"tx_products_domain_model_article",,
+,"uid","pid"
+,200,3
+,201,2
+,202,4

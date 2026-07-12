@@ -65,7 +65,7 @@ final class ProductPageTitleProviderIntegrationTest extends AbstractFunctionalTe
     private function bootstrapProductDetailFrontend(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/product_page_title.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/ProductPageTitleProviderIntegrationTest/product_page_title.csv');
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1, '/', 'Home', [

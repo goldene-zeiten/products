@@ -12,6 +12,7 @@ use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\Shipping\HandlingFeeService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class HandlingFeeServiceTest extends AbstractFunctionalTestCase
@@ -20,52 +21,36 @@ final class HandlingFeeServiceTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private Product $lightProduct;
-    private Product $heavyProduct;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/handling_fees.csv');
-        $productRepository = $this->get(ProductRepository::class);
-        $lightProduct = $productRepository->findByUid(1);
-        $heavyProduct = $productRepository->findByUid(2);
-        $this->assertInstanceOf(Product::class, $lightProduct);
-        $this->assertInstanceOf(Product::class, $heavyProduct);
-        $this->lightProduct = $lightProduct;
-        $this->heavyProduct = $heavyProduct;
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/HandlingFeeServiceTest/handling_fees.csv');
     }
 
     #[Test]
-    public function resolveCostIsZeroWhenDisabled(): void
+    #[DataProvider('resolveCostProvider')]
+    public function resolveCostPicksTheApplicableFee(bool $enabled, int $productUid, string $country, int $expectedCents): void
     {
-        $cost = $this->get(HandlingFeeService::class)->resolveCost($this->configuration(false), $this->basketViewModel($this->lightProduct), 'DE');
+        $subject = $this->get(HandlingFeeService::class);
 
-        $this->assertSame(0, $cost->getCents());
+        $cost = $subject->resolveCost($this->configuration($enabled), $this->basketViewModel($this->product($productUid)), $country);
+
+        $this->assertSame($expectedCents, $cost->getCents());
     }
 
-    #[Test]
-    public function resolveCostPicksTheApplicableFeeForALightBasket(): void
+    public static function resolveCostProvider(): \Generator
     {
-        $cost = $this->get(HandlingFeeService::class)->resolveCost($this->configuration(true), $this->basketViewModel($this->lightProduct), 'DE');
-
-        $this->assertSame(300, $cost->getCents());
+        yield 'zero when disabled' => ['enabled' => false, 'productUid' => 1, 'country' => 'DE', 'expectedCents' => 0];
+        yield 'applicable fee for a light basket' => ['enabled' => true, 'productUid' => 1, 'country' => 'DE', 'expectedCents' => 300];
+        yield 'applicable fee for a heavy basket' => ['enabled' => true, 'productUid' => 2, 'country' => 'DE', 'expectedCents' => 900];
+        yield 'zero when nothing applies' => ['enabled' => true, 'productUid' => 1, 'country' => 'FR', 'expectedCents' => 0];
     }
 
-    #[Test]
-    public function resolveCostPicksTheApplicableFeeForAHeavyBasket(): void
+    private function product(int $uid): Product
     {
-        $cost = $this->get(HandlingFeeService::class)->resolveCost($this->configuration(true), $this->basketViewModel($this->heavyProduct), 'DE');
-
-        $this->assertSame(900, $cost->getCents());
-    }
-
-    #[Test]
-    public function resolveCostIsZeroWhenNothingApplies(): void
-    {
-        $cost = $this->get(HandlingFeeService::class)->resolveCost($this->configuration(true), $this->basketViewModel($this->lightProduct), 'FR');
-
-        $this->assertSame(0, $cost->getCents());
+        $product = $this->get(ProductRepository::class)->findByUid($uid);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
     }
 
     private function configuration(bool $enabled): ProductsConfiguration

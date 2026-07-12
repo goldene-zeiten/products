@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
 
-use Doctrine\DBAL\ParameterType;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
@@ -19,6 +18,7 @@ use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Service\Order\Exception\InsufficientStockException;
 use GoldeneZeiten\Products\Service\Order\OrderCreationService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -30,41 +30,42 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
         'goldene-zeiten/products',
     ];
 
-    private OrderCreationService $subject;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_placement_unlimited_stock.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/OrderCreationServiceUnlimitedStockTest/order_placement_unlimited_stock.csv');
         // OrderFactory reads Extbase settings eagerly in its constructor, which requires a request
         // to be resolvable via $GLOBALS['TYPO3_REQUEST'] outside of a real controller dispatch.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
-        $this->subject = $this->get(OrderCreationService::class);
     }
 
     #[Test]
-    public function placementSucceedsForAnUnlimitedStockProductDespiteZeroStock(): void
+    #[DataProvider('unlimitedStockScenarioProvider')]
+    public function placementSucceedsWithUnlimitedStockScenarios(int $productUid, ?int $articleUid, string $resultFixturePath): void
     {
-        $order = $this->subject->create(
+        $subject = $this->subject();
+
+        $order = $subject->create(
             $this->request(),
-            $this->basketViewModel($this->product(1), null),
+            $this->basketViewModel($this->product($productUid), $articleUid !== null ? $this->article($articleUid) : null),
             $this->noSelections(),
             $this->address(),
             $this->paymentMethod()
         );
 
-        self::assertNotNull($order->getUid());
-        self::assertSame(0, $this->currentProductStock(1));
+        $this->assertNotNull($order->getUid());
+        $this->assertCSVDataSet($resultFixturePath);
     }
 
     #[Test]
     public function placementThrowsForALimitedStockProductWithInsufficientStock(): void
     {
+        $subject = $this->subject();
         $this->expectException(InsufficientStockException::class);
         $this->expectExceptionCode(1751751020);
 
-        $this->subject->create(
+        $subject->create(
             $this->request(),
             $this->basketViewModel($this->product(2), null),
             $this->noSelections(),
@@ -73,34 +74,19 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
         );
     }
 
-    #[Test]
-    public function placementSucceedsWhenOnlyTheSelectedArticleIsFlaggedUnlimited(): void
+    /**
+     * @return \Generator<string, array<string, mixed>>
+     */
+    public static function unlimitedStockScenarioProvider(): \Generator
     {
-        $order = $this->subject->create(
-            $this->request(),
-            $this->basketViewModel($this->product(3), $this->article(1)),
-            $this->noSelections(),
-            $this->address(),
-            $this->paymentMethod()
-        );
-
-        self::assertNotNull($order->getUid());
-        self::assertSame(0, $this->currentArticleStock(1));
+        yield 'unlimitedProduct' => ['productUid' => 1, 'articleUid' => null, 'resultFixturePath' => __DIR__ . '/Fixtures/Result/unlimited_stock_product_zero_stock.csv'];
+        yield 'unlimitedArticle' => ['productUid' => 3, 'articleUid' => 1, 'resultFixturePath' => __DIR__ . '/Fixtures/Result/unlimited_stock_article_zero_stock.csv'];
+        yield 'unlimitedProductWithLimitedArticle' => ['productUid' => 4, 'articleUid' => 2, 'resultFixturePath' => __DIR__ . '/Fixtures/Result/unlimited_stock_article_2_zero_stock.csv'];
     }
 
-    #[Test]
-    public function placementSucceedsWhenTheProductIsUnlimitedEvenIfItsSelectedArticleIsNot(): void
+    private function subject(): OrderCreationService
     {
-        $order = $this->subject->create(
-            $this->request(),
-            $this->basketViewModel($this->product(4), $this->article(2)),
-            $this->noSelections(),
-            $this->address(),
-            $this->paymentMethod()
-        );
-
-        self::assertNotNull($order->getUid());
-        self::assertSame(0, $this->currentArticleStock(2));
+        return $this->get(OrderCreationService::class);
     }
 
     private function request(): ServerRequestInterface
@@ -145,35 +131,14 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
     private function product(int $uid): Product
     {
         $product = $this->get(ProductRepository::class)->findByUid($uid);
-        self::assertInstanceOf(Product::class, $product);
+        $this->assertInstanceOf(Product::class, $product);
         return $product;
     }
 
     private function article(int $uid): Article
     {
         $article = $this->get(ArticleRepository::class)->findByUid($uid);
-        self::assertInstanceOf(Article::class, $article);
+        $this->assertInstanceOf(Article::class, $article);
         return $article;
-    }
-
-    private function currentProductStock(int $uid): int
-    {
-        return $this->currentStock('tx_products_domain_model_product', $uid);
-    }
-
-    private function currentArticleStock(int $uid): int
-    {
-        return $this->currentStock('tx_products_domain_model_article', $uid);
-    }
-
-    private function currentStock(string $table, int $uid): int
-    {
-        $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable($table);
-        return (int)$queryBuilder
-            ->select('in_stock')
-            ->from($table)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, ParameterType::INTEGER)))
-            ->executeQuery()
-            ->fetchOne();
     }
 }

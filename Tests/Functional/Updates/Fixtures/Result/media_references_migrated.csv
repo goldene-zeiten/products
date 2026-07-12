@@ -1,0 +1,10 @@
+"sys_file_reference",,,,,,
+,"uid","uid_local","uid_foreign","tablenames","fieldname"
+,900,500,1,"tt_products","image_uid"
+,901,501,1,"tt_products","datasheet_uid"
+,902,502,1,"tt_products_cat","image_uid"
+,903,503,1,"tt_products_articles","image_uid"
+,904,500,80,"tx_products_domain_model_product","images"
+,905,501,80,"tx_products_domain_model_product","downloads"
+,906,502,50,"tx_products_domain_model_category","image"
+,907,503,60,"tx_products_domain_model_article","images"

@@ -14,7 +14,7 @@ final class CheckoutControllerTest extends AbstractFrontendTestCase
     #[Test]
     public function paymentActionListsInvoicePaymentMethod(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/checkout_content.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/checkout_content.csv');
 
         // Production links to non-cacheable Extbase actions are always generated via
         // the Extbase UriBuilder, which computes a valid cHash automatically. This

@@ -20,115 +20,96 @@ final class TtProductsCategoryUpgradeWizardTest extends AbstractFunctionalTestCa
     private const LEGACY_TABLE = 'tt_products_cat';
     private const LOCAL_TABLE = 'tx_products_domain_model_category';
 
-    private TtProductsCategoryUpgradeWizard $subject;
-    private BufferedOutput $output;
-    private LegacyMigrationHelper $migrationHelper;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/LegacyMigration/tt_products_cat.csv');
-        $this->migrationHelper = $this->get(LegacyMigrationHelper::class);
-        $this->output = new BufferedOutput();
-        $this->subject = $this->get(TtProductsCategoryUpgradeWizard::class);
-        $this->subject->setOutput($this->output);
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsCategoryUpgradeWizardTest/tt_products_cat.csv');
     }
 
     #[Test]
     public function updateIsNecessaryInitially(): void
     {
-        $this->assertTrue($this->subject->updateNecessary());
+        $subject = $this->subject(new BufferedOutput());
+
+        $this->assertTrue($subject->updateNecessary());
     }
 
     #[Test]
     public function executeUpdateMigratesVisibleCategoriesExcludingDeleted(): void
     {
-        $this->assertTrue($this->subject->executeUpdate());
+        $subject = $this->subject(new BufferedOutput());
 
-        $this->assertSame(4, $this->countRows(['sys_language_uid' => 0]));
-        $this->assertNull($this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 4, self::LOCAL_TABLE));
+        $this->assertTrue($subject->executeUpdate());
+
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/categories_migrated.csv');
+        $this->assertNull($this->get(LegacyMigrationHelper::class)->resolveLocalUid(self::LEGACY_TABLE, 4, self::LOCAL_TABLE));
     }
 
     #[Test]
     public function parentCategoryIsReLinkedViaTheMigrationMap(): void
     {
-        $this->subject->executeUpdate();
+        $subject = $this->subject(new BufferedOutput());
 
-        $rootLocalUid = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
-        $childLocalUid = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE);
+        $subject->executeUpdate();
 
-        $this->assertSame($rootLocalUid, (int)$this->fetchField((int)$childLocalUid, 'parent_category'));
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/categories_migrated.csv');
     }
 
     #[Test]
     public function orphanParentIsLinkedToRootAndWarns(): void
     {
-        $this->subject->executeUpdate();
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
 
-        $orphanLocalUid = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 3, self::LOCAL_TABLE);
-        $this->assertSame(0, (int)$this->fetchField((int)$orphanLocalUid, 'parent_category'));
-        $this->assertStringContainsString('referenced missing parent uid 999', $this->output->fetch());
+        $subject->executeUpdate();
+
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/categories_migrated.csv');
+        $this->assertStringContainsString('referenced missing parent uid 999', $output->fetch());
     }
 
     #[Test]
     public function overlaysAreDeduplicatedPreferringVisibleThenHighestUid(): void
     {
-        $this->subject->executeUpdate();
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
 
-        $this->assertSame(2, $this->countRows(['sys_language_uid' => 1]));
-        $this->assertSame(1, $this->countRows(['sys_language_uid' => 2]));
-        $this->assertSame(0, $this->countRows(['sys_language_uid' => 3]));
-        $this->assertSame(1, $this->countRows(['title' => 'Child DE visible']));
-        $this->assertSame(0, $this->countRows(['title' => 'Child DE hidden old']));
-        $this->assertSame(1, $this->countRows(['title' => 'Child FR hidden 2']));
-        $this->assertSame(0, $this->countRows(['title' => 'Child FR hidden 1']));
+        $subject->executeUpdate();
 
-        $output = $this->output->fetch();
-        $this->assertStringContainsString('Skipped duplicate tt_products_cat_language uid 20', $output);
-        $this->assertStringContainsString('Skipped duplicate tt_products_cat_language uid 30', $output);
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/categories_migrated.csv');
+
+        $outputText = $output->fetch();
+        $this->assertStringContainsString('Skipped duplicate tt_products_cat_language uid 20', $outputText);
+        $this->assertStringContainsString('Skipped duplicate tt_products_cat_language uid 30', $outputText);
     }
 
     #[Test]
     public function overlayWithOrphanParentIsSkippedAndWarns(): void
     {
-        $this->subject->executeUpdate();
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
 
-        $this->assertSame(0, $this->countRows(['title' => 'Orphan overlay']));
-        $this->assertStringContainsString('parent uid 4 was never migrated', $this->output->fetch());
+        $subject->executeUpdate();
+
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/categories_migrated.csv');
+        $this->assertStringContainsString('parent uid 4 was never migrated', $output->fetch());
     }
 
     #[Test]
     public function executeUpdateIsIdempotent(): void
     {
-        $this->subject->executeUpdate();
-        $totalAfterFirstRun = $this->countRows([]);
+        $subject = $this->subject(new BufferedOutput());
+        $subject->executeUpdate();
 
-        $this->assertFalse($this->subject->updateNecessary());
-        $this->assertTrue($this->subject->executeUpdate());
-        $this->assertSame($totalAfterFirstRun, $this->countRows([]));
+        $this->assertFalse($subject->updateNecessary());
+        $this->assertTrue($subject->executeUpdate());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/categories_migrated.csv');
     }
 
-    /**
-     * @param array<string, int|string> $where
-     */
-    private function countRows(array $where): int
+    private function subject(BufferedOutput $output): TtProductsCategoryUpgradeWizard
     {
-        $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable(self::LOCAL_TABLE);
-        $queryBuilder->getRestrictions()->removeAll();
-        $queryBuilder->count('uid')->from(self::LOCAL_TABLE);
-        foreach ($where as $field => $value) {
-            $queryBuilder->andWhere($queryBuilder->expr()->eq($field, $queryBuilder->createNamedParameter($value)));
-        }
-        return (int)$queryBuilder->executeQuery()->fetchOne();
-    }
-
-    private function fetchField(int $uid, string $field): mixed
-    {
-        $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable(self::LOCAL_TABLE);
-        $queryBuilder->getRestrictions()->removeAll();
-        return $queryBuilder->select($field)->from(self::LOCAL_TABLE)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid)))
-            ->executeQuery()->fetchOne();
+        $subject = $this->get(TtProductsCategoryUpgradeWizard::class);
+        $subject->setOutput($output);
+        return $subject;
     }
 }

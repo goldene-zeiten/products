@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Tests\Functional\Controller;
 
 use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
@@ -14,39 +15,53 @@ final class ProductVariantSwitchingTest extends AbstractFrontendTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/product_with_variants.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/ProductVariantSwitchingTest/product_with_variants.csv');
     }
 
+    /**
+     * @param int[] $attributeValueUids
+     * @param string[] $unexpectedStrings
+     */
     #[Test]
-    public function noVariantSelectedShowsThePromptInsteadOfAPriceOrAddToBasketForm(): void
-    {
-        $response = $this->executeFrontendSubRequest($this->requestFor());
+    #[DataProvider('variantSelectionProvider')]
+    public function variantSelectionAffectsThePriceAndStockDisplay(
+        array $attributeValueUids,
+        string $expectedString,
+        array $unexpectedStrings,
+        ?string $expectedOutOfStockRegex = null,
+    ): void {
+        $response = $this->executeFrontendSubRequest($this->requestFor($attributeValueUids));
 
         $body = (string)$response->getBody();
-        $this->assertStringContainsString('Please choose a variant', $body);
-        $this->assertStringNotContainsString('15.00', $body);
-        $this->assertStringNotContainsString('20.00', $body);
+        $this->assertStringContainsString($expectedString, $body);
+        foreach ($unexpectedStrings as $unexpectedString) {
+            $this->assertStringNotContainsString($unexpectedString, $body);
+        }
+        if ($expectedOutOfStockRegex !== null) {
+            $this->assertMatchesRegularExpression($expectedOutOfStockRegex, $body);
+        }
     }
 
-    #[Test]
-    public function selectingASmallVariantShowsItsOwnPriceAndStock(): void
+    public static function variantSelectionProvider(): \Generator
     {
-        $response = $this->executeFrontendSubRequest($this->requestFor([1]));
+        yield 'no variant selected shows prompt instead of price' => [
+            'attributeValueUids' => [],
+            'expectedString' => 'Please choose a variant',
+            'unexpectedStrings' => ['15.00', '20.00'],
+        ];
 
-        $body = (string)$response->getBody();
-        $this->assertStringContainsString('15.00', $body);
-        $this->assertStringNotContainsString('20.00', $body);
-    }
+        yield 'selecting the small variant shows its own price and stock' => [
+            'attributeValueUids' => [1],
+            'expectedString' => '15.00',
+            'unexpectedStrings' => ['20.00'],
+        ];
 
-    #[Test]
-    public function selectingALargeOutOfStockVariantShowsItsOwnPriceAndOutOfStockState(): void
-    {
-        $response = $this->executeFrontendSubRequest($this->requestFor([2]));
-
-        $body = (string)$response->getBody();
-        $this->assertStringContainsString('20.00', $body);
-        $this->assertStringNotContainsString('15.00', $body);
-        $this->assertMatchesRegularExpression('/out.of.stock|Out of Stock/i', $body);
+        yield 'selecting the large out-of-stock variant shows its own price and out-of-stock state' => [
+            'attributeValueUids' => [2],
+            'expectedString' => '20.00',
+            'unexpectedStrings' => ['15.00'],
+            'expectedOutOfStockRegex' => '/out.of.stock|Out of Stock/i',
+        ];
     }
 
     /**

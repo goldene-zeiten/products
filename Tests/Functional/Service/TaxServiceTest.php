@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\Exception\MissingTaxRateException;
 use GoldeneZeiten\Products\Service\TaxService;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class TaxServiceTest extends AbstractFunctionalTestCase
@@ -19,43 +20,27 @@ final class TaxServiceTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private TaxClass $taxClass;
-    private TaxClass $zeroTaxClass;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/tax_rates.csv');
-        $taxClassRepository = $this->get(TaxClassRepository::class);
-        $taxClass = $taxClassRepository->findByUid(1);
-        $this->assertInstanceOf(TaxClass::class, $taxClass);
-        $this->taxClass = $taxClass;
-        $zeroTaxClass = $taxClassRepository->findByUid(2);
-        $this->assertInstanceOf(TaxClass::class, $zeroTaxClass);
-        $this->zeroTaxClass = $zeroTaxClass;
     }
 
     #[Test]
-    public function getTaxRateThrowsForANullTaxClass(): void
+    #[DataProvider('taxRateProvider')]
+    public function getTaxRateReturnsTheExpectedFraction(string $requestedCountry, float $expected): void
     {
-        $this->expectException(MissingTaxRateException::class);
-        $this->expectExceptionCode(1783758015);
+        $subject = $this->get(TaxService::class);
 
-        $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), null);
+        $this->assertSame($expected, $subject->getTaxRate($this->configuration('DE'), $this->taxClass(), $requestedCountry));
     }
 
-    #[Test]
-    public function getTaxRateReturnsAFractionNotTheStoredWholePercentage(): void
+    public static function taxRateProvider(): \Generator
     {
         // The fixture stores rate=19.00 (a 19% whole percentage, as edited in the backend) -
         // getTaxRate() must convert it to 0.19 for direct "1 + rate" multiplication.
-        $this->assertSame(0.19, $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), $this->taxClass, 'DE'));
-    }
-
-    #[Test]
-    public function getTaxRateFallsBackToTheDefaultCountryWhenTheRequestedCountryHasNoRate(): void
-    {
-        $this->assertSame(0.19, $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), $this->taxClass, 'FR'));
+        yield 'returns a fraction not the stored whole percentage' => ['requestedCountry' => 'DE', 'expected' => 0.19];
+        yield 'falls back to the default country when the requested country has no rate' => ['requestedCountry' => 'FR', 'expected' => 0.19];
     }
 
     /**
@@ -65,16 +50,40 @@ final class TaxServiceTest extends AbstractFunctionalTestCase
     #[Test]
     public function getTaxRateReturnsZeroWithoutThrowingForAConfiguredZeroRate(): void
     {
-        $this->assertSame(0.0, $this->get(TaxService::class)->getTaxRate($this->configuration('DE'), $this->zeroTaxClass, 'DE'));
+        $subject = $this->get(TaxService::class);
+
+        $this->assertSame(0.0, $subject->getTaxRate($this->configuration('DE'), $this->zeroTaxClass(), 'DE'));
     }
 
     #[Test]
-    public function getTaxRateThrowsWhenNeitherTheRequestedNorDefaultCountryHasARate(): void
+    #[DataProvider('missingTaxRateProvider')]
+    public function getTaxRateThrowsWhenNoRateCanBeResolved(string $defaultCountry, bool $useTaxClass, ?string $requestedCountry, int $expectedExceptionCode): void
     {
+        $subject = $this->get(TaxService::class);
         $this->expectException(MissingTaxRateException::class);
-        $this->expectExceptionCode(1783758016);
+        $this->expectExceptionCode($expectedExceptionCode);
 
-        $this->get(TaxService::class)->getTaxRate($this->configuration('AT'), $this->taxClass, 'FR');
+        $subject->getTaxRate($this->configuration($defaultCountry), $useTaxClass ? $this->taxClass() : null, $requestedCountry);
+    }
+
+    public static function missingTaxRateProvider(): \Generator
+    {
+        yield 'a null tax class' => ['defaultCountry' => 'DE', 'useTaxClass' => false, 'requestedCountry' => null, 'expectedExceptionCode' => 1783758015];
+        yield 'neither the requested nor default country has a rate' => ['defaultCountry' => 'AT', 'useTaxClass' => true, 'requestedCountry' => 'FR', 'expectedExceptionCode' => 1783758016];
+    }
+
+    private function taxClass(): TaxClass
+    {
+        $taxClass = $this->get(TaxClassRepository::class)->findByUid(1);
+        $this->assertInstanceOf(TaxClass::class, $taxClass);
+        return $taxClass;
+    }
+
+    private function zeroTaxClass(): TaxClass
+    {
+        $zeroTaxClass = $this->get(TaxClassRepository::class)->findByUid(2);
+        $this->assertInstanceOf(TaxClass::class, $zeroTaxClass);
+        return $zeroTaxClass;
     }
 
     private function configuration(string $defaultCountry): ProductsConfiguration

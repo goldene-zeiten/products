@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Domain\Model\TaxRate;
 use GoldeneZeiten\Products\Domain\Repository\TaxClassRepository;
 use GoldeneZeiten\Products\Domain\Repository\TaxRateRepository;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -23,55 +24,54 @@ final class TaxRateRepositoryTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private TaxRateRepository $subject;
-    private TaxClass $taxClass;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/tax_rates.csv');
-        $this->subject = $this->get(TaxRateRepository::class);
-        $taxClass = $this->get(TaxClassRepository::class)->findByUid(1);
+    }
+
+    #[Test]
+    #[DataProvider('findByTaxClassAndCountryProvider')]
+    public function findByTaxClassAndCountry(int $taxClassUid, string $country, ?float $expectedRate): void
+    {
+        $subject = $this->get(TaxRateRepository::class);
+        $taxClass = $this->get(TaxClassRepository::class)->findByUid($taxClassUid);
         $this->assertInstanceOf(TaxClass::class, $taxClass);
-        $this->taxClass = $taxClass;
-    }
 
-    #[Test]
-    public function findByTaxClassAndCountryFindsARateRegardlessOfItsStoragePage(): void
-    {
-        $rate = $this->subject->findByTaxClassAndCountry($this->taxClass, 'DE', new \DateTimeImmutable());
+        $rate = $subject->findByTaxClassAndCountry($taxClass, $country, new \DateTimeImmutable());
 
+        if ($expectedRate === null) {
+            $this->assertNull($rate);
+            return;
+        }
         $this->assertInstanceOf(TaxRate::class, $rate);
-        $this->assertSame(19.0, $rate->getRate());
+        $this->assertSame($expectedRate, $rate->getRate());
     }
 
-    #[Test]
-    public function findByTaxClassAndCountryReturnsNullForAnUnconfiguredCountry(): void
+    public static function findByTaxClassAndCountryProvider(): \Generator
     {
-        $this->assertNull($this->subject->findByTaxClassAndCountry($this->taxClass, 'FR', new \DateTimeImmutable()));
-    }
+        yield 'finds a rate regardless of its storage page' => [
+            'taxClassUid' => 1,
+            'country' => 'DE',
+            'expectedRate' => 19.0,
+        ];
 
-    #[Test]
-    public function findByTaxClassAndCountryFallsBackToTheAnyCountryWildcardRow(): void
-    {
-        $reducedTaxClass = $this->get(TaxClassRepository::class)->findByUid(3);
-        $this->assertInstanceOf(TaxClass::class, $reducedTaxClass);
+        yield 'returns null for an unconfigured country' => [
+            'taxClassUid' => 1,
+            'country' => 'FR',
+            'expectedRate' => null,
+        ];
 
-        $rate = $this->subject->findByTaxClassAndCountry($reducedTaxClass, 'AT', new \DateTimeImmutable());
+        yield 'falls back to the any-country wildcard row' => [
+            'taxClassUid' => 3,
+            'country' => 'AT',
+            'expectedRate' => 7.0,
+        ];
 
-        $this->assertInstanceOf(TaxRate::class, $rate);
-        $this->assertSame(7.0, $rate->getRate());
-    }
-
-    #[Test]
-    public function findByTaxClassAndCountryPrefersACountrySpecificRowOverTheWildcard(): void
-    {
-        $reducedTaxClass = $this->get(TaxClassRepository::class)->findByUid(3);
-        $this->assertInstanceOf(TaxClass::class, $reducedTaxClass);
-
-        $rate = $this->subject->findByTaxClassAndCountry($reducedTaxClass, 'FR', new \DateTimeImmutable());
-
-        $this->assertInstanceOf(TaxRate::class, $rate);
-        $this->assertSame(5.5, $rate->getRate());
+        yield 'prefers a country-specific row over the wildcard' => [
+            'taxClassUid' => 3,
+            'country' => 'FR',
+            'expectedRate' => 5.5,
+        ];
     }
 }

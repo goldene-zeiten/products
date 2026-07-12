@@ -19,70 +19,79 @@ final class ProductViewTrackingServiceTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private ProductViewTrackingService $subject;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/product_view_tracking.csv');
-        $this->subject = $this->get(ProductViewTrackingService::class);
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/ProductViewTrackingServiceTest/product_view_tracking.csv');
     }
 
     #[Test]
     public function recordIncrementsTheSiteWideCounterAcrossAnonymousVisitors(): void
     {
-        $this->subject->record($this->requestFor(0), 1);
-        $this->subject->record($this->requestFor(0), 1);
-        $this->subject->record($this->requestFor(0), 2);
+        $subject = $this->get(ProductViewTrackingService::class);
 
-        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getMostViewed(10)));
+        $subject->record($this->requestFor(0), 1);
+        $subject->record($this->requestFor(0), 1);
+        $subject->record($this->requestFor(0), 2);
+
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($subject->getMostViewed(10)));
     }
 
     #[Test]
     public function mostViewedOrdersByDescendingViewCount(): void
     {
-        $this->subject->record($this->requestFor(0), 2);
-        $this->subject->record($this->requestFor(0), 1);
-        $this->subject->record($this->requestFor(0), 1);
+        $subject = $this->get(ProductViewTrackingService::class);
 
-        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getMostViewed(10)));
+        $subject->record($this->requestFor(0), 2);
+        $subject->record($this->requestFor(0), 1);
+        $subject->record($this->requestFor(0), 1);
+
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($subject->getMostViewed(10)));
     }
 
     #[Test]
     public function anonymousVisitorsNeverGetAPerUserRecord(): void
     {
-        $this->subject->record($this->requestFor(0), 1);
+        $subject = $this->get(ProductViewTrackingService::class);
 
-        $this->assertSame([], $this->subject->getMostViewedByUser($this->requestFor(0), 10));
+        $subject->record($this->requestFor(0), 1);
+
+        $this->assertSame([], $subject->getMostViewedByUser($this->requestFor(0), 10));
     }
 
     #[Test]
     public function identifiedShoppersGetTheirOwnMostViewedListing(): void
     {
-        $this->subject->record($this->requestFor(5), 1);
-        $this->subject->record($this->requestFor(5), 1);
-        $this->subject->record($this->requestFor(5), 2);
+        $subject = $this->get(ProductViewTrackingService::class);
 
-        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($this->subject->getMostViewedByUser($this->requestFor(5), 10)));
+        $subject->record($this->requestFor(5), 1);
+        $subject->record($this->requestFor(5), 1);
+        $subject->record($this->requestFor(5), 2);
+
+        $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($subject->getMostViewedByUser($this->requestFor(5), 10)));
     }
 
     #[Test]
     public function perUserListingsAreIndependentBetweenShoppers(): void
     {
-        $this->subject->record($this->requestFor(5), 1);
-        $this->subject->record($this->requestFor(6), 2);
+        $subject = $this->get(ProductViewTrackingService::class);
 
-        $this->assertSame(['Product 1'], $this->titlesOf($this->subject->getMostViewedByUser($this->requestFor(5), 10)));
-        $this->assertSame(['Product 2'], $this->titlesOf($this->subject->getMostViewedByUser($this->requestFor(6), 10)));
+        $subject->record($this->requestFor(5), 1);
+        $subject->record($this->requestFor(6), 2);
+
+        $this->assertSame(['Product 1'], $this->titlesOf($subject->getMostViewedByUser($this->requestFor(5), 10)));
+        $this->assertSame(['Product 2'], $this->titlesOf($subject->getMostViewedByUser($this->requestFor(6), 10)));
     }
 
     #[Test]
     public function getMostViewedRespectsTheLimit(): void
     {
-        $this->subject->record($this->requestFor(0), 1);
-        $this->subject->record($this->requestFor(0), 2);
+        $subject = $this->get(ProductViewTrackingService::class);
 
-        $this->assertCount(1, $this->subject->getMostViewed(1));
+        $subject->record($this->requestFor(0), 1);
+        $subject->record($this->requestFor(0), 2);
+
+        $this->assertCount(1, $subject->getMostViewed(1));
     }
 
     /**

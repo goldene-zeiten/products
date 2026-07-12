@@ -20,116 +20,94 @@ final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCas
     private const LEGACY_TABLE = 'tt_products_articles';
     private const LOCAL_TABLE = 'tx_products_domain_model_article';
 
-    private TtProductsArticleUpgradeWizard $subject;
-    private BufferedOutput $output;
-    private LegacyMigrationHelper $migrationHelper;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/LegacyMigration/tt_products_articles.csv');
-        $this->migrationHelper = $this->get(LegacyMigrationHelper::class);
-        $this->output = new BufferedOutput();
-        $this->subject = $this->get(TtProductsArticleUpgradeWizard::class);
-        $this->subject->setOutput($this->output);
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsArticleUpgradeWizardTest/tt_products_articles.csv');
+    }
+
+    private function subject(BufferedOutput $output): TtProductsArticleUpgradeWizard
+    {
+        $subject = $this->get(TtProductsArticleUpgradeWizard::class);
+        $subject->setOutput($output);
+        return $subject;
     }
 
     #[Test]
     public function updateIsNecessaryInitially(): void
     {
-        $this->assertTrue($this->subject->updateNecessary());
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
+        $this->assertTrue($subject->updateNecessary());
     }
 
     #[Test]
     public function executeUpdateMigratesArticleWithResolvedProduct(): void
     {
-        $this->assertTrue($this->subject->executeUpdate());
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
+        $this->assertTrue($subject->executeUpdate());
 
-        $articleUid = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
-        $this->assertNotNull($articleUid);
-        $this->assertSame(80, (int)$this->fetchField((int)$articleUid, 'product'));
-        $this->assertSame('9.99', $this->fetchField((int)$articleUid, 'price'));
-        $this->assertSame(10, (int)$this->fetchField((int)$articleUid, 'in_stock'));
-        $this->assertSame(2, (int)$this->fetchField((int)$articleUid, 'basket_min_quantity'));
-        $this->assertSame(5, (int)$this->fetchField((int)$articleUid, 'basket_max_quantity'));
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/articles_migrated.csv');
     }
 
     #[Test]
     public function isAddedPriceFlexFormFlagMapsToSurchargePriceMode(): void
     {
-        $this->assertTrue($this->subject->executeUpdate());
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
+        $this->assertTrue($subject->executeUpdate());
 
-        $withoutFlag = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 1, self::LOCAL_TABLE);
-        $withFlag = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 4, self::LOCAL_TABLE);
-        $this->assertNotNull($withoutFlag);
-        $this->assertNotNull($withFlag);
-        $this->assertSame('override', $this->fetchField((int)$withoutFlag, 'price_mode'));
-        $this->assertSame('surcharge', $this->fetchField((int)$withFlag, 'price_mode'));
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/articles_migrated.csv');
     }
 
     #[Test]
     public function articleWithMissingProductIsSkippedAndWarns(): void
     {
-        $this->assertTrue($this->subject->executeUpdate());
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
+        $migrationHelper = $this->get(LegacyMigrationHelper::class);
+        $this->assertTrue($subject->executeUpdate());
 
-        $this->assertSame(0, $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE));
-        $this->assertStringContainsString('referenced missing product uid 999', $this->output->fetch());
+        $this->assertSame(0, $migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 2, self::LOCAL_TABLE));
+        $this->assertStringContainsString('referenced missing product uid 999', $output->fetch());
     }
 
     #[Test]
     public function deletedArticleIsNeverMigrated(): void
     {
-        $this->subject->executeUpdate();
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
+        $migrationHelper = $this->get(LegacyMigrationHelper::class);
+        $subject->executeUpdate();
 
-        $this->assertNull($this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 3, self::LOCAL_TABLE));
+        $this->assertNull($migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 3, self::LOCAL_TABLE));
     }
 
     #[Test]
     public function overlaysAreDeduplicatedAndOrphansAreSkipped(): void
     {
-        $this->subject->executeUpdate();
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
+        $subject->executeUpdate();
 
-        $this->assertSame(1, $this->countRows(['title' => 'New DE']));
-        $this->assertSame(0, $this->countRows(['title' => 'Old DE']));
-        $this->assertSame(0, $this->countRows(['title' => 'Orphan overlay']));
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/articles_migrated.csv');
 
-        $output = $this->output->fetch();
-        $this->assertStringContainsString('Skipped duplicate tt_products_articles_language uid 10', $output);
-        $this->assertStringContainsString('parent uid 999 was never migrated', $output);
+        $outputText = $output->fetch();
+        $this->assertStringContainsString('Skipped duplicate tt_products_articles_language uid 10', $outputText);
+        $this->assertStringContainsString('parent uid 999 was never migrated', $outputText);
     }
 
     #[Test]
     public function executeUpdateIsIdempotent(): void
     {
-        $this->subject->executeUpdate();
-        $totalAfterFirstRun = $this->countRows([]);
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
+        $subject->executeUpdate();
 
-        $this->assertFalse($this->subject->updateNecessary());
-        $this->assertTrue($this->subject->executeUpdate());
-        $this->assertSame($totalAfterFirstRun, $this->countRows([]));
-    }
-
-    /**
-     * @param array<string, int|string> $where
-     */
-    private function countRows(array $where): int
-    {
-        $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable(self::LOCAL_TABLE);
-        $queryBuilder->getRestrictions()->removeAll();
-        $queryBuilder->count('uid')->from(self::LOCAL_TABLE);
-        foreach ($where as $field => $value) {
-            $queryBuilder->andWhere($queryBuilder->expr()->eq($field, $queryBuilder->createNamedParameter($value)));
-        }
-        return (int)$queryBuilder->executeQuery()->fetchOne();
-    }
-
-    private function fetchField(int $uid, string $field): mixed
-    {
-        $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable(self::LOCAL_TABLE);
-        $queryBuilder->getRestrictions()->removeAll();
-        return $queryBuilder->select($field)->from(self::LOCAL_TABLE)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid)))
-            ->executeQuery()->fetchOne();
+        $this->assertFalse($subject->updateNecessary());
+        $this->assertTrue($subject->executeUpdate());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/articles_migrated.csv');
     }
 }

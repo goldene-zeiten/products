@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Configuration;
 
 use GoldeneZeiten\Products\Configuration\CreditPointsConfigurationFactory;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
@@ -37,28 +38,37 @@ final class CreditPointsConfigurationFactoryEarningTiersTest extends AbstractFun
         'goldene-zeiten/products',
     ];
 
+    /**
+     * @param string[] $tierStrings
+     * @param array<int, array{threshold: int, points: int}> $expectedTiers
+     */
     #[Test]
-    public function earningTiersAreParsedFromTheStringlistSiteSetting(): void
+    #[DataProvider('earningTiersDataProvider')]
+    public function earningTiersAreParsedFromTheStringlistSiteSetting(array $tierStrings, array $expectedTiers): void
     {
-        $configuration = $this->get(CreditPointsConfigurationFactory::class)->create($this->requestWithEarningTiers([
-            '50.00:10',
-            '100.00:25',
-        ]));
+        $configuration = $this->get(CreditPointsConfigurationFactory::class)->create($this->requestWithEarningTiers($tierStrings));
 
         $tiers = $configuration->getEarningTiers();
-        $this->assertCount(2, $tiers);
-        $this->assertSame(5000, $tiers[0]->getThreshold()->getCents());
-        $this->assertSame(10, $tiers[0]->getPoints());
-        $this->assertSame(10000, $tiers[1]->getThreshold()->getCents());
-        $this->assertSame(25, $tiers[1]->getPoints());
+        $this->assertCount(count($expectedTiers), $tiers);
+        foreach ($expectedTiers as $index => $expectedTier) {
+            $this->assertSame($expectedTier['threshold'], $tiers[$index]->getThreshold()->getCents());
+            $this->assertSame($expectedTier['points'], $tiers[$index]->getPoints());
+        }
     }
 
-    #[Test]
-    public function earningTiersDefaultToAnEmptyListWithoutTheSetting(): void
+    public static function earningTiersDataProvider(): \Generator
     {
-        $configuration = $this->get(CreditPointsConfigurationFactory::class)->create($this->requestWithEarningTiers([]));
-
-        $this->assertSame([], $configuration->getEarningTiers());
+        yield 'earning tiers are parsed from the stringlist site setting' => [
+            'tierStrings' => ['50.00:10', '100.00:25'],
+            'expectedTiers' => [
+                ['threshold' => 5000, 'points' => 10],
+                ['threshold' => 10000, 'points' => 25],
+            ],
+        ];
+        yield 'earning tiers default to an empty list without the setting' => [
+            'tierStrings' => [],
+            'expectedTiers' => [],
+        ];
     }
 
     /**

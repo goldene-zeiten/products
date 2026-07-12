@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
 use GoldeneZeiten\Products\Service\CreditPoints\Exception\InsufficientCreditPointsException;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class CreditPointsServiceTest extends AbstractFunctionalTestCase
@@ -22,90 +23,91 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
         'goldene-zeiten/products',
     ];
 
-    private ProductRepository $productRepository;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/credit_points.csv');
-        $this->productRepository = $this->get(ProductRepository::class);
     }
 
     #[Test]
     public function balanceIsTheSumOfLedgerEntries(): void
     {
-        $this->assertSame(70, $this->subject()->getBalance(1));
-        $this->assertSame(50, $this->subject()->getBalance(2));
+        $subject = $this->subject();
+        $this->assertSame(70, $subject->getBalance(1));
+        $this->assertSame(50, $subject->getBalance(2));
     }
 
     #[Test]
     public function balanceIsZeroForAFrontendUserWithNoLedgerEntries(): void
     {
-        $this->assertSame(0, $this->subject()->getBalance(999));
+        $subject = $this->subject();
+        $this->assertSame(0, $subject->getBalance(999));
     }
 
     #[Test]
     public function guestsAlwaysHaveAZeroBalanceWithoutQuerying(): void
     {
-        $this->assertSame(0, $this->subject()->getBalance(0));
+        $subject = $this->subject();
+        $this->assertSame(0, $subject->getBalance(0));
     }
 
     #[Test]
     public function manualAdjustmentRowsCountTowardTheBalance(): void
     {
-        $this->assertSame(20, $this->subject()->getBalance(3));
+        $subject = $this->subject();
+        $this->assertSame(20, $subject->getBalance(3));
     }
 
     #[Test]
     public function earnedPointsSumTheProductRateAcrossBasketLinesAndQuantities(): void
     {
-        $this->assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel(), $this->configuration()));
+        $subject = $this->subject();
+        $this->assertSame(10 * 2 + 5 * 3, $subject->calculateEarnedPoints($this->basketViewModel(), $this->configuration()));
     }
 
     #[Test]
     public function perProductModeIgnoresConfiguredTiers(): void
     {
+        $subject = $this->subject();
         $configuration = $this->configuration(earningMode: 'perProduct', earningTiers: ['0.00:999']);
 
-        $this->assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel(), $configuration));
+        $this->assertSame(10 * 2 + 5 * 3, $subject->calculateEarnedPoints($this->basketViewModel(), $configuration));
     }
 
+    /**
+     * @param string[] $earningTiers
+     */
     #[Test]
-    public function basketTieredModeAwardsTheHighestQualifyingTiersPoints(): void
+    #[DataProvider('basketTieredModeProvider')]
+    public function basketTieredModeAwardsPointsAccordingToTheQualifyingTier(array $earningTiers, string $basketTotal, int $expectedPoints): void
     {
-        $configuration = $this->configuration(earningMode: 'basketTiered', earningTiers: ['50.00:10', '100.00:25']);
+        $subject = $this->subject();
+        $configuration = $this->configuration(earningMode: 'basketTiered', earningTiers: $earningTiers);
 
-        $this->assertSame(10, $this->subject()->calculateEarnedPoints($this->basketWithTotal('75.00'), $configuration));
-        $this->assertSame(25, $this->subject()->calculateEarnedPoints($this->basketWithTotal('150.00'), $configuration));
+        $this->assertSame($expectedPoints, $subject->calculateEarnedPoints($this->basketWithTotal($basketTotal), $configuration));
     }
 
-    #[Test]
-    public function basketTieredModeAwardsNoPointsBelowTheLowestTier(): void
+    public static function basketTieredModeProvider(): \Generator
     {
-        $configuration = $this->configuration(earningMode: 'basketTiered', earningTiers: ['50.00:10']);
-
-        $this->assertSame(0, $this->subject()->calculateEarnedPoints($this->basketWithTotal('49.99'), $configuration));
-    }
-
-    #[Test]
-    public function basketTieredModeAtExactlyTheThresholdQualifies(): void
-    {
-        $configuration = $this->configuration(earningMode: 'basketTiered', earningTiers: ['50.00:10']);
-
-        $this->assertSame(10, $this->subject()->calculateEarnedPoints($this->basketWithTotal('50.00'), $configuration));
+        yield 'awards the highest qualifying tier below the top' => ['earningTiers' => ['50.00:10', '100.00:25'], 'basketTotal' => '75.00', 'expectedPoints' => 10];
+        yield 'awards the highest qualifying tier at the top' => ['earningTiers' => ['50.00:10', '100.00:25'], 'basketTotal' => '150.00', 'expectedPoints' => 25];
+        yield 'awards no points below the lowest tier' => ['earningTiers' => ['50.00:10'], 'basketTotal' => '49.99', 'expectedPoints' => 0];
+        yield 'exactly at the threshold qualifies' => ['earningTiers' => ['50.00:10'], 'basketTotal' => '50.00', 'expectedPoints' => 10];
     }
 
     #[Test]
     public function autoPriceFactorModeUsesTheExplicitRateWhenPresent(): void
     {
+        $subject = $this->subject();
         $configuration = $this->configuration(earningMode: 'autoPriceFactor', priceFactor: 1.0);
 
-        $this->assertSame(10 * 2 + 5 * 3, $this->subject()->calculateEarnedPoints($this->basketViewModel(), $configuration));
+        $this->assertSame(10 * 2 + 5 * 3, $subject->calculateEarnedPoints($this->basketViewModel(), $configuration));
     }
 
     #[Test]
     public function autoPriceFactorModeConvertsPriceToPointsForUnratedLines(): void
     {
+        $subject = $this->subject();
         $configuration = $this->configuration(earningMode: 'autoPriceFactor', priceFactor: 2.0);
         $unratedProduct = new Product();
         $unratedProduct->setCreditPoints(0);
@@ -115,54 +117,57 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
         $basket = new BasketViewModel([$item], $lineTotal, $lineTotal, Money::fromCents(0), 'EUR');
 
         // lineTotalGross 30.00 * priceFactor 2.0 = 60 points
-        $this->assertSame(60, $this->subject()->calculateEarnedPoints($basket, $configuration));
+        $this->assertSame(60, $subject->calculateEarnedPoints($basket, $configuration));
     }
 
     #[Test]
-    public function redeemClampsToBalanceWhenMoreIsRequestedThanAvailable(): void
+    #[DataProvider('redeemClampingProvider')]
+    public function redeemClampsToWhicheverLimitIsLower(int $requestedPoints, string $basketTotal, int $expectedPoints, int $expectedDiscountCents): void
     {
-        $redemption = $this->subject()->redeem(1, 1000, Money::fromDecimalString('1000.00'), $this->configuration());
+        $subject = $this->subject();
+        $redemption = $subject->redeem(1, $requestedPoints, Money::fromDecimalString($basketTotal), $this->configuration());
 
-        $this->assertSame(70, $redemption->getPoints());
-        $this->assertSame(700, $redemption->getDiscountAmount()->getCents());
+        $this->assertSame($expectedPoints, $redemption->getPoints());
+        $this->assertSame($expectedDiscountCents, $redemption->getDiscountAmount()->getCents());
     }
 
-    #[Test]
-    public function redeemClampsToWhatTheBasketCanAbsorb(): void
+    public static function redeemClampingProvider(): \Generator
     {
-        $redemption = $this->subject()->redeem(1, 70, Money::fromDecimalString('3.00'), $this->configuration());
-
-        $this->assertSame(30, $redemption->getPoints());
-        $this->assertSame(300, $redemption->getDiscountAmount()->getCents());
+        yield 'clamps to balance when more is requested than available' => ['requestedPoints' => 1000, 'basketTotal' => '1000.00', 'expectedPoints' => 70, 'expectedDiscountCents' => 700];
+        yield 'clamps to what the basket can absorb' => ['requestedPoints' => 70, 'basketTotal' => '3.00', 'expectedPoints' => 30, 'expectedDiscountCents' => 300];
     }
 
     #[Test]
     public function guestsCanNeverRedeemPoints(): void
     {
-        $this->assertTrue($this->subject()->redeem(0, 100, Money::fromDecimalString('1000.00'), $this->configuration())->isEmpty());
+        $subject = $this->subject();
+        $this->assertTrue($subject->redeem(0, 100, Money::fromDecimalString('1000.00'), $this->configuration())->isEmpty());
     }
 
     #[Test]
     public function redeemIsANoOpWhenTheFeatureIsDisabled(): void
     {
+        $subject = $this->subject();
         $configuration = $this->configuration(enabled: false);
 
-        $this->assertTrue($this->subject()->redeem(1, 10, Money::fromDecimalString('100.00'), $configuration)->isEmpty());
+        $this->assertTrue($subject->redeem(1, 10, Money::fromDecimalString('100.00'), $configuration)->isEmpty());
     }
 
     #[Test]
     public function assertSpendableThrowsWhenRequestingMoreThanTheBalance(): void
     {
+        $subject = $this->subject();
         $this->expectException(InsufficientCreditPointsException::class);
         $this->expectExceptionCode(1783430000);
 
-        $this->subject()->assertSpendable(1, 71);
+        $subject->assertSpendable(1, 71);
     }
 
     #[Test]
     public function assertSpendableAllowsRequestsWithinBalance(): void
     {
-        $this->subject()->assertSpendable(1, 70);
+        $subject = $this->subject();
+        $subject->assertSpendable(1, 70);
         $this->addToAssertionCount(1);
     }
 
@@ -195,8 +200,9 @@ final class CreditPointsServiceTest extends AbstractFunctionalTestCase
 
     private function basketViewModel(): BasketViewModel
     {
-        $product1 = $this->productRepository->findByUid(1);
-        $product2 = $this->productRepository->findByUid(2);
+        $productRepository = $this->get(ProductRepository::class);
+        $product1 = $productRepository->findByUid(1);
+        $product2 = $productRepository->findByUid(2);
         $this->assertInstanceOf(Product::class, $product1);
         $this->assertInstanceOf(Product::class, $product2);
 

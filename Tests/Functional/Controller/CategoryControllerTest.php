@@ -29,7 +29,7 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
     #[Test]
     public function navigationActionRendersTheFullCategoryTreeWithNestedLinks(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/category_routing.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/CategoryControllerTest/category_routing.csv');
         $this->writeSiteConfiguration('products', $this->buildSiteConfiguration(1), [
             $this->buildDefaultLanguageConfiguration('en', '/'),
         ]);
@@ -64,7 +64,7 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
     #[Test]
     public function theFullNestedSlugPathResolvesToTheLeafCategorysProducts(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/category_routing.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/CategoryControllerTest/category_routing.csv');
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1, '/', 'Home', $this->categoryRouteEnhancers()),
@@ -94,7 +94,7 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
     #[Test]
     public function aPathCombiningSegmentsFromDifferentBranchesIsRejected(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/category_routing.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/CategoryControllerTest/category_routing.csv');
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1, '/', 'Home', $this->categoryRouteEnhancers()),
