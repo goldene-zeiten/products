@@ -69,6 +69,55 @@ final class CategoryTreeServiceTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function subtreeIsRootedAtTheEntryPointCategoryItself(): void
+    {
+        $subject = $this->get(CategoryTreeService::class);
+
+        $subtree = $subject->getSubtree(6);
+
+        $this->assertCount(1, $subtree);
+        $this->assertSame('Sub Category 5', $subtree[0]->getCategory()->getTitle());
+        $this->assertSame(0, $subtree[0]->getDepth());
+    }
+
+    #[Test]
+    public function subtreeDefaultLevelsIncludesOnlyOneLevelOfChildrenBeneathTheEntryPoint(): void
+    {
+        $subject = $this->get(CategoryTreeService::class);
+
+        $subtree = $subject->getSubtree(6);
+
+        $children = $subtree[0]->getChildren();
+        $this->assertCount(3, $children);
+        foreach ($children as $child) {
+            $this->assertSame(1, $child->getDepth());
+            $this->assertSame([], $child->getChildren());
+        }
+    }
+
+    #[Test]
+    public function subtreeLevelsControlsHowManyLevelsBeneathTheEntryPointAreIncluded(): void
+    {
+        $subject = $this->get(CategoryTreeService::class);
+
+        $subtree = $subject->getSubtree(1, 2);
+
+        $subCategoryFive = $subtree[0]->getChildren()[4];
+        $this->assertSame('Sub Category 5', $subCategoryFive->getCategory()->getTitle());
+        $this->assertCount(3, $subCategoryFive->getChildren());
+    }
+
+    #[Test]
+    public function subtreeForANonExistentEntryPointCategoryReturnsAnEmptyArray(): void
+    {
+        $subject = $this->get(CategoryTreeService::class);
+
+        $subtree = $subject->getSubtree(999999);
+
+        $this->assertSame([], $subtree);
+    }
+
+    #[Test]
     public function ancestorChainIsRootFirstIncludingTheCategoryItself(): void
     {
         $subject = $this->get(CategoryTreeService::class);

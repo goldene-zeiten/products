@@ -1,0 +1,26 @@
+"pages",,,,,,
+,"uid","pid","sorting","deleted","title","slug"
+,1,0,256,0,"Root","/"
+,2,1,256,0,"Shop","/shop"
+
+"tx_products_domain_model_taxclass",,,
+,"uid","title","code"
+,1,"Standard Tax","STANDARD"
+
+"tx_products_domain_model_category",,,,,
+,"uid","pid","title","slug","parent_category"
+,1,2,"Main Category 1","main-category-1",0
+,6,2,"Sub Category 5","sub-category-5",1
+,20,2,"Last Category 1","last-category-1",6
+,21,2,"Last Category 2","last-category-2",6
+,22,2,"Last Category 3","last-category-3",6
+
+"tx_products_domain_model_product",,,,,,,
+,"uid","pid","title","slug","price","tax_class","in_stock"
+,101,2,"Product 1","product-1","10.00",1,100
+,102,2,"Product 2","product-2","20.00",1,100
+
+"tx_products_product_category_mm",,,
+,"uid_local","uid_foreign","sorting"
+,101,22,1
+,102,22,1

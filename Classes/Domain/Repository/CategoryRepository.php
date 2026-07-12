@@ -31,4 +31,14 @@ final class CategoryRepository extends AbstractReadOnlyRepository
         $query->getQuerySettings()->setRespectStoragePage(false);
         return $query->execute()->toArray();
     }
+
+    public function findByUidIgnoringStoragePage(int $uid): ?Category
+    {
+        $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage(false);
+        $query->matching($query->equals('uid', $uid));
+        /** @var Category|null $category */
+        $category = $query->execute()->getFirst();
+        return $category;
+    }
 }

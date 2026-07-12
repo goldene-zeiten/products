@@ -20,7 +20,29 @@ final class CategoryTreeService
      */
     public function getTree(): array
     {
-        return $this->buildLevel(0, $this->groupByParentUid(), 0, '');
+        return $this->buildLevel(0, $this->groupByParentUid(), 0, '', null);
+    }
+
+    /**
+     * Tree rooted at $entryPointCategoryUid (inclusive), $maxLevels deep beneath it.
+     * Returns an empty array when the entry point category doesn't exist.
+     *
+     * @return CategoryTreeNode[]
+     */
+    public function getSubtree(int $entryPointCategoryUid, int $maxLevels = PHP_INT_MAX): array
+    {
+        $entryPointCategory = $this->categoryRepository->findByUidIgnoringStoragePage($entryPointCategoryUid);
+        if ($entryPointCategory === null) {
+            return [];
+        }
+        $slugPath = $this->resolveSlugPath($entryPointCategory);
+        $remainingLevels = $maxLevels === PHP_INT_MAX ? null : $maxLevels;
+        return [new CategoryTreeNode(
+            $entryPointCategory,
+            $this->buildLevel($entryPointCategoryUid, $this->groupByParentUid(), 1, $slugPath, $remainingLevels),
+            0,
+            $slugPath
+        )];
     }
 
     /**
@@ -71,14 +93,18 @@ final class CategoryTreeService
      * @param array<int, Category[]> $groupedByParentUid
      * @return CategoryTreeNode[]
      */
-    private function buildLevel(int $parentUid, array $groupedByParentUid, int $depth, string $parentSlugPath): array
+    private function buildLevel(int $parentUid, array $groupedByParentUid, int $depth, string $parentSlugPath, ?int $remainingLevels): array
     {
+        if ($remainingLevels !== null && $remainingLevels <= 0) {
+            return [];
+        }
+        $nextRemainingLevels = $remainingLevels === null ? null : $remainingLevels - 1;
         $nodes = [];
         foreach ($groupedByParentUid[$parentUid] ?? [] as $category) {
             $slugPath = $this->appendSegment($parentSlugPath, $this->ownSlugSegment($category->getSlug()));
             $nodes[] = new CategoryTreeNode(
                 $category,
-                $this->buildLevel((int)$category->getUid(), $groupedByParentUid, $depth + 1, $slugPath),
+                $this->buildLevel((int)$category->getUid(), $groupedByParentUid, $depth + 1, $slugPath, $nextRemainingLevels),
                 $depth,
                 $slugPath
             );
