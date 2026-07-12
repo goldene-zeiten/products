@@ -15,6 +15,7 @@ class Article extends AbstractEntity
 {
     protected ?Product $product = null;
     protected string $title = '';
+    protected string $slug = '';
     protected string $itemNumber = '';
     protected string $ean = '';
     /** @var string */
@@ -78,6 +79,16 @@ class Article extends AbstractEntity
     public function setTitle(string $title): void
     {
         $this->title = $title;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): void
+    {
+        $this->slug = $slug;
     }
 
     public function getItemNumber(): string

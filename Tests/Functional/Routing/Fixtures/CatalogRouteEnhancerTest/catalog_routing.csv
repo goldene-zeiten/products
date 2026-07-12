@@ -1,0 +1,34 @@
+"pages",,,,,,
+,"uid","pid","sorting","deleted","title","slug"
+,1,0,256,0,"Root","/"
+,2,1,256,0,"Shop","/shop"
+
+"tx_products_domain_model_taxclass",,,
+,"uid","title","code"
+,1,"Standard Tax","STANDARD"
+
+"tx_products_domain_model_category",,,,,,
+,"uid","pid","title","slug","parent_category","hide_in_slug_path"
+,1,2,"Main Category 1","main-category-1",0,0
+,2,2,"Sub Category 5","sub-category-5",1,0
+,3,2,"Last Category 3","last-category-3",2,0
+,4,2,"Hidden Category","hidden-category",1,1
+,5,2,"Under Hidden","under-hidden",4,0
+,6,2,"Sub Category X","sub-category-x",1,0
+
+"tx_products_domain_model_product",,,,,,,
+,"uid","pid","title","slug","price","tax_class","in_stock"
+,101,2,"Product A","product-a","20.00",1,100
+,102,2,"Product B","product-b","15.00",1,50
+,103,2,"Product C","product-c","5.00",1,10
+,104,2,"Product D","product-d","8.00",1,20
+
+"tx_products_product_category_mm",,,
+,"uid_local","uid_foreign","sorting"
+,101,3,1
+,102,1,1
+,104,5,1
+
+"tx_products_domain_model_article",,,,,,
+,"uid","pid","product","title","slug","price","in_stock"
+,201,2,101,"Article Red","article-a-red","20.00",50

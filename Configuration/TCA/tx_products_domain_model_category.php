@@ -20,7 +20,21 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Category.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'title, slug, parent_category, image, description, notification_email, notification_recipient_name, discount_percent, discount_disabled, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_access, perms_userid, perms_groupid, perms_user, perms_group, perms_everybody'],
+        '1' => ['showitem' => '--div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_general, --palette--;;titleAndSlug, parent_category, image, description, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_discount, --palette--;;discount, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_notification, --palette--;;notification, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_access, --palette--;;access'],
+    ],
+    'palettes' => [
+        'titleAndSlug' => [
+            'showitem' => 'title, --linebreak--, slug, hide_in_slug_path',
+        ],
+        'discount' => [
+            'showitem' => 'discount_percent, discount_disabled',
+        ],
+        'notification' => [
+            'showitem' => 'notification_email, notification_recipient_name',
+        ],
+        'access' => [
+            'showitem' => 'perms_userid, perms_groupid, --linebreak--, perms_user, perms_group, perms_everybody',
+        ],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -116,6 +130,14 @@ return [
         ],
         'discount_disabled' => [
             'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.discount_disabled',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'default' => 0,
+            ],
+        ],
+        'hide_in_slug_path' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.hide_in_slug_path',
             'config' => [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
