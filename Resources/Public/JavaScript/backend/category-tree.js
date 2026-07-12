@@ -351,12 +351,27 @@ class ProductsCategoryTree extends LitElement {
         this.childrenByParent.set(identifier, children);
         return children;
     }
+    /**
+     * Re-fetches a parent's children and reconciles its cached hasChildren flag
+     * against them - without this, a node created via drag&drop under a
+     * previously-childless category never shows a toggle (or its new content)
+     * until a full module reload, since hasChildren was only ever set once,
+     * when the category itself was first fetched as someone else's child.
+     */
     async refreshParent(parentIdentifier) {
         if (parentIdentifier === 'root') {
             await this.loadRoot();
+            this.requestUpdate();
+            return;
         }
-        else {
-            await this.ensureChildrenLoaded(parentIdentifier, true);
+        const children = await this.ensureChildrenLoaded(parentIdentifier, true);
+        const parentNode = this.findCachedNode(parentIdentifier);
+        if (parentNode) {
+            parentNode.hasChildren = children.length > 0;
+            if (children.length > 0) {
+                this.expanded.add(parentIdentifier);
+                this.persistExpanded();
+            }
         }
         this.requestUpdate();
     }
