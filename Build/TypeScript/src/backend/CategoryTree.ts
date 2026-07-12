@@ -42,8 +42,9 @@ function label(key: string, fallback: string): string {
  * and the page tree's own global .node/.node-treelines/.node-toggle CSS
  * classes for a matching look without any bespoke styling).
  *
- * Articles are selectable leaves (opening the module's article-detail view),
- * but otherwise read-only here - not draggable, no context menu.
+ * Articles are selectable leaves (opening the module's article-detail view)
+ * with the standard record context menu (edit/hide/delete/copy/history),
+ * but are not draggable/reparentable here.
  *
  * The context menu's own hide/copy actions (context-menu-actions.js) commit
  * straight through the content iframe or a raw AJAX call with no event this
@@ -302,9 +303,6 @@ export class ProductsCategoryTree extends LitElement {
    * copy/history for any TCA table with no extra registration needed.
    */
   private onContextMenu(event: MouseEvent, node: TreeNode): void {
-    if (node.type === 'article') {
-      return;
-    }
     event.preventDefault();
     ContextMenu.show(
       tableForType(node.type),
@@ -681,7 +679,7 @@ export class ProductsCategoryTree extends LitElement {
               <typo3-backend-icon
                 identifier="${node.icon}"
                 size="small"
-                state="${node.hidden ? 'disabled' : 'default'}"
+                overlay="${node.hidden ? 'overlay-hidden' : ''}"
               ></typo3-backend-icon>
             </span>
             <div class="node-contentlabel">

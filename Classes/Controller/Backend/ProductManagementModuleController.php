@@ -400,7 +400,11 @@ final class ProductManagementModuleController
             return [];
         }
         $allowedFields = array_keys($GLOBALS['TCA'][self::TABLE_ARTICLE]['columns'] ?? []);
-        return array_values(array_intersect($selected, $allowedFields));
+        // "title" is always shown first via buildTitleFieldRow() regardless
+        // of this selection - core's own column picker locks its checkbox on
+        // but still submits it, so without this it duplicates as soon as an
+        // editor picks any other column.
+        return array_values(array_diff(array_intersect($selected, $allowedFields), ['title']));
     }
 
     /**
