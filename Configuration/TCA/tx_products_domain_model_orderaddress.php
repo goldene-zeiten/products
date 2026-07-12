@@ -15,7 +15,18 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'address_type, company, salutation, first_name, last_name, street, house_number, zip, city, country, telephone, vat_id'],
+        '1' => ['showitem' => 'address_type, company, --palette--;;name, --palette--;;address, country, --palette--;;contact'],
+    ],
+    'palettes' => [
+        'name' => [
+            'showitem' => 'salutation, first_name, last_name',
+        ],
+        'address' => [
+            'showitem' => 'street, house_number, --linebreak--, zip, city',
+        ],
+        'contact' => [
+            'showitem' => 'telephone, vat_id',
+        ],
     ],
     'columns' => [
         'address_type' => [

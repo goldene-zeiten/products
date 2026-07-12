@@ -312,6 +312,27 @@
 			<trans-unit id="tx_products_domain_model_product" resname="tx_products_domain_model_product">
 				<source>Product</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.tab_general" resname="tx_products_domain_model_product.tab_general">
+				<source>General</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.tab_prices" resname="tx_products_domain_model_product.tab_prices">
+				<source>Prices</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.tab_stock" resname="tx_products_domain_model_product.tab_stock">
+				<source>Stock &amp; Basket</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.tab_shipping" resname="tx_products_domain_model_product.tab_shipping">
+				<source>Shipping</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.tab_marketing" resname="tx_products_domain_model_product.tab_marketing">
+				<source>Marketing</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.tab_media" resname="tx_products_domain_model_product.tab_media">
+				<source>Media</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.tab_relations" resname="tx_products_domain_model_product.tab_relations">
+				<source>Relations</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_product.title" resname="tx_products_domain_model_product.title">
 				<source>Title</source>
 			</trans-unit>
@@ -479,6 +500,30 @@
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_order" resname="tx_products_domain_model_order">
 				<source>Order</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.tab_general" resname="tx_products_domain_model_order.tab_general">
+				<source>General</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.tab_customer" resname="tx_products_domain_model_order.tab_customer">
+				<source>Customer</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.tab_payment" resname="tx_products_domain_model_order.tab_payment">
+				<source>Payment &amp; Shipping</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.tab_totals" resname="tx_products_domain_model_order.tab_totals">
+				<source>Totals</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.tab_tax" resname="tx_products_domain_model_order.tab_tax">
+				<source>Tax</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.tab_items" resname="tx_products_domain_model_order.tab_items">
+				<source>Items</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.tab_notes" resname="tx_products_domain_model_order.tab_notes">
+				<source>Notes</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.tab_technical" resname="tx_products_domain_model_order.tab_technical">
+				<source>Technical</source>
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_order.order_number" resname="tx_products_domain_model_order.order_number">
 				<source>Order Number</source>

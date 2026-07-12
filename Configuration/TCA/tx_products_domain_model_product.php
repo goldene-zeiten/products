@@ -20,7 +20,30 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Product.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'title, subtitle, slug, item_number, ean, price, direct_cost, deposit, discount_percent, discount_disabled, price_tiers, tax_class, shipping_point, categories, in_stock, unlimited_stock, basket_min_quantity, basket_max_quantity, weight, bulky, credit_points, is_offer, is_highlight, description, images, downloads, articles, related_products, accessory_products, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => '--div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_general, title, subtitle, slug, --palette--;;identifiers, categories, description, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_prices, --palette--;;pricing, --palette--;;discount, price_tiers, tax_class, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_stock, --palette--;;stock, --palette--;;basketLimits, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_shipping, --palette--;;shipping, shipping_point, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_marketing, credit_points, --palette--;;flags, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_media, images, downloads, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_relations, articles, related_products, accessory_products, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+    ],
+    'palettes' => [
+        'identifiers' => [
+            'showitem' => 'item_number, ean',
+        ],
+        'pricing' => [
+            'showitem' => 'price, --linebreak--, direct_cost, deposit',
+        ],
+        'discount' => [
+            'showitem' => 'discount_percent, discount_disabled',
+        ],
+        'stock' => [
+            'showitem' => 'in_stock, unlimited_stock',
+        ],
+        'basketLimits' => [
+            'showitem' => 'basket_min_quantity, basket_max_quantity',
+        ],
+        'shipping' => [
+            'showitem' => 'weight, bulky',
+        ],
+        'flags' => [
+            'showitem' => 'is_offer, is_highlight',
+        ],
     ],
     'columns' => [
         'sys_language_uid' => [

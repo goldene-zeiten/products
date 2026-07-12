@@ -13,7 +13,24 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'order_number, order_date, frontend_user, email, billing_address, delivery_address, payment_method, payment_status, status, invoice_number, currency, total_net, total_tax, total_gross, discount_total, voucher_codes, shipping_method, shipping_total, handling_fee_total, deposit_total, tax_country, tax_breakdown, status_log, items, customer_note, gift_message, terms_accepted_at, site_identifier, legacy_order_data, legacy_country_name'],
+        '1' => ['showitem' => '--div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_general, order_number, order_date, --palette--;;statusInfo, invoice_number, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_customer, frontend_user, email, --palette--;;addresses, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_payment, --palette--;;payment, shipping_method, --palette--;;costs, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_totals, --palette--;;totals, discount_total, voucher_codes, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_tax, tax_country, tax_breakdown, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_items, items, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_notes, customer_note, gift_message, terms_accepted_at, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_technical, site_identifier, status_log, legacy_order_data, legacy_country_name'],
+    ],
+    'palettes' => [
+        'statusInfo' => [
+            'showitem' => 'status, payment_status',
+        ],
+        'addresses' => [
+            'showitem' => 'billing_address, delivery_address',
+        ],
+        'payment' => [
+            'showitem' => 'payment_method, currency',
+        ],
+        'costs' => [
+            'showitem' => 'shipping_total, handling_fee_total, deposit_total',
+        ],
+        'totals' => [
+            'showitem' => 'total_net, total_tax, total_gross',
+        ],
     ],
     'columns' => [
         'order_number' => [
