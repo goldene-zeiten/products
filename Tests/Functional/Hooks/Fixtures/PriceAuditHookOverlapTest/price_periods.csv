@@ -1,0 +1,17 @@
+"be_users",,,,
+,"uid","pid","username","admin"
+,1,0,"admin",1
+
+"pages",,,,,,,
+,"uid","pid","sorting","deleted","title","slug","doktype"
+,1,0,256,0,"Root","/",1
+,2,1,256,0,"Shop","/shop",254
+
+"tx_products_domain_model_product",,,,,
+,"uid","pid","title","price","crdate"
+,1,2,"Test Product","19.99",946684800
+
+"tx_products_domain_model_priceperiod",,,,,,,,,,,,
+,"uid","pid","product","article","fe_group","price","valid_from","valid_until","hidden","deleted","sorting","tstamp","crdate"
+,10,2,1,0,0,"10.00",946684800,978307200,0,0,256,946684800,946684800
+,11,2,1,0,1,"8.00",946684800,978307200,0,0,512,946684800,946684800

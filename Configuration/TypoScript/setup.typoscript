@@ -93,3 +93,6 @@ products_invoice {
         }
     }
 }
+
+# Cache lifetime configuration for price periods
+config.cache.all = tx_products_domain_model_priceperiod:{$plugin.tx_products.settings.pids.storageFolder}

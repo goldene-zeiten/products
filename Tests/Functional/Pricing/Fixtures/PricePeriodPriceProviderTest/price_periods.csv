@@ -1,0 +1,43 @@
+"tx_products_domain_model_product",,,,
+,"uid","pid","title","price"
+,1,2,"No Periods","19.99"
+,2,2,"Public Period Active","19.99"
+,3,2,"Expired And Future Periods","19.99"
+,4,2,"Reseller Only","19.99"
+,5,2,"Public And Reseller LowestWins","19.99"
+,6,2,"Public And Reseller ResellerFixed","19.99"
+,7,2,"Product With Article Period","19.99"
+,8,2,"Tier Lower Than Period","19.99"
+,9,2,"Period Lower Than Tier","19.99"
+,40,2,"Tiers Only No Periods","19.99"
+,41,2,"Product With Article Tiers","19.99"
+
+"tx_products_domain_model_article",,,,
+,"uid","pid","product","title","price"
+,20,2,7,"Article With Own Period","0.00"
+,42,2,41,"Article With Own Tiers","0.00"
+,43,2,41,"Article Without Own Tiers","0.00"
+
+"tx_products_domain_model_pricetier",,,,
+,"uid","pid","product","article","min_quantity","price"
+,30,2,8,0,10,"15.00"
+,31,2,9,0,10,"18.00"
+,50,2,40,0,10,"15.00"
+,51,2,40,0,50,"12.00"
+,52,2,41,0,10,"20.00"
+,53,2,0,42,10,"9.00"
+
+"tx_products_domain_model_priceperiod",,,,,,,
+,"uid","pid","product","article","fe_group","price","valid_from","valid_until"
+,10,2,2,0,0,"9.99",946684800,2145916800
+,11,2,3,0,0,"5.00",946684800,978307200
+,12,2,3,0,0,"7.00",2145916800,2147483647
+,13,2,4,0,1,"12.00",946684800,2145916800
+,14,2,5,0,0,"15.00",946684800,2145916800
+,15,2,5,0,1,"10.00",946684800,2145916800
+,16,2,6,0,0,"8.00",946684800,2145916800
+,17,2,6,0,1,"12.00",946684800,2145916800
+,18,2,0,20,0,"6.00",946684800,2145916800
+,19,2,7,0,0,"14.00",946684800,2145916800
+,32,2,8,0,0,"17.00",946684800,2145916800
+,33,2,9,0,0,"12.00",946684800,2145916800

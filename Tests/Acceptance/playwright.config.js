@@ -52,6 +52,7 @@ export default defineConfig({
         'specs/checkout-credit-points.spec.js',
         'specs/withdrawal-expired.spec.js',
         'specs/my-most-viewed.spec.js',
+        'specs/price-period-reseller-precedence.spec.js',
       ],
       dependencies: ['login'],
       use: {

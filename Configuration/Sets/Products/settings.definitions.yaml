@@ -58,6 +58,11 @@ settings:
     default: 'none'
     label: 'Basket/order gross total rounding, applied only to the final total (none|nearestInteger|psychological99)'
     category: products
+  products.pricing.resellerPeriodPrecedence:
+    type: string
+    default: 'lowestWins'
+    label: 'Reseller pricing vs. concurrent public discount precedence (lowestWins|resellerFixed) - lowestWins: reseller also benefits from a lower running public promo; resellerFixed: resellers always get their fixed tier price, ignoring public promotions'
+    category: products
   products.tax.defaultCountry:
     type: string
     default: 'DE'

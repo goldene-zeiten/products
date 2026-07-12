@@ -92,6 +92,10 @@ plugin.tx_products.settings.shipping.enabled = 1"
 ,115,2,"Limited Vintage Compass","limited-vintage-compass","45.00",1,1,150,0,0,0
 ,116,2,"Everlasting Digital Download","everlasting-digital-download","9.99",1,1,0,0,1,0
 ,117,2,"Employee Discount Sample","employee-discount-sample","5.00",1,999,50,0,0,3
+,201,2,"Flash Sale Jacket","flash-sale-jacket","39.99",1,100,400,0,0,0
+,202,2,"Expired Sale Hat","expired-sale-hat","34.99",1,100,150,0,0,0
+,203,2,"Reseller Precedence Shirt","reseller-precedence-shirt","44.99",1,100,350,0,0,0
+,204,2,"Bulk Tier vs Sale Socks","bulk-tier-vs-sale-socks","29.99",1,100,200,0,0,0
 
 "tx_products_product_category_mm",,,
 ,"uid_local","uid_foreign","sorting"
@@ -110,6 +114,18 @@ plugin.tx_products.settings.shipping.enabled = 1"
 "tx_products_product_accessory_mm",,,
 ,"uid_local","uid_foreign","sorting"
 ,106,108,1
+
+"tx_products_domain_model_priceperiod",,,,,,,
+,"uid","pid","product","article","price","fe_group","valid_from","valid_until"
+,501,2,201,0,"24.99",0,946684800,4102444800
+,502,2,202,0,"19.99",0,946684800,978307200
+,503,2,203,0,"34.99",0,946684800,4102444800
+,504,2,203,0,"29.99",1,946684800,4102444800
+,505,2,204,0,"19.99",0,946684800,4102444800
+
+"tx_products_domain_model_pricetier",,,,
+,"uid","pid","product","min_quantity","price"
+,601,2,204,5,"17.99"
 
 "tx_products_domain_model_attribute",,,
 ,"uid","pid","title"

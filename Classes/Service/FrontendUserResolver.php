@@ -26,6 +26,18 @@ final class FrontendUserResolver
     }
 
     /**
+     * @return int[]
+     */
+    public function getGroupUids(ServerRequestInterface $request): array
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if (!$frontendUser instanceof FrontendUserAuthentication) {
+            return [];
+        }
+        return GeneralUtility::intExplode(',', (string)($frontendUser->user['usergroup'] ?? ''), true);
+    }
+
+    /**
      * Whether the visitor's browser already carries the FE-session cookie from an earlier request
      * - never true for the request that would be the first to set it, matching legacy's
      * `isCookieSet()`-gated `writeSession()` (a session write never itself counts as consent).
@@ -52,7 +64,7 @@ final class FrontendUserResolver
         }
 
         $discounts = [(float)($frontendUser->user['tx_products_discount_percent'] ?? 0.0)];
-        $groupUids = GeneralUtility::intExplode(',', (string)($frontendUser->user['usergroup'] ?? ''), true);
+        $groupUids = $this->getGroupUids($request);
         foreach ($this->fetchGroupDiscounts($groupUids) as $groupDiscount) {
             $discounts[] = (float)$groupDiscount;
         }
