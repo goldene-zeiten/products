@@ -1,12 +1,18 @@
 <f:layout name="Module" />
 <f:section name="Content">
+    <f:asset.module identifier="@goldene-zeiten/products/backend/product-visibility-toggle.js" />
     <f:if condition="{columnSelector}">
         <f:asset.module identifier="@typo3/backend/column-selector-button.js" />
     </f:if>
 
     <div class="mb-3">
         <f:for each="{actions}" as="action">
-            <a class="btn btn-default" href="{action.url}">{action.label}</a>
+            <a class="btn btn-default" href="{action.url}">
+                <f:if condition="{action.icon}">
+                    <core:icon identifier="{action.icon}" size="small" />
+                </f:if>
+                {action.label}
+            </a>
         </f:for>
         <f:if condition="{columnSelector}">
             <typo3-backend-column-selector-button
@@ -21,6 +27,22 @@
                 <core:icon identifier="actions-options" size="small" />
                 {columnSelector.label}
             </typo3-backend-column-selector-button>
+        </f:if>
+        <f:if condition="{visibilityToggle}">
+            <button
+                type="button"
+                class="btn btn-default"
+                title="{visibilityToggle.title}"
+                data-products-visibility-toggle
+                data-table="{visibilityToggle.table}"
+                data-uid="{visibilityToggle.uid}"
+                data-field="{visibilityToggle.field}"
+                data-hidden="{visibilityToggle.hidden}"
+                data-error-message="{visibilityToggle.errorMessage}"
+            >
+                <core:icon identifier="{visibilityToggle.icon}" size="small" />
+                {visibilityToggle.title}
+            </button>
         </f:if>
     </div>
 
@@ -67,6 +89,9 @@
                                 <f:for each="{extraColumns}" as="columnLabel">
                                     <th>{columnLabel}</th>
                                 </f:for>
+                                <f:if condition="{mode} == 'product'">
+                                    <th></th>
+                                </f:if>
                                 <th></th>
                             </tr>
                         </thead>
@@ -78,6 +103,23 @@
                                     <f:for each="{item.extraValues}" as="value">
                                         <td>{value}</td>
                                     </f:for>
+                                    <f:if condition="{mode} == 'product'">
+                                        <td>
+                                            <button
+                                                type="button"
+                                                class="btn btn-default btn-sm"
+                                                title="{item.visibilityToggle.title}"
+                                                data-products-visibility-toggle
+                                                data-table="{item.visibilityToggle.table}"
+                                                data-uid="{item.visibilityToggle.uid}"
+                                                data-field="{item.visibilityToggle.field}"
+                                                data-hidden="{item.visibilityToggle.hidden}"
+                                                data-error-message="{item.visibilityToggle.errorMessage}"
+                                            >
+                                                <core:icon identifier="{item.visibilityToggle.icon}" size="small" />
+                                            </button>
+                                        </td>
+                                    </f:if>
                                     <td class="text-end">
                                         <a class="btn btn-default btn-sm" href="{item.editUrl}">
                                             <core:icon identifier="actions-open" size="small" />

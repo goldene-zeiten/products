@@ -22,4 +22,14 @@ export default [
     external: typo3External,
     plugins,
   },
+  {
+    input: 'Build/TypeScript/src/backend/ProductVisibilityToggle.ts',
+    output: {
+      file: 'Resources/Public/JavaScript/backend/product-visibility-toggle.js',
+      format: 'es',
+      sourcemap: true,
+    },
+    external: typo3External,
+    plugins,
+  },
 ];
