@@ -13,7 +13,21 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'parent_order, product, article, title, article_title, item_number, quantity, unit_price_net, unit_price_gross, tax_rate, line_total_net, line_total_tax, line_total_gross, deposit_total, options'],
+        '1' => ['showitem' => 'parent_order, --palette--;;productRef, --palette--;;titles, quantity, --palette--;;pricing, --palette--;;lineTotals, options'],
+    ],
+    'palettes' => [
+        'productRef' => [
+            'showitem' => 'product, article',
+        ],
+        'titles' => [
+            'showitem' => 'title, article_title, item_number',
+        ],
+        'pricing' => [
+            'showitem' => 'unit_price_net, unit_price_gross, tax_rate',
+        ],
+        'lineTotals' => [
+            'showitem' => 'line_total_net, line_total_tax, line_total_gross, --linebreak--, deposit_total',
+        ],
     ],
     'columns' => [
         'parent_order' => [

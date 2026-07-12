@@ -20,7 +20,24 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'code, title, discount_type, discount_value, combinable, waives_shipping_cost, usage_limit, min_basket_value, bound_frontend_user, valid_from, valid_until, generated_from_order'],
+        '1' => ['showitem' => '--palette--;;identity, --palette--;;discount, --palette--;;limits, --palette--;;validity, --palette--;;flags, bound_frontend_user, generated_from_order'],
+    ],
+    'palettes' => [
+        'identity' => [
+            'showitem' => 'code, title',
+        ],
+        'discount' => [
+            'showitem' => 'discount_type, discount_value',
+        ],
+        'limits' => [
+            'showitem' => 'usage_limit, redemption_count, min_basket_value',
+        ],
+        'validity' => [
+            'showitem' => 'valid_from, valid_until',
+        ],
+        'flags' => [
+            'showitem' => 'combinable, waives_shipping_cost',
+        ],
     ],
     'columns' => [
         'code' => [

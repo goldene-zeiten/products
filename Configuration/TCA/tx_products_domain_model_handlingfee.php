@@ -20,7 +20,12 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'title, country, min_order_value, max_order_value, min_weight, max_weight, rate'],
+        '1' => ['showitem' => 'title, country, --palette--;;range, rate'],
+    ],
+    'palettes' => [
+        'range' => [
+            'showitem' => 'min_order_value, max_order_value, --linebreak--, min_weight, max_weight',
+        ],
     ],
     'columns' => [
         'title' => [

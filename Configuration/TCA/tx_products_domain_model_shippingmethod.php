@@ -20,7 +20,15 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'title, country, min_order_value, max_order_value, min_weight, max_weight, rate, tax_rate_override_enabled, tax_rate_override'],
+        '1' => ['showitem' => 'title, country, --palette--;;range, rate, --palette--;;taxOverride'],
+    ],
+    'palettes' => [
+        'range' => [
+            'showitem' => 'min_order_value, max_order_value, --linebreak--, min_weight, max_weight',
+        ],
+        'taxOverride' => [
+            'showitem' => 'tax_rate_override_enabled, tax_rate_override',
+        ],
     ],
     'columns' => [
         'title' => [
