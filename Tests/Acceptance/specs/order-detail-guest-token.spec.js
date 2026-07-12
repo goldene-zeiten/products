@@ -26,8 +26,7 @@ test("a guest follows the thank-you page's order-detail link and sees the order 
 
   const viewOrderLink = page.getByRole('link', { name: 'View Order' });
   const href = await viewOrderLink.getAttribute('href');
-  // OrderController::showAction only grants a guest (frontendUser 0) access via this HMAC token -
-  // without a valid ?hash= it redirects straight back to the (empty, for a guest) order list.
+  // Guest access requires the HMAC ?hash= token
   expect(href).toContain('hash');
 
   await viewOrderLink.click();

@@ -21,28 +21,13 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['chec
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = CategoryMountAccessHook::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = CategoryMountAccessHook::class;
 
-// Page-title providers are registered via `config.pageTitleProviders` TypoScript, not a DI tag -
-// this mirrors exactly how EXT:core itself registers its own default `record` provider. "before"
-// ensures ours is tried first; returning '' (no current product) correctly falls through to it.
 ExtensionManagementUtility::addTypoScriptSetup(
     'config.pageTitleProviders.products.provider = ' . ProductPageTitleProvider::class . '
 config.pageTitleProviders.products.before = record'
 );
 
-// The variant chooser's GET form resubmits with a combination unknown at render time (no
-// pre-computable cHash is possible for it), and ProductController::showAction is already
-// re-rendered fresh on every request (registered as a non-cacheable action) regardless of the
-// surrounding page's own cache state - so requiring a cHash proof for these two parameters
-// specifically would only ever break the feature, never protect anything real.
 $GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '^tx_products_productdetail[attributeValues]';
 $GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '=tx_products_productdetail[selectedArticle]';
-// f:form (unlike f:link.action/f:uri.action) never embeds a cHash - it only ever emits Extbase's
-// own __referrer/__trustedProperties bookkeeping fields alongside whatever arguments the form
-// itself declares. Those two aren't part of TYPO3 core's default excludedParameters list (only
-// tracking/marketing params like utm_* are), so without excluding them here every submission of
-// this GET form 404s with "Request parameters could not be validated (&cHash empty)" regardless
-// of the attributeValues/selectedArticle exclusions above - this was never caught because the
-// no-JS reload fallback had no E2E coverage until the acceptance suite's variant-add spec.
 $GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '^tx_products_productdetail[__referrer]';
 $GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '^tx_products_productdetail[__trustedProperties]';
 
@@ -52,7 +37,6 @@ ExtensionUtility::configurePlugin(
     [
         ProductController::class => 'list, listByAjax',
     ],
-    // non-cacheable actions
     [],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );
@@ -63,9 +47,6 @@ ExtensionUtility::configurePlugin(
     [
         ProductController::class => 'show',
     ],
-    // "show" now accepts a dynamic attributeValues/selectedArticle combination the variant
-    // chooser's GET form resubmits with - a cacheable action can't validate a cHash for a
-    // combination unknown at render time, so this can no longer be cacheable.
     [
         ProductController::class => 'show',
     ],
@@ -78,7 +59,6 @@ ExtensionUtility::configurePlugin(
     [
         BasketController::class => 'show, add, update, remove, applyVoucher, removeVoucher',
     ],
-    // non-cacheable actions
     [
         BasketController::class => 'show, add, update, remove, applyVoucher, removeVoucher',
     ],
@@ -91,7 +71,6 @@ ExtensionUtility::configurePlugin(
     [
         CheckoutController::class => 'address, submitAddress, shippingMethod, submitShippingMethod, payment, submitPayment, review, finalize, paymentReturn, paymentCancel, thankYou',
     ],
-    // non-cacheable actions
     [
         CheckoutController::class => 'address, submitAddress, shippingMethod, submitShippingMethod, payment, submitPayment, review, finalize, paymentReturn, paymentCancel, thankYou',
     ],
@@ -104,7 +83,6 @@ ExtensionUtility::configurePlugin(
     [
         OrderController::class => 'list, show',
     ],
-    // non-cacheable actions
     [
         OrderController::class => 'list, show',
     ],
@@ -117,7 +95,6 @@ ExtensionUtility::configurePlugin(
     [
         WishlistController::class => 'show, add, remove, moveUp, moveDown',
     ],
-    // non-cacheable actions
     [
         WishlistController::class => 'show, add, remove, moveUp, moveDown',
     ],
@@ -130,11 +107,6 @@ ExtensionUtility::configurePlugin(
     [
         RecentlyViewedController::class => 'list, mostViewed, myMostViewed',
     ],
-    // non-cacheable actions - list reads the FE-session-scoped recently-viewed FIFO
-    // (RecentlyViewedStorage), so it must never be page-cached or every visitor would be served
-    // whichever session happened to render it first; myMostViewed is per-shopper for the same
-    // reason. mostViewed is the only one of the three that's a true site-wide aggregate
-    // independent of session/login state, so it's safe to leave cacheable.
     [
         RecentlyViewedController::class => 'list, myMostViewed',
     ],
@@ -147,7 +119,6 @@ ExtensionUtility::configurePlugin(
     [
         SearchController::class => 'search',
     ],
-    // non-cacheable actions
     [
         SearchController::class => 'search',
     ],
@@ -160,7 +131,6 @@ ExtensionUtility::configurePlugin(
     [
         CategoryController::class => 'navigation',
     ],
-    // non-cacheable actions - none, the tree has no session/user dependency
     [],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );
@@ -171,7 +141,6 @@ ExtensionUtility::configurePlugin(
     [
         CategoryController::class => 'list',
     ],
-    // non-cacheable actions - none, the listing has no session/user dependency
     [],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );
@@ -182,7 +151,6 @@ ExtensionUtility::configurePlugin(
     [
         InvoiceController::class => 'download',
     ],
-    // non-cacheable actions
     [
         InvoiceController::class => 'download',
     ],
@@ -195,7 +163,6 @@ ExtensionUtility::configurePlugin(
     [
         WithdrawalController::class => 'form, confirm',
     ],
-    // non-cacheable actions
     [
         WithdrawalController::class => 'form, confirm',
     ],

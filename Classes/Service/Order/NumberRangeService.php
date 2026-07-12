@@ -7,11 +7,7 @@ namespace GoldeneZeiten\Products\Service\Order;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /**
- * Race-safe sequence generator backed by tx_products_number_range.
- *
- * SELECT ... FOR UPDATE is MySQL/Postgres-only syntax and unsupported by sqlite,
- * which this extension must also run on. An atomic "UPDATE ... SET x = x + 1"
- * takes the same row lock on transactional platforms and is portable everywhere.
+ * Race-safe sequence generator: atomic UPDATE instead of SELECT FOR UPDATE for sqlite compatibility.
  */
 final class NumberRangeService
 {

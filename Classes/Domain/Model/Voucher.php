@@ -9,11 +9,6 @@ use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
-/**
- * A discount code. `validFrom`/`validUntil` are this table's enablecolumns starttime/endtime (same
- * repurposing as TaxRate), so an expired or not-yet-active voucher is never returned by a normal
- * query at all rather than needing an explicit date check.
- */
 #[Exclude]
 class Voucher extends AbstractEntity
 {
@@ -173,9 +168,6 @@ class Voucher extends AbstractEntity
         return $basketGoodsTotal->getCents() >= $this->getMinBasketValue()->getCents();
     }
 
-    /**
-     * Never discounts more than the basket is worth, so the payable amount can't go negative.
-     */
     public function calculateDiscount(Money $basketGoodsTotal): Money
     {
         $raw = $this->discountType === VoucherDiscountType::PERCENTAGE

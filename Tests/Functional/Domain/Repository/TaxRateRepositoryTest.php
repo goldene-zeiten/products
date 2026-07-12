@@ -13,10 +13,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
- * The fixture deliberately places tax class/rate records on pid 99 - a page unrelated to any
- * storagePid a test's TypoScript setup might configure - to prove findByTaxClassAndCountry()
- * resolves records regardless of storage page (it's a shared, non-page-bound lookup table, same
- * reasoning as ShippingMethodRepository's own storage-page-independent queries).
+ * Fixture places records on an unrelated pid to prove lookups are storage-page-independent.
  */
 final class TaxRateRepositoryTest extends AbstractFunctionalTestCase
 {

@@ -20,7 +20,6 @@ test('a product flagged as unlimited stock can be ordered past its nominal stock
   await page.locator('input[name="tx_products_checkout[address][city]"]').fill('Berlin');
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 
-  // Shipping method step (products.shipping.enabled is on in the demo shop).
   await page.locator('input[name="tx_products_checkout[shippingMethod]"]').first().check();
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 

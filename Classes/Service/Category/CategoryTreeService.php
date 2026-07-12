@@ -9,12 +9,6 @@ use GoldeneZeiten\Products\Domain\Model\Category;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\CategoryRepository;
 
-/**
- * Definition layer for category browsing: the tree structure, ancestor chains and the nested
- * slug path (e.g. "main-category-1/sub-category-5/last-category-3") are all resolved here so
- * that navigation/listing controllers and the route enhancer share one source of truth instead
- * of each re-deriving category ancestry themselves.
- */
 final class CategoryTreeService
 {
     public function __construct(
@@ -46,10 +40,7 @@ final class CategoryTreeService
     }
 
     /**
-     * Each ancestor's own slug segment (not its full, page-prefixed `slug` column value) joined
-     * by "/", with the product's own segment appended when given - category ancestry has no
-     * representation in the stored `slug` column at all (TCA's `prefixParentPageSlug` only
-     * prefixes the containing *page's* slug), so the nested path is composed here instead.
+     * Compose nested slug path from ancestor and optional product segments.
      */
     public function resolveSlugPath(Category $category, ?Product $product = null): string
     {

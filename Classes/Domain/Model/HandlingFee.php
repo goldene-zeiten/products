@@ -8,11 +8,6 @@ use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
-/**
- * A third cost bucket alongside shipping/payment (legacy tt_products modeled handling as its own
- * category with its own tiers/thresholds, distinct from shipping) - same structural shape as
- * ShippingMethod since it's resolved the same way, just automatically rather than shopper-chosen.
- */
 #[Exclude]
 class HandlingFee extends AbstractEntity
 {
@@ -97,9 +92,6 @@ class HandlingFee extends AbstractEntity
         $this->rate = $rate->getDecimalString();
     }
 
-    /**
-     * 0 (unset) means "no bound" for every threshold, same convention as ShippingMethod.
-     */
     public function isApplicable(int $basketWeight, Money $basketGoodsTotal): bool
     {
         return $this->meetsWeightBounds($basketWeight) && $this->meetsOrderValueBounds($basketGoodsTotal);

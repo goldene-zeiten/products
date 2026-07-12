@@ -19,8 +19,7 @@ final class CategoryController extends ActionController
     ) {}
 
     /**
-     * Renders the full tree regardless of the current page - "which categories exist" is
-     * static browsing chrome, not something that depends on route-resolved arguments.
+     * Renders the full category tree (independent of page context).
      */
     public function navigationAction(): ResponseInterface
     {
@@ -29,12 +28,7 @@ final class CategoryController extends ActionController
     }
 
     /**
-     * The route enhancer resolves whichever segment is deepest in the matched pattern to
-     * $category, independently validating each shallower segment along the way exists as a real
-     * category (via its own PersistedAliasMapper aspect) - but not that those segments actually
-     * nest under one another. assertRequestPathMatchesCategory() closes that gap by comparing the
-     * request's own path suffix against the category's real, precomputed nested path instead of
-     * trusting the combination the router happened to match.
+     * Validates that the request path actually matches the category's nested ancestry.
      *
      * @throws CategoryPathMismatchException
      */

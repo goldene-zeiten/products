@@ -7,9 +7,6 @@ namespace GoldeneZeiten\Products\Domain\Model;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
-/**
- * One value of an Attribute (e.g. "L" or "Red"), IRRE-nested under it.
- */
 #[Exclude]
 class AttributeValue extends AbstractEntity
 {

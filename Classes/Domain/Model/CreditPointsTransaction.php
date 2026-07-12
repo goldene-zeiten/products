@@ -8,11 +8,6 @@ use GoldeneZeiten\Products\Domain\Enum\CreditPointsTransactionType;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
-/**
- * One entry in a frontend user's points ledger. The balance is always derived by summing this
- * table rather than stored on a mutable column, avoiding a race condition under concurrent
- * checkouts (same reasoning as VoucherRedemption).
- */
 #[Exclude]
 class CreditPointsTransaction extends AbstractEntity
 {

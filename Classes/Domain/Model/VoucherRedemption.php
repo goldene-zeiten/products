@@ -7,12 +7,6 @@ namespace GoldeneZeiten\Products\Domain\Model;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
-/**
- * Audit trail of one voucher application to one order, written at order placement (Phase 17).
- * Snapshots the code rather than relying on a live join to Voucher, same reasoning as OrderItem's
- * title/price snapshots: the voucher record may later change or be deleted, the redemption record
- * must still say what actually applied.
- */
 #[Exclude]
 class VoucherRedemption extends AbstractEntity
 {

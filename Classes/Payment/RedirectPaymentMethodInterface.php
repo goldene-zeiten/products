@@ -9,11 +9,8 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * A gateway typically calls back twice for the same payment (the browser's synchronous return AND
- * an async webhook) - both handleReturn() and handleWebhook() implementations must be idempotent.
- * Check `PaymentTransactionRepository::findOneByExternalId($this->getIdentifier(), $externalId)`
- * before mutating anything: if it already returns a transaction in a terminal state, treat the
- * call as a no-op replay instead of re-processing the same payment.
+ * A gateway may call back twice for the same payment (browser return + async webhook); both
+ * methods must be idempotent, e.g. via {@see PaymentTransactionRepository::findOneByExternalId()}.
  */
 interface RedirectPaymentMethodInterface extends PaymentMethodInterface
 {

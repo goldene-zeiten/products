@@ -7,13 +7,9 @@ namespace GoldeneZeiten\Products\PageTitle;
 use GoldeneZeiten\Products\Domain\Model\Product;
 
 /**
- * Bridges ProductController::showAction() (an uncached/USER_INT action, per the article
- * price/stock variant-switching feature) to ProductPageTitleProvider, which runs later in the same
- * request during TypoScriptFrontendController's title-generation pass. A PSR-7 request attribute
- * cannot carry this across: Extbase's own request wraps the frontend one, is immutable, and never
- * writes back into the frontend request instance the title-generation pass later receives. A plain
- * DI-resolved service instance, by contrast, is already a de-facto per-request singleton (the
- * Symfony container is shared for the whole request), which is all that's needed here.
+ * Bridges the product controller to {@see ProductPageTitleProvider} via DI's per-request
+ * singleton; a PSR-7 request attribute can't carry this across since Extbase's immutable
+ * request wrapper never writes back to the frontend request.
  */
 final class CurrentProductHolder
 {

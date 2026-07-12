@@ -7,12 +7,6 @@ namespace GoldeneZeiten\Products\Domain\Dto\Checkout;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
-/**
- * Bundles the raw, unresolved checkout-step choices a shopper brings into checkout - voucher
- * codes, spent points, the selected shipping method, and an optional alternate delivery
- * address/gift message - so they travel as a single argument through
- * OrderPlacementTransaction/OrderCreationService instead of one positional parameter each.
- */
 #[Exclude]
 final readonly class CheckoutSelections
 {

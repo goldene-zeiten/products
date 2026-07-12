@@ -13,14 +13,6 @@ use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
-/**
- * `shipping`/`handling`/`pricing.roundingMode` are Site Settings
- * (Configuration/Sets/Products/settings.definitions.yaml) - ConfigurationManagerInterface never
- * bridges them (no `{$products:...}` reference exists in Configuration/TypoScript), so reading
- * them through it always silently returns the PHP-side fallback regardless of what a site editor
- * configures. `defaultCountry`/`pricingMode`/`currency` remain on ConfigurationManagerInterface
- * since legacy TypoScript genuinely bridges those into plugin.tx_products.settings.
- */
 final class ProductsConfigurationFactoryTest extends UnitTestCase
 {
     #[Test]

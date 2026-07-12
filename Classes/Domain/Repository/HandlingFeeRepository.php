@@ -15,9 +15,6 @@ final class HandlingFeeRepository extends AbstractReadOnlyRepository
     protected $defaultOrderings = ['uid' => QueryInterface::ORDER_ASCENDING];
 
     /**
-     * Country-specific fees take precedence over the '' fallback as a group, same
-     * "specific wins over fallback" precedence ShippingMethodRepository applies.
-     *
      * @return HandlingFee[]
      */
     public function findApplicableForCountry(string $countryCode): array

@@ -191,7 +191,7 @@ final class ShippingCostServiceTest extends AbstractFunctionalTestCase
         $lightProduct->setBulky(true);
         $this->importCSVDataSet(__DIR__ . '/../../Fixtures/frontend_user_discounts.csv');
 
-        // user 3 has a personal 15% discount (see frontend_user_discounts.csv): 5.00 * 0.85 = 4.25, plus the untouched 2.50 surcharge.
+        // user 3 has a 15% discount: 5.00 * 0.85 = 4.25, plus the untouched 2.50 surcharge.
         $criteria = new ShippingSelectionCriteria(1, $this->basketViewModel($lightProduct, 1), 'DE', false);
         $selection = $subject->resolveSelection($this->configuration(true, '2.50'), $criteria, $this->requestFor(3));
 

@@ -12,12 +12,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
- * The final pricing-chain step: applies whichever is higher of the category-cascading discount
- * (see CategoryDiscountResolver) or the shopper's FE-usergroup/personal discount (see
- * FrontendUserResolver::getDiscountPercent()) on top of GraduatedPriceProvider's quantity-based
- * price. The two discount sources are never stacked - matching FrontendUserResolver's own
- * "best rate wins" precedent for its own two sub-sources - so a shopper with both a personal
- * discount and a product in a discounted category simply gets whichever rate is bigger.
+ * Applies whichever is higher of the category discount ({@see CategoryDiscountResolver}) or the
+ * shopper's personal discount ({@see FrontendUserResolver::getDiscountPercent()}); never stacked.
  */
 final class CategoryDiscountPriceProvider implements PriceProviderInterface
 {

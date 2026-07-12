@@ -10,10 +10,6 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Event\BeforeInvoiceRenderedEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
-/**
- * Pure-PHP HTML-to-PDF conversion (dompdf) - no external binary/service needed, so invoice
- * generation works identically on any hosting environment this extension already supports.
- */
 final class InvoicePdfService
 {
     public function __construct(

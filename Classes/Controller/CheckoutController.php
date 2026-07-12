@@ -119,8 +119,7 @@ final class CheckoutController extends ActionController
     }
 
     /**
-     * 0 both hides the "spend points" input (feature disabled or guest) and doubles as "nothing
-     * to spend" - the template only needs a single number to decide whether to render it.
+     * 0 hides the spend-points input and indicates nothing to spend.
      */
     private function creditPointsBalance(): int
     {

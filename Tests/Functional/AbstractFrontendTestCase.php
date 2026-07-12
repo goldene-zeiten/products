@@ -6,15 +6,6 @@ namespace GoldeneZeiten\Products\Tests\Functional;
 
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 
-/**
- * Base class for functional tests that need a working frontend request,
- * e.g. because production code relies on Extbase's ConfigurationManager
- * (settings, TypoScript) which is only available within a TSFE context.
- *
- * Page rendering (including a minimal `lib.contentElement` anchor for
- * PLUGIN_TYPE_CONTENT_ELEMENT plugins) comes from the `frontend-test`
- * Site Set fixture, not from ad-hoc TypoScript injected per test.
- */
 abstract class AbstractFrontendTestCase extends AbstractFunctionalTestCase
 {
     use SiteBasedTestTrait;

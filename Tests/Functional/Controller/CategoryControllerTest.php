@@ -56,11 +56,6 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
         $this->assertStringContainsString('/shop/main-category-1/sub-category-5/last-category-3', $body);
     }
 
-    /**
-     * CategoryList is a cacheable plugin (no session/user dependency, matching ProductDetail's
-     * cacheability class) so it is only ever reached via the route-enhanced pretty URL in
-     * practice - a raw query-string request would need a cHash it deliberately doesn't get here.
-     */
     #[Test]
     public function theFullNestedSlugPathResolvesToTheLeafCategorysProducts(): void
     {
@@ -115,11 +110,6 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
         $this->expectException(CategoryPathMismatchException::class);
         $this->expectExceptionCode(1783800000);
 
-        // "sub-category-x" is a real sibling of "sub-category-5", but "last-category-3" only
-        // actually nests under "sub-category-5" - each segment individually exists, so only the
-        // controller's own ancestry check (not the route enhancer aspects) can catch this. A real
-        // site's configured error handling turns this into a 404 page; asserting the dedicated
-        // exception directly here matches this codebase's convention for business-rule failures.
         $this->executeFrontendSubRequest(
             new InternalRequest('http://localhost/shop/main-category-1/sub-category-x/last-category-3')
         );

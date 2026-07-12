@@ -68,9 +68,6 @@ products_ajax {
     }
 }
 
-# A PDF download must return exactly the invoice bytes, not the shop page's own HTML shell that
-# every normal PLUGIN_TYPE_CONTENT_ELEMENT dispatch gets wrapped in - same disableAllHeaderCode
-# trick as products_ajax, on its own typeNum so it never collides with normal page rendering.
 products_invoice = PAGE
 products_invoice {
     typeNum = {$plugin.tx_products.settings.invoice.pageType}

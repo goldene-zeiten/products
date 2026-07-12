@@ -9,12 +9,6 @@ use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 
-/**
- * Proves the actual wiring end-to-end (TypoScript `config.pageTitleProviders` registration,
- * CurrentProductHolder correctly bridging ProductController's uncached action to the later
- * title-generation pass, ProductPageTitleProvider's public:true reachability) - the mode-selection
- * logic itself is covered exhaustively by the unit test instead.
- */
 final class ProductPageTitleProviderIntegrationTest extends AbstractFunctionalTestCase
 {
     use SiteBasedTestTrait;

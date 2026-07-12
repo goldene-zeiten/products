@@ -19,12 +19,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
-/**
- * `order.numberPrefix`/`pricing.roundingMode` are Site Settings
- * (Configuration/Sets/Products/settings.definitions.yaml), read straight from the request's
- * `site` attribute - see ProductsConfigurationFactory's docblock for why
- * ConfigurationManagerInterface can't be used for these.
- */
 final class OrderFactory
 {
     public function __construct(
@@ -62,12 +56,7 @@ final class OrderFactory
     }
 
     /**
-     * total_gross is reduced by the combined voucher/points discount and increased by
-     * shipping/handling/deposit; total_net/total_tax stay pre-discount since tax was legitimately
-     * due on the goods and none of these adjustments are a retroactive price change - except
-     * shipping, which (unlike handling/deposit) now has real tax of its own reverse-split out of
-     * its tax-inclusive gross cost and folded into total_net/total_tax, so the order's tax
-     * reporting isn't silently missing it.
+     * total_gross adjusted by discounts/shipping/fees; shipping's tax split into total_net/total_tax.
      */
     private function applyAdjustments(Order $order, BasketViewModel $basketViewModel, PlacementDetails $details, ?Site $site): void
     {
@@ -89,10 +78,6 @@ final class OrderFactory
         $order->setDepositTotal($depositTotal);
     }
 
-    /**
-     * Unset (null) leaves the order billing-only, same as every order placed before this feature
-     * existed - delivery_address stays 0/unset and gift_message stays empty.
-     */
     private function applyGiftOrderDetails(Order $order, PlacementDetails $details): void
     {
         if ($details->getDeliveryAddress() !== null) {

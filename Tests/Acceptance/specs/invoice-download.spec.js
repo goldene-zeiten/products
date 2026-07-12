@@ -27,7 +27,6 @@ test('a guest downloads the invoice PDF from the thank-you page', async ({ page 
     page.getByRole('link', { name: 'Download Invoice' }).click(),
   ]);
 
-  // InvoiceController::downloadAction names the file after the order's invoice number, which is
-  // only assigned at finalize time - assert the shape rather than a value we can't predict here.
+  // Invoice number is only assigned at finalize time, so assert the filename shape, not its value
   expect(download.suggestedFilename()).toMatch(/^invoice-.+\.pdf$/);
 });

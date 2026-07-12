@@ -81,8 +81,7 @@ final class BasketController extends ActionController
     }
 
     /**
-     * @param int[] $attributeValues Selected variant attribute-value uids, used only when
-     *   $article is not already resolved (the no-JS fallback path of the variant selector).
+     * @param int[] $attributeValues Selected variant attribute-value uids (ignored if $article is set).
      */
     public function addAction(int $product, ?int $article = null, int $quantity = 1, array $attributeValues = []): ResponseInterface
     {

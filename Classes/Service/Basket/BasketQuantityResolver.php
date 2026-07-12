@@ -8,9 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Article;
 use GoldeneZeiten\Products\Domain\Model\Product;
 
 /**
- * Resolves the effective basket-quantity bounds for a product/article pair - an article's own
- * min/max overrides the product's whenever it is set (non-zero), mirroring legacy tt_products'
- * per-article override precedence; 0 means "no limit" at either level.
+ * Resolves basket quantity bounds: article min/max overrides product when set; 0 = unlimited.
  */
 final class BasketQuantityResolver
 {
@@ -31,9 +29,7 @@ final class BasketQuantityResolver
     }
 
     /**
-     * Clamps a requested quantity into [min, max] (0 on either side = no bound), matching
-     * legacy's MathUtility::forceIntegerInRange() clamping behaviour rather than rejecting the
-     * request outright.
+     * Clamp quantity to [min, max] bounds (0 = unlimited).
      */
     public function clamp(Product $product, ?Article $article, int $quantity): int
     {

@@ -8,9 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Voucher;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
- * Write path for auto-issued "gained" vouchers. Separate from the read-only VoucherRepository
- * (BE-managed codes) because Repository derives its managed type from the class name, and
- * VoucherRepository already owns the "Voucher" name for that read-only contract.
+ * Write path for auto-issued vouchers; {@see VoucherRepository} is read-only.
  *
  * @extends Repository<Voucher>
  */

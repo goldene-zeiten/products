@@ -8,12 +8,6 @@ use GoldeneZeiten\Products\Domain\Enum\VoucherDiscountType;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
-/**
- * A single, already-resolved snapshot of every products.vouchers.gained Site Setting needed by
- * GainedVoucherService - see GainedVoucherConfigurationFactory. Passing this in explicitly instead
- * of letting GainedVoucherService read Site Settings itself keeps it a pure function of its
- * inputs, same reasoning as ProductsConfiguration.
- */
 #[Exclude]
 final readonly class GainedVoucherConfiguration
 {

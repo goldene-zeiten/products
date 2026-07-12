@@ -110,12 +110,6 @@ class Article extends AbstractEntity
         $this->price = $price->getDecimalString();
     }
 
-    /**
-     * "override" (default): the article's own price fully replaces the product's, unless it is
-     * the 0.00 = inherit sentinel. "surcharge": the article's price is instead added on top of the
-     * product's base price (0.00 still means "no surcharge", same sentinel either way) - see
-     * ProductPriceProvider.
-     */
     public function getPriceMode(): string
     {
         return $this->priceMode;
@@ -223,9 +217,6 @@ class Article extends AbstractEntity
     }
 
     /**
-     * Own images override the product's gallery; an empty set means "inherit",
-     * the same 0.00-inherits convention already used for the article price.
-     *
      * @return ObjectStorage<FileReference>
      */
     public function getEffectiveImages(): ObjectStorage

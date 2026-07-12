@@ -8,9 +8,6 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
-/**
- * A variant dimension (e.g. "Size", "Colour") an article can carry one value of.
- */
 #[Exclude]
 class Attribute extends AbstractEntity
 {

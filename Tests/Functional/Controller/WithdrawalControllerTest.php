@@ -78,9 +78,7 @@ final class WithdrawalControllerTest extends AbstractFrontendTestCase
     }
 
     /**
-     * The fixture's own order_date is irrelevant to what each test needs - "still within the
-     * withdrawal window" - so it's pinned to now, right before use, rather than relying on the
-     * CSV's static value staying valid as the withdrawal period setting changes over time.
+     * Pins order_date to now so the withdrawal window remains valid regardless of period settings.
      */
     private function fetchWithinWithdrawalPeriodOrder(): Order
     {
@@ -110,11 +108,7 @@ final class WithdrawalControllerTest extends AbstractFrontendTestCase
             $queryParameters[sprintf('tx_products_withdrawal[%s]', $name)] = $value;
         }
 
-        // CacheHashCalculator::splitQueryStringToArray() rawurldecode()s each value (it does not
-        // treat "+" as a space, unlike urldecode()), so the query string fed into it must be
-        // percent-encoded via RFC3986 (%20), not http_build_query()'s RFC1738 default ("+") -
-        // otherwise a value containing a space (e.g. the "reason" argument) computes a cHash that
-        // never matches what the real dispatched request recomputes, and TYPO3 answers 404.
+        // RFC3986 encoding required; RFC1738 "+" breaks cHash for values with spaces.
         $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
             '&id=2&' . http_build_query($queryParameters, '', '&', PHP_QUERY_RFC3986)
         );

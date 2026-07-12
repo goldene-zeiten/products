@@ -12,10 +12,6 @@ use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\RawMessage;
 use TYPO3\CMS\Core\Mail\MailerInterface;
 
-/**
- * Test double for {@see MailerInterface} used in functional tests to capture
- * outgoing mails instead of sending them via a real transport.
- */
 final class TestMailer implements MailerInterface
 {
     /**

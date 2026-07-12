@@ -8,10 +8,6 @@ use Doctrine\DBAL\ParameterType;
 use GoldeneZeiten\Products\Service\Order\Exception\InsufficientStockException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
-/**
- * A product with articles is purchasable only via one of its articles,
- * so stock is decremented on the article when one is given, else on the product.
- */
 final class StockService
 {
     private const PRODUCT_TABLE = 'tx_products_domain_model_product';

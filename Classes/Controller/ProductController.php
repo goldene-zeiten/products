@@ -41,12 +41,7 @@ final class ProductController extends ActionController
     }
 
     /**
-     * @param int[] $attributeValues Selected variant attribute-value uids, used when the product
-     * has variant attributes; ignored (selectedArticle wins) for the flat article-select fallback.
-     * Either path shows that article's own price/stock instead of the product's. The reload
-     * (default) and AJAX (opt-in) variant switch modes both resubmit to this very action - AJAX
-     * mode just fetches this same URL and extracts the swappable fragment client-side instead of
-     * navigating, so there is no second action/argument-namespace to keep in sync with the form.
+     * @param int[] $attributeValues Selected variant attribute-value uids (ignored if $selectedArticle is set).
      */
     public function showAction(Product $product, ?Article $selectedArticle = null, array $attributeValues = []): ResponseInterface
     {

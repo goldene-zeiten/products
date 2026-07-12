@@ -39,9 +39,7 @@ final readonly class CategoryTreeNode
     }
 
     /**
-     * Nested slug path from the tree root down to and including this node
-     * (e.g. "main-category-1/sub-category-5/last-category-3"), precomputed once while the tree
-     * is built rather than re-walking ancestors per node.
+     * Slug path from tree root to this node, e.g. "main-category-1/sub-category-5/last-category-3".
      */
     public function getSlugPath(): string
     {

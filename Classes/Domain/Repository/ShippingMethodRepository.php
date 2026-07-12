@@ -15,9 +15,6 @@ final class ShippingMethodRepository extends AbstractReadOnlyRepository
     protected $defaultOrderings = ['uid' => QueryInterface::ORDER_ASCENDING];
 
     /**
-     * Country-specific methods take precedence over the '' fallback as a group, same "specific
-     * wins over fallback" precedence TaxRateRepository applies to a single winning rate.
-     *
      * @return ShippingMethod[]
      */
     public function findApplicableForCountry(string $countryCode): array

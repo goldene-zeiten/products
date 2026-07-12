@@ -46,9 +46,6 @@ return [
                 'default' => 0,
             ],
         ],
-        // No BE form field on purpose - ctrl.sortby already drives the physical column; this entry
-        // only exists so Extbase's DataMapFactory maps it onto WishlistItem::$sorting at all
-        // (a control-only column absent from `columns` is invisible to Extbase's persistence layer).
         'sorting' => [
             'config' => [
                 'type' => 'passthrough',

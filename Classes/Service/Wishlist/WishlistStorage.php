@@ -10,9 +10,7 @@ use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
- * Guest (not-logged-in) wishlist storage: a plain list of product uids in the FE session, same
- * shape discipline as BasketStorage. Only ever used for guests - an identified shopper's wishlist
- * lives in tx_products_domain_model_wishlistitem instead, see WishlistService.
+ * Guest wishlist storage in FE session. Logged-in users use tx_products_domain_model_wishlistitem.
  */
 final class WishlistStorage
 {

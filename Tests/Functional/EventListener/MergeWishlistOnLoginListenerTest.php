@@ -16,19 +16,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
- * Regression coverage for a real bug found in Phase 13 verification: this listener is constructed
- * via DI from `TYPO3\CMS\Frontend\Middleware\FrontendUserAuthenticator`, which fires *before*
- * Extbase's own bootstrap ever runs for the request - unlike every other place
- * `WishlistService`/`WishlistStorage` are normally constructed (an Extbase controller action).
- * Both previously read settings eagerly via `ConfigurationManagerInterface` in their own
- * constructors, which requires an Extbase-bootstrapped request and crashed with
- * `NoServerRequestGivenException` the instant the listener (and therefore its dependencies) were
- * constructed this early - silently 500ing every frontend login. Fixed by reading
- * `products.wishlist.enabled`/`products.session.requireCookieConsent` off
- * `$request->getAttribute('site')->getSettings()` instead (already this project's convention
- * elsewhere, e.g. `OrderFactory`/`StorageFolderResolver`), which needs only `SiteResolver` to have
- * run - true well before `FrontendUserAuthenticator` in the middleware stack, and requires no
- * Extbase involvement at all.
+ * Regression: listener constructor runs before Extbase bootstrap, so dependencies must read
+ * settings from site config, not ConfigurationManagerInterface.
  */
 final class MergeWishlistOnLoginListenerTest extends AbstractFunctionalTestCase
 {

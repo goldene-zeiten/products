@@ -28,9 +28,7 @@ final class PaymentInitiationService
     {
         $paymentContext = $this->paymentContextFactory->createFromOrder($order);
         $paymentResult = $paymentMethod->initiate($order, $paymentContext);
-        // A payment method's initiate() is free to mutate $order (InvoicePaymentMethod sets the
-        // invoice number) - without an explicit update() here that mutation is silently dropped
-        // on persistAll(), since Extbase never auto-flushes a fetched-then-mutated entity.
+        // Explicit update() needed—Extbase won't auto-flush fetched+mutated entities.
         $this->orderRepository->update($order);
         $this->persistPaymentTransaction($order, $paymentMethod, $paymentResult);
 
@@ -42,9 +40,7 @@ final class PaymentInitiationService
     }
 
     /**
-     * Reuses an existing not-yet-approved transaction for the same order/method instead of
-     * inserting a duplicate row - a resubmitted checkout/double-click/timeout-retry must not
-     * pollute payment reporting/reconciliation with multiple rows for the same attempt.
+     * Reuse existing unapproved transaction to prevent duplicate rows on retry.
      */
     private function persistPaymentTransaction(Order $order, PaymentMethodInterface $paymentMethod, PaymentResult $paymentResult): void
     {

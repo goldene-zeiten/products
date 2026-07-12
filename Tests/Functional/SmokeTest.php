@@ -20,10 +20,6 @@ final class SmokeTest extends AbstractFunctionalTestCase
         $this->assertGreaterThan(0, $this->get(Typo3Version::class)->getMajorVersion());
     }
 
-    /**
-     * Only applies to TYPO3 v13; excluded via `--exclude-group not-core-14`
-     * when the test suite runs against a TYPO3 v14 core.
-     */
     #[Test]
     #[Group('not-core-14')]
     public function testSuiteRunsOnTypo3V13(): void
@@ -36,10 +32,6 @@ final class SmokeTest extends AbstractFunctionalTestCase
         $this->assertSame(13, $majorVersion);
     }
 
-    /**
-     * Only applies to TYPO3 v14; excluded via `--exclude-group not-core-13`
-     * when the test suite runs against a TYPO3 v13 core.
-     */
     #[Test]
     #[Group('not-core-13')]
     public function testSuiteRunsOnTypo3V14(): void

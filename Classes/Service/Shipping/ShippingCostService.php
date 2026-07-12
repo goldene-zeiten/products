@@ -16,10 +16,6 @@ use GoldeneZeiten\Products\Service\Shipping\Exception\NoShippingMethodAvailableE
 use GoldeneZeiten\Products\Service\TaxService;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * Stateless by design - takes an already-resolved ProductsConfiguration rather than reading
- * settings itself, so it's a pure function of its inputs (see ProductsConfiguration's docblock).
- */
 final class ShippingCostService
 {
     public function __construct(
@@ -55,13 +51,7 @@ final class ShippingCostService
     }
 
     /**
-     * Re-validates the shopper's earlier choice against the current basket/country rather than
-     * trusting the session blindly, same reasoning as vouchers being fully re-resolved at
-     * placement time. $criteria->isWaived() comes from the caller since it depends on which
-     * voucher (if any) ends up applied, resolved earlier in the same placement. $request (when
-     * given) applies the shopper's FE-usergroup/personal discount to the method's own rate - not
-     * to the bulky surcharge, matching the existing "waiving doesn't touch the surcharge either"
-     * precedent.
+     * Re-validates choice against current basket/country; applies FE-usergroup discount to rate, not surcharge.
      *
      * @throws NoShippingMethodAvailableException
      */

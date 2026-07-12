@@ -12,9 +12,7 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Recurring housekeeping action for the "Products" backend module: moves products/articles
- * older than a given age (by crdate) out of the storage folder into an archive page, mirroring
- * legacy tt_products' MoveItemsWizardModuleFunctionController/MoveItemsUtility.
+ * Moves products/articles older than a given age to an archive page.
  */
 final class ProductArchiveService
 {
@@ -32,9 +30,7 @@ final class ProductArchiveService
             return [];
         }
 
-        // Clamped at 0 (crdate is never negative) - a very large ageDays would otherwise underflow
-        // the signed 32-bit integer column type Postgres maps native TYPO3 "int unsigned" to,
-        // aborting the query outright instead of correctly matching nothing.
+        // Clamp at 0 to avoid negative timestamp (Postgres 32-bit int underflow).
         $cutoff = max(0, time() - $ageDays * 86400);
         $cmd = [];
         $counts = [];

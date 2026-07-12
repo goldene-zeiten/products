@@ -114,20 +114,11 @@ class ShippingMethod extends AbstractEntity
         $this->taxRateOverrideEnabled = $taxRateOverrideEnabled;
     }
 
-    /**
-     * A whole percentage (e.g. 19.0), or null when the override is disabled - a plain
-     * `taxRateOverride` value of 0.0 is ambiguous between "not set" and "explicitly 0% tax", so
-     * the enabled flag disambiguates it, same two-field pattern as Product/Category's own
-     * discountPercent + discountDisabled.
-     */
     public function getEffectiveTaxRateOverride(): ?float
     {
         return $this->taxRateOverrideEnabled ? $this->taxRateOverride : null;
     }
 
-    /**
-     * 0 (unset) means "no bound" for every threshold, same convention as Voucher's usage_limit.
-     */
     public function isApplicable(int $basketWeight, Money $basketGoodsTotal): bool
     {
         return $this->meetsWeightBounds($basketWeight) && $this->meetsOrderValueBounds($basketGoodsTotal);

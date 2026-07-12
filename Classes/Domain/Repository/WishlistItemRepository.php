@@ -15,9 +15,6 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 final class WishlistItemRepository extends Repository
 {
     /**
-     * Ordered by `sorting` (the shopper's own manual arrangement, see WishlistService::moveUp()/
-     * moveDown()), falling back to insertion order for items that have never been reordered.
-     *
      * @return QueryResultInterface<int, WishlistItem>
      */
     public function findByFrontendUser(int $frontendUser): QueryResultInterface

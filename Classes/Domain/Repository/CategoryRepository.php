@@ -13,9 +13,7 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 final class CategoryRepository extends AbstractReadOnlyRepository
 {
     /**
-     * Without an explicit ORDER BY, row order is undefined and differs across DBMS/versions
-     * (observed to differ between PostgreSQL versions). "sorting" is the TCA-editable backend
-     * order; "uid" breaks ties deterministically for rows sharing the same sorting value.
+     * "uid" breaks ties for rows sharing the same "sorting" value.
      *
      * @var array<non-empty-string, QueryInterface::ORDER_*>
      */
@@ -25,10 +23,6 @@ final class CategoryRepository extends AbstractReadOnlyRepository
     ];
 
     /**
-     * Callers such as CategoryTreeService may run outside a request context where the plugin's
-     * configured `persistence.storagePid` applies (e.g. route enhancer resolution) - the whole
-     * category tree must be visible regardless of calling context.
-     *
      * @return Category[]
      */
     public function findAllIgnoringStoragePage(): array

@@ -25,9 +25,7 @@ use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 /**
- * "Products Order" backend module: a filtered order list plus a detail view with manual
- * status/payment-status transitions on top of the existing OrderStatusManager - the module is a
- * UI on that service, not a new state machine.
+ * Backend module for order management: list and detail views with status/payment transitions.
  */
 #[AsController]
 final class OrderManagementModuleController

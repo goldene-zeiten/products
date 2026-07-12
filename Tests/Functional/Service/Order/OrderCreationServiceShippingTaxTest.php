@@ -24,12 +24,7 @@ use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
- * Covers the phase 7 shipping-tax split (OrderFactory::applyAdjustments() reverse-splitting the
- * shipping method's gross rate/tax-rate-override into totalNet/totalTax) and the FE-usergroup
- * discount applied to the shipping rate, through a direct OrderCreationService::create() call
- * rather than a full HTTP checkout flow - TaxService/ShippingCostService/HandlingFeeService are
- * stateless (take an explicit ProductsConfiguration), so no request/site-config faking is needed
- * to exercise this behaviour.
+ * Covers shipping-tax split via {@see OrderFactory::applyAdjustments()} and FE-usergroup discounts.
  */
 final class OrderCreationServiceShippingTaxTest extends AbstractFunctionalTestCase
 {

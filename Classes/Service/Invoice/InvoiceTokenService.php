@@ -8,9 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use TYPO3\CMS\Core\Crypto\HashService;
 
 /**
- * Guest checkout has no login, so the invoice download link is secured by an HMAC token bound to
- * the order instead - a guest can still re-fetch their invoice from the thank-you page/email
- * without an account, but can't guess another order's token from its uid alone.
+ * Secures guest invoice downloads via HMAC token bound to order.
  */
 final class InvoiceTokenService
 {

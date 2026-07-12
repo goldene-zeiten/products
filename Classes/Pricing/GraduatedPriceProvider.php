@@ -13,8 +13,8 @@ use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
  * Quantity-based pricing: picks the highest `min_quantity` tier at or below the requested
- * quantity, preferring the article's own tiers over the product's when the article has any (same
- * "own overrides shared" convention as price/images), else falls back to `ProductPriceProvider`.
+ * quantity, preferring the article's own tiers over the product's; falls back to
+ * {@see ProductPriceProvider} if none match.
  */
 final class GraduatedPriceProvider implements PriceProviderInterface
 {

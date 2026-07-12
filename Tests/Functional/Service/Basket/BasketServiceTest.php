@@ -13,13 +13,6 @@ use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
-/**
- * Regression coverage for a real (fixed) bug: TaxService::getTaxRate() used to return the whole
- * percentage stored on TaxRate (19.00) instead of a fraction (0.19), which BasketService's
- * "1 + rate" arithmetic silently treated as already-a-fraction - producing a net price of ~5% of
- * gross instead of ~84% for a 19% rate. Masked until a separate TaxRateRepository storage-page bug
- * was fixed (it had always returned null/0.0 before, i.e. every order silently reported 0% tax).
- */
 final class BasketServiceTest extends AbstractFrontendTestCase
 {
     #[Test]

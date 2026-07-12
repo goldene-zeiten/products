@@ -10,9 +10,7 @@ use TYPO3\CMS\Core\View\ViewFactoryData;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
 
 /**
- * Renders the invoice HTML source that InvoicePdfService turns into a PDF. Uses the generic
- * ViewFactoryInterface (StandaloneView's replacement, see Deprecation-104773) since this runs
- * outside a frontend request context - no request needed for a headless render.
+ * Renders invoice HTML using ViewFactoryInterface (headless, no request needed).
  */
 final class InvoiceRenderer
 {

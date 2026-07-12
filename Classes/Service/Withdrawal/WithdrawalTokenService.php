@@ -8,11 +8,7 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use TYPO3\CMS\Core\Crypto\HashService;
 
 /**
- * Guest checkout has no login, so the self-service withdrawal/cancellation link is secured by an
- * HMAC token bound to the order instead - the token itself acts as the "tracking code" a guest
- * needs alongside their email to withdraw an order, mirroring InvoiceTokenService's identical
- * guest-download-link approach (a distinct additional secret keeps the two token types from being
- * interchangeable even though they're bound to the same order subject).
+ * Secures guest withdrawal via HMAC token bound to order.
  */
 final class WithdrawalTokenService
 {

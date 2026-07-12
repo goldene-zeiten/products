@@ -13,8 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Country\Country;
 use TYPO3\CMS\Core\Country\CountryProvider;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-// EXT:install namespaces are valid through TYPO3 v14 (deprecated there); migrate to the
-// TYPO3\CMS\Core\Attribute\UpgradeWizard / TYPO3\CMS\Core\Updates\* equivalents once v13 support is dropped.
+// TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
 use TYPO3\CMS\Install\Updates\ChattyInterface;
 use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
@@ -22,17 +21,8 @@ use TYPO3\CMS\Install\Updates\RepeatableInterface;
 use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
- * Migrates `sys_products_orders` (+ its `sys_products_orders_mm_tt_products` line items) to
- * `tx_products_domain_model_order`/orderitem/orderaddress. Requires the product and article wizards
- * to have already fully run: executeUpdate() refuses to start otherwise (see
- * ProductMigrationPrerequisite/ArticleMigrationPrerequisite). Once that holds, a line item whose
- * product was still genuinely orphaned is dropped (with a warning); the order itself is always
- * created. Line item prices cannot be reliably reconstructed from the legacy `orderData` blob
- * (site-specific, version-dependent serialized structure) so they use the *current* catalog price
- * with an explanatory note, per the plan's documented fallback. Only `payment_method = 'invoice'`
- * exists in the new extension, so every order is mapped to it; a warning is emitted when the legacy
- * order actually used a different (electronic) gateway, since that history only survives in
- * `legacy_order_data`, not as a re-creatable payment method.
+ * Migrates orders and line items to new domain models. Requires
+ * {@see ProductMigrationPrerequisite} and {@see ArticleMigrationPrerequisite} to have run first.
  */
 #[UpgradeWizard('products_ttProductsOrderMigration')]
 final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, ChattyInterface, RepeatableInterface
@@ -180,9 +170,7 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
             'total_gross' => $amountCents,
             'tax_country' => $country[0],
             'customer_note' => (string)($legacyRow['note'] ?? ''),
-            // 0, not null: Extbase's DataMapper reads a 0 timestamp back as a null DateTime,
-            // matching how the rest of the app already leaves this field unset (OrderFactory
-            // never populates it either).
+            // 0, not null: Extbase's DataMapper reads a 0 timestamp back as a null DateTime.
             'terms_accepted_at' => (int)$legacyRow['agb'] === 1 ? $crdate : 0,
             'legacy_order_data' => $this->buildLegacyOrderData($legacyUid, $legacyRow),
             'legacy_country_name' => $country[1],
@@ -221,8 +209,7 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
     }
 
     /**
-     * Only "invoice" is implemented, so every order maps to it; an order that actually used an
-     * electronic gateway gets a warning since that history is only preserved in legacy_order_data.
+     * Only "invoice" is implemented; electronic gateways get a warning and map to it too.
      */
     private function resolvePaymentMethod(int $legacyUid, int $legacyPayMode): string
     {
@@ -306,8 +293,8 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
     }
 
     /**
-     * PHP's unserialize() returns false both on failure and for a legitimately serialized `false`,
-     * so a literal `b:0;` payload is checked for explicitly before treating a false return as an error.
+     * unserialize() returns false both on failure and for a serialized `false`; check for the
+     * literal `b:0;` payload before treating a false return as an error.
      *
      * @return array<string, mixed>|null
      */

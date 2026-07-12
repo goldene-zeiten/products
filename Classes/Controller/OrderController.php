@@ -36,10 +36,7 @@ final class OrderController extends ActionController
     }
 
     /**
-     * A guest order's frontendUser is 0, same as an anonymous visitor's uid - ownership by
-     * frontend-user match alone can never gate a guest order, so an order-bound HMAC token
-     * (?hash=) is the only valid access path whenever the visitor isn't the order's own logged-in
-     * frontend user.
+     * Guest orders require an order-bound HMAC token; logged-in users can view their own orders by uid alone.
      */
     public function showAction(Order $order, ?string $hash = null): ResponseInterface
     {

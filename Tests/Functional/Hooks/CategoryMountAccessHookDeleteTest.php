@@ -13,14 +13,7 @@ use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Regression coverage for a real (fixed) bug: CategoryMountAccessHook::processCmdmap() enforced
- * category-mount visibility for delete/move commands but never consulted CategoryPermissionGuard -
- * a user denied "edit" via perms_user/perms_group, but within an accessible mount, could still
- * delete the category outright through the standard record-list/edit-form delete action.
- *
- * Exercises the hook method directly (rather than a full DataHandler::process_cmdmap() run) so the
- * test proves this extension's own access rule in isolation, without also having to reconstruct
- * TYPO3 core's independent tables_modify/non_exclude_fields ACL for a non-admin user.
+ * Regression: the hook must consult CategoryPermissionGuard for delete, not just visibility.
  */
 final class CategoryMountAccessHookDeleteTest extends AbstractFunctionalTestCase
 {

@@ -12,11 +12,7 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /**
- * Persisted view counters, independent of RecentlyViewedStorage's session-only FIFO - mirrors
- * legacy tt_products' site-wide "most viewed" (sys_products_visited_products) and per-FE-user
- * "your most-viewed" (sys_products_fe_users_mm_visited_products) listings, which survive across
- * sessions/devices unlike the recently-viewed list. GDPR-minimal: the per-user table only ever
- * gains a row for an identified (logged-in) shopper, never an anonymous session.
+ * Persisted view counters (site-wide and per-user). Per-user entries only for logged-in shoppers.
  */
 final class ProductViewTrackingService
 {

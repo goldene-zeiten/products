@@ -15,10 +15,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
- * Regression coverage for a real (fixed) bug: PaymentInitiationService unconditionally inserted a
- * new PaymentTransaction on every initiate() call - a resubmitted checkout/double-click/timeout
- * retry created duplicate audit rows for the same order/method pair instead of reusing the still-
- * open one.
+ * Regression: resubmitted initiate() calls should reuse still-open transactions.
  */
 final class PaymentInitiationServiceTest extends AbstractFunctionalTestCase
 {
@@ -69,12 +66,7 @@ final class PaymentInitiationServiceTest extends AbstractFunctionalTestCase
     }
 
     /**
-     * Regression coverage: a payment method's initiate() (InvoicePaymentMethod::initiate() being
-     * the shipped example) is allowed to mutate the $order it's handed - here setting an invoice
-     * number - but $order was fetched via the repository, not freshly add()ed, so Extbase never
-     * auto-flushes that mutation on persistAll() without an explicit update() first. Asserted via
-     * a raw column read, not a re-fetch through the repository, since Extbase's identity map would
-     * return the same in-memory (already-mutated) object and mask a persistence gap.
+     * Regression: Extbase won't auto-flush mutations on fetched entities without explicit update().
      */
     #[Test]
     public function initiateFlushesOrderMutationsMadeByThePaymentMethod(): void

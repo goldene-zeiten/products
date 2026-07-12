@@ -25,11 +25,7 @@ use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\SiteFinder;
 
 /**
- * `stock.lowStockThreshold` is a Site Setting - see ProductsConfigurationFactoryTest for the same
- * class of fix applied to ProductsConfigurationFactory. Stock starts at 10 (see fixture) so a
- * single-unit purchase leaves 9 in stock: above the default threshold (5), but at/below a
- * site-configured threshold of 10 - proving the value actually comes from Site Settings rather
- * than always being the hardcoded default.
+ * `stock.lowStockThreshold` is a Site Setting, tested via fixture scenario.
  */
 final class OrderCreationServiceLowStockThresholdTest extends AbstractFunctionalTestCase
 {
@@ -52,9 +48,7 @@ final class OrderCreationServiceLowStockThresholdTest extends AbstractFunctional
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/OrderCreationServiceLowStockThresholdTest/order_placement_low_stock_custom_threshold.csv');
-        // CreditPointsService still reads Extbase settings eagerly in its constructor (fixed in a
-        // later step of this migration), which requires a request resolvable via
-        // $GLOBALS['TYPO3_REQUEST'] outside of a real controller dispatch.
+        // Extbase setting reads in CreditPointsService need a request resolvable via globals.
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
         TestMailer::reset();

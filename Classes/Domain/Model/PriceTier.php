@@ -8,10 +8,6 @@ use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
-/**
- * A quantity-based price tier, IRRE-nested under either a product or an article (never both —
- * whichever parent's inline list created the row owns it; the sibling FK column stays 0).
- */
 #[Exclude]
 class PriceTier extends AbstractEntity
 {

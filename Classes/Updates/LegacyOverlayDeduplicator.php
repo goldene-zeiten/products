@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Updates;
 
 /**
- * Legacy `*_language` overlay tables have no uniqueness constraint on (parent, sys_language_uid),
- * so duplicate translations must be resolved before migration: excluding deleted rows, a visible
- * (`hidden=0`) candidate always wins over a hidden one, and the highest uid wins within that group.
+ * Resolves duplicate translations: visible (`hidden=0`) rows win, then highest uid.
  */
 final class LegacyOverlayDeduplicator
 {

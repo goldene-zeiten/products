@@ -14,8 +14,7 @@ use TYPO3\CMS\Core\Database\Query\Restriction\WorkspaceRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Plain QueryBuilder access to the category/product/article tree for the backend module.
- * Deliberately not Extbase-based: backend modules are plain core, Extbase is a frontend concern.
+ * QueryBuilder access to the category/product/article tree for the backend module.
  */
 final class CategoryTreeRepository
 {
@@ -267,10 +266,7 @@ final class CategoryTreeRepository
     }
 
     /**
-     * Renumbers `sorting` for category siblings sharing $uid's parent, placing it directly
-     * before $beforeUid (or last, when null). TYPO3's native sortby is pid-scoped only, and
-     * every category here shares one flat storage-folder pid, so DataHandler's generic
-     * cmd[move] can't express "reorder within this parent_category branch" - this does.
+     * Reorders category siblings within their parent (using parent_category scope, not pid).
      */
     public function reorderCategorySiblings(int $uid, ?int $beforeUid): void
     {
@@ -279,9 +275,6 @@ final class CategoryTreeRepository
         $this->applyReorder(self::TABLE_CATEGORY, $siblingUids, $uid, $beforeUid);
     }
 
-    /**
-     * Same rationale as reorderCategorySiblings(), for the flat top-level product list.
-     */
     public function reorderProducts(int $uid, ?int $beforeUid): void
     {
         $siblingUids = array_map(static fn(array $p): int => $p['uid'], $this->fetchAllProductsOrdered());

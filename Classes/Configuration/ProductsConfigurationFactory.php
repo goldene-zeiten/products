@@ -10,19 +10,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
- * `defaultCountry`/`pricingMode`/`currency` are the only fields still resolved via
- * ConfigurationManagerInterface - legacy TypoScript (Configuration/TypoScript/{constants,setup}.
- * typoscript) genuinely bridges those into plugin.tx_products.settings. `shipping`/`handling`/
- * `pricing.roundingMode` are TYPO3 v13 Site Settings (Configuration/Sets/Products/
- * settings.definitions.yaml) that ConfigurationManagerInterface can never see - no such bridge
- * exists for them - so they're read straight from the request's `site` attribute instead, the
- * same mechanism WishlistService/WishlistStorage/StorageFolderResolver already use.
- * TaxService/ShippingCostService/HandlingFeeService take the resulting plain ProductsConfiguration
- * value object as an explicit parameter instead of reading settings themselves. Called by whoever
- * naturally has a request in hand (a controller action, or a service that already receives one,
- * e.g. OrderCreationService::create()) - never resolved eagerly in a constructor, which is what
- * made those services' behaviour depend on incidental construction order/timing rather than being
- * a pure function of their inputs.
+ * Some settings come from legacy TypoScript via ConfigurationManagerInterface, others from
+ * TYPO3 v13 Site Settings (read via request's site attribute) since ConfigurationManagerInterface
+ * cannot access them.
  */
 final class ProductsConfigurationFactory
 {

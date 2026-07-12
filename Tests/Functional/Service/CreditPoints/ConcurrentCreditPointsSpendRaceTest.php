@@ -9,11 +9,7 @@ use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
- * CreditPointsBalanceService::debitIfAffordable() guards the maintained balance with a single
- * atomic SQL statement (`UPDATE ... SET balance = balance - ? WHERE balance >= ?`), the same
- * pattern StockService already uses for stock - so calling it twice against the same balance can
- * never let both calls succeed beyond what the balance can actually afford, regardless of call
- * ordering or true concurrency.
+ * Atomic SQL UPDATE guards balance via {@see CreditPointsBalanceService::debitIfAffordable()}.
  */
 final class ConcurrentCreditPointsSpendRaceTest extends AbstractFunctionalTestCase
 {
@@ -32,8 +28,7 @@ final class ConcurrentCreditPointsSpendRaceTest extends AbstractFunctionalTestCa
     {
         $creditPointsBalanceService = $this->get(CreditPointsBalanceService::class);
 
-        // frontend_user 1 has a ledger-derived balance of 70 (see credit_points.csv) - adopted
-        // into the new balance table on first touch by ensureRowExists().
+        // User 1 balance: 70 (ledger), then adopted to balance table by ensureRowExists().
         $this->assertTrue($creditPointsBalanceService->debitIfAffordable(1, 60));
         $this->assertFalse($creditPointsBalanceService->debitIfAffordable(1, 60));
 

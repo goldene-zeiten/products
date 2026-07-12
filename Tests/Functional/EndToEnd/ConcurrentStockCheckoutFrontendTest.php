@@ -16,11 +16,7 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 final class ConcurrentStockCheckoutFrontendTest extends AbstractFrontendTestCase
 {
     /**
-     * Raw (pre-hash) frontend session identifiers. The fixture's fe_sessions rows are keyed by
-     * hash_hmac('sha256', $rawId, sha1($encryptionKey . 'core-session-backend')) of these exact
-     * values (see the fixture's own comments) - DatabaseSessionBackend's own hashing scheme, using
-     * this instance's fixed test encryptionKey ('i-am-not-a-secure-encryption-key', set by
-     * TYPO3\TestingFramework\Core\Functional\FunctionalTestCase itself for every functional test).
+     * Raw frontend session identifiers hashed in the fixture per {@see DatabaseSessionBackend}.
      */
     private const SESSION_ID_A = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
     private const SESSION_ID_B = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
@@ -72,11 +68,7 @@ final class ConcurrentStockCheckoutFrontendTest extends AbstractFrontendTestCase
     }
 
     /**
-     * The JWT cookie value TYPO3's own frontend session middleware expects: it embeds only the raw
-     * identifier (+ a "time" field that is never validated on decode, per JwtTrait/Firebase JWT -
-     * no exp/nbf claim is set) signed with the same fixed test encryptionKey, so it is fully
-     * reproducible at any time from just the raw identifier - never needs to be scraped from a
-     * real login response.
+     * Generates a reproducible JWT session cookie from the raw identifier.
      */
     private function sessionCookie(string $rawSessionId): string
     {
