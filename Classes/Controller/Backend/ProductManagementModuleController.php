@@ -200,6 +200,7 @@ final class ProductManagementModuleController
             'items' => $items,
             'fields' => [],
             'columnSelector' => $this->buildColumnSelectorData(self::TABLE_ARTICLE, $returnUrl),
+            'visibilityToggle' => null,
             'actions' => [
                 $this->buildAction('actions.new_article', self::TABLE_ARTICLE, ['product' => $productUid], $returnUrl),
                 $this->buildEditAction('actions.edit_product', self::TABLE_PRODUCT, $productUid, $returnUrl),
@@ -230,6 +231,7 @@ final class ProductManagementModuleController
                 $this->buildFieldRows(self::TABLE_ARTICLE, $displayFields, $rawValues, $articleUid)
             ),
             'columnSelector' => $this->buildColumnSelectorData(self::TABLE_ARTICLE, $returnUrl),
+            'visibilityToggle' => $this->buildVisibilityToggleData(self::TABLE_ARTICLE, $articleUid, $article['hidden'] ?? false),
             'actions' => [
                 $this->buildEditAction('actions.edit_article', self::TABLE_ARTICLE, $articleUid, $returnUrl),
             ],
@@ -272,6 +274,7 @@ final class ProductManagementModuleController
             'items' => $items,
             'fields' => [],
             'columnSelector' => null,
+            'visibilityToggle' => null,
             'actions' => $this->buildCategoryScopedActions($categoryUid, $returnUrl),
             'overviewHtml' => null,
         ];
@@ -312,6 +315,7 @@ final class ProductManagementModuleController
             'items' => [],
             'fields' => [],
             'columnSelector' => null,
+            'visibilityToggle' => null,
             'actions' => [
                 $this->buildAction('actions.new_category', self::TABLE_CATEGORY, ['parent_category' => 0], $returnUrl),
                 ['label' => $this->translate('actions.archive_old_products'), 'url' => (string)$this->uriBuilder->buildUriFromRoute('products_management', ['archive' => 1])],
@@ -347,10 +351,37 @@ final class ProductManagementModuleController
             'hidden' => $item['hidden'],
             'itemNumber' => $item['itemNumber'] ?? '',
             'editUrl' => $this->buildEditUrl($table, $item['uid'], $returnUrl),
+            'visibilityToggle' => $this->buildVisibilityToggleData($table, $item['uid'], $item['hidden']),
             'extraValues' => array_map(
                 fn(string $field): string => $this->formatFieldValue($table, $field, $rawValues[$field] ?? null, $item['uid']),
                 $extraFields
             ),
+        ];
+    }
+
+    /**
+     * Mirrors TYPO3\CMS\Backend\RecordList\DatabaseRecordList's own hide/
+     * unhide button (icon identifiers, LLL keys) for visual consistency,
+     * but is handled by this extension's own JS
+     * (ProductVisibilityToggle.ts) rather than core's stock
+     * data-datahandler-action="visibility" button - see that file's
+     * docblock for why: core's own delegated click handler only notifies
+     * anything about the "pages" table.
+     * @return array{table: string, uid: int, hidden: string, field: string, icon: string, title: string, errorMessage: string}
+     */
+    private function buildVisibilityToggleData(string $table, int $uid, bool $hidden): array
+    {
+        $lang = $this->getLanguageService();
+        $visibleTitle = $lang->sL('LLL:EXT:core/Resources/Private/Language/locallang_mod_web_list.xlf:hide');
+        $hiddenTitle = $lang->sL('LLL:EXT:core/Resources/Private/Language/locallang_mod_web_list.xlf:unHide');
+        return [
+            'table' => $table,
+            'uid' => $uid,
+            'hidden' => $hidden ? '1' : '0',
+            'field' => 'hidden',
+            'icon' => $hidden ? 'actions-edit-unhide' : 'actions-edit-hide',
+            'title' => $hidden ? $hiddenTitle : $visibleTitle,
+            'errorMessage' => $this->translate('tree.error_generic'),
         ];
     }
 
@@ -448,11 +479,15 @@ final class ProductManagementModuleController
     }
 
     /**
-     * @return array{label: string, url: string}
+     * @return array{label: string, url: string, icon: string}
      */
     private function buildEditAction(string $labelKey, string $table, int $uid, string $returnUrl): array
     {
-        return ['label' => $this->translate($labelKey), 'url' => $this->buildEditUrl($table, $uid, $returnUrl)];
+        return [
+            'label' => $this->translate($labelKey),
+            'url' => $this->buildEditUrl($table, $uid, $returnUrl),
+            'icon' => 'actions-open',
+        ];
     }
 
     private function translate(string $key): string

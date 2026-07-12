@@ -45,3 +45,26 @@ declare module '@typo3/backend/context-menu.js' {
   const contextMenu: ContextMenuApi;
   export default contextMenu;
 }
+
+declare module '@typo3/backend/ajax-data-handler.js' {
+  interface DataHandlerResponse {
+    hasErrors: boolean;
+    messages: Array<{ title: string; message: string }>;
+  }
+
+  class AjaxDataHandler {
+    process(payload: Record<string, unknown>, metadata?: Record<string, unknown>): Promise<DataHandlerResponse>;
+  }
+
+  const ajaxDataHandler: AjaxDataHandler;
+  export default ajaxDataHandler;
+}
+
+declare module '@typo3/backend/notification.js' {
+  interface NotificationApi {
+    error(title: string, message?: string): void;
+  }
+
+  const notification: NotificationApi;
+  export default notification;
+}

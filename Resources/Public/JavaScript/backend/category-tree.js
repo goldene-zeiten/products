@@ -230,13 +230,17 @@ class ProductsCategoryTree extends LitElement {
         this.shouldFocusDraftInput = false;
         this.storageFolderPid = 0;
         /**
-         * The only generically-listenable signal context-menu-actions.js emits for
-         * any table (see class doc) - used to drop a deleted node from the cache
-         * immediately instead of waiting for its parent to be re-expanded.
+         * The only generically-listenable signal for tree-relevant record changes
+         * outside this element itself - dispatched by context-menu-actions.js for
+         * deletes, and by ProductVisibilityToggle.ts (this module's own hide/show
+         * button) for visibility updates. A delete drops the node from the cache
+         * outright; anything else (e.g. a hidden-flag flip) just re-fetches its
+         * parent's children, which is enough to pick up the new hidden state and
+         * refresh the node's icon without waiting for its parent to be re-expanded.
          */
         this.onDataHandlerProcess = (event) => {
             const payload = event.detail?.payload;
-            if (!payload || payload.action !== 'delete' || payload.table === undefined || payload.uid === undefined) {
+            if (!payload || payload.table === undefined || payload.uid === undefined) {
                 return;
             }
             const type = ['category', 'product', 'article'].find((candidate) => tableForType(candidate) === payload.table);
@@ -245,8 +249,10 @@ class ProductsCategoryTree extends LitElement {
             }
             const identifier = `${type}-${payload.uid}`;
             const node = this.findCachedNode(identifier);
-            this.expanded.delete(identifier);
-            this.childrenByParent.delete(identifier);
+            if (payload.action === 'delete') {
+                this.expanded.delete(identifier);
+                this.childrenByParent.delete(identifier);
+            }
             if (node) {
                 void this.refreshParent(node.parentIdentifier);
             }
