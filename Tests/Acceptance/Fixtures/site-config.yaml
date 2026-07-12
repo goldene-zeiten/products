@@ -1,6 +1,25 @@
 rootPageId: 1
 base: /
 websiteTitle: 'Products Acceptance'
+# Activates the goldene-zeiten/products Site Set so `settings:` below (Site Settings, not the
+# classic TypoScript constants already included via the sys_template row in shop-demo.csv) can
+# actually resolve - see CreditPointsConfigurationFactoryEarningTiersTest for the same pattern.
+#
+# products.shipping.enabled is required here, not just as the legacy
+# `plugin.tx_products.settings.shipping.enabled = 1` TypoScript constant already set in
+# shop-demo.csv's sys_template row: since 56d53db, ProductsConfigurationFactory reads
+# shipping/handling/rounding straight from Site Settings (ConfigurationManagerInterface can never
+# see them - no TypoScript bridges them into plugin.tx_products.settings). Without this, every
+# checkout spec silently skipped the shipping-method step (isShippingEnabled() fell back to
+# false) and hung waiting for a shippingMethod radio that was never rendered.
+dependencies:
+  - goldene-zeiten/products
+settings:
+  products:
+    creditPoints:
+      enabled: true
+    shipping:
+      enabled: true
 languages:
   -
     title: English
