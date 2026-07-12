@@ -9,6 +9,10 @@
 ,8,1,1792,0,"Order History","/order-history"
 ,9,1,2048,0,"Login","/login"
 ,10,1,2304,0,"Cancel Order","/cancel-order"
+,11,1,2560,0,"Wishlist","/wishlist"
+,12,1,2816,0,"Recently Viewed","/recently-viewed"
+,13,1,3072,0,"Most Viewed","/most-viewed"
+,14,1,3328,0,"My Most Viewed","/my-most-viewed"
 
 "sys_template",,,,,,,
 ,"uid","pid","title","root","clear","include_static_file","config"
@@ -22,6 +26,7 @@ plugin.tx_products.settings.pids.checkoutPage = 7
 plugin.tx_products.settings.pids.orderHistoryPage = 8
 plugin.tx_products.settings.pids.categoryPage = 4
 plugin.tx_products.settings.pids.withdrawalPage = 10
+plugin.tx_products.settings.pids.wishlistPage = 11
 plugin.tx_products.settings.shipping.enabled = 1"
 
 "tx_products_domain_model_taxclass",,,
@@ -83,6 +88,7 @@ plugin.tx_products.settings.shipping.enabled = 1"
 ,111,2,"SoundMax Headphones","soundmax-headphones","89.99",1,80,250,0
 ,112,2,"Reward Mug","reward-mug","20.00",1,50,250,30
 ,113,2,"Variant Tee","variant-tee","10.00",1,999,150,0
+,114,2,"Popularity Test Item","popularity-test-item","15.00",1,999,100,0
 
 "tx_products_product_category_mm",,,
 ,"uid_local","uid_foreign","sorting"
@@ -137,16 +143,20 @@ plugin.tx_products.settings.shipping.enabled = 1"
 ,"uid","pid","order_number","frontend_user","email","currency","total_gross","items","status","payment_status","order_date","billing_address","payment_method"
 ,1,2,"ORD-EXPIRED-1",1,"shopper1@example.com","EUR",8999,0,"confirmed","paid",1700000000,1,"invoice"
 
-"tt_content",,,,,,,
-,"uid","pid","sorting","deleted","colPos","CType","header"
-,1,1,256,0,0,"products_productlist","Products"
-,2,1,512,0,0,"products_categorynavigation","Categories"
-,3,1,768,0,0,"products_search","Search"
-,4,4,256,0,0,"products_categorynavigation","Categories"
-,5,4,512,0,0,"products_categorylist","Category products"
-,6,5,256,0,0,"products_productdetail","Product"
-,7,6,256,0,0,"products_basket","Basket"
-,8,7,256,0,0,"products_checkout","Checkout"
-,9,8,256,0,0,"products_orderhistory","Order History"
-,10,9,256,0,0,"felogin_login","Login"
-,11,10,256,0,0,"products_withdrawal","Cancel Order"
+"tt_content",,,,,,,,
+,"uid","pid","sorting","deleted","colPos","CType","header","pi_flexform"
+,1,1,256,0,0,"products_productlist","Products",
+,2,1,512,0,0,"products_categorynavigation","Categories",
+,3,1,768,0,0,"products_search","Search",
+,4,4,256,0,0,"products_categorynavigation","Categories",
+,5,4,512,0,0,"products_categorylist","Category products",
+,6,5,256,0,0,"products_productdetail","Product",
+,7,6,256,0,0,"products_basket","Basket",
+,8,7,256,0,0,"products_checkout","Checkout",
+,9,8,256,0,0,"products_orderhistory","Order History",
+,10,9,256,0,0,"felogin_login","Login",
+,11,10,256,0,0,"products_withdrawal","Cancel Order",
+,12,11,256,0,0,"products_wishlist","Wishlist",
+,13,12,256,0,0,"products_recentlyviewed","Recently Viewed",
+,14,13,256,0,0,"products_recentlyviewed","Most Viewed","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""switchableControllerActions""><value index=""vDEF"">RecentlyViewed->mostViewed</value></field></language></sheet></data></T3FlexForms>"
+,15,14,256,0,0,"products_recentlyviewed","My Most Viewed","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""switchableControllerActions""><value index=""vDEF"">RecentlyViewed->myMostViewed</value></field></language></sheet></data></T3FlexForms>"

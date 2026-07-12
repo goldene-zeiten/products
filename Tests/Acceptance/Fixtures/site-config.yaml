@@ -20,6 +20,8 @@ settings:
       enabled: true
     shipping:
       enabled: true
+    wishlist:
+      enabled: true
 languages:
   -
     title: English

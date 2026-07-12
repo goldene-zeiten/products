@@ -37,6 +37,7 @@ export default defineConfig({
         'specs/checkout-withdrawal-logged-in.spec.js',
         'specs/checkout-credit-points.spec.js',
         'specs/withdrawal-expired.spec.js',
+        'specs/my-most-viewed.spec.js',
       ],
     },
     {
@@ -50,6 +51,7 @@ export default defineConfig({
         'specs/checkout-withdrawal-logged-in.spec.js',
         'specs/checkout-credit-points.spec.js',
         'specs/withdrawal-expired.spec.js',
+        'specs/my-most-viewed.spec.js',
       ],
       dependencies: ['login'],
       use: {
