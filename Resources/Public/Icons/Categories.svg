@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <g transform="translate(8, 8) scale(3)">
+        <rect x="1" y="4.6" width="10.4" height="7.4" rx="1" fill="currentColor"/>
+        <path fill="currentColor" d="M1 4.6V3.3a1 1 0 0 1 1-1h2.66a1 1 0 0 1 .78.375l.62.75a1 1 0 0 0 .78.375H10.4a1 1 0 0 1 1 1v.8H1Z"/>
+        <rect x="8.6" y="7.6" width="6.4" height="5.8" rx="1" fill="var(--icon-color-accent, #ff8700)"/>
+    </g>
+</svg>
