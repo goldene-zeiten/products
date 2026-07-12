@@ -229,11 +229,12 @@ Options:
             - 13: (default) use TYPO3 v13
             - 14: use TYPO3 v14
 
-    -p <8.2|8.3|8.4>
+    -p <8.2|8.3|8.4|8.5>
         Specifies the PHP minor version to be used
             - 8.2: (default) use PHP 8.2
             - 8.3: use PHP 8.3
             - 8.4: use PHP 8.4
+            - 8.5: use PHP 8.5
 
     -x
         Only with -s functional|functionalDeprecated|unit|unitDeprecated|unitRandom
@@ -340,7 +341,7 @@ while getopts "a:b:s:d:i:p:t:xy:o:nhu" OPT; do
             ;;
         p)
             PHP_VERSION=${OPTARG}
-            if ! [[ ${PHP_VERSION} =~ ^(8.2|8.3|8.4)$ ]]; then
+            if ! [[ ${PHP_VERSION} =~ ^(8.2|8.3|8.4|8.5)$ ]]; then
                 INVALID_OPTIONS+=("p ${OPTARG}")
             fi
             ;;
