@@ -243,6 +243,15 @@
 			<trans-unit id="tx_products_domain_model_category" resname="tx_products_domain_model_category">
 				<source>Category</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_category.tab_general" resname="tx_products_domain_model_category.tab_general">
+				<source>General</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_category.tab_discount" resname="tx_products_domain_model_category.tab_discount">
+				<source>Discount</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_category.tab_notification" resname="tx_products_domain_model_category.tab_notification">
+				<source>Notifications</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_category.title" resname="tx_products_domain_model_category.title">
 				<source>Title</source>
 			</trans-unit>
@@ -392,6 +401,21 @@
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_article" resname="tx_products_domain_model_article">
 				<source>Article</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.tab_general" resname="tx_products_domain_model_article.tab_general">
+				<source>General</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.tab_prices" resname="tx_products_domain_model_article.tab_prices">
+				<source>Prices</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.tab_stock" resname="tx_products_domain_model_article.tab_stock">
+				<source>Stock &amp; Basket</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.tab_shipping" resname="tx_products_domain_model_article.tab_shipping">
+				<source>Shipping</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.tab_media" resname="tx_products_domain_model_article.tab_media">
+				<source>Media</source>
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_article.product" resname="tx_products_domain_model_article.product">
 				<source>Product</source>
