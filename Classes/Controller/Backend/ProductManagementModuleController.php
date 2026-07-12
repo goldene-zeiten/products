@@ -156,7 +156,7 @@ final class ProductManagementModuleController
      */
     private function buildProductScopedView(ServerRequestInterface $request, int $productUid): array
     {
-        $returnUrl = (string)$this->uriBuilder->buildUriFromRequest($request, []);
+        $returnUrl = (string)$this->uriBuilder->buildUriFromRequest($request, ['product' => $productUid]);
         $product = $this->treeRepository->fetchProductByUid($productUid);
         $items = array_map(
             fn(array $article): array => $this->buildRow(self::TABLE_ARTICLE, $article, $returnUrl),
@@ -181,7 +181,7 @@ final class ProductManagementModuleController
      */
     private function buildCategoryScopedView(ServerRequestInterface $request, int $categoryUid): array
     {
-        $returnUrl = (string)$this->uriBuilder->buildUriFromRequest($request, []);
+        $returnUrl = (string)$this->uriBuilder->buildUriFromRequest($request, ['category' => $categoryUid]);
         $category = $this->treeRepository->fetchCategoryByUid($categoryUid);
         $items = array_map(
             fn(array $product): array => $this->buildRow(self::TABLE_PRODUCT, $product, $returnUrl),
