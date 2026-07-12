@@ -201,7 +201,9 @@ function label(key, fallback) {
  * Deliberately not built on top of TYPO3\CMS\Backend's internal
  * AbstractTree/tree.js hierarchy (@internal, not a public API) - this stays a
  * small, self-contained Lit element instead, reusing only public building
- * blocks (typo3-backend-icon, the context menu, the DataHandler AJAX route).
+ * blocks (typo3-backend-icon, the context menu, the DataHandler AJAX route,
+ * and the page tree's own global .node/.node-treelines/.node-toggle CSS
+ * classes for a matching look without any bespoke styling).
  *
  * Articles are read-only leaves here (see .claude/TREE.md: "Articles from
  * products are not part of the tree, yet.") - not draggable, no context menu.
@@ -642,106 +644,161 @@ class ProductsCategoryTree extends LitElement {
     }
     renderToggle(node) {
         if (!node.hasChildren) {
-            return html `<span class="d-inline-block" style="width:1.5rem"></span>`;
+            return html `<span class="node-toggle"></span>`;
         }
         const expanded = this.expanded.has(node.identifier);
         const text = expanded ? label('collapse', 'Collapse') : label('expand', 'Expand');
         return html `<button
       type="button"
-      class="btn btn-borderless btn-sm p-0"
-      style="width:1.5rem"
-      aria-expanded="${expanded}"
+      class="node-toggle"
+      style="background:transparent;border:0;padding:0;color:inherit"
       aria-label="${text}"
       title="${text}"
-      @click="${() => void this.toggleNode(node)}"
+      tabindex="-1"
+      @click="${(event) => {
+            event.stopPropagation();
+            void this.toggleNode(node);
+        }}"
     >
-      ${expanded ? '−' : '+'}
+      <typo3-backend-icon
+        identifier="${expanded ? 'actions-chevron-down' : 'actions-chevron-end'}"
+        size="small"
+      ></typo3-backend-icon>
     </button>`;
     }
-    rowStateClasses(node) {
-        const classes = ['d-flex', 'align-items-center', 'gap-1'];
+    /**
+     * Mirrors PageTree's node-treelines: one filler slot per ancestor depth
+     * (a continuing vertical line if that ancestor still has siblings below it,
+     * blank otherwise), followed by this node's own connector (an "L" if it's
+     * the last child, a "T" if siblings follow) - all drawn via TYPO3 core's
+     * own .node-treeline* classes, not bespoke CSS.
+     */
+    renderTreelines(ancestorGuides, isLast) {
+        return html `<div class="node-treelines">
+      ${ancestorGuides.map((hasMoreSiblings) => html `<div class="node-treeline${hasMoreSiblings ? ' node-treeline--line' : ''}"></div>`)}
+      <div class="node-treeline node-treeline--${isLast ? 'last' : 'connect'}"></div>
+    </div>`;
+    }
+    nodeClasses(node) {
+        const classes = ['node'];
         if (this.selected === node.identifier) {
-            classes.push('bg-primary-subtle', 'rounded');
+            classes.push('node-selected');
         }
         if (this.searchActive && this.searchMatches.some((match) => match.identifier === node.identifier)) {
             classes.push('fw-bold');
         }
+        if (this.dragPayload?.identifier === node.identifier) {
+            classes.push('node-dragging');
+        }
         if (this.dropTarget?.identifier === node.identifier) {
             if (this.dropTarget.position === 'before') {
-                classes.push('border-top', 'border-primary');
+                classes.push('node-dragging-before');
             }
             else if (this.dropTarget.position === 'after') {
-                classes.push('border-bottom', 'border-primary');
+                classes.push('node-dragging-after');
             }
             else {
-                classes.push('bg-primary-subtle', 'rounded');
+                classes.push('node-active');
             }
         }
         return classes.join(' ');
     }
-    renderDraftRow(draft) {
+    renderDraftRow(draft, ancestorGuides) {
         const icon = draft.type === 'category' ? 'products-category' : 'products-product';
         const titleLabel = draft.type === 'category'
             ? label('new_category_title', 'Category title:')
             : label('new_product_title', 'Product title:');
         return html `
       <li>
-        <div class="d-flex align-items-center gap-1">
-          <span class="d-inline-block" style="width:1.5rem"></span>
-          <typo3-backend-icon identifier="${icon}" size="small"></typo3-backend-icon>
-          <input
-            type="text"
-            class="form-control form-control-sm flex-grow-1"
-            data-new-node-draft-input
-            placeholder="${titleLabel}"
-            aria-label="${titleLabel}"
-            @keydown="${(event) => this.onDraftKeyDown(event)}"
-            @blur="${(event) => void this.commitNewNodeDraft(event.target.value)}"
-          />
+        <div class="node" style="position:relative;height:32px">
+          ${this.renderTreelines(ancestorGuides, true)}
+          <span class="node-toggle"></span>
+          <div class="node-content">
+            <span class="node-icon"><typo3-backend-icon identifier="${icon}" size="small"></typo3-backend-icon></span>
+            <div class="node-contentlabel">
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                data-new-node-draft-input
+                placeholder="${titleLabel}"
+                aria-label="${titleLabel}"
+                @keydown="${(event) => this.onDraftKeyDown(event)}"
+                @blur="${(event) => void this.commitNewNodeDraft(event.target.value)}"
+              />
+            </div>
+          </div>
         </div>
       </li>
     `;
     }
-    renderNode(node) {
+    renderNode(node, ancestorGuides = [], isLast = true) {
         const expanded = this.expanded.has(node.identifier);
         const children = this.childrenByParent.get(node.identifier) ?? [];
         const draft = this.newNodeDraft?.parentIdentifier === node.identifier ? this.newNodeDraft : null;
+        const childAncestorGuides = [...ancestorGuides, !isLast];
         return html `
       <li>
         <div
-          class="${this.rowStateClasses(node)}"
+          class="${this.nodeClasses(node)}"
+          style="position:relative;height:32px"
+          role="treeitem"
+          tabindex="0"
+          aria-level="${ancestorGuides.length + 1}"
+          aria-selected="${this.selected === node.identifier}"
+          aria-expanded="${node.hasChildren ? expanded : nothing}"
           draggable="${node.type !== 'article'}"
+          @click="${() => this.selectNode(node)}"
+          @keydown="${(event) => this.onNodeKeyDown(event, node)}"
           @dragstart="${(event) => this.onDragStart(event, node)}"
           @dragover="${(event) => this.onDragOver(event, node)}"
           @dragleave="${() => this.onDragLeave()}"
           @drop="${(event) => void this.onDrop(event, node)}"
           @contextmenu="${(event) => this.onContextMenu(event, node)}"
         >
-          ${this.renderToggle(node)}
-          <typo3-backend-icon
-            identifier="${node.icon}"
-            size="small"
-            state="${node.hidden ? 'disabled' : 'default'}"
-          ></typo3-backend-icon>
-          <a
-            href="#"
-            class="flex-grow-1${node.hidden ? ' text-body-secondary fst-italic' : ''}"
-            @click="${(event) => {
-            event.preventDefault();
-            this.selectNode(node);
-        }}"
-            >${node.title}</a
-          >
+          ${this.renderTreelines(ancestorGuides, isLast)} ${this.renderToggle(node)}
+          <div class="node-content">
+            <span class="node-icon">
+              <typo3-backend-icon
+                identifier="${node.icon}"
+                size="small"
+                state="${node.hidden ? 'disabled' : 'default'}"
+              ></typo3-backend-icon>
+            </span>
+            <div class="node-contentlabel">
+              <div class="node-name${node.hidden ? ' text-body-secondary fst-italic' : ''}">${node.title}</div>
+            </div>
+          </div>
         </div>
         ${expanded && (children.length > 0 || draft)
-            ? html `<ul class="list-unstyled ps-4">
-                ${children.map((child) => this.renderNode(child))} ${draft ? this.renderDraftRow(draft) : nothing}
+            ? html `<ul class="list-unstyled ps-0" role="group">
+                ${children.map((child, index) => this.renderNode(child, childAncestorGuides, index === children.length - 1 && !draft))}
+                ${draft ? this.renderDraftRow(draft, childAncestorGuides) : nothing}
               </ul>`
             : nothing}
       </li>
     `;
     }
+    onNodeKeyDown(event, node) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            this.selectNode(node);
+            return;
+        }
+        if (!node.hasChildren) {
+            return;
+        }
+        const expanded = this.expanded.has(node.identifier);
+        if (event.key === 'ArrowRight' && !expanded) {
+            event.preventDefault();
+            void this.toggleNode(node);
+        }
+        else if (event.key === 'ArrowLeft' && expanded) {
+            event.preventDefault();
+            void this.toggleNode(node);
+        }
+    }
     render() {
+        const rootDraft = this.newNodeDraft?.parentIdentifier === 'root' ? this.newNodeDraft : null;
         return html `
       <div class="tree">
         <goldene-zeiten-products-tree-toolbar
@@ -757,11 +814,13 @@ class ProductsCategoryTree extends LitElement {
           <ul
             class="list-unstyled ps-0"
             style="min-height:2rem"
+            role="tree"
+            aria-label="${label('tree_label', 'Categories and products')}"
             @dragover="${(event) => this.onRootDragOver(event)}"
             @drop="${(event) => void this.onRootDrop(event)}"
           >
-            ${this.rootNodes.map((node) => this.renderNode(node))}
-            ${this.newNodeDraft?.parentIdentifier === 'root' ? this.renderDraftRow(this.newNodeDraft) : nothing}
+            ${this.rootNodes.map((node, index) => this.renderNode(node, [], index === this.rootNodes.length - 1 && !rootDraft))}
+            ${rootDraft ? this.renderDraftRow(rootDraft, []) : nothing}
           </ul>
         </div>
       </div>
