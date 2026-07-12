@@ -17,28 +17,27 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
  */
 final class CategoryDiscountPriceProvider implements PriceProviderInterface
 {
-    /**
-     * @var array<string, mixed>
-     */
-    private array $settings;
-
     public function __construct(
         private readonly GraduatedPriceProvider $graduatedPriceProvider,
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly CategoryDiscountResolver $categoryDiscountResolver,
-        ConfigurationManagerInterface $configurationManager
-    ) {
-        $this->settings = $configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
-        );
-    }
+        private readonly ConfigurationManagerInterface $configurationManager
+    ) {}
 
     public function getUnitPrice(Product $product, ?Article $article, int $quantity, ?ServerRequestInterface $request = null): Money
     {
         $price = $this->graduatedPriceProvider->getUnitPrice($product, $article, $quantity, $request);
 
-        $mode = (string)($this->settings['pricing']['discountFieldMode'] ?? 'maxAcrossTree');
+        if ($request !== null) {
+            $this->configurationManager->setRequest($request);
+            $settings = $this->configurationManager->getConfiguration(
+                ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+                'Products'
+            );
+            $mode = (string)($settings['pricing']['discountFieldMode'] ?? 'maxAcrossTree');
+        } else {
+            $mode = 'maxAcrossTree';
+        }
         $discountPercent = max(
             $this->categoryDiscountResolver->getDiscountPercent($product, $mode),
             $request !== null ? $this->frontendUserResolver->getDiscountPercent($request) : 0.0

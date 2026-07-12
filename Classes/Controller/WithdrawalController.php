@@ -27,7 +27,7 @@ final class WithdrawalController extends ActionController
         $this->view->assignMultiple([
             'order' => $orderObject,
             'hash' => $hash,
-            'withdrawable' => $orderObject instanceof Order && $this->withdrawalService->isStillWithdrawable($orderObject),
+            'withdrawable' => $orderObject instanceof Order && $this->withdrawalService->isStillWithdrawable($orderObject, $this->request),
         ]);
         return $this->htmlResponse();
     }
@@ -40,7 +40,7 @@ final class WithdrawalController extends ActionController
         }
 
         try {
-            $this->withdrawalService->withdraw($orderObject, $email, $reason);
+            $this->withdrawalService->withdraw($orderObject, $email, $reason, $this->request);
         } catch (WithdrawalEmailMismatchException|WithdrawalPeriodExpiredException|OrderNotWithdrawableException $exception) {
             $this->addFlashMessage($this->translateExceptionMessage($exception), '', ContextualFeedbackSeverity::ERROR);
             return $this->redirect('form', null, null, ['order' => $order, 'hash' => $hash]);

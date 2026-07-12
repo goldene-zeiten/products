@@ -34,9 +34,6 @@ final class OrderFinalizationServiceIdempotencyTest extends AbstractFunctionalTe
         parent::setUp();
         TestMailer::reset();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/OrderFinalizationServiceIdempotencyTest/order_finalization_idempotency.csv');
-        // Extbase setting reads in constructors need a request resolvable via globals.
-        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
     #[Test]

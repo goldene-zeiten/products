@@ -13,6 +13,7 @@ use GoldeneZeiten\Products\Service\Withdrawal\Exception\InvalidWithdrawalTokenEx
 use GoldeneZeiten\Products\Service\Withdrawal\Exception\OrderNotWithdrawableException;
 use GoldeneZeiten\Products\Service\Withdrawal\Exception\WithdrawalEmailMismatchException;
 use GoldeneZeiten\Products\Service\Withdrawal\Exception\WithdrawalPeriodExpiredException;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
@@ -21,24 +22,14 @@ use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
  */
 final class WithdrawalService
 {
-    /**
-     * @var array<string, mixed>
-     */
-    private array $settings;
-
     public function __construct(
         private readonly OrderRepository $orderRepository,
         private readonly WithdrawalTokenService $withdrawalTokenService,
         private readonly OrderStatusManager $orderStatusManager,
         private readonly OrderMailService $orderMailService,
         private readonly PersistenceManagerInterface $persistenceManager,
-        ConfigurationManagerInterface $configurationManager
-    ) {
-        $this->settings = $configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
-        );
-    }
+        private readonly ConfigurationManagerInterface $configurationManager
+    ) {}
 
     /**
      * @throws InvalidWithdrawalTokenException
@@ -55,9 +46,9 @@ final class WithdrawalService
         return $order;
     }
 
-    public function isStillWithdrawable(Order $order): bool
+    public function isStillWithdrawable(Order $order, ServerRequestInterface $request): bool
     {
-        return $order->getStatus()->canTransitionTo(OrderStatus::CANCELLED) && $this->withinWithdrawalPeriod($order);
+        return $order->getStatus()->canTransitionTo(OrderStatus::CANCELLED) && $this->withinWithdrawalPeriod($order, $request);
     }
 
     /**
@@ -65,10 +56,10 @@ final class WithdrawalService
      * @throws WithdrawalPeriodExpiredException
      * @throws OrderNotWithdrawableException
      */
-    public function withdraw(Order $order, string $email, string $reason): void
+    public function withdraw(Order $order, string $email, string $reason, ServerRequestInterface $request): void
     {
         $this->assertEmailMatches($order, $email);
-        $this->assertWithinPeriod($order);
+        $this->assertWithinPeriod($order, $request);
         $this->assertCancellable($order);
 
         $this->orderStatusManager->transition($order, OrderStatus::CANCELLED, $reason);
@@ -87,9 +78,9 @@ final class WithdrawalService
         }
     }
 
-    private function assertWithinPeriod(Order $order): void
+    private function assertWithinPeriod(Order $order, ServerRequestInterface $request): void
     {
-        if (!$this->withinWithdrawalPeriod($order)) {
+        if (!$this->withinWithdrawalPeriod($order, $request)) {
             throw new WithdrawalPeriodExpiredException(
                 sprintf('Withdrawal period has expired for order %d.', $order->getUid() ?? 0),
                 1752100002
@@ -107,9 +98,14 @@ final class WithdrawalService
         }
     }
 
-    private function withinWithdrawalPeriod(Order $order): bool
+    private function withinWithdrawalPeriod(Order $order, ServerRequestInterface $request): bool
     {
-        $days = (int)($this->settings['checkout']['withdrawalPeriodDays'] ?? 14);
+        $this->configurationManager->setRequest($request);
+        $settings = $this->configurationManager->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            'Products'
+        );
+        $days = (int)($settings['checkout']['withdrawalPeriodDays'] ?? 14);
         $orderDate = $order->getOrderDate();
         if ($days <= 0 || $orderDate === null) {
             return false;

@@ -25,7 +25,9 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     #[Test]
     public function returnsAnEmptyStringWithoutACurrentProduct(): void
     {
-        $this->assertSame('', $this->subject('title')->getTitle());
+        $provider = $this->subject('title');
+        $provider->setRequest($this->createStub(ServerRequestInterface::class));
+        $this->assertSame('', $provider->getTitle());
     }
 
     #[Test]
@@ -33,7 +35,9 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Gadget', 'Deluxe Edition'));
 
-        $this->assertSame('Gadget', $this->subject('title')->getTitle());
+        $provider = $this->subject('title');
+        $provider->setRequest($this->createStub(ServerRequestInterface::class));
+        $this->assertSame('Gadget', $provider->getTitle());
     }
 
     #[Test]
@@ -41,7 +45,9 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Gadget', 'Deluxe Edition'));
 
-        $this->assertSame('', $this->subject('none')->getTitle());
+        $provider = $this->subject('none');
+        $provider->setRequest($this->createStub(ServerRequestInterface::class));
+        $this->assertSame('', $provider->getTitle());
     }
 
     #[Test]
@@ -49,7 +55,9 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Gadget', 'Deluxe Edition'));
 
-        $this->assertSame('Deluxe Edition', $this->subject('subtitleOrTitle')->getTitle());
+        $provider = $this->subject('subtitleOrTitle');
+        $provider->setRequest($this->createStub(ServerRequestInterface::class));
+        $this->assertSame('Deluxe Edition', $provider->getTitle());
     }
 
     #[Test]
@@ -57,7 +65,9 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Widget', ''));
 
-        $this->assertSame('Widget', $this->subject('subtitleOrTitle')->getTitle());
+        $provider = $this->subject('subtitleOrTitle');
+        $provider->setRequest($this->createStub(ServerRequestInterface::class));
+        $this->assertSame('Widget', $provider->getTitle());
     }
 
     #[Test]
@@ -65,7 +75,9 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Gadget', 'Deluxe Edition'));
 
-        $this->assertSame('Gadget - Deluxe Edition', $this->subject('titleAndSubtitle')->getTitle());
+        $provider = $this->subject('titleAndSubtitle');
+        $provider->setRequest($this->createStub(ServerRequestInterface::class));
+        $this->assertSame('Gadget - Deluxe Edition', $provider->getTitle());
     }
 
     #[Test]
@@ -73,7 +85,9 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Widget', ''));
 
-        $this->assertSame('Widget', $this->subject('titleAndSubtitle')->getTitle());
+        $provider = $this->subject('titleAndSubtitle');
+        $provider->setRequest($this->createStub(ServerRequestInterface::class));
+        $this->assertSame('Widget', $provider->getTitle());
     }
 
     #[Test]
@@ -81,7 +95,9 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Gadget', 'Deluxe Edition'));
 
-        $this->assertSame('Deluxe Edition - Gadget', $this->subject('subtitleAndTitle')->getTitle());
+        $provider = $this->subject('subtitleAndTitle');
+        $provider->setRequest($this->createStub(ServerRequestInterface::class));
+        $this->assertSame('Deluxe Edition - Gadget', $provider->getTitle());
     }
 
     #[Test]
@@ -89,7 +105,9 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Widget', ''));
 
-        $this->assertSame('Widget', $this->subject('subtitleAndTitle')->getTitle());
+        $provider = $this->subject('subtitleAndTitle');
+        $provider->setRequest($this->createStub(ServerRequestInterface::class));
+        $this->assertSame('Widget', $provider->getTitle());
     }
 
     #[Test]
@@ -97,7 +115,9 @@ final class ProductPageTitleProviderTest extends UnitTestCase
     {
         $this->holder->setProduct($this->product('Gadget', 'Deluxe Edition'));
 
-        $this->assertSame('Gadget', $this->subject('not-a-real-mode')->getTitle());
+        $provider = $this->subject('not-a-real-mode');
+        $provider->setRequest($this->createStub(ServerRequestInterface::class));
+        $this->assertSame('Gadget', $provider->getTitle());
     }
 
     private function subject(string $mode): ProductPageTitleProvider

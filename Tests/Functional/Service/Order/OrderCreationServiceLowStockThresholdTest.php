@@ -48,9 +48,6 @@ final class OrderCreationServiceLowStockThresholdTest extends AbstractFunctional
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/OrderCreationServiceLowStockThresholdTest/order_placement_low_stock_custom_threshold.csv');
-        // Extbase setting reads in CreditPointsService need a request resolvable via globals.
-        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
         TestMailer::reset();
     }
 

@@ -19,8 +19,6 @@ final class BasketServiceTest extends AbstractFrontendTestCase
     public function unitPriceIsSplitIntoNetAndTaxUsingTheRealTaxRate(): void
     {
         $this->importCSVDataSet(__DIR__ . '/Fixtures/BasketServiceTest/basket_service_tax.csv');
-        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
         $basketService = $this->get(BasketService::class);
         $request = $this->anonymousSessionRequest();
 

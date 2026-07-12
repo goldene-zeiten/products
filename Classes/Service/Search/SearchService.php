@@ -6,28 +6,19 @@ namespace GoldeneZeiten\Products\Service\Search;
 
 use GoldeneZeiten\Products\Domain\Dto\Search\SearchResult;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 final class SearchService
 {
     private const DEFAULT_RESULTS_PER_PAGE = 20;
 
-    /**
-     * @var array<string, mixed>
-     */
-    private array $settings;
-
     public function __construct(
         private readonly ProductRepository $productRepository,
-        ConfigurationManagerInterface $configurationManager
-    ) {
-        $this->settings = $configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
-        );
-    }
+        private readonly ConfigurationManagerInterface $configurationManager
+    ) {}
 
-    public function search(string $term, ?int $categoryUid, int $page): SearchResult
+    public function search(string $term, ?int $categoryUid, int $page, ServerRequestInterface $request): SearchResult
     {
         $term = trim($term);
         if ($term === '') {
@@ -35,15 +26,20 @@ final class SearchService
         }
 
         $page = max(1, $page);
-        $perPage = $this->resultsPerPage();
+        $perPage = $this->resultsPerPage($request);
         $totalCount = $this->productRepository->countSearchResults($term, $categoryUid);
         $products = iterator_to_array($this->productRepository->search($term, $categoryUid, ($page - 1) * $perPage, $perPage), false);
 
         return new SearchResult($products, $term, $page, max(1, (int)ceil($totalCount / $perPage)), $totalCount);
     }
 
-    private function resultsPerPage(): int
+    private function resultsPerPage(ServerRequestInterface $request): int
     {
-        return max(1, (int)($this->settings['search']['resultsPerPage'] ?? self::DEFAULT_RESULTS_PER_PAGE));
+        $this->configurationManager->setRequest($request);
+        $settings = $this->configurationManager->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            'Products'
+        );
+        return max(1, (int)($settings['search']['resultsPerPage'] ?? self::DEFAULT_RESULTS_PER_PAGE));
     }
 }

@@ -16,7 +16,7 @@ final class SearchController extends ActionController
 
     public function searchAction(string $term = '', ?int $category = null, int $page = 1): ResponseInterface
     {
-        $this->view->assign('result', $this->searchService->search($term, $category, $page));
+        $this->view->assign('result', $this->searchService->search($term, $category, $page, $this->request));
         return $this->htmlResponse();
     }
 }
