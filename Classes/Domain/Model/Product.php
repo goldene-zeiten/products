@@ -37,6 +37,8 @@ class Product extends AbstractEntity
     protected int $basketMaxQuantity = 0;
     protected int $weight = 0;
     protected bool $bulky = false;
+    protected float $contentAmount = 0.0;
+    protected string $contentUnit = '';
     protected int $creditPoints = 0;
     protected float $discountPercent = 0.0;
     protected bool $discountDisabled = false;
@@ -470,5 +472,25 @@ class Product extends AbstractEntity
     public function setAccessoryProducts(ObjectStorage $accessoryProducts): void
     {
         $this->accessoryProducts = $accessoryProducts;
+    }
+
+    public function getContentAmount(): float
+    {
+        return $this->contentAmount;
+    }
+
+    public function setContentAmount(float $contentAmount): void
+    {
+        $this->contentAmount = $contentAmount;
+    }
+
+    public function getContentUnit(): string
+    {
+        return $this->contentUnit;
+    }
+
+    public function setContentUnit(string $contentUnit): void
+    {
+        $this->contentUnit = $contentUnit;
     }
 }

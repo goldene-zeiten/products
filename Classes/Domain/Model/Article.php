@@ -31,6 +31,8 @@ class Article extends AbstractEntity
     protected int $basketMaxQuantity = 0;
     protected int $weight = 0;
     protected bool $bulky = false;
+    protected float $contentAmount = 0.0;
+    protected string $contentUnit = '';
     /**
      * @var ObjectStorage<FileReference>
      */
@@ -310,5 +312,25 @@ class Article extends AbstractEntity
     public function setAttributeValues(ObjectStorage $attributeValues): void
     {
         $this->attributeValues = $attributeValues;
+    }
+
+    public function getContentAmount(): float
+    {
+        return $this->contentAmount;
+    }
+
+    public function setContentAmount(float $contentAmount): void
+    {
+        $this->contentAmount = $contentAmount;
+    }
+
+    public function getContentUnit(): string
+    {
+        return $this->contentUnit;
+    }
+
+    public function setContentUnit(string $contentUnit): void
+    {
+        $this->contentUnit = $contentUnit;
     }
 }

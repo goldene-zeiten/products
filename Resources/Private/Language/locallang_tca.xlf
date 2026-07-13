@@ -768,6 +768,18 @@
 			<trans-unit id="tx_products_domain_model_paymenttransaction.raw_data" resname="tx_products_domain_model_paymenttransaction.raw_data">
 				<source>Raw Data</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.content_amount" resname="tx_products_domain_model_product.content_amount">
+				<source>Content Amount</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.content_unit" resname="tx_products_domain_model_product.content_unit">
+				<source>Content Unit</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.content_amount" resname="tx_products_domain_model_article.content_amount">
+				<source>Content Amount</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.content_unit" resname="tx_products_domain_model_article.content_unit">
+				<source>Content Unit</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
