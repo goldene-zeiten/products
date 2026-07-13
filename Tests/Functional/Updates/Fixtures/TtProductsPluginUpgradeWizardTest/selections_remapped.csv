@@ -1,0 +1,17 @@
+"tt_content",,,,,,,,,
+,"uid","pid","sorting","deleted","colPos","CType","list_type","pi_flexform"
+,100,2,256,0,0,"list","5","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""display_mode""><value index=""vDEF"">LIST,BASKET</value></field><field index=""productSelection""><value index=""vDEF"">tt_products_1,tt_products_2</value></field><field index=""categorySelection""><value index=""vDEF"">tt_products_cat_1,tt_products_cat_2</value></field></language></sheet></data></T3FlexForms>"
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,10,2,0,"Product A"
+,20,2,0,"Product B"
+"tx_products_domain_model_category",,,,
+,"uid","pid","hidden","title"
+,5,2,0,"Category A"
+,6,2,0,"Category B"
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",1,"tx_products_domain_model_product",10
+,"tt_products",2,"tx_products_domain_model_product",20
+,"tt_products_cat",1,"tx_products_domain_model_category",5
+,"tt_products_cat",2,"tx_products_domain_model_category",6

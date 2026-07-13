@@ -201,3 +201,11 @@ CREATE TABLE sys_products_fe_users_mm_visited_products (
 
 	PRIMARY KEY (uid)
 );
+
+# TYPO3 v14 dropped tt_content.list_type (core #105538), but the plugin upgrade wizard still finds
+# legacy elements through it and works whenever the column physically survives an upgrade. Recreate
+# it so the migration tests exercise that column on v14 too; on v13 this merges with core's own
+# definition.
+CREATE TABLE tt_content (
+	list_type varchar(255) DEFAULT '' NOT NULL
+);

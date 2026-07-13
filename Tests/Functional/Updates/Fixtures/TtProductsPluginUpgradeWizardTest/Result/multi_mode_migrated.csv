@@ -1,0 +1,7 @@
+"tt_content",,,,,,,,,
+,"uid","pid","sorting","deleted","colPos","CType","list_type","pi_flexform","tx_products_list_mode"
+,100,2,256,0,0,"products_productlist","","","all"
+,101,2,257,0,0,"products_basket","","","all"
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,1,2,0,"Product A"

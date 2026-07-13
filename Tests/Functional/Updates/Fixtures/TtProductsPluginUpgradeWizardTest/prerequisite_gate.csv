@@ -1,0 +1,11 @@
+"tt_content",,,,,,,,,
+,"uid","pid","sorting","deleted","colPos","CType","list_type","pi_flexform"
+,100,2,256,0,0,"list","5","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""display_mode""><value index=""vDEF"">LIST</value></field></language></sheet></data></T3FlexForms>"
+"tt_products",,,,
+,"uid","pid","deleted","title"
+,1,2,0,"Unmigrated Product"
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,10,2,0,"Migrated Product"
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
