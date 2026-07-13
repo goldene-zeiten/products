@@ -8,11 +8,14 @@ use GoldeneZeiten\Products\Domain\Dto\Category\CategoryTreeNode;
 use GoldeneZeiten\Products\Domain\Model\Category;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\CategoryRepository;
+use GoldeneZeiten\Products\Event\ModifyCategoryTreeEvent;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class CategoryTreeService
 {
     public function __construct(
-        private readonly CategoryRepository $categoryRepository
+        private readonly CategoryRepository $categoryRepository,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     /**
@@ -20,7 +23,10 @@ final class CategoryTreeService
      */
     public function getTree(): array
     {
-        return $this->buildLevel(0, $this->groupByParentUid(), 0, '', null);
+        $tree = $this->buildLevel(0, $this->groupByParentUid(), 0, '', null);
+        $event = new ModifyCategoryTreeEvent($tree);
+        $this->eventDispatcher->dispatch($event);
+        return $event->getTree();
     }
 
     /**

@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Domain\Model\Category;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\Repository\ArticleRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Event\ModifyProductListEvent;
 use GoldeneZeiten\Products\PageTitle\CurrentProductHolder;
 use GoldeneZeiten\Products\Service\Category\CategoryTreeService;
 use GoldeneZeiten\Products\Service\ContentElement\RecordsFieldResolver;
@@ -149,7 +150,9 @@ final class ProductController extends ActionController
                 }
             );
         }
-        return $products;
+        $event = new ModifyProductListEvent($products, $this->request);
+        $this->eventDispatcher->dispatch($event);
+        return $event->getProducts();
     }
 
     /**

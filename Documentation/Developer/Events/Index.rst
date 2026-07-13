@@ -17,6 +17,7 @@ filter payment methods, extend exports, or veto orders before creation.
     :titlesonly:
 
     Basket
+    Catalog
     OrderAndCheckout
     Payment
     Invoice
