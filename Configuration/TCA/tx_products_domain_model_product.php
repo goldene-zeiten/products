@@ -49,6 +49,13 @@ return [
         ],
     ],
     'columns' => [
+        'crdate' => [
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.creationDate',
+            'config' => [
+                'type' => 'datetime',
+                'readOnly' => true,
+            ],
+        ],
         'sys_language_uid' => [
             'exclude' => true,
             'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',

@@ -273,6 +273,39 @@
 			<trans-unit id="tt_content.tx_products_navigation_style.dropdown" resname="tt_content.tx_products_navigation_style.dropdown">
 				<source>Dropdown select</source>
 			</trans-unit>
+			<trans-unit id="tt_content.tx_products_search_browse_mode" resname="tt_content.tx_products_search_browse_mode">
+				<source>Search Browse Mode</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_search_browse_mode.text" resname="tt_content.tx_products_search_browse_mode.text">
+				<source>Free text search</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_search_browse_mode.firstletter" resname="tt_content.tx_products_search_browse_mode.firstletter">
+				<source>Browse by first letter</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_search_browse_mode.year" resname="tt_content.tx_products_search_browse_mode.year">
+				<source>Browse by year</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_search_browse_mode.field" resname="tt_content.tx_products_search_browse_mode.field">
+				<source>Browse by field value</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_search_browse_mode.lastentries" resname="tt_content.tx_products_search_browse_mode.lastentries">
+				<source>Most recent entries</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_search_target" resname="tt_content.tx_products_search_target">
+				<source>Search Target</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_search_target.products" resname="tt_content.tx_products_search_target.products">
+				<source>Products</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_search_target.articles" resname="tt_content.tx_products_search_target.articles">
+				<source>Articles</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_search_target.categories" resname="tt_content.tx_products_search_target.categories">
+				<source>Categories</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_search_field" resname="tt_content.tx_products_search_field">
+				<source>Search Field</source>
+			</trans-unit>
 			<trans-unit id="tt_content.tx_products_category" resname="tt_content.tx_products_category">
 				<source>Category Restriction</source>
 			</trans-unit>

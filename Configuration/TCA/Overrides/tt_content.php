@@ -129,6 +129,45 @@ ExtensionManagementUtility::addTCAcolumns('tt_content', [
 ]);
 
 ExtensionManagementUtility::addTCAcolumns('tt_content', [
+    'tx_products_search_browse_mode' => [
+        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode',
+        'config' => [
+            'type' => 'select',
+            'renderType' => 'selectSingle',
+            'items' => [
+                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.text', 'value' => 'text'],
+                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.firstletter', 'value' => 'firstletter'],
+                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.year', 'value' => 'year'],
+                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.field', 'value' => 'field'],
+                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.lastentries', 'value' => 'lastentries'],
+            ],
+            'default' => 'text',
+        ],
+    ],
+    'tx_products_search_target' => [
+        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_target',
+        'config' => [
+            'type' => 'select',
+            'renderType' => 'selectSingle',
+            'items' => [
+                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_target.products', 'value' => 'products'],
+                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_target.articles', 'value' => 'articles'],
+                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_target.categories', 'value' => 'categories'],
+            ],
+            'default' => 'products',
+        ],
+    ],
+    'tx_products_search_field' => [
+        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_field',
+        'config' => [
+            'type' => 'input',
+            'size' => 20,
+            'default' => '',
+        ],
+    ],
+]);
+
+ExtensionManagementUtility::addTCAcolumns('tt_content', [
     'tx_products_category' => [
         'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_category',
         'config' => [
@@ -152,6 +191,9 @@ ExtensionManagementUtility::addTCAcolumns('tt_content', [
 ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_list_mode', 'products_productlist');
 ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_recentlyviewed_mode', 'products_recentlyviewed');
 ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_navigation_style', 'products_categorynavigation');
+ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_search_browse_mode', 'products_search');
+ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_search_target', 'products_search');
+ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_search_field', 'products_search');
 
 $GLOBALS['TCA']['tt_content']['types']['products_productlist']['columnsOverrides']['records']['config']['allowed'] = 'tx_products_domain_model_product';
 

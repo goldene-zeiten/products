@@ -31,6 +31,18 @@ final class ProductRepository extends AbstractReadOnlyRepository
     ];
 
     /**
+     * All products across all storage pages.
+     *
+     * @return Product[]
+     */
+    public function findAllIgnoringStoragePage(): array
+    {
+        $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage(false);
+        return $query->execute()->toArray();
+    }
+
+    /**
      * Direct members only, not the whole subtree beneath the category.
      *
      * @return Product[]

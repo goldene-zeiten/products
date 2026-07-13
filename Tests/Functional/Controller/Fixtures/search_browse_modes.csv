@@ -1,0 +1,9 @@
+"tt_content",,,,,,,,,,,,
+,"uid","pid","sorting","deleted","colPos","CType","header","tx_products_search_browse_mode","tx_products_search_target","tx_products_search_field"
+,200,2,256,0,0,"products_search","Search Default","text","products",""
+,201,2,256,0,0,"products_search","Search First Letter","firstletter","products","title"
+,202,2,256,0,0,"products_search","Search Year","year","products","crdate"
+,203,2,256,0,0,"products_search","Search Field","field","products","title"
+,204,2,256,0,0,"products_search","Search Last Entries","lastentries","products",""
+,205,2,256,0,0,"products_search","Search Articles","firstletter","articles","title"
+,206,2,256,0,0,"products_search","Search Categories","firstletter","categories","title"

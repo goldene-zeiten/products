@@ -40,4 +40,21 @@
             </f:if>
         </f:then>
     </f:if>
+
+    <f:if condition="{browseGroups}">
+        <f:then>
+            <f:for each="{browseGroups}" as="items" key="groupLabel">
+                <f:if condition="{groupLabel}">
+                    <h3>{groupLabel}</h3>
+                </f:if>
+                <ul class="list-unstyled">
+                    <f:for each="{items}" as="item">
+                        <li>
+                            {item.title}
+                        </li>
+                    </f:for>
+                </ul>
+            </f:for>
+        </f:then>
+    </f:if>
 </div>
