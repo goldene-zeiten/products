@@ -64,6 +64,10 @@ and upgrade wizards that migrate existing ``tt_products`` installations in place
 
         Migrating an existing ``tt_products`` shop with the built-in upgrade wizards.
 
+    ..  card:: :ref:`Changelog <changelog>`
+
+        Notable changes to this extension.
+
 **Table of Contents:**
 
 ..  toctree::
@@ -75,6 +79,7 @@ and upgrade wizards that migrate existing ``tt_products`` installations in place
     Configuration/Index
     UsersManual/Index
     Upgrading/Index
+    Changelog/Index
 
 ..  Meta Menu
 
