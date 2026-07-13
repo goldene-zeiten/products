@@ -318,6 +318,9 @@
 			<trans-unit id="download.no_files" resname="download.no_files">
 				<source>No downloadable files available for this order.</source>
 			</trans-unit>
+			<trans-unit id="tracking" resname="tracking">
+				<source>Tracking</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

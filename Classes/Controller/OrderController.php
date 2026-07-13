@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Controller;
 
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Event\ModifyOrderTrackingEvent;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Invoice\InvoiceTokenService;
 use GoldeneZeiten\Products\Service\Order\OrderTokenService;
@@ -46,10 +47,14 @@ final class OrderController extends ActionController
             return $this->redirect('list');
         }
 
+        $trackingEvent = new ModifyOrderTrackingEvent($order);
+        $this->eventDispatcher->dispatch($trackingEvent);
+
         $this->view->assignMultiple([
             'order' => $order,
             'invoiceHash' => $this->invoiceTokenService->generateToken($order),
             'withdrawalHash' => $this->withdrawalTokenService->generateToken($order),
+            'trackingLinks' => $trackingEvent->getTrackingLinks(),
         ]);
         return $this->htmlResponse();
     }

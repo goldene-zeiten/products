@@ -13,8 +13,10 @@ use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Model\OrderAddress;
 use GoldeneZeiten\Products\Domain\Model\OrderItem;
+use GoldeneZeiten\Products\Event\MapBillingToDeliveryAddressEvent;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\PriceRoundingService;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
@@ -24,7 +26,8 @@ final class OrderFactory
     public function __construct(
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly NumberRangeService $numberRangeService,
-        private readonly PriceRoundingService $priceRoundingService
+        private readonly PriceRoundingService $priceRoundingService,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     public function create(
@@ -50,8 +53,14 @@ final class OrderFactory
         $order->setTotalTax($basketViewModel->getTotalTax());
         $this->applyAdjustments($order, $basketViewModel, $details, $site);
         $order->setTaxCountry($address->getCountry());
-        $order->setBillingAddress($this->buildBillingAddress($address));
+        $billingAddress = $this->buildBillingAddress($address);
+        $order->setBillingAddress($billingAddress);
         $this->applyGiftOrderDetails($order, $details);
+        $event = new MapBillingToDeliveryAddressEvent($billingAddress, $order->getDeliveryAddress(), $order);
+        $this->eventDispatcher->dispatch($event);
+        if ($event->getDeliveryAddress() !== null) {
+            $order->setDeliveryAddress($event->getDeliveryAddress());
+        }
         $order->setItems($this->buildOrderItems($basketViewModel, $order));
         return $order;
     }
