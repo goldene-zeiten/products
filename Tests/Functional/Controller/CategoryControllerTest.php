@@ -22,6 +22,11 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
         ],
     ];
 
+    protected array $coreExtensionsToLoad = [
+        'install',
+        'fluid_styled_content',
+    ];
+
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products',
     ];
@@ -34,7 +39,10 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
             $this->buildDefaultLanguageConfiguration('en', '/'),
         ]);
         $this->setUpFrontendRootPage(1, [
-            'constants' => ['EXT:products/Configuration/TypoScript/constants.typoscript'],
+            'constants' => [
+                'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
+                'EXT:products/Configuration/TypoScript/constants.typoscript',
+            ],
             'setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript'],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
@@ -69,7 +77,10 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
         $this->setUpFrontendRootPage(1, [
-            'constants' => ['EXT:products/Configuration/TypoScript/constants.typoscript'],
+            'constants' => [
+                'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
+                'EXT:products/Configuration/TypoScript/constants.typoscript',
+            ],
             'setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript'],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
@@ -102,7 +113,10 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
         $this->setUpFrontendRootPage(1, [
-            'constants' => ['EXT:products/Configuration/TypoScript/constants.typoscript'],
+            'constants' => [
+                'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
+                'EXT:products/Configuration/TypoScript/constants.typoscript',
+            ],
             'setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript'],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
@@ -122,6 +136,48 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
         $this->executeFrontendSubRequest(
             new InternalRequest('http://localhost/shop/main-category-1/sub-category-x/last-category-3')
         );
+    }
+
+    #[Test]
+    public function listActionResolvesACategoryFromCategoryFieldWhenNoRouteParameterIsPresent(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/CategoryControllerTest/category_routing.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/category_list_with_category_field.csv');
+        $this->writeSiteConfiguration(
+            'products',
+            $this->buildSiteConfiguration(1),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+        // Renders the real tt_content row (uid 200, records=3) through the normal CType
+        // dispatch, so currentContentObject carries that row's actual data - a hardcoded
+        // "page.10 = USER" plugin call never populates currentContentObject and can't
+        // exercise the records-based category fallback.
+        $this->setUpFrontendRootPage(1, [
+            'constants' => [
+                'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
+                'EXT:products/Configuration/TypoScript/constants.typoscript',
+            ],
+            'setup' => [
+                'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
+                'EXT:products/Configuration/TypoScript/setup.typoscript',
+                'EXT:products/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
+            ],
+        ]);
+        $this->addTypoScriptToTemplateRecord(1, '
+            plugin.tx_products.persistence.storagePid = 2
+            page = PAGE
+            page.10 = CONTENT
+            page.10 {
+                table = tt_content
+                select.where = uid = 200
+            }
+        ');
+
+        $response = $this->executeFrontendSubRequest(new InternalRequest('http://localhost/shop'));
+
+        $this->assertSame(200, $response->getStatusCode());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('Product 2', $body);
     }
 
     /**

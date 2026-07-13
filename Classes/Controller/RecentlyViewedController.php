@@ -23,7 +23,9 @@ final class RecentlyViewedController extends ActionController
 
     public function listAction(): ResponseInterface
     {
-        $this->view->assign('products', $this->resolveProducts());
+        $mode = (string)($this->request->getAttribute('currentContentObject')?->data['tx_products_recentlyviewed_mode'] ?? 'recent');
+        $products = $this->resolveProductsByMode($mode);
+        $this->view->assign('products', $products);
         return $this->htmlResponse();
     }
 
@@ -32,7 +34,7 @@ final class RecentlyViewedController extends ActionController
      */
     public function mostViewedAction(): ResponseInterface
     {
-        $this->view->assign('products', $this->productViewTrackingService->getMostViewed($this->mostViewedLimit()));
+        $this->view->assign('products', $this->getMostViewedProducts());
         return $this->htmlResponse();
     }
 
@@ -41,14 +43,26 @@ final class RecentlyViewedController extends ActionController
      */
     public function myMostViewedAction(): ResponseInterface
     {
-        $this->view->assign('products', $this->productViewTrackingService->getMostViewedByUser($this->request, $this->mostViewedLimit()));
+        $this->view->assign('products', $this->getMyMostViewedProducts());
         return $this->htmlResponse();
     }
 
     /**
      * @return Product[]
      */
-    private function resolveProducts(): array
+    private function resolveProductsByMode(string $mode): array
+    {
+        return match ($mode) {
+            'mostviewed' => $this->getMyMostViewedProducts(),
+            'mostviewedglobal' => $this->getMostViewedProducts(),
+            default => $this->getRecentlyViewedProducts(),
+        };
+    }
+
+    /**
+     * @return Product[]
+     */
+    private function getRecentlyViewedProducts(): array
     {
         $products = [];
         foreach ($this->recentlyViewedStorage->load($this->request) as $productUid) {
@@ -58,6 +72,22 @@ final class RecentlyViewedController extends ActionController
             }
         }
         return $products;
+    }
+
+    /**
+     * @return Product[]
+     */
+    private function getMyMostViewedProducts(): array
+    {
+        return $this->productViewTrackingService->getMostViewedByUser($this->request, $this->mostViewedLimit());
+    }
+
+    /**
+     * @return Product[]
+     */
+    private function getMostViewedProducts(): array
+    {
+        return $this->productViewTrackingService->getMostViewed($this->mostViewedLimit());
     }
 
     private function mostViewedLimit(): int

@@ -8,9 +8,14 @@ use GoldeneZeiten\Products\Controller\Exception\ProductPathMismatchException;
 use GoldeneZeiten\Products\Domain\Model\Article;
 use GoldeneZeiten\Products\Domain\Model\Category;
 use GoldeneZeiten\Products\Domain\Model\Product;
+use GoldeneZeiten\Products\Domain\Repository\ArticleRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\PageTitle\CurrentProductHolder;
 use GoldeneZeiten\Products\Service\Category\CategoryTreeService;
+use GoldeneZeiten\Products\Service\ContentElement\RecordsFieldResolver;
+use GoldeneZeiten\Products\Service\ContentElement\SelectedCategoriesResolver;
+use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsBalanceService;
+use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\RecentlyViewed\ProductViewTrackingService;
 use GoldeneZeiten\Products\Service\RecentlyViewed\RecentlyViewedStorage;
 use GoldeneZeiten\Products\Service\Variant\ArticleVariantResolver;
@@ -20,26 +25,33 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 final class ProductController extends ActionController
 {
+    private const DEFAULT_NEW_ITEM_DAYS = 7;
+
     public function __construct(
         private readonly ProductRepository $productRepository,
+        private readonly ArticleRepository $articleRepository,
         private readonly WishlistService $wishlistService,
         private readonly RecentlyViewedStorage $recentlyViewedStorage,
         private readonly ProductViewTrackingService $productViewTrackingService,
         private readonly ArticleVariantResolver $articleVariantResolver,
         private readonly CurrentProductHolder $currentProductHolder,
-        private readonly CategoryTreeService $categoryTreeService
+        private readonly CategoryTreeService $categoryTreeService,
+        private readonly RecordsFieldResolver $recordsFieldResolver,
+        private readonly SelectedCategoriesResolver $selectedCategoriesResolver,
+        private readonly CreditPointsBalanceService $creditPointsBalanceService,
+        private readonly FrontendUserResolver $frontendUserResolver
     ) {}
 
     public function listAction(): ResponseInterface
     {
-        $products = $this->productRepository->findAll();
+        $products = $this->resolveProductsForList();
         $this->view->assignMultiple(['products' => $products] + $this->wishlistViewVariables());
         return $this->htmlResponse();
     }
 
     public function listByAjaxAction(): ResponseInterface
     {
-        $products = $this->productRepository->findAll();
+        $products = $this->resolveProductsForList();
         $this->view->assignMultiple(['products' => $products] + $this->wishlistViewVariables());
         return $this->htmlResponse();
     }
@@ -102,6 +114,93 @@ final class ProductController extends ActionController
                 1783800102
             );
         }
+    }
+
+    /**
+     * @return Product[]
+     */
+    private function resolveProductsForList(): array
+    {
+        $mode = (string)($this->request->getAttribute('currentContentObject')?->data['tx_products_list_mode'] ?? 'all');
+        $products = $this->resolveProducts($mode);
+        $selectedProductUids = $this->recordsFieldResolver->resolveUids($this->request, 'tx_products_domain_model_product');
+        if ($selectedProductUids !== []) {
+            $products = array_filter(
+                $products,
+                static fn(Product $product): bool => in_array($product->getUid() ?? 0, $selectedProductUids, true)
+            );
+        }
+        $selectedCategoryUids = $this->selectedCategoriesResolver->resolveUids($this->request);
+        if ($selectedCategoryUids !== []) {
+            $categorySubtreeUids = [];
+            foreach ($selectedCategoryUids as $categoryUid) {
+                $categorySubtreeUids = array_merge($categorySubtreeUids, $this->categoryTreeService->getSubtreeUids($categoryUid));
+            }
+            $categorySubtreeUids = array_unique($categorySubtreeUids);
+            $products = array_filter(
+                $products,
+                static function (Product $product) use ($categorySubtreeUids): bool {
+                    foreach ($product->getCategories() as $category) {
+                        if (in_array($category->getUid() ?? 0, $categorySubtreeUids, true)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            );
+        }
+        return $products;
+    }
+
+    /**
+     * @return Product[]
+     */
+    private function resolveProducts(string $mode): array
+    {
+        $result = match ($mode) {
+            'offers' => $this->productRepository->findOffers(),
+            'highlights' => $this->productRepository->findHighlights(),
+            'new' => $this->productRepository->findNew($this->getNewItemDays()),
+            'affordable' => $this->productRepository->findAffordable($this->getCreditPointsBalance()),
+            'articles' => $this->resolveProductsFromArticles(),
+            default => $this->productRepository->findAll(),
+        };
+        return is_array($result) ? $result : $result->toArray();
+    }
+
+    /**
+     * @return Product[]
+     */
+    private function resolveProductsFromArticles(): array
+    {
+        $articles = $this->articleRepository->findAllFlat();
+        $productMap = [];
+        foreach ($articles as $article) {
+            $product = $article->getProduct();
+            if ($product instanceof Product) {
+                $uid = $product->getUid();
+                if ($uid !== null && !isset($productMap[$uid])) {
+                    $productMap[$uid] = $product;
+                }
+            }
+        }
+        return array_values($productMap);
+    }
+
+    private function getNewItemDays(): int
+    {
+        $site = $this->request->getAttribute('site');
+        if ($site !== null) {
+            $days = $site->getSettings()->get('products.list.newItemDays', self::DEFAULT_NEW_ITEM_DAYS);
+            return max(1, (int)$days);
+        }
+        return self::DEFAULT_NEW_ITEM_DAYS;
+    }
+
+    private function getCreditPointsBalance(): int
+    {
+        $uid = $this->frontendUserResolver->getUid($this->request);
+        return $this->creditPointsBalanceService->getBalance($uid);
     }
 
     /**

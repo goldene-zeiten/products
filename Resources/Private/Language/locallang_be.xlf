@@ -231,6 +231,51 @@
 			<trans-unit id="archive.message.moved" resname="archive.message.moved">
 				<source>Moved: %s.</source>
 			</trans-unit>
+			<trans-unit id="tt_content.tx_products_list_mode" resname="tt_content.tx_products_list_mode">
+				<source>Product List Mode</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_list_mode.all" resname="tt_content.tx_products_list_mode.all">
+				<source>All products</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_list_mode.offers" resname="tt_content.tx_products_list_mode.offers">
+				<source>Special offers</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_list_mode.highlights" resname="tt_content.tx_products_list_mode.highlights">
+				<source>Highlights</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_list_mode.new" resname="tt_content.tx_products_list_mode.new">
+				<source>New items</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_list_mode.affordable" resname="tt_content.tx_products_list_mode.affordable">
+				<source>Affordable (within my credit points)</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_list_mode.articles" resname="tt_content.tx_products_list_mode.articles">
+				<source>Articles (flat listing)</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_recentlyviewed_mode" resname="tt_content.tx_products_recentlyviewed_mode">
+				<source>Recently Viewed Mode</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_recentlyviewed_mode.recent" resname="tt_content.tx_products_recentlyviewed_mode.recent">
+				<source>My recently viewed</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_recentlyviewed_mode.mostviewed" resname="tt_content.tx_products_recentlyviewed_mode.mostviewed">
+				<source>My most viewed</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_recentlyviewed_mode.mostviewedglobal" resname="tt_content.tx_products_recentlyviewed_mode.mostviewedglobal">
+				<source>Site-wide most viewed</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_navigation_style" resname="tt_content.tx_products_navigation_style">
+				<source>Navigation Style</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_navigation_style.menu" resname="tt_content.tx_products_navigation_style.menu">
+				<source>Nested menu</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_navigation_style.dropdown" resname="tt_content.tx_products_navigation_style.dropdown">
+				<source>Dropdown select</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_category" resname="tt_content.tx_products_category">
+				<source>Category Restriction</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

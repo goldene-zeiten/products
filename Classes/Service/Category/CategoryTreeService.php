@@ -46,6 +46,36 @@ final class CategoryTreeService
     }
 
     /**
+     * Uid of the given category plus all descendant uids (flattened).
+     *
+     * @return int[]
+     */
+    public function getSubtreeUids(int $categoryUid): array
+    {
+        $nodes = $this->getSubtree($categoryUid);
+        if ($nodes === []) {
+            return [];
+        }
+        $uids = [];
+        $this->flattenNodeUids($nodes[0], $uids);
+        return $uids;
+    }
+
+    /**
+     * @param int[] $uids
+     */
+    private function flattenNodeUids(CategoryTreeNode $node, array &$uids): void
+    {
+        $category = $node->getCategory();
+        if ($category->getUid() !== null) {
+            $uids[] = $category->getUid();
+        }
+        foreach ($node->getChildren() as $child) {
+            $this->flattenNodeUids($child, $uids);
+        }
+    }
+
+    /**
      * Root-first, including $category itself.
      *
      * @return Category[]
