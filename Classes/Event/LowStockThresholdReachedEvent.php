@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Event;
 
+/**
+ * Notifies integrators when stock falls below the configured threshold — send an alert to
+ * the warehouse, trigger an automatic reorder, or block further sales of the item. Fired
+ * during order placement when stock is decremented.
+ *
+ * {@see \GoldeneZeiten\Products\Service\Order\OrderCreationService::dispatchLowStockEvent()}
+ */
 final class LowStockThresholdReachedEvent
 {
     public function __construct(
