@@ -148,3 +148,54 @@ Example listener:
             // Send alert to warehouse
         }
     }
+
+MapBillingToDeliveryAddressEvent
+--------------------------------
+
+Lets integrators derive or adjust the delivery address from the billing address while the order
+is built. Useful for copying billing into delivery when the customer gave none, or normalising
+it for a carrier.
+
+Mutable: Yes (via {@see MapBillingToDeliveryAddressEvent::setDeliveryAddress()})
+
+Example listener:
+
+..  code-block:: php
+
+    #[AsEventListener]
+    final class CopyBillingToDelivery
+    {
+        public function __invoke(MapBillingToDeliveryAddressEvent $event): void
+        {
+            if ($event->getDeliveryAddress() === null) {
+                $event->setDeliveryAddress($event->getBillingAddress());
+            }
+        }
+    }
+
+ModifyOrderTrackingEvent
+------------------------
+
+Lets shipping/fulfilment extensions attach tracking links to an order as its detail page renders.
+A pluggable collection so several extensions can each contribute links — a parcel-tracking URL
+per carrier, a returns portal, a delivery-status page.
+
+Mutable: Yes (pluggable via {@see ModifyOrderTrackingEvent::addTrackingLink()})
+
+Example listener:
+
+..  code-block:: php
+
+    #[AsEventListener]
+    final class AttachCarrierTracking
+    {
+        public function __invoke(ModifyOrderTrackingEvent $event): void
+        {
+            $order = $event->getOrder();
+            if ($trackingUrl = $this->lookupTracking($order)) {
+                $event->addTrackingLink(
+                    new OrderTrackingLink('Track your parcel', $trackingUrl)
+                );
+            }
+        }
+    }

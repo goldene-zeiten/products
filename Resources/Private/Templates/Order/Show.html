@@ -33,6 +33,16 @@
             <p><strong><f:translate key="status" />:</strong> {order.status.value}</p>
             <p><strong><f:translate key="payment_status" />:</strong> {order.paymentStatus.value}</p>
             <p><strong><f:translate key="payment_method" />:</strong> {order.paymentMethod}</p>
+            <f:if condition="{trackingLinks}">
+                <div class="order-tracking mt-3">
+                    <h4><f:translate key="tracking" /></h4>
+                    <ul>
+                        <f:for each="{trackingLinks}" as="trackingLink">
+                            <li><a href="{trackingLink.url}" target="_blank" rel="noopener noreferrer">{trackingLink.label}</a></li>
+                        </f:for>
+                    </ul>
+                </div>
+            </f:if>
         </div>
     </div>
     
