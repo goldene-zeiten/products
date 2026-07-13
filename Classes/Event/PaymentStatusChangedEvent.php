@@ -6,13 +6,14 @@ namespace GoldeneZeiten\Products\Event;
 
 use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Service\Order\OrderStatusManager;
 
 /**
  * Notifies integrators when payment status changes — reconcile payment in accounting systems,
  * update customer notifications, or trigger refund workflows. Fired whenever an order's payment
  * status transitions via the order status manager.
  *
- * {@see \GoldeneZeiten\Products\Service\Order\OrderStatusManager::transitionPayment()}
+ * @see OrderStatusManager::transitionPayment()
  */
 final class PaymentStatusChangedEvent
 {

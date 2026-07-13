@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Event;
 
 use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Service\Invoice\InvoicePdfService;
 
 /**
  * Lets integrators customize the invoice PDF before rendering — add company letterhead,
  * custom stamps, or replace it entirely with a custom implementation. Mutable via
- * {@see setReplacementPdf()}, which fully replaces the rendered document.
+ * {@see BeforeInvoiceRenderedEvent::setReplacementPdf()}, which fully replaces the rendered document.
  *
- * {@see \GoldeneZeiten\Products\Service\Invoice\InvoicePdfService::renderToPdf()}
+ * @see InvoicePdfService::renderToPdf()
  */
 final class BeforeInvoiceRenderedEvent
 {

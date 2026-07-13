@@ -7,14 +7,15 @@ namespace GoldeneZeiten\Products\Event;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
+use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Lets integrators veto suspicious orders before they are created — enforce minimum order value,
- * reject orders from specific regions, or flag for manual approval. Mutable via {@see veto()},
+ * reject orders from specific regions, or flag for manual approval. Mutable via {@see BeforeOrderPlacedEvent::veto()},
  * which prevents order creation and rolls back the entire placement transaction.
  *
- * {@see \GoldeneZeiten\Products\Service\Order\OrderPlacementService::dispatchBeforeOrderPlaced()}
+ * @see OrderPlacementService::dispatchBeforeOrderPlaced()
  */
 final class BeforeOrderPlacedEvent
 {

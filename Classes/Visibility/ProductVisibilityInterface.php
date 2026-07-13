@@ -15,11 +15,11 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
  *
  * Aggregation is an explicit allow/deny contract, deliberately not a mutable event: with no
  * implementation registered every product is visible (today's behaviour); once one or more are
- * registered a single {@see \GoldeneZeiten\Products\Visibility\ProductVisibilityInterface::isVisible()}
- * returning false hides the product - deny wins over allow, so a checker can never be silently
- * bypassed the way a forgotten event listener could.
+ * registered a single {@see ProductVisibilityInterface::isVisible()} returning false hides the
+ * product - deny wins over allow, so a checker can never be silently bypassed the way a forgotten
+ * event listener could.
  *
- * {@see \GoldeneZeiten\Products\Visibility\ProductVisibilityResolver::isVisible()}
+ * @see ProductVisibilityResolver::isVisible()
  */
 #[AutoconfigureTag('products.product_visibility')]
 interface ProductVisibilityInterface
