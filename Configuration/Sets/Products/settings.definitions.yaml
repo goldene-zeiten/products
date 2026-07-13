@@ -63,6 +63,11 @@ settings:
     default: 'lowestWins'
     label: 'Reseller pricing vs. concurrent public discount precedence (lowestWins|resellerFixed) - lowestWins: reseller also benefits from a lower running public promo; resellerFixed: resellers always get their fixed tier price, ignoring public promotions'
     category: products
+  products.pricing.priceReductionLookbackDays:
+    type: int
+    default: 30
+    label: 'Lookback window (days) for the EU Art. 6a "prior price" reference-price calculation'
+    category: products
   products.tax.defaultCountry:
     type: string
     default: 'DE'
