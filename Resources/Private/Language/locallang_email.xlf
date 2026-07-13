@@ -63,6 +63,12 @@
 			<trans-unit id="withdrawal_reason" resname="withdrawal_reason">
 				<source>Reason given</source>
 			</trans-unit>
+			<trans-unit id="withdrawal_notice_intro" resname="withdrawal_notice_intro">
+				<source>You have the right to withdraw from this contract within %d days without giving any reason.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_notice_deadline" resname="withdrawal_notice_deadline">
+				<source>The withdrawal period expires on %s.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
