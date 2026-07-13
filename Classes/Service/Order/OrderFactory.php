@@ -38,6 +38,7 @@ final class OrderFactory
         $order = new Order();
         $order->setFrontendUser($this->frontendUserResolver->getUid($request));
         $order->setOrderDate(new \DateTime());
+        $order->setTermsAcceptedAt(new \DateTime());
         $order->setSiteIdentifier($site instanceof Site ? $site->getIdentifier() : 'default');
         $order->setOrderNumber($this->generateOrderNumber($order->getSiteIdentifier(), $site));
         $order->setEmail($address->getEmail());

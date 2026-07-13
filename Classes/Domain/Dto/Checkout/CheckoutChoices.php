@@ -14,7 +14,8 @@ final readonly class CheckoutChoices
         private int $spendPoints = 0,
         private int $shippingMethodUid = 0,
         private ?Address $deliveryAddress = null,
-        private string $giftMessage = ''
+        private string $giftMessage = '',
+        private bool $termsAccepted = false
     ) {}
 
     public function getSpendPoints(): int
@@ -35,5 +36,10 @@ final readonly class CheckoutChoices
     public function getGiftMessage(): string
     {
         return $this->giftMessage;
+    }
+
+    public function isTermsAccepted(): bool
+    {
+        return $this->termsAccepted;
     }
 }

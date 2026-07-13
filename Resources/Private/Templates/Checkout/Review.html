@@ -58,6 +58,10 @@
                     </div>
                 </f:then>
             </f:if>
+            <div class="form-check mb-3">
+                <f:form.checkbox name="termsAccepted" value="1" class="form-check-input" id="termsAccepted" required="required" />
+                <label class="form-check-label" for="termsAccepted"><f:translate key="terms_accepted_label" /></label>
+            </div>
             <f:form.submit value="{f:translate(key: 'place_order')}" class="btn btn-success btn-lg" />
         </f:form>
     </div>

@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
+use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
@@ -55,6 +56,10 @@ class Order extends AbstractEntity
     protected string $customerNote = '';
     protected string $giftMessage = '';
     protected ?\DateTime $termsAcceptedAt = null;
+    /**
+     * @var ObjectStorage<FileReference>
+     */
+    protected ObjectStorage $termsDocument;
     protected string $siteIdentifier = '';
     /** @var string */
     protected string $legacyOrderData = '[]';
@@ -68,6 +73,7 @@ class Order extends AbstractEntity
     public function initializeObject(): void
     {
         $this->items = new ObjectStorage();
+        $this->termsDocument = new ObjectStorage();
     }
 
     public function getOrderNumber(): string
@@ -398,5 +404,21 @@ class Order extends AbstractEntity
     public function setLegacyCountryName(string $legacyCountryName): void
     {
         $this->legacyCountryName = $legacyCountryName;
+    }
+
+    /**
+     * @return ObjectStorage<FileReference>
+     */
+    public function getTermsDocument(): ObjectStorage
+    {
+        return $this->termsDocument;
+    }
+
+    /**
+     * @param ObjectStorage<FileReference> $termsDocument
+     */
+    public function setTermsDocument(ObjectStorage $termsDocument): void
+    {
+        $this->termsDocument = $termsDocument;
     }
 }

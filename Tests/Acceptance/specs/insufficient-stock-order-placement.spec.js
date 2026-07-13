@@ -24,9 +24,10 @@ test('order placement fails visibly when the requested quantity exceeds availabl
   await page.locator('input[name="tx_products_checkout[paymentMethod]"]').first().check();
   await page.getByRole('button', { name: 'Continue to review' }).click();
 
-  await page.getByRole('button', { name: 'Place order' }).click();
+  await page.locator('#termsAccepted').check();
+  await page.getByRole('button', { name: 'Order with obligation to pay' }).click();
 
   await expect(page.getByText('Insufficient stock', { exact: false })).toBeVisible();
   await expect(page.getByText('Your order number is', { exact: false })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Place order' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Order with obligation to pay' })).toBeVisible();
 });

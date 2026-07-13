@@ -45,7 +45,7 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
         $basketService->addVoucherCode($request, 'FREESHIP');
 
         $delivery = new Address(firstName: 'Jane', lastName: 'Doe', street: 'Gift Lane 1', zip: '54321', city: 'Giftville', country: 'DE');
-        $choices = new CheckoutChoices(spendPoints: 0, shippingMethodUid: 1, deliveryAddress: $delivery, giftMessage: 'Happy birthday!');
+        $choices = new CheckoutChoices(spendPoints: 0, shippingMethodUid: 1, deliveryAddress: $delivery, giftMessage: 'Happy birthday!', termsAccepted: true);
 
         $order = $orderPlacementService->place($request, $this->address(), 'invoice', $choices)->getOrder();
 

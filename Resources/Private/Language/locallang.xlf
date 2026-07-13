@@ -309,6 +309,12 @@
 			<trans-unit id="withdrawal_not_allowed" resname="withdrawal_not_allowed">
 				<source>This order can no longer be cancelled.</source>
 			</trans-unit>
+			<trans-unit id="terms_accepted_label" resname="terms_accepted_label">
+				<source>I have read and accept the terms and conditions.</source>
+			</trans-unit>
+			<trans-unit id="terms_not_accepted" resname="terms_not_accepted">
+				<source>Please accept the terms and conditions before placing your order.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

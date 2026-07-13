@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
 
 use GoldeneZeiten\Products\Domain\Dto\Address;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Service\Basket\BasketService;
 use GoldeneZeiten\Products\Service\Checkout\PriceQuoteService;
@@ -50,7 +51,7 @@ final class OrderPlacementServiceQuoteTest extends AbstractFunctionalTestCase
         $this->addActivePricePeriod(1, '5.00');
         $this->get(PersistenceManager::class)->clearState(); // force a fresh fetch, bypassing Extbase's identity map
 
-        $order = $this->get(OrderPlacementService::class)->place($request, $this->address(), 'invoice')->getOrder();
+        $order = $this->get(OrderPlacementService::class)->place($request, $this->address(), 'invoice', new CheckoutChoices(termsAccepted: true))->getOrder();
 
         $this->assertSame(2000, $order->getTotalGross()->getCents(), 'The order must be charged the reviewed price (20.00), not the changed live price (5.00).');
     }
@@ -102,7 +103,7 @@ final class OrderPlacementServiceQuoteTest extends AbstractFunctionalTestCase
         $basketService = $this->get(BasketService::class);
         $basketService->add($request, 1, null, 1);
 
-        $order = $this->get(OrderPlacementService::class)->place($request, $this->address(), 'invoice')->getOrder();
+        $order = $this->get(OrderPlacementService::class)->place($request, $this->address(), 'invoice', new CheckoutChoices(termsAccepted: true))->getOrder();
 
         $this->assertSame(2000, $order->getTotalGross()->getCents());
     }

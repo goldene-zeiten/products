@@ -146,7 +146,7 @@ final class CheckoutController extends ActionController
         }
     }
 
-    public function finalizeAction(int $spendPoints = 0): ResponseInterface
+    public function finalizeAction(int $spendPoints = 0, bool $termsAccepted = false): ResponseInterface
     {
         $address = $this->checkoutService->getAddress($this->request);
         $paymentMethodIdentifier = $this->checkoutService->getPaymentMethod($this->request);
@@ -154,7 +154,8 @@ final class CheckoutController extends ActionController
             $spendPoints,
             $this->checkoutService->getShippingMethod($this->request),
             $this->checkoutService->getDeliveryAddress($this->request),
-            $this->checkoutService->getGiftMessage($this->request)
+            $this->checkoutService->getGiftMessage($this->request),
+            $termsAccepted
         );
 
         try {
