@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Domain\Repository;
 
 use GoldeneZeiten\Products\Domain\Model\Category;
+use GoldeneZeiten\Products\Event\ModifyCategoryQueryEvent;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
 /**
@@ -29,6 +30,7 @@ final class CategoryRepository extends AbstractReadOnlyRepository
     {
         $query = $this->createQuery();
         $query->getQuerySettings()->setRespectStoragePage(false);
+        $this->eventDispatcher->dispatch(new ModifyCategoryQueryEvent($query));
         return $query->execute()->toArray();
     }
 
