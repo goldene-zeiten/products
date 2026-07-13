@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Article.svg',
     ],
     'types' => [
-        '1' => ['showitem' => '--div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_general, product, title, slug, --palette--;;identifiers, attribute_values, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_prices, --palette--;;pricing, price_tiers, price_periods, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_stock, --palette--;;stock, --palette--;;basketLimits, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_shipping, --palette--;;shipping, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_media, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => '--div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_general, product, title, slug, --palette--;;identifiers, attribute_values, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_prices, --palette--;;pricing, price_tiers, price_periods, --linebreak--, --palette--;;unitPricing, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_stock, --palette--;;stock, --palette--;;basketLimits, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_shipping, --palette--;;shipping, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_media, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
     ],
     'palettes' => [
         'identifiers' => [
@@ -37,6 +37,9 @@ return [
         ],
         'shipping' => [
             'showitem' => 'weight, bulky',
+        ],
+        'unitPricing' => [
+            'showitem' => 'content_amount, content_unit',
         ],
     ],
     'columns' => [
@@ -240,6 +243,41 @@ return [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
                 'default' => 0,
+            ],
+        ],
+        'content_amount' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.content_amount',
+            'config' => [
+                'type' => 'number',
+                'format' => 'decimal',
+                'size' => 10,
+                'default' => 0,
+            ],
+        ],
+        'content_unit' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.content_unit',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'items' => [
+                    ['label' => '-- disabled --', 'value' => ''],
+                    ['label' => 'Gram (g)', 'value' => 'g'],
+                    ['label' => 'Kilogram (kg)', 'value' => 'kg'],
+                    ['label' => 'Ounce (oz)', 'value' => 'oz'],
+                    ['label' => 'Pound (lb)', 'value' => 'lb'],
+                    ['label' => 'Millilitre (ml)', 'value' => 'ml'],
+                    ['label' => 'Litre (l)', 'value' => 'l'],
+                    ['label' => 'Fluid ounce (US, fl oz)', 'value' => 'fl_oz'],
+                    ['label' => 'Gallon (US, gal)', 'value' => 'gal'],
+                    ['label' => 'Millimetre (mm)', 'value' => 'mm'],
+                    ['label' => 'Centimetre (cm)', 'value' => 'cm'],
+                    ['label' => 'Metre (m)', 'value' => 'm'],
+                    ['label' => 'Inch (in)', 'value' => 'in'],
+                    ['label' => 'Foot (ft)', 'value' => 'ft'],
+                    ['label' => 'Square metre (m²)', 'value' => 'm2'],
+                    ['label' => 'Square foot (ft²)', 'value' => 'ft2'],
+                ],
+                'default' => '',
             ],
         ],
         'images' => [
