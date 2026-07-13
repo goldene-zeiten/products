@@ -1,301 +1,346 @@
 categories:
   products:
-    label: Products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.products'
+  storage:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.storage'
+    parent: products
+  pricing:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.pricing'
+    parent: products
+  order:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.order'
+    parent: products
+  catalog:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.catalog'
+    parent: products
+  payment:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.payment'
+    parent: products
+  shipping:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.shipping'
+    parent: products
+  vouchers:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.vouchers'
+    parent: products
+  creditPoints:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.creditPoints'
+    parent: products
+  discovery:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.discovery'
+    parent: products
+  search:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.search'
+    parent: products
+  email:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.email'
+    parent: products
+  invoice:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.invoice'
+    parent: products
+  seo:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.seo'
+    parent: products
+  privacy:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.privacy'
+    parent: products
+  technical:
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.technical'
+    parent: products
 
 settings:
   products.pids.storageFolder:
     type: int
     default: 0
-    label: Storage folder UID
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.storageFolder'
+    category: storage
   products.pids.detailPage:
     type: int
     default: 0
-    label: Detail page UID
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.detailPage'
+    category: storage
   products.pids.basketPage:
     type: int
     default: 0
-    label: Basket page UID
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.basketPage'
+    category: storage
   products.pids.checkoutPage:
     type: int
     default: 0
-    label: Checkout page UID
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.checkoutPage'
+    category: storage
   products.pids.orderHistoryPage:
     type: int
     default: 0
-    label: Order history page UID
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.orderHistoryPage'
+    category: storage
   products.pids.categoryPage:
     type: int
     default: 0
-    label: Category navigation/listing page UID
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.categoryPage'
+    category: storage
   products.pids.withdrawalPage:
     type: int
     default: 0
-    label: Order withdrawal/cancellation page UID
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.withdrawalPage'
+    category: storage
   products.pricing.mode:
     type: string
     default: 'gross'
-    label: 'Pricing mode (gross|net)'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pricing.mode'
+    category: pricing
   products.pricing.currency:
     type: string
     default: 'EUR'
-    label: Currency
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pricing.currency'
+    category: pricing
   products.pricing.discountFieldMode:
     type: string
     default: 'maxAcrossTree'
-    label: 'Category-cascading discount resolution mode (maxAcrossTree|nearestCategory)'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pricing.discountFieldMode'
+    category: pricing
   products.pricing.roundingMode:
     type: string
     default: 'none'
-    label: 'Basket/order gross total rounding, applied only to the final total (none|nearestInteger|psychological99)'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pricing.roundingMode'
+    category: pricing
   products.pricing.resellerPeriodPrecedence:
     type: string
     default: 'lowestWins'
-    label: 'Reseller pricing vs. concurrent public discount precedence (lowestWins|resellerFixed) - lowestWins: reseller also benefits from a lower running public promo; resellerFixed: resellers always get their fixed tier price, ignoring public promotions'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pricing.resellerPeriodPrecedence'
+    category: pricing
   products.pricing.priceReductionLookbackDays:
     type: int
     default: 30
-    label: 'Lookback window (days) for the EU Art. 6a "prior price" reference-price calculation'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pricing.priceReductionLookbackDays'
+    category: pricing
   products.tax.defaultCountry:
     type: string
     default: 'DE'
-    label: 'Default tax country (alpha-2)'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.tax.defaultCountry'
+    category: pricing
   products.tax.rounding:
     type: string
     default: 'perLine'
-    label: 'Tax rounding (perLine|perTotal)'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.tax.rounding'
+    category: pricing
   products.order.numberPrefix:
     type: string
     default: 'ORD-'
-    label: Order number prefix
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.order.numberPrefix'
+    category: order
   products.order.storeClientIp:
     type: bool
     default: false
-    label: Store client IP address
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.order.storeClientIp'
+    category: order
+  products.checkout.withdrawalPeriodDays:
+    type: int
+    default: 14
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.checkout.withdrawalPeriodDays'
+    category: order
+  products.checkout.priceQuoteValiditySeconds:
+    type: int
+    default: 900
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.checkout.priceQuoteValiditySeconds'
+    category: order
+  products.stock.lowStockThreshold:
+    type: int
+    default: 5
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.stock.lowStockThreshold'
+    category: catalog
+  products.catalog.articleSwitchMode:
+    type: string
+    default: reload
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.catalog.articleSwitchMode'
+    category: catalog
+  products.payment.invoice.enabled:
+    type: bool
+    default: true
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.invoice.enabled'
+    category: payment
+  products.shipping.enabled:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.shipping.enabled'
+    category: shipping
+  products.shipping.bulkySurcharge:
+    type: string
+    default: '0.00'
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.shipping.bulkySurcharge'
+    category: shipping
+  products.shipping.bulkyNoticeText:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.shipping.bulkyNoticeText'
+    category: shipping
+  products.shipping.weightNoticeThreshold:
+    type: int
+    default: 0
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.shipping.weightNoticeThreshold'
+    category: shipping
+  products.shipping.weightNoticeText:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.shipping.weightNoticeText'
+    category: shipping
+  products.handling.enabled:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.handling.enabled'
+    category: shipping
+  products.vouchers.gained.enabled:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.vouchers.gained.enabled'
+    category: vouchers
+  products.vouchers.gained.minimumOrderValue:
+    type: number
+    default: 0.00
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.vouchers.gained.minimumOrderValue'
+    category: vouchers
+  products.vouchers.gained.rewardType:
+    type: string
+    default: 'fixed'
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.vouchers.gained.rewardType'
+    category: vouchers
+  products.vouchers.gained.rewardValue:
+    type: number
+    default: 5.00
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.vouchers.gained.rewardValue'
+    category: vouchers
+  products.creditPoints.enabled:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.creditPoints.enabled'
+    category: creditPoints
+  products.creditPoints.moneyPerPoint:
+    type: number
+    default: 0.10
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.creditPoints.moneyPerPoint'
+    category: creditPoints
+  products.creditPoints.earningMode:
+    type: string
+    default: 'perProduct'
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.creditPoints.earningMode'
+    category: creditPoints
+  products.creditPoints.earningTiers:
+    type: stringlist
+    default: []
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.creditPoints.earningTiers'
+    category: creditPoints
+  products.creditPoints.priceFactor:
+    type: number
+    default: 0.0
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.creditPoints.priceFactor'
+    category: creditPoints
+  products.wishlist.enabled:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.wishlist.enabled'
+    category: discovery
+  products.recentlyViewed.limit:
+    type: int
+    default: 10
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.recentlyViewed.limit'
+    category: discovery
+  products.mostViewed.limit:
+    type: int
+    default: 10
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.mostViewed.limit'
+    category: discovery
+  products.search.resultsPerPage:
+    type: int
+    default: 20
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.search.resultsPerPage'
+    category: search
   products.email.senderEmail:
     type: string
     default: ''
-    label: Sender email
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.email.senderEmail'
+    category: email
   products.email.senderName:
     type: string
     default: ''
-    label: Sender name
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.email.senderName'
+    category: email
   products.email.templateRootPaths:
     type: stringlist
     default:
       - 'EXT:products/Resources/Private/Templates/Email/'
-    label: Template root paths
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.email.templateRootPaths'
+    category: email
   products.email.partialRootPaths:
     type: stringlist
     default:
       - 'EXT:products/Resources/Private/Partials/'
-    label: Partial root paths
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.email.partialRootPaths'
+    category: email
   products.email.layoutRootPaths:
     type: stringlist
     default:
       - 'EXT:products/Resources/Private/Layouts/'
-    label: Layout root paths
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.email.layoutRootPaths'
+    category: email
   products.email.merchantRecipient:
     type: string
     default: ''
-    label: 'Merchant notification recipient (empty disables the notification)'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.email.merchantRecipient'
+    category: email
   products.email.agbAttachment:
     type: string
     default: ''
-    label: 'AGB/terms PDF to attach to order confirmations - FAL combined file identifier (e.g. "1:/legal/agb.pdf"), empty disables the attachment'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.email.agbAttachment'
+    category: email
   products.email.orderBccRecipient:
     type: string
     default: ''
-    label: 'Standing blind-copy recipient for order confirmation and merchant notification emails (empty disables it)'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.email.orderBccRecipient'
+    category: email
   products.email.orderStatusChanged.enabled:
     type: bool
     default: true
-    label: Send an email to the customer when an order's status changes
-    category: products
-  products.stock.lowStockThreshold:
-    type: int
-    default: 5
-    label: 'Stock level at/below which a low-stock warning email is sent to the merchant'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.email.orderStatusChanged.enabled'
+    category: email
   products.invoice.templateRootPaths:
     type: stringlist
     default:
       - 'EXT:products/Resources/Private/Templates/Invoice/'
-    label: Invoice template root paths
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.invoice.templateRootPaths'
+    category: invoice
   products.invoice.partialRootPaths:
     type: stringlist
     default:
       - 'EXT:products/Resources/Private/Partials/'
-    label: Invoice partial root paths
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.invoice.partialRootPaths'
+    category: invoice
   products.invoice.layoutRootPaths:
     type: stringlist
     default:
       - 'EXT:products/Resources/Private/Layouts/'
-    label: Invoice layout root paths
-    category: products
-  products.payment.invoice.enabled:
-    type: bool
-    default: true
-    label: Invoice payment enabled
-    category: products
-  products.ajax.pageType:
-    type: int
-    default: 1729512000
-    label: AJAX page typeNum
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.invoice.layoutRootPaths'
+    category: invoice
   products.invoice.pageType:
     type: int
     default: 1729512001
-    label: Invoice download page typeNum
-    category: products
-  products.catalog.articleSwitchMode:
-    type: string
-    default: reload
-    label: 'Article variant switch mode (reload|ajax)'
-    category: products
-  products.creditPoints.enabled:
-    type: bool
-    default: false
-    label: Credit points enabled
-    category: products
-  products.creditPoints.moneyPerPoint:
-    type: number
-    default: 0.10
-    label: Money value of one credit point when redeemed
-    category: products
-  products.creditPoints.earningMode:
-    type: string
-    default: 'perProduct'
-    label: 'Credit-point earning mode (perProduct|basketTiered|autoPriceFactor)'
-    category: products
-  products.creditPoints.earningTiers:
-    type: stringlist
-    default: []
-    label: 'basketTiered mode thresholds as "amount:points" pairs, e.g. "50.00:10" (highest qualifying threshold wins, not summed)'
-    category: products
-  products.creditPoints.priceFactor:
-    type: number
-    default: 0.0
-    label: 'autoPriceFactor mode: points earned per whole currency unit for lines without their own explicit credit-points value'
-    category: products
-  products.shipping.enabled:
-    type: bool
-    default: false
-    label: Shipping cost calculation enabled
-    category: products
-  products.shipping.bulkySurcharge:
-    type: string
-    default: '0.00'
-    label: 'Flat surcharge added once per bulky-flagged item unit (0.00 disables it)'
-    category: products
-  products.shipping.bulkyNoticeText:
-    type: string
-    default: ''
-    label: 'Notice shown in the basket/checkout when it contains a bulky-flagged item (empty disables it)'
-    category: products
-  products.shipping.weightNoticeThreshold:
-    type: int
-    default: 0
-    label: 'Basket weight in grams above which a weight-tier shipping notice is shown (0 disables it)'
-    category: products
-  products.shipping.weightNoticeText:
-    type: string
-    default: ''
-    label: 'Notice shown in the basket/checkout when the weight threshold above is exceeded (empty disables it)'
-    category: products
-  products.handling.enabled:
-    type: bool
-    default: false
-    label: Handling fee calculation enabled
-    category: products
-  products.vouchers.gained.enabled:
-    type: bool
-    default: false
-    label: Auto-issue a reward voucher for qualifying orders
-    category: products
-  products.vouchers.gained.minimumOrderValue:
-    type: number
-    default: 0.00
-    label: Minimum order total (gross) to trigger a gained voucher
-    category: products
-  products.vouchers.gained.rewardType:
-    type: string
-    default: 'fixed'
-    label: 'Gained voucher discount type (percentage|fixed)'
-    category: products
-  products.vouchers.gained.rewardValue:
-    type: number
-    default: 5.00
-    label: Gained voucher discount value
-    category: products
-  products.wishlist.enabled:
-    type: bool
-    default: false
-    label: Show the add-to-wishlist affordance on product listings
-    category: products
-  products.recentlyViewed.limit:
-    type: int
-    default: 10
-    label: Maximum number of recently-viewed products remembered per visitor
-    category: products
-  products.mostViewed.limit:
-    type: int
-    default: 10
-    label: Maximum number of products shown in the site-wide/per-shopper "most viewed" listings
-    category: products
-  products.search.resultsPerPage:
-    type: int
-    default: 20
-    label: Search results per page
-    category: products
-  products.checkout.withdrawalPeriodDays:
-    type: int
-    default: 14
-    label: 'Days after order placement a customer may self-service withdraw/cancel (0 disables it)'
-    category: products
-  products.checkout.priceQuoteValiditySeconds:
-    type: int
-    default: 900
-    label: 'How long a reviewed price quote remains valid before checkout forces a fresh review (seconds) - default 15 minutes'
-    category: products
-  products.session.requireCookieConsent:
-    type: bool
-    default: false
-    label: 'Require an already-confirmed FE-session cookie before writing wishlist/recently-viewed session data'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.invoice.pageType'
+    category: invoice
   products.seo.pageTitleMode:
     type: string
     default: 'title'
-    label: 'Product single-view page-title substitution (none|title|subtitleOrTitle|titleAndSubtitle|subtitleAndTitle)'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.seo.pageTitleMode'
+    category: seo
+  products.session.requireCookieConsent:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.session.requireCookieConsent'
+    category: privacy
   products.gdpr.invoiceRetentionDays:
     type: int
     default: 3650
-    label: 'Days to retain order/invoice data before automatic deletion (GDPR data minimization) - set per your jurisdiction''s statutory bookkeeping retention period, e.g. 10 years in Germany'
-    category: products
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.gdpr.invoiceRetentionDays'
+    category: privacy
+  products.ajax.pageType:
+    type: int
+    default: 1729512000
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.ajax.pageType'
+    category: technical
