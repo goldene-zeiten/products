@@ -1,0 +1,5 @@
+"tx_products_domain_model_product",,,,,,
+,"uid","pid","title","slug","price","tax_class","item_number"
+,7,2,"Keyfield Alpha","keyfield-alpha","10.00",1,"KF-A"
+,8,2,"Keyfield Beta","keyfield-beta","20.00",1,"KF-B"
+,9,2,"Keyfield Gamma","keyfield-gamma","30.00",1,"KF-C"
