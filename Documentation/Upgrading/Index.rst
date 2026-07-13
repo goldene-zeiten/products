@@ -8,7 +8,7 @@ Upgrading from tt_products
 ==========================
 
 If the legacy ``tt_products`` extension (and its tables) are still present in the installation,
-nine upgrade wizards under :guilabel:`Admin Tools > Upgrade` migrate its data into this
+ten upgrade wizards under :guilabel:`Admin Tools > Upgrade` migrate its data into this
 extension's tables. The migration wizards are idempotent (safe to run more than once) and skip
 themselves entirely once the legacy tables are gone.
 
@@ -39,6 +39,22 @@ Run the wizards in this order — each one links its rows back to the previous o
     :sql:`sys_products_visited_products` (global view counts) and
     :sql:`sys_products_fe_users_mm_visited_products` (per-user view counts), remapping legacy
     product uids to migrated ones.
+#.  **Migrate plugin content elements** (``products_ttProductsPluginMigration``) — rewrites the
+    legacy FlexForm-driven plugin elements (:sql:`CType='list'` with :sql:`list_type` ``5``,
+    ``tt_products_pi_int`` or ``tt_products_pi_search``) into this extension's single-purpose
+    content types. A legacy element could select several display modes at once and rendered them
+    one after another, so such an element becomes one new element per mode. Its product and
+    category selections are remapped to the migrated records, which is why this wizard runs after
+    the category and product wizards. Elements selecting a mode without an equivalent here (gift
+    vouchers, the DAM and address-book families, the ``USER1``-``USER5`` hook slots) are left
+    completely untouched and reported with their uid and page, for manual review.
+
+    ..  warning::
+        Run this wizard **before upgrading the site to TYPO3 v14.** TYPO3 v14 removes the
+        :sql:`tt_content.list_type` column, and legacy ``tt_products`` never registered its
+        plugins any other way — not even in its final v13 release. Once that column is gone,
+        these elements can no longer be identified and must be rebuilt by hand.
+
 #.  **Drop legacy tables** (``products_ttProductsLegacyCleanup``, optional) — a confirmable wizard
     that permanently drops the migrated ``tt_products``/``tt_products_cat``/``tt_products_articles``/
     ``sys_products_orders`` and visited-product tables (and their ``_language``/``mm`` siblings) once
