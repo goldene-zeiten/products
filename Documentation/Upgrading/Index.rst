@@ -8,7 +8,7 @@ Upgrading from tt_products
 ==========================
 
 If the legacy ``tt_products`` extension (and its tables) are still present in the installation,
-eight upgrade wizards under :guilabel:`Admin Tools > Upgrade` migrate its data into this
+nine upgrade wizards under :guilabel:`Admin Tools > Upgrade` migrate its data into this
 extension's tables. The migration wizards are idempotent (safe to run more than once) and skip
 themselves entirely once the legacy tables are gone.
 
@@ -35,15 +35,18 @@ Run the wizards in this order — each one links its rows back to the previous o
     product datasheets, linked to the already-migrated categories/products/articles. Run this
     before the cleanup wizard, since it needs the other wizards' :sql:`tx_products_migration_map`
     rows to know where each legacy record ended up.
+#.  **Migrate visited-product counters** (``products_ttProductsVisitedProductsMigration``) —
+    :sql:`sys_products_visited_products` (global view counts) and
+    :sql:`sys_products_fe_users_mm_visited_products` (per-user view counts), remapping legacy
+    product uids to migrated ones.
 #.  **Drop legacy tables** (``products_ttProductsLegacyCleanup``, optional) — a confirmable wizard
     that permanently drops the migrated ``tt_products``/``tt_products_cat``/``tt_products_articles``/
-    ``sys_products_orders`` tables (and their ``_language``/``mm`` siblings) once every wizard above
-    reports nothing left to migrate. It refuses to run while any of them still has pending work, but
-    it cannot verify media migration completeness automatically (see below) - run the media wizard
-    first and confirm its output looks complete before confirming this one. Tables this extension
-    never migrates at all (gifts, vouchers, the old graduated-price mechanism, the separate
-    downloads catalog, visited products) are left untouched; remove them manually if no longer
-    needed.
+    ``sys_products_orders`` and visited-product tables (and their ``_language``/``mm`` siblings) once
+    every wizard above reports nothing left to migrate. It refuses to run while any of them still has
+    pending work, but it cannot verify media migration completeness automatically (see below) - run
+    the media wizard first and confirm its output looks complete before confirming this one. Tables
+    this extension never migrates at all (gifts, vouchers, the old graduated-price mechanism) are
+    left untouched; remove them manually if no longer needed.
 
 Known limitations
 ==================
@@ -52,10 +55,6 @@ Known limitations
     articles) and ``sliderimage`` (categories) are redundant pre-generated thumbnails of the main
     image; FAL generates thumbnails on demand, so only the main ``image`` (and, for products, the
     ``datasheet``) is migrated. The media wizard logs a notice for every legacy record that had one.
-*   **The separate downloads catalog is not migrated.** Legacy ``tt_products_downloads`` (a
-    many-to-many "download library" linked via ``tt_products_products_mm_downloads``) has no
-    equivalent in this extension's plain FAL downloads field. The media wizard logs a notice for
-    every product with linked catalog downloads so they can be re-attached manually.
 *   **Duplicate translations are resolved deterministically.** Legacy ``*_language`` tables have no
     uniqueness constraint on (parent, language). When duplicates exist, a non-hidden row always wins
     over a hidden one, and the highest uid wins among equally-visible candidates; the losing rows are

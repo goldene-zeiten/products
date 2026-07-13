@@ -66,6 +66,8 @@ final class TtProductsLegacyCleanupUpgradeWizardTest extends AbstractFunctionalT
         $this->assertFalse($migrationHelper->tablesExist('tt_products'));
         $this->assertFalse($migrationHelper->tablesExist('tt_products_articles'));
         $this->assertFalse($migrationHelper->tablesExist('sys_products_orders'));
+        $this->assertFalse($migrationHelper->tablesExist('sys_products_visited_products'));
+        $this->assertFalse($migrationHelper->tablesExist('sys_products_fe_users_mm_visited_products'));
         $this->assertStringContainsString('Dropped legacy table', $output->fetch());
 
         $this->assertFalse($subject->updateNecessary());

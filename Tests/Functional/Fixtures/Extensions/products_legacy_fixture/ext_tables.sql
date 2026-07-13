@@ -178,3 +178,26 @@ CREATE TABLE sys_products_orders_mm_tt_products (
 
 	PRIMARY KEY (uid)
 );
+
+CREATE TABLE sys_products_visited_products (
+	uid int(11) DEFAULT '0' NOT NULL,
+	pid int(11) DEFAULT '0' NOT NULL,
+	tstamp int(11) DEFAULT '0' NOT NULL,
+	qty int(11) DEFAULT '0' NOT NULL,
+
+	PRIMARY KEY (uid)
+);
+
+CREATE TABLE sys_products_fe_users_mm_visited_products (
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	tstamp int(11) DEFAULT '0' NOT NULL,
+	crdate int(11) DEFAULT '0' NOT NULL,
+	deleted tinyint(4) DEFAULT '0' NOT NULL,
+	hidden tinyint(4) DEFAULT '0' NOT NULL,
+	uid_local int(11) DEFAULT '0' NOT NULL,
+	uid_foreign int(11) DEFAULT '0' NOT NULL,
+	qty int(11) DEFAULT '0' NOT NULL,
+
+	PRIMARY KEY (uid)
+);

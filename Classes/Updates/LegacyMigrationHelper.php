@@ -30,18 +30,18 @@ final class LegacyMigrationHelper
         return true;
     }
 
-    public function countUnmigrated(string $legacyTable, string $localTable): int
+    public function countUnmigrated(string $legacyTable, string $localTable, bool $legacyTableHasDeletedColumn = true): int
     {
-        $queryBuilder = $this->unmigratedQueryBuilder($legacyTable, $localTable);
+        $queryBuilder = $this->unmigratedQueryBuilder($legacyTable, $localTable, $legacyTableHasDeletedColumn);
         return (int)$queryBuilder->count('legacy.uid')->executeQuery()->fetchOne();
     }
 
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function fetchUnmigratedBatch(string $legacyTable, string $localTable): array
+    public function fetchUnmigratedBatch(string $legacyTable, string $localTable, bool $legacyTableHasDeletedColumn = true): array
     {
-        $queryBuilder = $this->unmigratedQueryBuilder($legacyTable, $localTable);
+        $queryBuilder = $this->unmigratedQueryBuilder($legacyTable, $localTable, $legacyTableHasDeletedColumn);
         return $queryBuilder->select('legacy.*')
             ->orderBy('legacy.uid')
             ->setMaxResults(self::BATCH_SIZE)
@@ -81,19 +81,21 @@ final class LegacyMigrationHelper
     /**
      * Finds unmigrated legacy rows via NOT EXISTS subquery.
      */
-    private function unmigratedQueryBuilder(string $legacyTable, string $localTable): QueryBuilder
+    private function unmigratedQueryBuilder(string $legacyTable, string $localTable, bool $legacyTableHasDeletedColumn = true): QueryBuilder
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($legacyTable);
         $queryBuilder->getRestrictions()->removeAll();
-        $queryBuilder->from($legacyTable, 'legacy')
-            ->andWhere($queryBuilder->expr()->eq('legacy.deleted', 0))
-            ->andWhere(sprintf(
-                'NOT EXISTS (SELECT 1 FROM %s WHERE legacy_table = %s AND local_table = %s AND legacy_uid = %s)',
-                $queryBuilder->quoteIdentifier(self::MAP_TABLE),
-                $queryBuilder->createNamedParameter($legacyTable),
-                $queryBuilder->createNamedParameter($localTable),
-                $queryBuilder->quoteIdentifier('legacy.uid')
-            ));
+        $queryBuilder->from($legacyTable, 'legacy');
+        if ($legacyTableHasDeletedColumn) {
+            $queryBuilder->andWhere($queryBuilder->expr()->eq('legacy.deleted', 0));
+        }
+        $queryBuilder->andWhere(sprintf(
+            'NOT EXISTS (SELECT 1 FROM %s WHERE legacy_table = %s AND local_table = %s AND legacy_uid = %s)',
+            $queryBuilder->quoteIdentifier(self::MAP_TABLE),
+            $queryBuilder->createNamedParameter($legacyTable),
+            $queryBuilder->createNamedParameter($localTable),
+            $queryBuilder->quoteIdentifier('legacy.uid')
+        ));
         return $queryBuilder;
     }
 }
