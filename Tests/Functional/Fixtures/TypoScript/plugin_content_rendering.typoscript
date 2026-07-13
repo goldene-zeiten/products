@@ -42,3 +42,13 @@ tt_content.products_recentlyviewed {
         pluginName = RecentlyViewed
     }
 }
+
+tt_content.products_search =< lib.contentElement
+tt_content.products_search {
+    templateName = Generic
+    20 = EXTBASEPLUGIN
+    20 {
+        extensionName = Products
+        pluginName = Search
+    }
+}
