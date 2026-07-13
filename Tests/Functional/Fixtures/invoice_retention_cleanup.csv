@@ -1,0 +1,17 @@
+"tx_products_domain_model_orderaddress",,,,,,,,,,,
+,"uid","pid","address_type","company","salutation","first_name","last_name","street","house_number","zip","city","country"
+,1,2,"billing","","Mr","John","Old","Main Street","1","12345","Oldtown","DE"
+,2,2,"billing","","Ms","Jane","Recent","Oak Street","2","54321","Newtown","DE"
+,3,2,"billing","","Mr","Bob","Pending","Elm Street","3","99999","Pendingville","DE"
+
+"tx_products_domain_model_order",,,,,,,,,,,,,,
+,"uid","pid","order_number","invoice_number","email","currency","total_net","total_tax","total_gross","billing_address","order_date","site_identifier","status","payment_status"
+,1,2,"ORD-OLD-COMPLETED","INV-1","old@example.com","EUR",8403,1597,10000,1,1400000000,"products","completed","paid"
+,2,2,"ORD-RECENT-COMPLETED","INV-2","recent@example.com","EUR",8403,1597,10000,2,1700000000,"products","completed","paid"
+,3,2,"ORD-OLD-PENDING","INV-3","pending@example.com","EUR",8403,1597,10000,3,1400000000,"products","pending","open"
+
+"tx_products_domain_model_orderitem",,,,,,,,
+,"uid","pid","parent_order","title","item_number","quantity","unit_price_gross","line_total_gross"
+,1,2,1,"Old Product","OLD-1",1,10000,10000
+,2,2,2,"Recent Product","RECENT-1",1,10000,10000
+,3,2,3,"Pending Product","PENDING-1",1,10000,10000

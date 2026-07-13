@@ -294,3 +294,8 @@ settings:
     default: 'title'
     label: 'Product single-view page-title substitution (none|title|subtitleOrTitle|titleAndSubtitle|subtitleAndTitle)'
     category: products
+  products.gdpr.invoiceRetentionDays:
+    type: int
+    default: 3650
+    label: 'Days to retain order/invoice data before automatic deletion (GDPR data minimization) - set per your jurisdiction''s statutory bookkeeping retention period, e.g. 10 years in Germany'
+    category: products
