@@ -1,0 +1,25 @@
+{namespace p=TYPO3\CMS\Fluid\ViewHelpers}
+
+<div class="products-downloads">
+    <f:if condition="{downloads -> f:count()}">
+        <f:then>
+            <f:for each="{downloads}" as="group">
+                <div class="downloads-group">
+                    <h3 class="downloads-group-title">{group.product.title}</h3>
+                    <ul class="downloads-list">
+                        <f:for each="{group.files}" as="fileReference">
+                            <li class="downloads-item">
+                                <a href="{fileReference.originalResource.publicUrl}" class="downloads-link" download="{fileReference.originalResource.name}">
+                                    {fileReference.originalResource.name}
+                                </a>
+                            </li>
+                        </f:for>
+                    </ul>
+                </div>
+            </f:for>
+        </f:then>
+        <f:else>
+            <p class="downloads-empty"><f:translate key="download.no_files" /></p>
+        </f:else>
+    </f:if>
+</div>

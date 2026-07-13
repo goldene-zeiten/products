@@ -315,6 +315,9 @@
 			<trans-unit id="terms_not_accepted" resname="terms_not_accepted">
 				<source>Please accept the terms and conditions before placing your order.</source>
 			</trans-unit>
+			<trans-unit id="download.no_files" resname="download.no_files">
+				<source>No downloadable files available for this order.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

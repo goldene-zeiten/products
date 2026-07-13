@@ -50,6 +50,80 @@ final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
     }
 
     /**
+     * The fixture links legacy product uid 1 (-> local product uid 80) to a downloads-catalog
+     * entry (legacy uid 999) via tt_products_products_mm_downloads, with an existing
+     * sys_file_reference on tt_products_downloads.file_uid pointing at sys_file uid 504.
+     */
+    #[Test]
+    public function linkedDownloadsCatalogEntryIsMigratedToProductDownloads(): void
+    {
+        $subject = $this->subject(new BufferedOutput());
+
+        $this->assertTrue($subject->executeUpdate());
+
+        $connection = $this->getConnectionPool()->getConnectionForTable('sys_file_reference');
+        $migratedReference = $connection->select(
+            ['*'],
+            'sys_file_reference',
+            [
+                'tablenames' => 'tx_products_domain_model_product',
+                'fieldname' => 'downloads',
+                'uid_foreign' => 80,
+                'uid_local' => 504,
+            ]
+        )->fetchAssociative();
+
+        $this->assertNotFalse($migratedReference, 'Expected the downloads-catalog file to be migrated to product 80.');
+    }
+
+    /**
+     * Legacy product uid 2 (-> local product uid 81) has two catalog downloads and no datasheet, so
+     * the first migrated reference lands on sorting position 0. The second must be appended after it
+     * rather than reusing 0, or the two files would share a sorting position.
+     */
+    #[Test]
+    public function eachCatalogDownloadOfTheSameProductGetsItsOwnSortingPosition(): void
+    {
+        $subject = $this->subject(new BufferedOutput());
+
+        $this->assertTrue($subject->executeUpdate());
+
+        $connection = $this->getConnectionPool()->getConnectionForTable('sys_file_reference');
+        $sortings = $connection->select(
+            ['sorting_foreign'],
+            'sys_file_reference',
+            [
+                'tablenames' => 'tx_products_domain_model_product',
+                'fieldname' => 'downloads',
+                'uid_foreign' => 81,
+            ],
+            [],
+            ['sorting_foreign' => 'ASC']
+        )->fetchFirstColumn();
+
+        $this->assertSame([0, 1], array_map('intval', $sortings));
+    }
+
+    #[Test]
+    public function reRunningTheWizardDoesNotDuplicateTheMigratedDownloadsCatalogReference(): void
+    {
+        $subject = $this->subject(new BufferedOutput());
+        $subject->executeUpdate();
+
+        $this->assertTrue($subject->executeUpdate());
+
+        $connection = $this->getConnectionPool()->getConnectionForTable('sys_file_reference');
+        $count = (int)$connection->count('uid', 'sys_file_reference', [
+            'tablenames' => 'tx_products_domain_model_product',
+            'fieldname' => 'downloads',
+            'uid_foreign' => 80,
+            'uid_local' => 504,
+        ]);
+
+        $this->assertSame(1, $count);
+    }
+
+    /**
      * @param string[] $expectedOutputStrings
      */
     #[Test]
@@ -76,11 +150,6 @@ final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
             'expectedOutputStrings' => [
                 'tt_products uid 1: "smallimage" is a redundant thumbnail',
                 'tt_products_cat uid 1: "sliderimage" is a redundant thumbnail',
-            ],
-        ];
-        yield 'linked downloads catalog' => [
-            'expectedOutputStrings' => [
-                'tt_products uid 1 had catalog downloads linked',
             ],
         ];
     }

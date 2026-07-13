@@ -1,0 +1,11 @@
+"fe_users",,,,,
+,"uid","pid","deleted","disable","username"
+,1,2,0,0,"testuser"
+"tx_products_domain_model_order",,,,,,,,,,,
+,"uid","pid","deleted","order_number","frontend_user","email","currency","total_gross","items","status","payment_status"
+,1,2,0,"ORD-1",1,"user@example.com","EUR",9999,1,"new","open"
+,2,2,0,"ORD-2",0,"guest@example.com","EUR",9999,1,"new","open"
+"tx_products_domain_model_orderitem",,,,,,,,
+,"uid","pid","deleted","parent_order","product","title","quantity","unit_price_gross"
+,1,2,0,1,10,"Product",1,9999
+,2,2,0,2,10,"Product",1,9999

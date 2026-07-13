@@ -3,6 +3,7 @@
 use GoldeneZeiten\Products\Controller\BasketController;
 use GoldeneZeiten\Products\Controller\CategoryController;
 use GoldeneZeiten\Products\Controller\CheckoutController;
+use GoldeneZeiten\Products\Controller\DownloadController;
 use GoldeneZeiten\Products\Controller\InvoiceController;
 use GoldeneZeiten\Products\Controller\OrderController;
 use GoldeneZeiten\Products\Controller\ProductController;
@@ -168,6 +169,18 @@ ExtensionUtility::configurePlugin(
     ],
     [
         WithdrawalController::class => 'form, confirm',
+    ],
+    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+);
+
+ExtensionUtility::configurePlugin(
+    'Products',
+    'Download',
+    [
+        DownloadController::class => 'list',
+    ],
+    [
+        DownloadController::class => 'list',
     ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );
