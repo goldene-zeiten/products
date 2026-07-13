@@ -171,6 +171,9 @@
 			<trans-unit id="setting.products.mostViewed.limit" resname="setting.products.mostViewed.limit">
 				<source>Maximum number of products shown in the site-wide/per-shopper "most viewed" listings</source>
 			</trans-unit>
+			<trans-unit id="setting.products.list.newItemDays" resname="setting.products.list.newItemDays">
+				<source>Number of days a product counts as "new" in the new-items listing</source>
+			</trans-unit>
 			<trans-unit id="setting.products.search.resultsPerPage" resname="setting.products.search.resultsPerPage">
 				<source>Search results per page</source>
 			</trans-unit>

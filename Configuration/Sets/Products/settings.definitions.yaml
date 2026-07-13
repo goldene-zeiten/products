@@ -248,6 +248,11 @@ settings:
     default: 10
     label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.mostViewed.limit'
     category: discovery
+  products.list.newItemDays:
+    type: int
+    default: 7
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.list.newItemDays'
+    category: discovery
   products.search.resultsPerPage:
     type: int
     default: 20
