@@ -16,3 +16,4 @@ This section documents extension points for integrators to customize the shop's 
     :titlesonly:
 
     Events/Index
+    Interfaces/Index

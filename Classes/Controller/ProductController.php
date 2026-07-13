@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Controller;
 
+use GoldeneZeiten\Products\Controller\Exception\ProductNotVisibleException;
 use GoldeneZeiten\Products\Controller\Exception\ProductPathMismatchException;
 use GoldeneZeiten\Products\Domain\Model\Article;
 use GoldeneZeiten\Products\Domain\Model\Category;
@@ -21,6 +22,7 @@ use GoldeneZeiten\Products\Service\RecentlyViewed\ProductViewTrackingService;
 use GoldeneZeiten\Products\Service\RecentlyViewed\RecentlyViewedStorage;
 use GoldeneZeiten\Products\Service\Variant\ArticleVariantResolver;
 use GoldeneZeiten\Products\Service\Wishlist\WishlistService;
+use GoldeneZeiten\Products\Visibility\ProductVisibilityResolver;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
@@ -40,7 +42,8 @@ final class ProductController extends ActionController
         private readonly RecordsFieldResolver $recordsFieldResolver,
         private readonly SelectedCategoriesResolver $selectedCategoriesResolver,
         private readonly CreditPointsBalanceService $creditPointsBalanceService,
-        private readonly FrontendUserResolver $frontendUserResolver
+        private readonly FrontendUserResolver $frontendUserResolver,
+        private readonly ProductVisibilityResolver $productVisibilityResolver
     ) {}
 
     public function listAction(): ResponseInterface
@@ -60,6 +63,7 @@ final class ProductController extends ActionController
     /**
      * @param int[] $attributeValues Selected variant attribute-value uids (ignored if $selectedArticle is set).
      * @throws ProductPathMismatchException
+     * @throws ProductNotVisibleException
      */
     public function showAction(
         ?Product $product = null,
@@ -76,6 +80,13 @@ final class ProductController extends ActionController
         }
         if ($category instanceof Category) {
             $this->assertRequestPathMatchesProduct($product, $category, $selectedArticle);
+        }
+
+        if (!$this->productVisibilityResolver->isVisible($product, $this->request)) {
+            throw new ProductNotVisibleException(
+                sprintf('Product %d is not visible to the current visitor.', (int)$product->getUid()),
+                1783800103
+            );
         }
 
         $this->currentProductHolder->setProduct($product);
@@ -152,7 +163,7 @@ final class ProductController extends ActionController
         }
         $event = new ModifyProductListEvent($products, $this->request);
         $this->eventDispatcher->dispatch($event);
-        return $event->getProducts();
+        return $this->productVisibilityResolver->filterVisible($event->getProducts(), $this->request);
     }
 
     /**
