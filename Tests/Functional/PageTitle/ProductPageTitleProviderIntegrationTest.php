@@ -46,6 +46,7 @@ final class ProductPageTitleProviderIntegrationTest extends AbstractFunctionalTe
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
         $this->setUpFrontendRootPage(1, [
+            'constants' => ['EXT:products/Configuration/TypoScript/constants.typoscript'],
             'setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript'],
         ]);
         $this->addTypoScriptToTemplateRecord(1, 'page = PAGE');
@@ -90,6 +91,7 @@ final class ProductPageTitleProviderIntegrationTest extends AbstractFunctionalTe
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
         $this->setUpFrontendRootPage(1, [
+            'constants' => ['EXT:products/Configuration/TypoScript/constants.typoscript'],
             'setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript'],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '

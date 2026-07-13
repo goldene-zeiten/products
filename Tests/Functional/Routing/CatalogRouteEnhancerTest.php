@@ -46,7 +46,10 @@ final class CatalogRouteEnhancerTest extends AbstractFunctionalTestCase
             ]),
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
-        $this->setUpFrontendRootPage(1, ['setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript']]);
+        $this->setUpFrontendRootPage(1, [
+            'constants' => ['EXT:products/Configuration/TypoScript/constants.typoscript'],
+            'setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript'],
+        ]);
     }
 
     #[Test]

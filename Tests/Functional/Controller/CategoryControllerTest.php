@@ -33,7 +33,10 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
         $this->writeSiteConfiguration('products', $this->buildSiteConfiguration(1), [
             $this->buildDefaultLanguageConfiguration('en', '/'),
         ]);
-        $this->setUpFrontendRootPage(1, ['setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript']]);
+        $this->setUpFrontendRootPage(1, [
+            'constants' => ['EXT:products/Configuration/TypoScript/constants.typoscript'],
+            'setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript'],
+        ]);
         $this->addTypoScriptToTemplateRecord(1, '
             plugin.tx_products.persistence.storagePid = 2
             plugin.tx_products.settings.pids.categoryPage = 2
@@ -65,7 +68,10 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
             $this->buildSiteConfiguration(1, '/', 'Home', $this->categoryRouteEnhancers()),
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
-        $this->setUpFrontendRootPage(1, ['setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript']]);
+        $this->setUpFrontendRootPage(1, [
+            'constants' => ['EXT:products/Configuration/TypoScript/constants.typoscript'],
+            'setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript'],
+        ]);
         $this->addTypoScriptToTemplateRecord(1, '
             plugin.tx_products.persistence.storagePid = 2
             page = PAGE
@@ -95,7 +101,10 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
             $this->buildSiteConfiguration(1, '/', 'Home', $this->categoryRouteEnhancers()),
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
-        $this->setUpFrontendRootPage(1, ['setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript']]);
+        $this->setUpFrontendRootPage(1, [
+            'constants' => ['EXT:products/Configuration/TypoScript/constants.typoscript'],
+            'setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript'],
+        ]);
         $this->addTypoScriptToTemplateRecord(1, '
             plugin.tx_products.persistence.storagePid = 2
             page = PAGE
