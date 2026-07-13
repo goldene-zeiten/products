@@ -6,8 +6,10 @@ namespace GoldeneZeiten\Products\Controller;
 
 use GoldeneZeiten\Products\Controller\Exception\CategoryPathMismatchException;
 use GoldeneZeiten\Products\Domain\Model\Category;
+use GoldeneZeiten\Products\Domain\Repository\CategoryRepository;
 use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Service\Category\CategoryTreeService;
+use GoldeneZeiten\Products\Service\ContentElement\SelectedCategoriesResolver;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
@@ -15,7 +17,9 @@ final class CategoryController extends ActionController
 {
     public function __construct(
         private readonly CategoryTreeService $categoryTreeService,
-        private readonly ProductRepository $productRepository
+        private readonly ProductRepository $productRepository,
+        private readonly CategoryRepository $categoryRepository,
+        private readonly SelectedCategoriesResolver $selectedCategoriesResolver
     ) {}
 
     /**
@@ -23,7 +27,11 @@ final class CategoryController extends ActionController
      */
     public function navigationAction(): ResponseInterface
     {
-        $this->view->assign('tree', $this->categoryTreeService->getTree());
+        $navigationStyle = (string)($this->request->getAttribute('currentContentObject')?->data['tx_products_navigation_style'] ?? 'menu');
+        $this->view->assignMultiple([
+            'tree' => $this->categoryTreeService->getTree(),
+            'navigationStyle' => $navigationStyle,
+        ]);
         return $this->htmlResponse();
     }
 
@@ -34,7 +42,12 @@ final class CategoryController extends ActionController
      */
     public function listAction(?Category $category = null): ResponseInterface
     {
-        if ($category instanceof Category) {
+        if ($category === null) {
+            $selectedCategoryUids = $this->selectedCategoriesResolver->resolveUids($this->request);
+            if ($selectedCategoryUids !== []) {
+                $category = $this->categoryRepository->findByUidIgnoringStoragePage($selectedCategoryUids[0]);
+            }
+        } else {
             $this->assertRequestPathMatchesCategory($category);
         }
         $this->view->assignMultiple([

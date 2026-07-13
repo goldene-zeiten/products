@@ -46,6 +46,7 @@
     "sbuerk/fixture-packages": "^1.1",
     "sbuerk/typo3-site-based-test-trait": "^2.0 || ^3.0",
     "symfony/translation": "^7.4 || ^8.1",
+    "typo3/cms-fluid-styled-content": "^13.4 || ^14.3",
     "typo3/cms-lowlevel": "^13.4 || ^14.3",
     "typo3/cms-tstemplate": "^13.4 || ^14.3",
     "typo3/testing-framework": "^9.0"
