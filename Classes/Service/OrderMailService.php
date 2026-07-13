@@ -43,6 +43,12 @@ final class OrderMailService
     public function sendOrderConfirmation(Order $order): void
     {
         $email = $this->buildEmail($order, 'OrderConfirmation', self::LANGUAGE_FILE . 'order_confirmation_subject', $order->getEmail());
+        $settings = $this->settingsResolver->getSettings($order);
+        $days = $this->getIntSetting($settings, 'products.checkout.withdrawalPeriodDays', 14);
+        if ($days > 0 && $order->getOrderDate() !== null) {
+            $deadline = (clone $order->getOrderDate())->modify(sprintf('+%d days', $days));
+            $email->assignMultiple(['withdrawalPeriodDays' => $days, 'withdrawalDeadline' => $deadline]);
+        }
         $this->attachInvoice($email, $order);
         $this->attachAgb($email, $order);
         $this->mailer->send($email);
@@ -293,5 +299,10 @@ final class OrderMailService
     private function getBoolSetting(SettingsInterface $settings, string $path, bool $default): bool
     {
         return $settings->has($path) ? (bool)$settings->get($path) : $default;
+    }
+
+    private function getIntSetting(SettingsInterface $settings, string $path, int $default): int
+    {
+        return $settings->has($path) ? (int)$settings->get($path) : $default;
     }
 }
