@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Event;
 
+use GoldeneZeiten\Products\Controller\ProductController;
 use GoldeneZeiten\Products\Domain\Model\Product;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Lets integrators adjust the product list before rendering - filter/reorder the product list,
  * hide out-of-region items, pin promotions, or inject cross-sells.
- * Mutable via {@see \GoldeneZeiten\Products\Event\ModifyProductListEvent::setProducts()}.
+ * Mutable via {@see ModifyProductListEvent::setProducts()}.
  *
- * {@see \GoldeneZeiten\Products\Controller\ProductController::resolveProductsForList()}
+ * @see ProductController::resolveProductsForList()
  */
 final class ModifyProductListEvent
 {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Event;
 
 use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Service\Order\OrderCreationService;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -12,7 +13,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * create a shipping label, or trigger a fulfillment request. The order is ready for processing
  * and the basket has been cleared.
  *
- * {@see \GoldeneZeiten\Products\Service\Order\OrderCreationService::create()}
+ * @see OrderCreationService::create()
  */
 final class AfterOrderPlacedEvent
 {

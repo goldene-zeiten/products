@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Event;
 
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
+use GoldeneZeiten\Products\Service\Basket\BasketService;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Lets integrators adjust a single basket line as it is resolved for display and checkout -
  * surcharges, per-customer pricing or bundle rules the standard price providers cannot express.
- * Mutable via {@see \GoldeneZeiten\Products\Event\ModifyBasketItemEvent::setViewItem()}.
+ * Mutable via {@see ModifyBasketItemEvent::setViewItem()}.
  *
- * {@see \GoldeneZeiten\Products\Service\Basket\BasketService::resolveItem()}
+ * @see BasketService::resolveItem()
  */
 final class ModifyBasketItemEvent
 {

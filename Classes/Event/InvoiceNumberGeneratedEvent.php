@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Event;
 
 use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Payment\InvoicePaymentMethod;
 
 /**
  * Notifies integrators when an invoice number has been assigned — log it, sync it with an
  * accounting system, or publish it to external services. This fires when invoice payment method
  * is initiated.
  *
- * {@see \GoldeneZeiten\Products\Payment\InvoicePaymentMethod::initiate()}
+ * @see InvoicePaymentMethod::initiate()
  */
 final class InvoiceNumberGeneratedEvent
 {

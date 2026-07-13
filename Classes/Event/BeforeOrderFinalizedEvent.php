@@ -6,13 +6,14 @@ namespace GoldeneZeiten\Products\Event;
 
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
 use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Service\Order\OrderFinalizationService;
 
 /**
  * Notifies integrators just before an order transitions to finalized — a last chance to verify
  * inventory, apply additional discounts, or reject the order. The order is not yet persisted
  * when this fires, but payment has been initiated.
  *
- * {@see \GoldeneZeiten\Products\Service\Order\OrderFinalizationService::finalize()}
+ * @see OrderFinalizationService::finalize()
  */
 final class BeforeOrderFinalizedEvent
 {
