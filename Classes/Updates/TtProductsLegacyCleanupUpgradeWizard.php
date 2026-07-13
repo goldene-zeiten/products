@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Updates\Prerequisites\ArticleMigrationPrerequisite;
 use GoldeneZeiten\Products\Updates\Prerequisites\CategoryMigrationPrerequisite;
 use GoldeneZeiten\Products\Updates\Prerequisites\OrderMigrationPrerequisite;
 use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
+use GoldeneZeiten\Products\Updates\Prerequisites\VisitedProductsMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 // TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
@@ -19,9 +20,9 @@ use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
 use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
- * Drops legacy `tt_products` tables once all entity wizards report nothing left to migrate.
- * Media migration completeness cannot be checked automatically (no reliable per-row signal),
- * so operators must confirm the media wizard already ran.
+ * Drops legacy `tt_products` tables and visited-product tracking tables once all entity wizards
+ * report nothing left to migrate. Media migration completeness cannot be checked automatically
+ * (no reliable per-row signal), so operators must confirm the media wizard already ran.
  */
 #[UpgradeWizard('products_ttProductsLegacyCleanup')]
 final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterface, ConfirmableInterface, ChattyInterface
@@ -43,6 +44,8 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
         'tt_products_articles_language',
         self::ORDER_TABLE,
         'sys_products_orders_mm_tt_products',
+        'sys_products_visited_products',
+        'sys_products_fe_users_mm_visited_products',
     ];
 
     private OutputInterface $output;
@@ -54,6 +57,7 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
         private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
         private readonly ArticleMigrationPrerequisite $articleMigrationPrerequisite,
         private readonly OrderMigrationPrerequisite $orderMigrationPrerequisite,
+        private readonly VisitedProductsMigrationPrerequisite $visitedProductsMigrationPrerequisite,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -71,14 +75,14 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
         return 'Drops the legacy tt_products/tt_products_cat/tt_products_articles/sys_products_orders '
             . 'tables (and their _language/mm siblings) once every migration wizard reports nothing '
             . 'left to migrate. Tables this extension never migrates (gifts, vouchers, the old '
-            . 'graduated-price mechanism, the downloads catalog, visited products) are left untouched.';
+            . 'graduated-price mechanism) are left untouched.';
     }
 
     public function getConfirmation(): Confirmation
     {
         return new Confirmation(
             $this->getTitle(),
-            'This permanently deletes the legacy tt_products tables. Only confirm once you have '
+            'This permanently deletes the legacy tt_products and visited-product tables. Only confirm once you have '
                 . 'verified the migrated catalog, articles and orders in the new tables AND run the '
                 . 'media migration wizard - media completeness cannot be checked automatically.',
             false,
@@ -117,6 +121,7 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
             ProductMigrationPrerequisite::class,
             ArticleMigrationPrerequisite::class,
             OrderMigrationPrerequisite::class,
+            VisitedProductsMigrationPrerequisite::class,
         ];
     }
 
@@ -135,7 +140,8 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
         $fulfilled = $this->categoryMigrationPrerequisite->isFulfilled()
             && $this->productMigrationPrerequisite->isFulfilled()
             && $this->articleMigrationPrerequisite->isFulfilled()
-            && $this->orderMigrationPrerequisite->isFulfilled();
+            && $this->orderMigrationPrerequisite->isFulfilled()
+            && $this->visitedProductsMigrationPrerequisite->isFulfilled();
         if (!$fulfilled) {
             $this->output->writeln(
                 '<error>Not all tt_products data has been migrated yet; refusing to drop legacy tables.</error>'
