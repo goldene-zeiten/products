@@ -6,6 +6,13 @@ namespace GoldeneZeiten\Products\Event;
 
 use GoldeneZeiten\Products\Export\OrderExportInterface;
 
+/**
+ * Lets integrators add or filter order exporters — inject custom exporters for SAP, analytics
+ * platforms, or fulfillment partners. Mutable via {@see setExporters()}, which replaces the
+ * exporter list before the export registry is finalized.
+ *
+ * {@see \GoldeneZeiten\Products\Export\OrderExportRegistry::getAvailable()}
+ */
 final class OrderExportersCollectedEvent
 {
     /**

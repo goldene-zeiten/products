@@ -7,6 +7,13 @@ namespace GoldeneZeiten\Products\Event;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Domain\Model\Voucher;
 
+/**
+ * Notifies integrators when a reward voucher is auto-generated for a customer — log the
+ * voucher code, notify the customer about their reward, or sync it to a loyalty system.
+ * Fired after an order is placed if it qualifies for automatic voucher generation.
+ *
+ * {@see \GoldeneZeiten\Products\Service\Voucher\GainedVoucherService::maybeIssue()}
+ */
 final class VoucherGeneratedEvent
 {
     public function __construct(

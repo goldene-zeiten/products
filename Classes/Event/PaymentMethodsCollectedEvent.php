@@ -7,6 +7,13 @@ namespace GoldeneZeiten\Products\Event;
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 
+/**
+ * Lets integrators add or filter payment methods shown to customers — inject custom payment
+ * providers, restrict methods by region or cart value, or reorder them. Mutable via
+ * {@see setPaymentMethods()}, which replaces the available methods before checkout displays them.
+ *
+ * {@see \GoldeneZeiten\Products\Payment\PaymentMethodRegistry::getAvailable()}
+ */
 final class PaymentMethodsCollectedEvent
 {
     /**

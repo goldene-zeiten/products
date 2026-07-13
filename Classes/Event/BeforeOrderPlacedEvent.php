@@ -9,6 +9,13 @@ use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * Lets integrators veto suspicious orders before they are created — enforce minimum order value,
+ * reject orders from specific regions, or flag for manual approval. Mutable via {@see veto()},
+ * which prevents order creation and rolls back the entire placement transaction.
+ *
+ * {@see \GoldeneZeiten\Products\Service\Order\OrderPlacementService::dispatchBeforeOrderPlaced()}
+ */
 final class BeforeOrderPlacedEvent
 {
     private bool $vetoed = false;

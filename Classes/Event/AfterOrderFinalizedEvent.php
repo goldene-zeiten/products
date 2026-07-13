@@ -6,6 +6,13 @@ namespace GoldeneZeiten\Products\Event;
 
 use GoldeneZeiten\Products\Domain\Model\Order;
 
+/**
+ * Notifies integrators once an order is fully finalized — push it into an ERP, trigger
+ * fulfilment, or notify a warehouse. The order is already persisted, so this is a read-only
+ * notification.
+ *
+ * {@see \GoldeneZeiten\Products\Service\Order\OrderFinalizationService::finalize()}
+ */
 final class AfterOrderFinalizedEvent
 {
     public function __construct(

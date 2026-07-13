@@ -7,6 +7,13 @@ namespace GoldeneZeiten\Products\Event;
 use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
 
+/**
+ * Notifies integrators when an order transitions to a new status — send status update emails,
+ * update fulfillment systems, or trigger shipment workflows. Fired whenever an order's status
+ * changes via the order status manager.
+ *
+ * {@see \GoldeneZeiten\Products\Service\Order\OrderStatusManager::transition()}
+ */
 final class OrderStatusChangedEvent
 {
     public function __construct(
