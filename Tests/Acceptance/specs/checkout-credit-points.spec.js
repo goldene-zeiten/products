@@ -51,7 +51,8 @@ test('spending credit points reduces the order total, and points earned from the
   await expect(page.getByText('You have 100 credit points available.')).toBeVisible();
 
   await page.locator('#spendPoints').fill('50');
-  await page.getByRole('button', { name: 'Place order' }).click();
+  await page.locator('#termsAccepted').check();
+  await page.getByRole('button', { name: 'Order with obligation to pay' }).click();
 
   await expect(page.getByText('Your order number is', { exact: false })).toBeVisible();
 

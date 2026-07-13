@@ -27,7 +27,8 @@ test('a product flagged as unlimited stock can be ordered past its nominal stock
   await page.getByRole('button', { name: 'Continue to review' }).click();
 
   await expect(page.getByText('Jane Doe')).toBeVisible();
-  await page.getByRole('button', { name: 'Place order' }).click();
+  await page.locator('#termsAccepted').check();
+  await page.getByRole('button', { name: 'Order with obligation to pay' }).click();
 
   await expect(page.getByText('Your order number is', { exact: false })).toBeVisible();
 });

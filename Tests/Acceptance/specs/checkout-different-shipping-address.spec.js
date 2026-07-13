@@ -28,6 +28,7 @@ test('guest checks out with a billing address and a different shipping address',
   await expect(page.getByText('Bill Payer')).toBeVisible();
   await expect(page.getByText('Della Recipient')).toBeVisible();
 
-  await page.getByRole('button', { name: 'Place order' }).click();
+  await page.locator('#termsAccepted').check();
+  await page.getByRole('button', { name: 'Order with obligation to pay' }).click();
   await expect(page.getByText('Your order number is', { exact: false })).toBeVisible();
 });

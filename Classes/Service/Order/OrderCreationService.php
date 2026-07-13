@@ -60,7 +60,8 @@ final class OrderCreationService
         private readonly ShippingCostService $shippingCostService,
         private readonly HandlingFeeService $handlingFeeService,
         private readonly ProductsConfigurationFactory $configurationFactory,
-        private readonly CreditPointsConfigurationFactory $creditPointsConfigurationFactory
+        private readonly CreditPointsConfigurationFactory $creditPointsConfigurationFactory,
+        private readonly TermsSnapshotService $termsSnapshotService
     ) {}
 
     public function create(
@@ -96,6 +97,9 @@ final class OrderCreationService
 
         $order = $this->orderFactory->create($request, $basketViewModel, $address, $paymentMethod->getIdentifier(), $details);
         $this->orderRepository->add($order);
+        $this->persistenceManager->persistAll();
+
+        $this->termsSnapshotService->snapshot($order);
         $this->persistenceManager->persistAll();
 
         $this->redeemVouchers($voucherSummary, $order, $frontendUser, $basketViewModel->getTotalGross());

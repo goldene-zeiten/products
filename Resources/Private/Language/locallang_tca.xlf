@@ -645,6 +645,9 @@
 			<trans-unit id="tx_products_domain_model_order.terms_accepted_at" resname="tx_products_domain_model_order.terms_accepted_at">
 				<source>Terms Accepted At</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.terms_document" resname="tx_products_domain_model_order.terms_document">
+				<source>Terms Document</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_order.site_identifier" resname="tx_products_domain_model_order.site_identifier">
 				<source>Site Identifier</source>
 			</trans-unit>

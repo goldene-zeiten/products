@@ -13,7 +13,7 @@ return [
         'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => '--div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_general, order_number, order_date, --palette--;;statusInfo, invoice_number, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_customer, frontend_user, email, --palette--;;addresses, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_payment, --palette--;;payment, shipping_method, --palette--;;costs, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_totals, --palette--;;totals, discount_total, voucher_codes, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_tax, tax_country, tax_breakdown, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_items, items, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_notes, customer_note, gift_message, terms_accepted_at, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_technical, site_identifier, status_log, legacy_order_data, legacy_country_name'],
+        '1' => ['showitem' => '--div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_general, order_number, order_date, --palette--;;statusInfo, invoice_number, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_customer, frontend_user, email, --palette--;;addresses, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_payment, --palette--;;payment, shipping_method, --palette--;;costs, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_totals, --palette--;;totals, discount_total, voucher_codes, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_tax, tax_country, tax_breakdown, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_items, items, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_notes, customer_note, gift_message, terms_accepted_at, terms_document, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_technical, site_identifier, status_log, legacy_order_data, legacy_country_name'],
     ],
     'palettes' => [
         'statusInfo' => [
@@ -251,6 +251,14 @@ return [
                 'type' => 'datetime',
                 'size' => 13,
                 'readOnly' => true,
+            ],
+        ],
+        'terms_document' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.terms_document',
+            'config' => [
+                'type' => 'file',
+                'allowed' => 'pdf',
+                'maxitems' => 1,
             ],
         ],
         'site_identifier' => [

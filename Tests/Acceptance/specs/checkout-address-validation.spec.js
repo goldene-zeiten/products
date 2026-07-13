@@ -14,7 +14,8 @@ test('checkout places the order even when every address field is left blank', as
   await page.locator('input[name="tx_products_checkout[paymentMethod]"]').first().check();
   await page.getByRole('button', { name: 'Continue to review' }).click();
 
-  await page.getByRole('button', { name: 'Place order' }).click();
+  await page.locator('#termsAccepted').check();
+  await page.getByRole('button', { name: 'Order with obligation to pay' }).click();
   await expect(page.getByText('Your order number is', { exact: false })).toBeVisible();
 
   await page.getByRole('link', { name: 'View Order' }).click();

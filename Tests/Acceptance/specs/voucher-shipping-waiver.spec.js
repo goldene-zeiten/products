@@ -26,7 +26,8 @@ test('a free-shipping voucher waives the actual shipping cost even though the re
   await page.locator('input[name="tx_products_checkout[paymentMethod]"]').first().check();
   await page.getByRole('button', { name: 'Continue to review' }).click();
 
-  await page.getByRole('button', { name: 'Place order' }).click();
+  await page.locator('#termsAccepted').check();
+  await page.getByRole('button', { name: 'Order with obligation to pay' }).click();
 
   // 29.99 (shipping waived), not 34.98
   await expect(page.locator('tr', { hasText: 'Total Gross' })).toContainText('29.99');

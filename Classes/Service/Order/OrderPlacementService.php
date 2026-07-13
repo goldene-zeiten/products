@@ -23,6 +23,7 @@ use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Order\Exception\EmptyBasketException;
 use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementVetoedException;
+use GoldeneZeiten\Products\Service\Order\Exception\TermsNotAcceptedException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -50,6 +51,9 @@ final class OrderPlacementService
         $configuration = $this->configurationFactory->create($request);
         $basketViewModel = $this->priceQuoteService->resolve($request, $liveBasketViewModel, $configuration);
         $this->assertBasketNotEmpty($basketViewModel);
+        if (!$choices->isTermsAccepted()) {
+            throw new TermsNotAcceptedException('Please accept the terms and conditions before placing your order.', 1752422400);
+        }
         if ($choices->getSpendPoints() > 0) {
             $this->creditPointsService->assertSpendable($this->frontendUserResolver->getUid($request), $choices->getSpendPoints());
         }
