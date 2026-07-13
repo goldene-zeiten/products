@@ -47,8 +47,7 @@ final class LegacyPluginModeMap
     ];
 
     /**
-     * tt_products_pi_search has its own display_mode vocabulary. KEYFIELD (browse by a keyword
-     * column) has no dedicated equivalent and is approximated by the generic field browse.
+     * tt_products_pi_search has its own display_mode vocabulary.
      *
      * @var array<string, string>
      */
@@ -58,10 +57,8 @@ final class LegacyPluginModeMap
         'YEAR' => 'year',
         'LASTENTRIES' => 'lastentries',
         'FIELD' => 'field',
-        'KEYFIELD' => 'field',
+        'KEYFIELD' => 'keyfield',
     ];
-
-    private const APPROXIMATED_SEARCH_MODE = 'KEYFIELD';
 
     private const DEFAULT_SEARCH_MODE = 'text';
 
@@ -76,10 +73,5 @@ final class LegacyPluginModeMap
     public function resolveSearchMode(string $displayMode): string
     {
         return self::SEARCH_MODE_TARGETS[$displayMode] ?? self::DEFAULT_SEARCH_MODE;
-    }
-
-    public function isApproximatedSearchMode(string $displayMode): bool
-    {
-        return $displayMode === self::APPROXIMATED_SEARCH_MODE;
     }
 }

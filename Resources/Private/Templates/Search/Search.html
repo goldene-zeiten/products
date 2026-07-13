@@ -5,6 +5,28 @@
         <f:form.submit value="{f:translate(key: 'search')}" class="btn btn-primary" />
     </f:form>
 
+    <f:if condition="{keyfieldOptions}">
+        <f:then>
+            <f:form action="search" class="mb-4">
+                <div class="form-group">
+                    <f:form.select name="keywords" options="{keyfieldOptions}" value="{keyfieldSelected}" multiple="1" class="form-select" />
+                </div>
+                <f:form.submit value="{f:translate(key: 'search')}" class="btn btn-primary" />
+            </f:form>
+            <f:if condition="{keyfieldSelected}">
+                <f:then>
+                    <ul class="list-unstyled">
+                        <f:for each="{keyfieldResults}" as="item">
+                            <li>
+                                {item.title}
+                            </li>
+                        </f:for>
+                    </ul>
+                </f:then>
+            </f:if>
+        </f:then>
+    </f:if>
+
     <f:if condition="{result.searched}">
         <f:then>
             <f:if condition="{result.results}">

@@ -291,6 +291,9 @@
 			<trans-unit id="tt_content.tx_products_search_browse_mode.field" resname="tt_content.tx_products_search_browse_mode.field">
 				<source>Browse by field value</source>
 			</trans-unit>
+			<trans-unit id="tt_content.tx_products_search_browse_mode.keyfield" resname="tt_content.tx_products_search_browse_mode.keyfield">
+				<source>Browse by keyword multi-select</source>
+			</trans-unit>
 			<trans-unit id="tt_content.tx_products_search_browse_mode.lastentries" resname="tt_content.tx_products_search_browse_mode.lastentries">
 				<source>Most recent entries</source>
 			</trans-unit>

@@ -146,6 +146,7 @@ ExtensionManagementUtility::addTCAcolumns('tt_content', [
                 ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.firstletter', 'value' => 'firstletter'],
                 ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.year', 'value' => 'year'],
                 ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.field', 'value' => 'field'],
+                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.keyfield', 'value' => 'keyfield'],
                 ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.lastentries', 'value' => 'lastentries'],
             ],
             'default' => 'text',

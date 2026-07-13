@@ -135,6 +135,51 @@ final class FacetedBrowseService
         return array_slice($withCrdate, 0, self::LAST_ENTRIES_LIMIT);
     }
 
+    /**
+     * The distinct values of a field, sorted, keyed by themselves - a select ViewHelper renders the
+     * array keys as option values, so a plain list would submit array indices instead of the values.
+     *
+     * @return array<string, string>
+     */
+    public function keyfieldOptions(string $target, string $field): array
+    {
+        $resolvedField = $this->resolveField($target, $field);
+        $entities = $this->entitiesFor($target);
+        $values = [];
+        foreach ($entities as $entity) {
+            $value = (string)$this->propertyValue($entity, $resolvedField);
+            if ($value !== '') {
+                $values[$value] = true;
+            }
+        }
+        $keys = array_keys($values);
+        sort($keys);
+        return array_combine($keys, $keys);
+    }
+
+    /**
+     * Returns entities whose field value is one of the provided values (OR filter).
+     * Empty values array returns an empty result.
+     *
+     * @param string[] $values
+     * @return object[]
+     */
+    public function filterByValues(string $target, string $field, array $values): array
+    {
+        if ($values === []) {
+            return [];
+        }
+        $resolvedField = $this->resolveField($target, $field);
+        $entities = $this->entitiesFor($target);
+        $selectedValues = array_flip(array_map(static fn(mixed $v): string => (string)$v, $values));
+        return array_values(
+            array_filter(
+                $entities,
+                fn(object $entity): bool => isset($selectedValues[(string)$this->propertyValue($entity, $resolvedField)])
+            )
+        );
+    }
+
     private function propertyValue(object $entity, string $field): mixed
     {
         $getter = 'get' . ucfirst($field);

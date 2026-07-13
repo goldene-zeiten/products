@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Tests\Functional\Controller;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
+use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 
 final class SearchControllerTest extends AbstractFunctionalTestCase
@@ -171,6 +172,61 @@ final class SearchControllerTest extends AbstractFunctionalTestCase
         $this->assertStringContainsString('<h3>C</h3>', $body);
         $this->assertStringContainsString('Category 1', $body);
         $this->assertStringNotContainsString('Product 1', $body);
+    }
+
+    /**
+     * The keyfield fixture is the only data carrying item numbers (KF-A/KF-B/KF-C), so the options
+     * are those item numbers while the results below the form show titles - which keeps the two
+     * regions distinguishable in the rendered body.
+     */
+    #[Test]
+    public function searchActionWithKeyFieldModeOffersEveryValueOfTheFieldAsAnOption(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/keyfield_products.csv');
+        $request = $this->contentRequest(207);
+        $response = $this->executeFrontendSubRequest($request);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('multiple="multiple"', $body);
+        $this->assertStringContainsString('<option value="KF-A">KF-A</option>', $body);
+        $this->assertStringContainsString('<option value="KF-B">KF-B</option>', $body);
+        $this->assertStringContainsString('<option value="KF-C">KF-C</option>', $body);
+        // Nothing is ticked yet, so no result rows are rendered.
+        $this->assertStringNotContainsString('Keyfield Alpha', $body);
+    }
+
+    #[Test]
+    public function searchActionWithKeyFieldModeReturnsTheUnionOfTheTickedValues(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/keyfield_products.csv');
+        $this->addTypoScriptToTemplateRecord(1, '
+            plugin.tx_products.persistence.storagePid = 2
+            page = PAGE
+            page.10 = CONTENT
+            page.10 {
+                table = tt_content
+                select.where = uid = 207
+            }
+        ');
+
+        $queryParameters = [
+            'tx_products_search[keywords][0]' => 'KF-A',
+            'tx_products_search[keywords][1]' => 'KF-C',
+        ];
+        // RFC3986 encoding required; RFC1738 "+" breaks cHash for values with spaces.
+        $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
+            '&id=2&' . http_build_query($queryParameters, '', '&', PHP_QUERY_RFC3986)
+        );
+        $request = (new InternalRequest('http://localhost/shop'))
+            ->withQueryParameters(array_merge($queryParameters, ['cHash' => $cHash]));
+        $response = $this->executeFrontendSubRequest($request);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('Keyfield Alpha', $body);
+        $this->assertStringContainsString('Keyfield Gamma', $body);
+        $this->assertStringNotContainsString('Keyfield Beta', $body);
     }
 
     /**

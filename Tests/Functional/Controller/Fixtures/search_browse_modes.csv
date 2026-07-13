@@ -7,3 +7,4 @@
 ,204,2,256,0,0,"products_search","Search Last Entries","lastentries","products",""
 ,205,2,256,0,0,"products_search","Search Articles","firstletter","articles","title"
 ,206,2,256,0,0,"products_search","Search Categories","firstletter","categories","title"
+,207,2,256,0,0,"products_search","Search Keyfield","keyfield","products","itemNumber"
