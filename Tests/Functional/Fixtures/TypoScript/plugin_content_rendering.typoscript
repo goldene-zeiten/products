@@ -52,3 +52,13 @@ tt_content.products_search {
         pluginName = Search
     }
 }
+
+tt_content.products_download =< lib.contentElement
+tt_content.products_download {
+    templateName = Generic
+    20 = EXTBASEPLUGIN
+    20 {
+        extensionName = Products
+        pluginName = Download
+    }
+}

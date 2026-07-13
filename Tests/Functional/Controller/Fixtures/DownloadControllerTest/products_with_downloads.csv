@@ -1,0 +1,9 @@
+"tx_products_domain_model_product",,,,,,
+,"uid","pid","title","slug","price"
+,10,2,"Download Product","/download-product","99.99"
+"sys_file",,,,,
+,"uid","storage","identifier","name","missing"
+,601,1,"/example.pdf","example.pdf",0
+"sys_file_reference",,,,,,,,
+,"uid","pid","deleted","uid_local","uid_foreign","tablenames","fieldname","sorting_foreign"
+,601,2,0,601,10,"tx_products_domain_model_product","downloads",1

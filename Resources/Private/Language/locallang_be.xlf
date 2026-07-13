@@ -42,6 +42,9 @@
 			<trans-unit id="plugin.withdrawal" resname="plugin.withdrawal">
 				<source>Order Withdrawal</source>
 			</trans-unit>
+			<trans-unit id="plugin.download" resname="plugin.download">
+				<source>Order Downloads</source>
+			</trans-unit>
 			<trans-unit id="module.products.title" resname="module.products.title">
 				<source>Products</source>
 			</trans-unit>

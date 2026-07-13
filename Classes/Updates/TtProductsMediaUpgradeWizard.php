@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Updates;
 
-use Doctrine\DBAL\ParameterType;
 use GoldeneZeiten\Products\Updates\Prerequisites\ArticleMigrationPrerequisite;
 use GoldeneZeiten\Products\Updates\Prerequisites\CategoryMigrationPrerequisite;
 use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
@@ -35,6 +34,7 @@ final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, Chat
         private readonly ConnectionPool $connectionPool,
         private readonly LegacyMigrationHelper $migrationHelper,
         private readonly LegacyMediaMigrator $mediaMigrator,
+        private readonly DownloadsCatalogMigrator $downloadsCatalogMigrator,
         private readonly CategoryMigrationPrerequisite $categoryMigrationPrerequisite,
         private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
         private readonly ArticleMigrationPrerequisite $articleMigrationPrerequisite,
@@ -52,9 +52,8 @@ final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, Chat
 
     public function getDescription(): string
     {
-        return 'Migrates product/category/article images and product datasheets to the new FAL '
-            . 'fields. Secondary thumbnails (smallimage/sliderimage) and the separate downloads '
-            . 'catalog entity are reported, not migrated.';
+        return 'Migrates product/category/article images, product datasheets, and downloads catalog '
+            . 'to the new FAL fields. Secondary thumbnails (smallimage/sliderimage) are reported but not migrated.';
     }
 
     public function updateNecessary(): bool
@@ -67,7 +66,20 @@ final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, Chat
                 return true;
             }
         }
+        if ($this->hasPendingDownloads()) {
+            return true;
+        }
         return false;
+    }
+
+    private function hasPendingDownloads(): bool
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::DOWNLOADS_MM_TABLE);
+        $queryBuilder->getRestrictions()->removeAll();
+        $count = $queryBuilder->count('uid')->from(self::DOWNLOADS_MM_TABLE)
+            ->andWhere($queryBuilder->expr()->eq('deleted', 0))
+            ->executeQuery()->fetchOne();
+        return (int)$count > 0;
     }
 
     public function executeUpdate(): bool
@@ -81,6 +93,7 @@ final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, Chat
         foreach ($this->mappings() as $mapping) {
             $this->migrateMapping($mapping);
         }
+        $this->downloadsCatalogMigrator->migrateAll($this->output);
         return true;
     }
 
@@ -185,29 +198,6 @@ final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, Chat
                 $legacyTable,
                 (int)$row['uid'],
                 $secondaryField
-            ));
-        }
-        if ($legacyTable === self::PRODUCT_TABLE) {
-            $this->reportLinkedDownloadsCatalog((int)$row['uid']);
-        }
-    }
-
-    private function reportLinkedDownloadsCatalog(int $legacyProductUid): void
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::DOWNLOADS_MM_TABLE);
-        $queryBuilder->getRestrictions()->removeAll();
-        $count = $queryBuilder->count('uid')->from(self::DOWNLOADS_MM_TABLE)
-            ->andWhere($queryBuilder->expr()->eq(
-                'uid_local',
-                $queryBuilder->createNamedParameter($legacyProductUid, ParameterType::INTEGER)
-            ))
-            ->andWhere($queryBuilder->expr()->eq('deleted', 0))
-            ->executeQuery()->fetchOne();
-        if ((int)$count > 0) {
-            $this->output->writeln(sprintf(
-                '<comment>tt_products uid %d had catalog downloads linked; the downloads catalog '
-                    . 'is not migrated, re-attach them to the product manually if still needed.</comment>',
-                $legacyProductUid
             ));
         }
     }

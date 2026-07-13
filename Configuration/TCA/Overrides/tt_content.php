@@ -84,6 +84,13 @@ ExtensionUtility::registerPlugin(
     'EXT:products/Resources/Public/Icons/Extension.svg'
 );
 
+ExtensionUtility::registerPlugin(
+    'Products',
+    'Download',
+    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.download',
+    'EXT:products/Resources/Public/Icons/Extension.svg'
+);
+
 ExtensionManagementUtility::addTCAcolumns('tt_content', [
     'tx_products_list_mode' => [
         'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode',
