@@ -38,6 +38,9 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
             ]
         );
         $this->setUpFrontendRootPage(1, [
+            'constants' => [
+                'EXT:products/Configuration/TypoScript/constants.typoscript',
+            ],
             'setup' => [
                 'EXT:products/Configuration/TypoScript/setup.typoscript',
             ],
@@ -98,6 +101,9 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
             ]
         );
         $this->setUpFrontendRootPage(1, [
+            'constants' => [
+                'EXT:products/Configuration/TypoScript/constants.typoscript',
+            ],
             'setup' => [
                 'EXT:products/Configuration/TypoScript/setup.typoscript',
             ],
@@ -158,6 +164,9 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
             ]
         );
         $this->setUpFrontendRootPage(1, [
+            'constants' => [
+                'EXT:products/Configuration/TypoScript/constants.typoscript',
+            ],
             'setup' => [
                 'EXT:products/Configuration/TypoScript/setup.typoscript',
             ],
