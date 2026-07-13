@@ -102,4 +102,60 @@ final class ProductRepository extends AbstractReadOnlyRepository
     {
         return str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $term);
     }
+
+    /**
+     * @return Product[]
+     */
+    public function findOffers(): array
+    {
+        $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage(false);
+        $query->matching($query->equals('isOffer', true));
+        return $query->execute()->toArray();
+    }
+
+    /**
+     * @return Product[]
+     */
+    public function findHighlights(): array
+    {
+        $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage(false);
+        $query->matching($query->equals('isHighlight', true));
+        return $query->execute()->toArray();
+    }
+
+    /**
+     * Products created within the last $days days (inclusive), newest first.
+     *
+     * @return Product[]
+     */
+    public function findNew(int $days): array
+    {
+        $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage(false);
+        $cutoff = new \DateTime(sprintf('-%d days', $days));
+        $query->matching($query->greaterThanOrEqual('crdate', $cutoff));
+        $query->setOrderings(['crdate' => QueryInterface::ORDER_DESCENDING]);
+        return $query->execute()->toArray();
+    }
+
+    /**
+     * Products whose credit-point price is within the given balance, cheapest first.
+     * A balance of 0 or less returns an empty array (matches the legacy "must be logged in
+     * with a positive balance" behavior for guests).
+     *
+     * @return Product[]
+     */
+    public function findAffordable(int $creditPointsBalance): array
+    {
+        if ($creditPointsBalance <= 0) {
+            return [];
+        }
+        $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage(false);
+        $query->matching($query->lessThanOrEqual('creditPoints', $creditPointsBalance));
+        $query->setOrderings(['creditPoints' => QueryInterface::ORDER_ASCENDING]);
+        return $query->execute()->toArray();
+    }
 }

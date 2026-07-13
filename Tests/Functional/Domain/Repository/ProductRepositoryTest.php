@@ -119,4 +119,107 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
             'expectedExceptionCode' => 1751741004,
         ];
     }
+
+    #[Test]
+    public function findOffersReturnsBothOffers(): void
+    {
+        $productRepository = $this->get(ProductRepository::class);
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+
+        $offers = $productRepository->findOffers();
+        $this->assertCount(2, $offers);
+
+        $titles = array_map(static fn(Product $p): string => $p->getTitle(), $offers);
+        $this->assertContains('Product 2', $titles);
+        $this->assertContains('Product 4', $titles);
+    }
+
+    #[Test]
+    public function findHighlightsReturnsBothHighlights(): void
+    {
+        $productRepository = $this->get(ProductRepository::class);
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+
+        $highlights = $productRepository->findHighlights();
+        $this->assertCount(2, $highlights);
+
+        $titles = array_map(static fn(Product $p): string => $p->getTitle(), $highlights);
+        $this->assertContains('Product 3', $titles);
+        $this->assertContains('Product 4', $titles);
+    }
+
+    #[Test]
+    public function findNewReturnsProductsOrderedByCreationDateDescending(): void
+    {
+        $productRepository = $this->get(ProductRepository::class);
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+
+        $new = $productRepository->findNew(36500);
+        $this->assertCount(6, $new);
+
+        $titles = array_map(static fn(Product $p): string => $p->getTitle(), $new);
+        // Verify ordering: newest first (descending by crdate)
+        // Product 6 and 5 are newest, Product 1 is oldest
+        $this->assertSame('Product 6', $titles[0]);
+        $this->assertSame('Product 1', $titles[5]);
+    }
+
+    #[Test]
+    public function findNewReturnsAllProductsWhenDaysIsLarge(): void
+    {
+        $productRepository = $this->get(ProductRepository::class);
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+
+        $new = $productRepository->findNew(36500);
+        $this->assertCount(6, $new);
+    }
+
+    #[Test]
+    public function findAffordableReturnsProductsWithinBalance(): void
+    {
+        $productRepository = $this->get(ProductRepository::class);
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+
+        // With balance 50, affordable products are: 2 (50), 4 (25), 6 (10)
+        $affordable = $productRepository->findAffordable(50);
+        $this->assertCount(3, $affordable);
+
+        $titles = array_map(static fn(Product $p): string => $p->getTitle(), $affordable);
+        $this->assertContains('Product 6', $titles);
+        $this->assertContains('Product 4', $titles);
+        $this->assertContains('Product 2', $titles);
+    }
+
+    #[Test]
+    public function findAffordableReturnsEmptyListForNonPositiveBalance(): void
+    {
+        $productRepository = $this->get(ProductRepository::class);
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+
+        $this->assertSame([], $productRepository->findAffordable(0));
+        $this->assertSame([], $productRepository->findAffordable(-10));
+    }
+
+    #[Test]
+    public function findAffordableReturnsProductsOrderedByCreditPointsAscending(): void
+    {
+        $productRepository = $this->get(ProductRepository::class);
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+
+        // With balance 150, affordable products are: 2 (50), 3 (100), 4 (25), 5 (150), 6 (10)
+        // Product 1 (200) is not affordable
+        $affordable = $productRepository->findAffordable(150);
+        $this->assertCount(5, $affordable);
+
+        $titles = array_map(static fn(Product $p): string => $p->getTitle(), $affordable);
+        // Cheapest first by credit_points: 10, 25, 50, 100, 150
+        $this->assertSame(['Product 6', 'Product 4', 'Product 2', 'Product 3', 'Product 5'], $titles);
+    }
 }

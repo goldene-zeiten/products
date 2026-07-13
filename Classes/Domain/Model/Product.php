@@ -44,6 +44,7 @@ class Product extends AbstractEntity
     protected bool $discountDisabled = false;
     protected bool $isOffer = false;
     protected bool $isHighlight = false;
+    protected ?\DateTime $crdate = null;
     /**
      * @var ObjectStorage<Article>
      */
@@ -492,5 +493,15 @@ class Product extends AbstractEntity
     public function setContentUnit(string $contentUnit): void
     {
         $this->contentUnit = $contentUnit;
+    }
+
+    public function getCrdate(): ?\DateTime
+    {
+        return $this->crdate;
+    }
+
+    public function setCrdate(?\DateTime $crdate): void
+    {
+        $this->crdate = $crdate;
     }
 }
