@@ -182,6 +182,55 @@ The extension ships the :php:`VoucherDiscountProvider` (which implements this in
 have vouchers out of the box, but it is itself just one more discount provider. Uninstalling the
 voucher feature (if it were a separate extension) would simply remove one provider from the registry.
 
+Customer Input and Checkout State
+==================================
+
+While the discount providers compute and apply reductions, customer input (the codes they enter,
+options they select) is stored separately from the basket DTO. The **checkout state** is a
+feature-specific slice of session storage, managed by :php:`CheckoutStateStore`.
+
+**Why separate input from the basket?**
+The basket DTO carries only items and their quantities — it is feature-agnostic. Voucher codes,
+loyalty-program selections, or other discount-specific input belong in their own state container.
+This keeps the basket clean and lets discount features evolve independently without touching
+core basket code.
+
+**The Pattern: VoucherCheckoutState**
+
+The voucher feature demonstrates this:
+
+-   **Customer enters codes:** Via :php:`VoucherController` (actions :php:`apply()` and :php:`remove()`),
+    the frontend submits a voucher code request.
+
+-   **Codes are stored:** :php:`VoucherCheckoutState` persists them in the session under a provider-scoped
+    key (using :php:`CoreAdjustmentProvider::VOUCHER` as the identifier).
+
+-   **State is checked during quote:** When :php:`VoucherDiscountProvider::quote()` runs, it calls
+    :php:`VoucherCheckoutState::getCodes()` to fetch the applied codes and decide whether a
+    discount applies.
+
+-   **UI renders the state:** A template partial uses :php:`VoucherSummaryViewHelper` to fetch the
+    current codes and display them to the customer, without needing the basket DTO to carry them.
+
+**Implementing this for a custom discount feature**
+
+If you build a custom discount feature (e.g., a loyalty-points selector), follow the same pattern:
+
+1.  Create a checkout state holder similar to :php:`VoucherCheckoutState`:
+
+    -   Accept :php:`CheckoutStateStore` in the constructor.
+    -   Implement methods like :php:`getCodes()`, :php:`addCode()`, :php:`removeCode()`.
+    -   Store your state under your provider's identifier key.
+
+2.  Create a controller to accept customer input (the frontend form).
+
+3.  In your discount provider's :php:`quote()` method, fetch the state via your checkout-state class.
+
+4.  In your template, fetch the state via a ViewHelper or direct service injection to display
+    the current selection.
+
+The basket remains decoupled from your feature; the checkout store handles session persistence.
+
 Complete Example: A Flat 5 EUR Discount
 =======================================
 

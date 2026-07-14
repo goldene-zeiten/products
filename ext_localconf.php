@@ -1,6 +1,7 @@
 <?php
 
 use GoldeneZeiten\Products\Controller\BasketController;
+use GoldeneZeiten\Products\Controller\VoucherController;
 use GoldeneZeiten\Products\Controller\CategoryController;
 use GoldeneZeiten\Products\Controller\CheckoutController;
 use GoldeneZeiten\Products\Controller\DownloadController;
@@ -61,10 +62,22 @@ ExtensionUtility::configurePlugin(
     'Products',
     'Basket',
     [
-        BasketController::class => 'show, add, update, remove, applyVoucher, removeVoucher',
+        BasketController::class => 'show, add, update, remove',
     ],
     [
-        BasketController::class => 'show, add, update, remove, applyVoucher, removeVoucher',
+        BasketController::class => 'show, add, update, remove',
+    ],
+    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+);
+
+ExtensionUtility::configurePlugin(
+    'Products',
+    'Voucher',
+    [
+        VoucherController::class => 'apply, remove',
+    ],
+    [
+        VoucherController::class => 'apply, remove',
     ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );

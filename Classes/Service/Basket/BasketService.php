@@ -124,35 +124,6 @@ final class BasketService
         return false;
     }
 
-    public function addVoucherCode(ServerRequestInterface $request, string $voucherCode): void
-    {
-        $basket = $this->basketStorage->load($request);
-        $basket->addVoucherCode($voucherCode);
-        $this->basketStorage->save($request, $basket);
-    }
-
-    public function removeVoucherCode(ServerRequestInterface $request, string $voucherCode): void
-    {
-        $basket = $this->basketStorage->load($request);
-        $basket->removeVoucherCode($voucherCode);
-        $this->basketStorage->save($request, $basket);
-    }
-
-    public function clearVoucherCodes(ServerRequestInterface $request): void
-    {
-        $basket = $this->basketStorage->load($request);
-        $basket->clearVoucherCodes();
-        $this->basketStorage->save($request, $basket);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getAppliedVoucherCodes(ServerRequestInterface $request): array
-    {
-        return $this->basketStorage->load($request)->getVoucherCodes();
-    }
-
     public function getBasketViewModel(ServerRequestInterface $request): BasketViewModel
     {
         $basket = $this->basketStorage->load($request);

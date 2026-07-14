@@ -41,7 +41,10 @@ final class BasketEventDispatchTest extends AbstractFrontendTestCase
         $basketService->add($request, 1, null, 1);
 
         $this->assertGreaterThanOrEqual(1, BasketUpdatedListener::$invocationCount);
-        $this->assertContains('EVENT-TOUCHED', $this->get(BasketStorage::class)->load($request)->getVoucherCodes());
+        $basket = $this->get(BasketStorage::class)->load($request);
+        $items = $basket->getItems();
+        $this->assertCount(2, $items);
+        $this->assertSame(9999, $items[1]->getProductUid());
     }
 
     #[Test]

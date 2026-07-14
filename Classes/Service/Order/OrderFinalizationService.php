@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Event\AfterOrderFinalizedEvent;
 use GoldeneZeiten\Products\Event\BeforeOrderFinalizedEvent;
 use GoldeneZeiten\Products\Service\Basket\BasketService;
 use GoldeneZeiten\Products\Service\Checkout\CheckoutService;
+use GoldeneZeiten\Products\Service\Checkout\CheckoutStateStore;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
@@ -21,6 +22,7 @@ final class OrderFinalizationService
         private readonly OrderStatusManager $orderStatusManager,
         private readonly BasketService $basketService,
         private readonly CheckoutService $checkoutService,
+        private readonly CheckoutStateStore $checkoutStateStore,
         private readonly PersistenceManagerInterface $persistenceManager,
         private readonly EventDispatcherInterface $eventDispatcher
     ) {}
@@ -39,6 +41,7 @@ final class OrderFinalizationService
 
         $this->basketService->clear($request);
         $this->checkoutService->clearCheckoutSession($request);
+        $this->checkoutStateStore->clear($request);
 
         $this->eventDispatcher->dispatch(new AfterOrderFinalizedEvent($order));
     }

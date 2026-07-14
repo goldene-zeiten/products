@@ -38,9 +38,7 @@ final class BasketStorage
                 (int)($itemData['quantity'] ?? 0)
             );
         }
-        $voucherCodes = array_map('strval', $sessionData['voucherCodes'] ?? []);
-
-        return new Basket($items, $voucherCodes);
+        return new Basket($items);
     }
 
     public function save(ServerRequestInterface $request, Basket $basket): void
@@ -58,7 +56,7 @@ final class BasketStorage
                 'quantity' => $item->getQuantity(),
             ];
         }
-        $sessionData = ['items' => $itemsData, 'voucherCodes' => $basket->getVoucherCodes()];
+        $sessionData = ['items' => $itemsData];
 
         $frontendUser->setKey('ses', self::SESSION_KEY, json_encode($sessionData));
         $frontendUser->storeSessionData();

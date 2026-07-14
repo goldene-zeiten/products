@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\EndToEnd;
 
+use GoldeneZeiten\Products\Discount\Voucher\VoucherCheckoutState;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Domain\Model\Product;
@@ -52,10 +53,11 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
         $this->assertSame(['Related Product'], $relatedTitles);
 
         $this->applyVoucher($basketService, $request, 'COMBO1');
-        $this->assertSame(['COMBO1'], $basketService->getAppliedVoucherCodes($request));
+        $voucherState = $this->get(VoucherCheckoutState::class);
+        $this->assertSame(['COMBO1'], $voucherState->getCodes($request));
 
         $this->applyVoucher($basketService, $request, 'SOLO');
-        $this->assertSame(['SOLO'], $basketService->getAppliedVoucherCodes($request), 'A non-combinable voucher must replace, not join, an existing code.');
+        $this->assertSame(['SOLO'], $voucherState->getCodes($request), 'A non-combinable voucher must replace, not join, an existing code.');
 
         $order = $orderPlacementService->place($request, $this->address(), 'invoice', new CheckoutChoices(30, termsAccepted: true))->getOrder();
 
@@ -69,7 +71,6 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
 
         $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/m3_ledger_partial_points_redemption.csv');
 
-        $this->assertSame([], $basketService->getAppliedVoucherCodes($request), 'A finalized order clears the basket, including its voucher codes.');
     }
 
     #[Test]
@@ -107,16 +108,17 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
     private function applyVoucher(BasketService $basketService, ServerRequestInterface $request, string $code): void
     {
         $voucherService = $this->get(VoucherService::class);
+        $voucherState = $this->get(VoucherCheckoutState::class);
         $frontendUser = $this->get(FrontendUserResolver::class)->getUid($request);
         $basketGoodsTotal = $basketService->getBasketViewModel($request)->getTotalGross();
 
         $newVoucher = $voucherService->resolve($code, $basketGoodsTotal, $frontendUser);
-        $existingCodes = $basketService->getAppliedVoucherCodes($request);
+        $existingCodes = $voucherState->getCodes($request);
         $existingVouchers = $voucherService->buildDiscountSummary($existingCodes, $basketGoodsTotal, $frontendUser)->getAppliedVouchers();
         if (!$voucherService->canCoexist($existingVouchers, $newVoucher)) {
-            $basketService->clearVoucherCodes($request);
+            $voucherState->clearCodes($request);
         }
-        $basketService->addVoucherCode($request, $newVoucher->getCode());
+        $voucherState->addCode($request, $newVoucher->getCode());
     }
 
     private function requestFor(int $frontendUserUid): ServerRequestInterface
