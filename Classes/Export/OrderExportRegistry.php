@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Export;
 
+use GoldeneZeiten\Products\Domain\Dto\Export\ExportContext;
 use GoldeneZeiten\Products\Event\OrderExportersCollectedEvent;
 use GoldeneZeiten\Products\Export\Exception\OrderExporterNotFoundException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 
+/**
+ * Serves the order exporters registered by integrators: discovery, for the backend to offer a choice,
+ * and resolution by identifier, for executing the one an editor selected.
+ */
 final class OrderExportRegistry
 {
     /**
@@ -30,11 +35,23 @@ final class OrderExportRegistry
     }
 
     /**
+     * Discovery phase: the exporters that may be offered for this context, highest priority first.
+     *
      * @return array<OrderExportInterface>
      */
-    public function getAvailable(): array
+    public function getAvailable(ExportContext $context): array
     {
-        $event = new OrderExportersCollectedEvent(array_values($this->exporters));
+        $available = array_values(array_filter(
+            $this->exporters,
+            static fn(OrderExportInterface $exporter): bool => $exporter->isAvailable($context)
+        ));
+
+        usort(
+            $available,
+            static fn(OrderExportInterface $a, OrderExportInterface $b): int => $b->getPriority() <=> $a->getPriority()
+        );
+
+        $event = new OrderExportersCollectedEvent($context, $available);
         $this->eventDispatcher->dispatch($event);
 
         return $event->getExporters();

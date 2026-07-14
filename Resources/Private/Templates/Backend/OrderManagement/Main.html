@@ -157,6 +157,21 @@
                             </form>
                         </f:for>
                     </div>
+
+                    <f:if condition="{exporters}">
+                        <f:then>
+                            <div class="mt-4">
+                                <h3><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.export.title" /></h3>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <f:for each="{exporters}" as="exporter">
+                                        <a class="btn btn-default" href="{listUrl}&amp;order={order.uid}&amp;export={exporter.identifier}">
+                                            {exporter.label}
+                                        </a>
+                                    </f:for>
+                                </div>
+                            </div>
+                        </f:then>
+                    </f:if>
                 </f:then>
                 <f:else>
                     <p><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:message.no_records" /></p>
