@@ -47,7 +47,7 @@ final class OrderCreationServiceShippingTaxTest extends AbstractFunctionalTestCa
         $order = $subject->create(
             $this->requestFor(0),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 0, $methodId),
+            new CheckoutSelections([], 0, 'tablerate:' . $methodId),
             $this->address(),
             $this->paymentMethod()
         );
@@ -77,7 +77,7 @@ final class OrderCreationServiceShippingTaxTest extends AbstractFunctionalTestCa
         $order = $subject->create(
             $this->requestFor(1),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 0, 1),
+            new CheckoutSelections([], 0, 'tablerate:1'),
             $this->address(),
             $this->paymentMethod()
         );

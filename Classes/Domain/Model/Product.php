@@ -37,6 +37,7 @@ class Product extends AbstractEntity
     protected int $basketMaxQuantity = 0;
     protected int $weight = 0;
     protected bool $bulky = false;
+    protected string $shippingClass = '';
     protected float $contentAmount = 0.0;
     protected string $contentUnit = '';
     protected int $creditPoints = 0;
@@ -270,6 +271,21 @@ class Product extends AbstractEntity
     public function isBulky(): bool
     {
         return $this->bulky;
+    }
+
+    /**
+     * What kind of goods this is, as far as shipping is concerned - hazardous, freight-only, refrigerated.
+     * This extension defines the field but never interprets it: a carrier matches it against what it is
+     * willing to carry, and ignores the classes it does not know.
+     */
+    public function getShippingClass(): string
+    {
+        return $this->shippingClass;
+    }
+
+    public function setShippingClass(string $shippingClass): void
+    {
+        $this->shippingClass = $shippingClass;
     }
 
     public function setBulky(bool $bulky): void

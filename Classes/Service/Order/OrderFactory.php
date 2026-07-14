@@ -81,7 +81,10 @@ final class OrderFactory
         $order->setTotalTax($order->getTotalTax()->add($adjustments->getTaxTotal()));
         $order->setDiscountTotal($adjustments->getDiscountTotal());
         $order->setVoucherCodes($details->getVoucherCodes());
-        $order->setShippingMethod($details->getShippingMethodUid());
+        $shippingSelection = $details->getShippingSelection();
+        $order->setShippingProvider($shippingSelection->getOption()?->getProviderIdentifier() ?? '');
+        $order->setShippingOption($shippingSelection->getOption()?->getOptionIdentifier() ?? '');
+        $order->setShippingLabel($shippingSelection->getLabel());
         $order->setShippingTotal($adjustments->getTotalByType(AdjustmentType::SHIPPING));
         $order->setHandlingFeeTotal($adjustments->getTotalByType(AdjustmentType::HANDLING));
         $order->setDepositTotal($adjustments->getTotalByType(AdjustmentType::DEPOSIT));

@@ -32,10 +32,10 @@
         <div class="col-md-6">
             <h4><f:translate key="payment_method" /></h4>
             <p>{paymentMethod.label}</p>
-            <f:if condition="{shippingMethod}">
+            <f:if condition="{shippingSelection.option}">
                 <f:then>
                     <h4><f:translate key="checkout_shipping_method" /></h4>
-                    <p>{shippingMethod.title} - {shippingMethod.rate.decimalString}</p>
+                    <p>{shippingSelection.label} - {shippingSelection.total.decimalString}</p>
                 </f:then>
             </f:if>
         </div>

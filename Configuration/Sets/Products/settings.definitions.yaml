@@ -163,6 +163,11 @@ settings:
     default: false
     label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.shipping.enabled'
     category: shipping
+  products.shipping.preselect:
+    type: string
+    default: 'none'
+    label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.shipping.preselect'
+    category: shipping
   products.shipping.bulkySurcharge:
     type: string
     default: '0.00'

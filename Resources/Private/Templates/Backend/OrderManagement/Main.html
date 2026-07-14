@@ -44,11 +44,11 @@
                                 </tr>
                             </f:then>
                         </f:if>
-                        <f:if condition="{order.shippingMethodUid}">
+                        <f:if condition="{order.shippingLabel}">
                             <f:then>
                                 <tr>
                                     <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.shipping" /></th>
-                                    <td><p:format.money value="{order.shippingTotalCents}" currency="{order.currency}" /></td>
+                                    <td>{order.shippingLabel} &ndash; <p:format.money value="{order.shippingTotalCents}" currency="{order.currency}" /></td>
                                 </tr>
                             </f:then>
                         </f:if>

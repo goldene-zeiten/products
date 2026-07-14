@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Domain\Dto\Checkout;
 
 use GoldeneZeiten\Products\Domain\Dto\Address;
+use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingSelection;
 use GoldeneZeiten\Products\Domain\ValueObject\AdjustmentCollection;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
@@ -21,7 +22,7 @@ final readonly class PlacementDetails
     public function __construct(
         private AdjustmentCollection $adjustments,
         private array $voucherCodes = [],
-        private int $shippingMethodUid = 0,
+        private ?ShippingSelection $shippingSelection = null,
         private ?Address $deliveryAddress = null,
         private string $giftMessage = ''
     ) {}
@@ -39,9 +40,9 @@ final readonly class PlacementDetails
         return $this->voucherCodes;
     }
 
-    public function getShippingMethodUid(): int
+    public function getShippingSelection(): ShippingSelection
     {
-        return $this->shippingMethodUid;
+        return $this->shippingSelection ?? ShippingSelection::none();
     }
 
     public function getDeliveryAddress(): ?Address

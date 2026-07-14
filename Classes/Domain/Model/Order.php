@@ -41,8 +41,9 @@ class Order extends AbstractEntity
     protected int $discountTotal = 0;
     /** @var string */
     protected string $voucherCodes = '[]';
-    /** @var int */
-    protected int $shippingMethod = 0;
+    protected string $shippingProvider = '';
+    protected string $shippingOption = '';
+    protected string $shippingLabel = '';
     /** @var int */
     protected int $shippingTotal = 0;
     /** @var int */
@@ -284,14 +285,43 @@ class Order extends AbstractEntity
         $this->voucherCodes = (string)json_encode($voucherCodes);
     }
 
-    public function getShippingMethod(): int
+    /**
+     * Which carrier shipped this order, and which of its options was used - "dhl" / "express". The
+     * carrier is recorded by name rather than by reference, because it may live in an extension that is
+     * no longer installed by the time anyone looks at the order.
+     */
+    public function getShippingProvider(): string
     {
-        return $this->shippingMethod;
+        return $this->shippingProvider;
     }
 
-    public function setShippingMethod(int $shippingMethod): void
+    public function setShippingProvider(string $shippingProvider): void
     {
-        $this->shippingMethod = $shippingMethod;
+        $this->shippingProvider = $shippingProvider;
+    }
+
+    public function getShippingOption(): string
+    {
+        return $this->shippingOption;
+    }
+
+    public function setShippingOption(string $shippingOption): void
+    {
+        $this->shippingOption = $shippingOption;
+    }
+
+    /**
+     * What the customer was shown - "DHL Express". Denormalized on purpose: the order has to keep
+     * rendering after the carrier's extension is uninstalled.
+     */
+    public function getShippingLabel(): string
+    {
+        return $this->shippingLabel;
+    }
+
+    public function setShippingLabel(string $shippingLabel): void
+    {
+        $this->shippingLabel = $shippingLabel;
     }
 
     public function getShippingTotal(): Money

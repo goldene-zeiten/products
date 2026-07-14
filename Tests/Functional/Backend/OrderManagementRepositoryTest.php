@@ -83,14 +83,14 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
 
     #[Test]
     #[DataProvider('fetchRowShippingFieldsProvider')]
-    public function fetchRowMapsShippingFields(int $orderUid, int $expectedShippingMethodUid, int $expectedShippingTotalCents): void
+    public function fetchRowMapsShippingFields(int $orderUid, string $expectedShippingLabel, int $expectedShippingTotalCents): void
     {
         $subject = $this->get(OrderManagementRepository::class);
 
         $row = $subject->fetchRow($orderUid);
 
         $this->assertNotNull($row);
-        $this->assertSame($expectedShippingMethodUid, $row['shippingMethodUid']);
+        $this->assertSame($expectedShippingLabel, $row['shippingLabel']);
         $this->assertSame($expectedShippingTotalCents, $row['shippingTotalCents']);
     }
 
@@ -98,13 +98,13 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         yield 'shipping fields are mapped' => [
             'orderUid' => 1,
-            'expectedShippingMethodUid' => 1,
+            'expectedShippingLabel' => 'Standard',
             'expectedShippingTotalCents' => 500,
         ];
 
-        yield 'absent shipping is mapped as zero' => [
+        yield 'absent shipping is mapped as empty' => [
             'orderUid' => 2,
-            'expectedShippingMethodUid' => 0,
+            'expectedShippingLabel' => '',
             'expectedShippingTotalCents' => 0,
         ];
     }

@@ -429,6 +429,21 @@
 			<trans-unit id="tx_products_domain_model_product.bulky" resname="tx_products_domain_model_product.bulky">
 				<source>Bulky (adds the shipping bulky surcharge)</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.shipping_class" resname="tx_products_domain_model_product.shipping_class">
+				<source>Shipping class</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.shipping_class.description" resname="tx_products_domain_model_product.shipping_class.description">
+				<source>Restricts which carriers may ship this product. Carriers that cannot carry the class refuse the whole basket.</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.shipping_class.hazmat" resname="tx_products_domain_model_product.shipping_class.hazmat">
+				<source>Hazardous goods</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.shipping_class.freight" resname="tx_products_domain_model_product.shipping_class.freight">
+				<source>Freight only</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.shipping_class.refrigerated" resname="tx_products_domain_model_product.shipping_class.refrigerated">
+				<source>Refrigerated</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_product.credit_points" resname="tx_products_domain_model_product.credit_points">
 				<source>Credit points earned per unit</source>
 			</trans-unit>
@@ -612,8 +627,14 @@
 			<trans-unit id="tx_products_domain_model_order.voucher_codes" resname="tx_products_domain_model_order.voucher_codes">
 				<source>Applied Voucher Codes</source>
 			</trans-unit>
-			<trans-unit id="tx_products_domain_model_order.shipping_method" resname="tx_products_domain_model_order.shipping_method">
-				<source>Shipping Method</source>
+			<trans-unit id="tx_products_domain_model_order.shipping_provider" resname="tx_products_domain_model_order.shipping_provider">
+				<source>Shipping carrier</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.shipping_option" resname="tx_products_domain_model_order.shipping_option">
+				<source>Shipping option</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.shipping_label" resname="tx_products_domain_model_order.shipping_label">
+				<source>Shipping option (as shown to the customer)</source>
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_order.shipping_total" resname="tx_products_domain_model_order.shipping_total">
 				<source>Shipping Total</source>

@@ -18,7 +18,7 @@ final class CheckoutService
 {
     private const SESSION_KEY_ADDRESS = 'tx_products_checkout_address';
     private const SESSION_KEY_PAYMENT = 'tx_products_checkout_payment';
-    private const SESSION_KEY_SHIPPING_METHOD = 'tx_products_checkout_shipping_method';
+    private const SESSION_KEY_SHIPPING_OPTION = 'tx_products_checkout_shipping_option';
     private const SESSION_KEY_DELIVERY_ADDRESS = 'tx_products_checkout_delivery_address';
     private const SESSION_KEY_GIFT_MESSAGE = 'tx_products_checkout_gift_message';
 
@@ -123,22 +123,26 @@ final class CheckoutService
         return '';
     }
 
-    public function setShippingMethod(ServerRequestInterface $request, int $shippingMethodUid): void
+    /**
+     * The customer's choice is stored as "provider:option" rather than a record uid, because a carrier
+     * that computes its rates through an API has no record to point at.
+     */
+    public function setShippingOption(ServerRequestInterface $request, string $optionKey): void
     {
         $frontendUser = $request->getAttribute('frontend.user');
         if ($frontendUser instanceof FrontendUserAuthentication) {
-            $frontendUser->setKey('ses', self::SESSION_KEY_SHIPPING_METHOD, $shippingMethodUid);
+            $frontendUser->setKey('ses', self::SESSION_KEY_SHIPPING_OPTION, $optionKey);
             $frontendUser->storeSessionData();
         }
     }
 
-    public function getShippingMethod(ServerRequestInterface $request): int
+    public function getShippingOption(ServerRequestInterface $request): string
     {
         $frontendUser = $request->getAttribute('frontend.user');
         if ($frontendUser instanceof FrontendUserAuthentication) {
-            return (int)$frontendUser->getKey('ses', self::SESSION_KEY_SHIPPING_METHOD);
+            return (string)$frontendUser->getKey('ses', self::SESSION_KEY_SHIPPING_OPTION);
         }
-        return 0;
+        return '';
     }
 
     public function setDeliveryAddress(ServerRequestInterface $request, ?Address $deliveryAddress): void
@@ -202,7 +206,7 @@ final class CheckoutService
         if ($frontendUser instanceof FrontendUserAuthentication) {
             $frontendUser->setKey('ses', self::SESSION_KEY_ADDRESS, null);
             $frontendUser->setKey('ses', self::SESSION_KEY_PAYMENT, null);
-            $frontendUser->setKey('ses', self::SESSION_KEY_SHIPPING_METHOD, null);
+            $frontendUser->setKey('ses', self::SESSION_KEY_SHIPPING_OPTION, null);
             $frontendUser->setKey('ses', self::SESSION_KEY_DELIVERY_ADDRESS, null);
             $frontendUser->setKey('ses', self::SESSION_KEY_GIFT_MESSAGE, null);
             $frontendUser->storeSessionData();

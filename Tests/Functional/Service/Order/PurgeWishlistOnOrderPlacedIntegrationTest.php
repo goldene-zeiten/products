@@ -70,7 +70,7 @@ final class PurgeWishlistOnOrderPlacedIntegrationTest extends AbstractFunctional
         $this->get(OrderCreationService::class)->create(
             $request,
             $basketViewModel,
-            new CheckoutSelections([], 0, 0),
+            new CheckoutSelections([], 0, ''),
             new Address(email: 'buyer@example.com', country: 'DE'),
             $this->get(PaymentMethodRegistry::class)->get('invoice')
         );

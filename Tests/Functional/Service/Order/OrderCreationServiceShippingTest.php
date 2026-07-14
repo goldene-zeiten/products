@@ -14,7 +14,7 @@ use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Service\Order\OrderCreationService;
-use GoldeneZeiten\Products\Service\Shipping\Exception\NoShippingMethodAvailableException;
+use GoldeneZeiten\Products\Shipping\Exception\NoShippingOptionAvailableException;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -40,20 +40,22 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
      */
     #[Test]
     #[DataProvider('shippingMethodVoucherScenarioProvider')]
-    public function shippingMethodAndVoucherHandling(array $voucherCodes, int $expectedShippingCents): void
+    public function shippingMethodAndVoucherHandling(array $voucherCodes, int $expectedShippingCents, int $expectedTotalGross = 10500): void
     {
         $subject = $this->subject();
 
         $order = $subject->create(
             $this->requestWithShipping(enabled: true),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections($voucherCodes, 0, 1),
+            new CheckoutSelections($voucherCodes, 0, 'tablerate:1'),
             $this->address(),
             $this->paymentMethod()
         );
 
-        $this->assertSame(1, $order->getShippingMethod());
+        $this->assertSame('tablerate', $order->getShippingProvider());
+        $this->assertSame('1', $order->getShippingOption());
         $this->assertSame($expectedShippingCents, $order->getShippingTotal()->getCents());
+        $this->assertSame($expectedTotalGross, $order->getTotalGross()->getCents());
     }
 
     /**
@@ -61,9 +63,9 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
      */
     public static function shippingMethodVoucherScenarioProvider(): \Generator
     {
-        yield 'chosenMethodAddsItsRate' => ['voucherCodes' => [], 'expectedShippingCents' => 500];
-        yield 'freeShippingVoucherZeroesTheCost' => ['voucherCodes' => ['FREESHIP'], 'expectedShippingCents' => 0];
-        yield 'regularVoucherDoesNotWaiveTheShipping' => ['voucherCodes' => ['REGULAR'], 'expectedShippingCents' => 500];
+        yield 'chosenMethodAddsItsRate' => ['voucherCodes' => [], 'expectedShippingCents' => 500, 'expectedTotalGross' => 10500];
+        yield 'freeShippingVoucherOffsetsTheCostInsteadOfHidingIt' => ['voucherCodes' => ['FREESHIP'], 'expectedShippingCents' => 500, 'expectedTotalGross' => 10000];
+        yield 'regularVoucherDoesNotWaiveTheShipping' => ['voucherCodes' => ['REGULAR'], 'expectedShippingCents' => 500, 'expectedTotalGross' => 10500];
     }
 
     #[Test]
@@ -74,12 +76,12 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->requestWithShipping(enabled: false),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 0, 1),
+            new CheckoutSelections([], 0, 'tablerate:1'),
             $this->address(),
             $this->paymentMethod()
         );
 
-        $this->assertSame(0, $order->getShippingMethod());
+        $this->assertSame('', $order->getShippingProvider());
         $this->assertSame(0, $order->getShippingTotal()->getCents());
         $this->assertSame(10000, $order->getTotalGross()->getCents());
     }
@@ -92,12 +94,12 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->requestWithShipping(enabled: true),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 0, 0),
+            new CheckoutSelections([], 0, ''),
             $this->address(),
             $this->paymentMethod()
         );
 
-        $this->assertSame(0, $order->getShippingMethod());
+        $this->assertSame('', $order->getShippingProvider());
         $this->assertSame(0, $order->getShippingTotal()->getCents());
     }
 
@@ -110,12 +112,12 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
             $subject->create(
                 $this->requestWithShipping(enabled: true),
                 $this->basketViewModel($this->product()),
-                new CheckoutSelections([], 0, 999),
+                new CheckoutSelections([], 0, 'tablerate:999'),
                 $this->address(),
                 $this->paymentMethod()
             );
-            $this->fail('Expected NoShippingMethodAvailableException was not thrown.');
-        } catch (NoShippingMethodAvailableException) {
+            $this->fail('Expected NoShippingOptionAvailableException was not thrown.');
+        } catch (NoShippingOptionAvailableException) {
             // expected
         }
 
