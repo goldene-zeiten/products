@@ -31,11 +31,6 @@ ExtensionManagementUtility::addTypoScriptSetup(
 config.pageTitleProviders.products.before = record'
 );
 
-$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '^tx_products_productdetail[attributeValues]';
-$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '=tx_products_productdetail[selectedArticle]';
-$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '^tx_products_productdetail[__referrer]';
-$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = '^tx_products_productdetail[__trustedProperties]';
-
 ExtensionUtility::configurePlugin(
     'Products',
     'ProductList',
