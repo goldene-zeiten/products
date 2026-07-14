@@ -71,7 +71,10 @@ return [
                 'renderType' => 'selectSingle',
                 'default' => 0,
                 'items' => [
-                    ['label' => '', 'value' => 0],
+                    [
+                        'label' => '',
+                        'value' => 0,
+                    ],
                 ],
                 'foreign_table' => 'tx_products_domain_model_product',
                 'foreign_table_where' => 'AND {#tx_products_domain_model_product}.{#pid}=###CURRENT_PID### AND {#tx_products_domain_model_product}.{#sys_language_uid} IN (-1,0)',
@@ -292,10 +295,22 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['label' => '', 'value' => ''],
-                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.shipping_class.hazmat', 'value' => 'hazmat'],
-                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.shipping_class.freight', 'value' => 'freight'],
-                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.shipping_class.refrigerated', 'value' => 'refrigerated'],
+                    [
+                        'label' => '',
+                        'value' => '',
+                    ],
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.shipping_class.hazmat',
+                        'value' => 'hazmat',
+                    ],
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.shipping_class.freight',
+                        'value' => 'freight',
+                    ],
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.shipping_class.refrigerated',
+                        'value' => 'refrigerated',
+                    ],
                 ],
                 'default' => '',
             ],
@@ -315,22 +330,70 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['label' => '-- disabled --', 'value' => ''],
-                    ['label' => 'Gram (g)', 'value' => 'g'],
-                    ['label' => 'Kilogram (kg)', 'value' => 'kg'],
-                    ['label' => 'Ounce (oz)', 'value' => 'oz'],
-                    ['label' => 'Pound (lb)', 'value' => 'lb'],
-                    ['label' => 'Millilitre (ml)', 'value' => 'ml'],
-                    ['label' => 'Litre (l)', 'value' => 'l'],
-                    ['label' => 'Fluid ounce (US, fl oz)', 'value' => 'fl_oz'],
-                    ['label' => 'Gallon (US, gal)', 'value' => 'gal'],
-                    ['label' => 'Millimetre (mm)', 'value' => 'mm'],
-                    ['label' => 'Centimetre (cm)', 'value' => 'cm'],
-                    ['label' => 'Metre (m)', 'value' => 'm'],
-                    ['label' => 'Inch (in)', 'value' => 'in'],
-                    ['label' => 'Foot (ft)', 'value' => 'ft'],
-                    ['label' => 'Square metre (m²)', 'value' => 'm2'],
-                    ['label' => 'Square foot (ft²)', 'value' => 'ft2'],
+                    [
+                        'label' => '-- disabled --',
+                        'value' => '',
+                    ],
+                    [
+                        'label' => 'Gram (g)',
+                        'value' => 'g',
+                    ],
+                    [
+                        'label' => 'Kilogram (kg)',
+                        'value' => 'kg',
+                    ],
+                    [
+                        'label' => 'Ounce (oz)',
+                        'value' => 'oz',
+                    ],
+                    [
+                        'label' => 'Pound (lb)',
+                        'value' => 'lb',
+                    ],
+                    [
+                        'label' => 'Millilitre (ml)',
+                        'value' => 'ml',
+                    ],
+                    [
+                        'label' => 'Litre (l)',
+                        'value' => 'l',
+                    ],
+                    [
+                        'label' => 'Fluid ounce (US, fl oz)',
+                        'value' => 'fl_oz',
+                    ],
+                    [
+                        'label' => 'Gallon (US, gal)',
+                        'value' => 'gal',
+                    ],
+                    [
+                        'label' => 'Millimetre (mm)',
+                        'value' => 'mm',
+                    ],
+                    [
+                        'label' => 'Centimetre (cm)',
+                        'value' => 'cm',
+                    ],
+                    [
+                        'label' => 'Metre (m)',
+                        'value' => 'm',
+                    ],
+                    [
+                        'label' => 'Inch (in)',
+                        'value' => 'in',
+                    ],
+                    [
+                        'label' => 'Foot (ft)',
+                        'value' => 'ft',
+                    ],
+                    [
+                        'label' => 'Square metre (m²)',
+                        'value' => 'm2',
+                    ],
+                    [
+                        'label' => 'Square foot (ft²)',
+                        'value' => 'ft2',
+                    ],
                 ],
                 'default' => '',
             ],

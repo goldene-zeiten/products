@@ -59,7 +59,10 @@ return [
                 'foreign_table' => 'fe_users',
                 'default' => 0,
                 'items' => [
-                    ['label' => 'Guest', 'value' => 0],
+                    [
+                        'label' => 'Guest',
+                        'value' => 0,
+                    ],
                 ],
                 'readOnly' => true,
             ],

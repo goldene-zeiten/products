@@ -53,7 +53,10 @@ return [
                 'renderType' => 'selectSingle',
                 'foreign_table' => 'fe_groups',
                 'items' => [
-                    ['label' => 'Public (all visitors)', 'value' => 0],
+                    [
+                        'label' => 'Public (all visitors)',
+                        'value' => 0,
+                    ],
                 ],
                 'default' => 0,
             ],
