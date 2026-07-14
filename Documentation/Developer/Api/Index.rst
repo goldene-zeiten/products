@@ -33,3 +33,4 @@ availability checks and priority, plus a registry service that collects and quer
 
     CheckoutAdjustments
     OrderExport
+    PaymentMethods

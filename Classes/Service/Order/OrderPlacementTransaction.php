@@ -35,7 +35,7 @@ final class OrderPlacementTransaction
         $connection->beginTransaction();
         try {
             $order = $this->orderCreationService->create($request, $basketViewModel, $checkoutSelections, $address, $paymentMethod);
-            $paymentResult = $this->paymentInitiationService->initiate($order, $paymentMethod);
+            $paymentResult = $this->paymentInitiationService->initiate($order, $paymentMethod, $request);
             $connection->commit();
             return [$order, $paymentResult];
         } catch (\Throwable $exception) {
