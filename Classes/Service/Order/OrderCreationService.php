@@ -12,9 +12,12 @@ use GoldeneZeiten\Products\Domain\Dto\BasketDiscountSummary;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementContext;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementDetails;
+use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelection;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelectionCriteria;
 use GoldeneZeiten\Products\Domain\Dto\CreditPointsRedemption;
+use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
 use GoldeneZeiten\Products\Domain\Enum\CreditPointsTransactionType;
 use GoldeneZeiten\Products\Domain\Model\CreditPointsTransaction;
 use GoldeneZeiten\Products\Domain\Model\Order;
@@ -23,6 +26,8 @@ use GoldeneZeiten\Products\Domain\Model\VoucherRedemption;
 use GoldeneZeiten\Products\Domain\Repository\CreditPointsTransactionRepository;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Domain\Repository\VoucherRedemptionRepository;
+use GoldeneZeiten\Products\Domain\ValueObject\AdjustmentCollection;
+use GoldeneZeiten\Products\Domain\ValueObject\CheckoutAdjustment;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Event\AfterOrderPlacedEvent;
 use GoldeneZeiten\Products\Event\LowStockThresholdReachedEvent;
@@ -39,13 +44,16 @@ use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherExceptionInterface;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 final class OrderCreationService
 {
     private const DEFAULT_LOW_STOCK_THRESHOLD = 5;
+    private const ORDER_TABLE = 'tx_products_domain_model_order';
 
     public function __construct(
+        private readonly ConnectionPool $connectionPool,
         private readonly StockService $stockService,
         private readonly OrderRepository $orderRepository,
         private readonly OrderFactory $orderFactory,
@@ -64,6 +72,11 @@ final class OrderCreationService
         private readonly TermsSnapshotService $termsSnapshotService
     ) {}
 
+    /**
+     * Order placement is atomic: stock decrements, voucher redemptions and credit-point bookings either
+     * all land with the order or none of them do. Without the transaction a failure between them would
+     * burn a voucher for an order that never came into existence.
+     */
     public function create(
         ServerRequestInterface $request,
         BasketViewModel $basketViewModel,
@@ -71,6 +84,50 @@ final class OrderCreationService
         Address $address,
         PaymentMethodInterface $paymentMethod
     ): Order {
+        $connection = $this->connectionPool->getConnectionForTable(self::ORDER_TABLE);
+        $connection->beginTransaction();
+        try {
+            $order = $this->persistOrder($request, $basketViewModel, $checkoutSelections, $address, $paymentMethod);
+            $connection->commit();
+        } catch (\Throwable $exception) {
+            $connection->rollBack();
+            throw $exception;
+        }
+
+        $this->eventDispatcher->dispatch(new AfterOrderPlacedEvent($order, $request));
+
+        return $order;
+    }
+
+    private function persistOrder(
+        ServerRequestInterface $request,
+        BasketViewModel $basketViewModel,
+        CheckoutSelections $checkoutSelections,
+        Address $address,
+        PaymentMethodInterface $paymentMethod
+    ): Order {
+        $context = $this->resolvePlacementContext($request, $basketViewModel, $checkoutSelections, $address);
+        $this->decrementStock($basketViewModel, $request);
+
+        $order = $this->orderFactory->create($request, $basketViewModel, $address, $paymentMethod->getIdentifier(), $context->getDetails());
+        $this->orderRepository->add($order);
+        $this->persistenceManager->persistAll();
+
+        $this->termsSnapshotService->snapshot($order);
+        $this->persistenceManager->persistAll();
+
+        $this->redeemVouchers($context->getVoucherSummary(), $order, $context->getFrontendUser(), $basketViewModel->getTotalGross());
+        $this->recordCreditPoints($basketViewModel, $context->getPointsRedemption(), $order, $context->getFrontendUser(), $context->getCreditPointsConfiguration());
+
+        return $order;
+    }
+
+    private function resolvePlacementContext(
+        ServerRequestInterface $request,
+        BasketViewModel $basketViewModel,
+        CheckoutSelections $checkoutSelections,
+        Address $address
+    ): PlacementContext {
         $configuration = $this->configurationFactory->create($request);
         $creditPointsConfiguration = $this->creditPointsConfigurationFactory->create($request);
         $frontendUser = $this->frontendUserResolver->getUid($request);
@@ -84,29 +141,63 @@ final class OrderCreationService
         );
         $shippingSelection = $this->shippingCostService->resolveSelection($configuration, $shippingCriteria, $request);
         $handlingFeeCost = $this->handlingFeeService->resolveCost($configuration, $basketViewModel, $address->getCountry(), $request);
+
         $details = new PlacementDetails(
-            $voucherSummary,
-            $pointsRedemption->getDiscountAmount(),
-            $shippingSelection,
-            $handlingFeeCost,
+            $this->buildAdjustments($basketViewModel, $voucherSummary, $pointsRedemption, $shippingSelection, $handlingFeeCost),
+            $this->voucherCodes($voucherSummary),
+            $shippingSelection->getShippingMethodUid(),
             $checkoutSelections->getDeliveryAddress(),
             $checkoutSelections->getGiftMessage()
         );
 
-        $this->decrementStock($basketViewModel, $request);
+        return new PlacementContext($details, $voucherSummary, $pointsRedemption, $creditPointsConfiguration, $frontendUser);
+    }
 
-        $order = $this->orderFactory->create($request, $basketViewModel, $address, $paymentMethod->getIdentifier(), $details);
-        $this->orderRepository->add($order);
-        $this->persistenceManager->persistAll();
+    /**
+     * The order's money effects, in the order they apply. Each is a signed amount, so a later feature can
+     * offset an earlier one instead of having to reach into it.
+     */
+    private function buildAdjustments(
+        BasketViewModel $basketViewModel,
+        BasketDiscountSummary $voucherSummary,
+        CreditPointsRedemption $pointsRedemption,
+        ShippingSelection $shippingSelection,
+        Money $handlingFeeCost
+    ): AdjustmentCollection {
+        $candidates = [
+            new CheckoutAdjustment(
+                AdjustmentType::SHIPPING,
+                'core.shipping',
+                $shippingSelection->getShippingMethod()?->getTitle() ?? '',
+                $shippingSelection->getCost(),
+                $shippingSelection->getTaxRate()
+            ),
+            new CheckoutAdjustment(AdjustmentType::HANDLING, 'core.handling', '', $handlingFeeCost),
+            new CheckoutAdjustment(AdjustmentType::DISCOUNT, 'core.voucher', '', $this->negate($voucherSummary->getDiscountTotal())),
+            new CheckoutAdjustment(AdjustmentType::LOYALTY, 'core.credit_points', '', $this->negate($pointsRedemption->getDiscountAmount())),
+            new CheckoutAdjustment(AdjustmentType::DEPOSIT, 'core.deposit', '', $basketViewModel->getDepositTotal()),
+        ];
 
-        $this->termsSnapshotService->snapshot($order);
-        $this->persistenceManager->persistAll();
+        return new AdjustmentCollection(...array_filter(
+            $candidates,
+            static fn(CheckoutAdjustment $adjustment): bool => $adjustment->getAmount()->getCents() !== 0
+        ));
+    }
 
-        $this->redeemVouchers($voucherSummary, $order, $frontendUser, $basketViewModel->getTotalGross());
-        $this->recordCreditPoints($basketViewModel, $pointsRedemption, $order, $frontendUser, $creditPointsConfiguration);
-        $this->eventDispatcher->dispatch(new AfterOrderPlacedEvent($order, $request));
+    private function negate(Money $amount): Money
+    {
+        return Money::fromCents(-$amount->getCents());
+    }
 
-        return $order;
+    /**
+     * @return string[]
+     */
+    private function voucherCodes(BasketDiscountSummary $voucherSummary): array
+    {
+        return array_map(
+            static fn(Voucher $voucher): string => $voucher->getCode(),
+            $voucherSummary->getAppliedVouchers()
+        );
     }
 
     private function decrementStock(BasketViewModel $basketViewModel, ServerRequestInterface $request): void
