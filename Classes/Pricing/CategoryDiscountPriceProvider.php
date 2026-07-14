@@ -9,12 +9,17 @@ use GoldeneZeiten\Products\Domain\Model\Product;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Applies whichever is higher of the category discount ({@see CategoryDiscountResolver}) or the
  * shopper's personal discount ({@see FrontendUserResolver::getDiscountPercent()}); never stacked.
+ *
+ * Several price providers implement the interface; this is the one anything asking for a
+ * {@see PriceProviderInterface} gets, so it is the shop's effective pricing rule.
  */
+#[AsAlias(PriceProviderInterface::class)]
 final class CategoryDiscountPriceProvider implements PriceProviderInterface
 {
     public function __construct(

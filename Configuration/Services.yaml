@@ -7,6 +7,3 @@ services:
   GoldeneZeiten\Products\:
     resource: '../Classes/*'
     exclude: '../Classes/Exception/*'
-
-  GoldeneZeiten\Products\Pricing\PriceProviderInterface:
-    alias: GoldeneZeiten\Products\Pricing\CategoryDiscountPriceProvider
