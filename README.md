@@ -56,8 +56,9 @@ Build/Scripts/runTests.sh -s phpstan
 
 A Playwright suite drives a real demo shop (nested categories, search, basket, checkout, FE
 login) end to end in a browser. It runs against a disposable TYPO3 instance that
-`Tests/Acceptance/setupInstance.sh` builds fresh every time - nothing under
-`Tests/Acceptance/Instance/` is ever committed.
+`Tests/Acceptance/setupInstance.sh` builds fresh every time, beside the functional tests'
+own throwaway instances under `.Build/Web/typo3temp/var/tests/`, so nothing of it is ever
+committed and a leftover instance cannot disturb the other suites.
 
 ```bash
 Build/Scripts/runTests.sh -s acceptance -t 13 -d sqlite

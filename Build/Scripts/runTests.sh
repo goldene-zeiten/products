@@ -120,8 +120,7 @@ cleanTestFiles() {
     # test related
     echo -n "Clean test related files ... "
     rm -rf \
-        .Build/Web/typo3temp/var/tests/ \
-        Tests/Acceptance/Instance/
+        .Build/Web/typo3temp/var/tests/
     echo "done"
 }
 
@@ -506,7 +505,7 @@ case ${TEST_SUITE} in
             echo "Acceptance instance setup failed, aborting before starting the web server/Playwright." >&2
             SUITE_EXIT_CODE=${SETUP_EXIT_CODE}
         else
-            ${CONTAINER_BIN} run -d --name acceptance-web-${SUFFIX} --network ${NETWORK} -v ${ROOT_DIR}:${ROOT_DIR} -w ${ROOT_DIR} ${IMAGE_PHP} php -S 0.0.0.0:8080 -t Tests/Acceptance/Instance/public Tests/Acceptance/Instance/public/index.php >/dev/null
+            ${CONTAINER_BIN} run -d --name acceptance-web-${SUFFIX} --network ${NETWORK} -v ${ROOT_DIR}:${ROOT_DIR} -w ${ROOT_DIR} ${IMAGE_PHP} php -S 0.0.0.0:8080 -t .Build/Web/typo3temp/var/tests/acceptance/public .Build/Web/typo3temp/var/tests/acceptance/public/index.php >/dev/null
             waitFor acceptance-web-${SUFFIX} 8080
             ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name playwright-${SUFFIX} -e PLAYWRIGHT_BASE_URL="http://acceptance-web-${SUFFIX}:8080/" -e CI=1 ${IMAGE_PLAYWRIGHT} npx playwright test --config=Tests/Acceptance/playwright.config.js
             SUITE_EXIT_CODE=$?
