@@ -1,5 +1,5 @@
 {
-    "name": "@goldene-zeiten/products",
+    "name": "@goldene-zeiten/products-core",
     "version": "0.1.0",
     "private": true,
     "type": "module",

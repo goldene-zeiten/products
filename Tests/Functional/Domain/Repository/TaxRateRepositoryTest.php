@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Domain\Repository;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Domain\Repository;
 
-use GoldeneZeiten\Products\Domain\Model\TaxClass;
-use GoldeneZeiten\Products\Domain\Model\TaxRate;
-use GoldeneZeiten\Products\Domain\Repository\TaxClassRepository;
-use GoldeneZeiten\Products\Domain\Repository\TaxRateRepository;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Domain\Model\TaxClass;
+use GoldeneZeiten\Products\Core\Domain\Model\TaxRate;
+use GoldeneZeiten\Products\Core\Domain\Repository\TaxClassRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\TaxRateRepository;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -18,7 +18,7 @@ use PHPUnit\Framework\Attributes\Test;
 final class TaxRateRepositoryTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

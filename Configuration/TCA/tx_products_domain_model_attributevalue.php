@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_attributevalue',
+        'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_attributevalue',
         'label' => 'value',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -29,7 +29,7 @@ return [
             ],
         ],
         'value' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_attributevalue.value',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_attributevalue.value',
             'config' => [
                 'type' => 'input',
                 'size' => 30,

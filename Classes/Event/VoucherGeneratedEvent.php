@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Event;
+namespace GoldeneZeiten\Products\Core\Event;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Model\Voucher;
-use GoldeneZeiten\Products\Service\Voucher\GainedVoucherService;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\Voucher;
+use GoldeneZeiten\Products\Core\Service\Voucher\GainedVoucherService;
 
 /**
  * Notifies integrators when a reward voucher is auto-generated for a customer — log the

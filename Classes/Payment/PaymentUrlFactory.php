@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Payment;
+namespace GoldeneZeiten\Products\Core\Payment;
 
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentCallbackUrls;
-use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentCallbackUrls;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 
@@ -21,7 +21,7 @@ final class PaymentUrlFactory
 {
     public const WEBHOOK_PATH = '/products/payment/webhook';
 
-    private const PLUGIN_NAMESPACE = 'tx_products_checkout';
+    private const PLUGIN_NAMESPACE = 'tx_productscore_checkout';
 
     public function __construct(
         private readonly PaymentTokenService $paymentTokenService

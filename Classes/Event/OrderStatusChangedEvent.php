@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Event;
+namespace GoldeneZeiten\Products\Core\Event;
 
-use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Service\Order\OrderStatusManager;
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Service\Order\OrderStatusManager;
 
 /**
  * Notifies integrators when an order transitions to a new status — send status update emails,

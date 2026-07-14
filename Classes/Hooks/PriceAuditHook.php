@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Hooks;
+namespace GoldeneZeiten\Products\Core\Hooks;
 
-use GoldeneZeiten\Products\Domain\Validation\PricePeriodOverlapGuard;
-use GoldeneZeiten\Products\Service\PriceHistory\PriceHistoryRecorder;
+use GoldeneZeiten\Products\Core\Domain\Validation\PricePeriodOverlapGuard;
+use GoldeneZeiten\Products\Core\Service\PriceHistory\PriceHistoryRecorder;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SysLog\Action\Database as SystemLogDatabaseAction;

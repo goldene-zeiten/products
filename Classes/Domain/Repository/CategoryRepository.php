@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Repository;
+namespace GoldeneZeiten\Products\Core\Domain\Repository;
 
-use GoldeneZeiten\Products\Domain\Model\Category;
-use GoldeneZeiten\Products\Event\ModifyCategoryQueryEvent;
+use GoldeneZeiten\Products\Core\Domain\Model\Category;
+use GoldeneZeiten\Products\Core\Event\ModifyCategoryQueryEvent;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
 /**

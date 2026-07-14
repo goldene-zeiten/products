@@ -12,7 +12,7 @@ in the backend, so a provider supplies both the products **and** the label the c
 Because product listing is inherently shop-specific, **the extension ships with only basic listings**
 (all, offers, highlights, new); integrators add custom views by implementing the interface.
 
-**Location:** :php:`GoldeneZeiten\Products\Catalog\ProductListModeProviderInterface`
+**Location:** :php:`GoldeneZeiten\Products\Core\Catalog\ProductListModeProviderInterface`
 
 A Listing Is a View, Not Just a Query
 ======================================
@@ -149,9 +149,9 @@ This example implements a simple staff picks listing managed in the backend:
 
     namespace MyVendor\MyExtension\Catalog;
 
-    use GoldeneZeiten\Products\Catalog\ProductListModeProviderInterface;
-    use GoldeneZeiten\Products\Domain\Dto\Catalog\ProductListContext;
-    use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
+    use GoldeneZeiten\Products\Core\Catalog\ProductListModeProviderInterface;
+    use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListContext;
+    use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 
     /**
      * A curated list of staff-picked products.
@@ -173,7 +173,7 @@ This example implements a simple staff picks listing managed in the backend:
         }
 
         /**
-         * @return \GoldeneZeiten\Products\Domain\Model\Product[]
+         * @return \GoldeneZeiten\Products\Core\Domain\Model\Product[]
          */
         public function findProducts(ProductListContext $context): array
         {
@@ -213,9 +213,9 @@ decisions:
 
     namespace MyVendor\MyExtension\Catalog;
 
-    use GoldeneZeiten\Products\Catalog\ProductListModeProviderInterface;
-    use GoldeneZeiten\Products\Domain\Dto\Catalog\ProductListContext;
-    use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
+    use GoldeneZeiten\Products\Core\Catalog\ProductListModeProviderInterface;
+    use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListContext;
+    use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
     use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
 
     /**
@@ -239,7 +239,7 @@ decisions:
         }
 
         /**
-         * @return \GoldeneZeiten\Products\Domain\Model\Product[]
+         * @return \GoldeneZeiten\Products\Core\Domain\Model\Product[]
          */
         public function findProducts(ProductListContext $context): array
         {

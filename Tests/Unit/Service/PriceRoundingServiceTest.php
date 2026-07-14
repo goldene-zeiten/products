@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Unit\Service;
+namespace GoldeneZeiten\Products\Core\Tests\Unit\Service;
 
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\PriceRoundingService;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\PriceRoundingService;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 

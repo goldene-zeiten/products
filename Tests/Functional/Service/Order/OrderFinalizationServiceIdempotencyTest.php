@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Order;
 
-use GoldeneZeiten\Products\Discount\Voucher\VoucherCheckoutState;
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
-use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
-use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Service\Order\OrderFinalizationService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
-use GoldeneZeiten\Products\Tests\Functional\Fixtures\TestMailer;
+use GoldeneZeiten\Products\Core\Discount\Voucher\VoucherCheckoutState;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Service\Order\OrderFinalizationService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\TestMailer;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -26,7 +26,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class OrderFinalizationServiceIdempotencyTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
         'goldene-zeiten/frontend-test',
     ];
 

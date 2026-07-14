@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Unit\Domain\Model;
+namespace GoldeneZeiten\Products\Core\Tests\Unit\Domain\Model;
 
-use GoldeneZeiten\Products\Domain\Model\Article;
-use GoldeneZeiten\Products\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Model\Article;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;

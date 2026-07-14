@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Payment;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Payment;
 
-use GoldeneZeiten\Products\Domain\Enum\PaymentResultState;
-use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Payment\InvoicePaymentMethod;
-use GoldeneZeiten\Products\Payment\RefundablePaymentMethodInterface;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentResultState;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Payment\InvoicePaymentMethod;
+use GoldeneZeiten\Products\Core\Payment\RefundablePaymentMethodInterface;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class InvoicePaymentMethodTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     #[Test]

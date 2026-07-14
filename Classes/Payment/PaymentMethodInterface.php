@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Payment;
+namespace GoldeneZeiten\Products\Core\Payment;
 
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
-use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('products.payment_method')]

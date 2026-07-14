@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Controller;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
@@ -17,11 +17,11 @@ final class CheckoutControllerTest extends AbstractFrontendTestCase
         $this->importCSVDataSet(__DIR__ . '/Fixtures/checkout_content.csv');
 
         $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
-            '&id=2&tx_products_checkout[action]=payment'
+            '&id=2&tx_productscore_checkout[action]=payment'
         );
         $request = (new InternalRequest('http://localhost/shop'))
             ->withQueryParameters([
-                'tx_products_checkout[action]' => 'payment',
+                'tx_productscore_checkout[action]' => 'payment',
                 'cHash' => $cHash,
             ]);
         $response = $this->executeFrontendSubRequest($request);

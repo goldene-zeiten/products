@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service;
+namespace GoldeneZeiten\Products\Core\Service;
 
-use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
-use GoldeneZeiten\Products\Domain\Model\Category;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Model\OrderItem;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\Model\ShippingPoint;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Service\Exception\AgbFileNotFoundException;
-use GoldeneZeiten\Products\Service\Invoice\InvoicePdfService;
-use GoldeneZeiten\Products\Service\Invoice\InvoiceRenderer;
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Category;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\OrderItem;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Model\ShippingPoint;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Service\Exception\AgbFileNotFoundException;
+use GoldeneZeiten\Products\Core\Service\Invoice\InvoicePdfService;
+use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceRenderer;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mime\Address;
 use TYPO3\CMS\Core\Mail\FluidEmail;
@@ -25,10 +25,10 @@ use TYPO3\CMS\Fluid\View\TemplatePaths;
 
 final class OrderMailService
 {
-    private const LANGUAGE_FILE = 'LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:';
-    private const DEFAULT_TEMPLATE_ROOT_PATHS = ['EXT:products/Resources/Private/Templates/Email/'];
-    private const DEFAULT_PARTIAL_ROOT_PATHS = ['EXT:products/Resources/Private/Partials/'];
-    private const DEFAULT_LAYOUT_ROOT_PATHS = ['EXT:products/Resources/Private/Layouts/'];
+    private const LANGUAGE_FILE = 'LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:';
+    private const DEFAULT_TEMPLATE_ROOT_PATHS = ['EXT:products_core/Resources/Private/Templates/Email/'];
+    private const DEFAULT_PARTIAL_ROOT_PATHS = ['EXT:products_core/Resources/Private/Partials/'];
+    private const DEFAULT_LAYOUT_ROOT_PATHS = ['EXT:products_core/Resources/Private/Layouts/'];
 
     public function __construct(
         private readonly MailerInterface $mailer,
@@ -190,7 +190,7 @@ final class OrderMailService
         $this->applySender($email, $settings);
         $email
             ->to($recipient)
-            ->subject((string)LocalizationUtility::translate(self::LANGUAGE_FILE . 'low_stock_warning_subject', 'Products', [$title]))
+            ->subject((string)LocalizationUtility::translate(self::LANGUAGE_FILE . 'low_stock_warning_subject', 'ProductsCore', [$title]))
             ->format(FluidEmail::FORMAT_BOTH)
             ->setTemplate('LowStockWarning')
             ->assignMultiple(['title' => $title, 'newStock' => $newStock]);
@@ -206,7 +206,7 @@ final class OrderMailService
 
         $email
             ->to($recipient)
-            ->subject((string)LocalizationUtility::translate($subjectKey, 'Products', [$order->getOrderNumber()]))
+            ->subject((string)LocalizationUtility::translate($subjectKey, 'ProductsCore', [$order->getOrderNumber()]))
             ->format(FluidEmail::FORMAT_BOTH)
             ->setTemplate($template)
             ->assign('order', $order);

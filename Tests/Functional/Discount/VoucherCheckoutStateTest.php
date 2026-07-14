@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Discount;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Discount;
 
-use GoldeneZeiten\Products\Discount\Voucher\VoucherCheckoutState;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Discount\Voucher\VoucherCheckoutState;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -16,7 +16,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class VoucherCheckoutStateTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     #[Test]

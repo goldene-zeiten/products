@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Exception;
+namespace GoldeneZeiten\Products\Core\Exception;
 
 /**
  * Thrown when a DataHandler write targets a category branch outside the

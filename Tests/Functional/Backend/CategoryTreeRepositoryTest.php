@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Backend;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Backend;
 
-use GoldeneZeiten\Products\Backend\CategoryAccessGuard;
-use GoldeneZeiten\Products\Backend\CategoryMountResolver;
-use GoldeneZeiten\Products\Backend\CategoryTreeRepository;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Backend\CategoryAccessGuard;
+use GoldeneZeiten\Products\Core\Backend\CategoryMountResolver;
+use GoldeneZeiten\Products\Core\Backend\CategoryTreeRepository;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

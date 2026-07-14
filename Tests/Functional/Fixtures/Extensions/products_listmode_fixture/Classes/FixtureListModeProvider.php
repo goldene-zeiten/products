@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\ListModeFixture;
 
-use GoldeneZeiten\Products\Catalog\ProductListModeProviderInterface;
-use GoldeneZeiten\Products\Domain\Dto\Catalog\ProductListContext;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Catalog\ProductListModeProviderInterface;
+use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListContext;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 
 /**
  * Fixture product listing provider with a static list of products.
@@ -31,7 +31,7 @@ final class FixtureListModeProvider implements ProductListModeProviderInterface
     }
 
     /**
-     * @return \GoldeneZeiten\Products\Domain\Model\Product[]
+     * @return \GoldeneZeiten\Products\Core\Domain\Model\Product[]
      */
     public function findProducts(ProductListContext $context): array
     {

@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_wishlistitem',
+        'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_wishlistitem',
         'label' => 'frontend_user',
         'label_alt' => 'product',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'delete' => 'deleted',
         'sortby' => 'sorting',
-        'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
+        'iconfile' => 'EXT:products_core/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
         '1' => ['showitem' => 'frontend_user, product, created'],
     ],
     'columns' => [
         'frontend_user' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_wishlistitem.frontend_user',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_wishlistitem.frontend_user',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -28,7 +28,7 @@ return [
             ],
         ],
         'product' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_wishlistitem.product',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_wishlistitem.product',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -38,7 +38,7 @@ return [
             ],
         ],
         'created' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_wishlistitem.created',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_wishlistitem.created',
             'config' => [
                 'type' => 'datetime',
                 'size' => 13,

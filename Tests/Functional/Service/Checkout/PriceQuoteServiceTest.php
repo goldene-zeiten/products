@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service\Checkout;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Checkout;
 
-use GoldeneZeiten\Products\Configuration\ProductsConfiguration;
-use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
-use GoldeneZeiten\Products\Service\Basket\BasketService;
-use GoldeneZeiten\Products\Service\Checkout\PriceQuoteService;
-use GoldeneZeiten\Products\Service\Order\Exception\PriceQuoteExpiredException;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Configuration\ProductsConfiguration;
+use GoldeneZeiten\Products\Core\Configuration\ProductsConfigurationFactory;
+use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Service\Checkout\PriceQuoteService;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\PriceQuoteExpiredException;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -30,7 +30,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class PriceQuoteServiceTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

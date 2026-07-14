@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Unit\Domain\ValueObject;
+namespace GoldeneZeiten\Products\Core\Tests\Unit\Domain\ValueObject;
 
-use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
-use GoldeneZeiten\Products\Domain\ValueObject\AdjustmentCollection;
-use GoldeneZeiten\Products\Domain\ValueObject\CheckoutAdjustment;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Domain\Enum\AdjustmentType;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\AdjustmentCollection;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\CheckoutAdjustment;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;

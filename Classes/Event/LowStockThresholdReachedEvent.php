@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Event;
+namespace GoldeneZeiten\Products\Core\Event;
 
-use GoldeneZeiten\Products\Service\Order\OrderCreationService;
+use GoldeneZeiten\Products\Core\Service\Order\OrderCreationService;
 
 /**
  * Notifies integrators when stock falls below the configured threshold — send an alert to

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Discount\Voucher;
+namespace GoldeneZeiten\Products\Core\Discount\Voucher;
 
-use GoldeneZeiten\Products\Domain\ValueObject\CoreAdjustmentProvider;
-use GoldeneZeiten\Products\Service\Checkout\CheckoutStateStore;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\CoreAdjustmentProvider;
+use GoldeneZeiten\Products\Core\Service\Checkout\CheckoutStateStore;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**

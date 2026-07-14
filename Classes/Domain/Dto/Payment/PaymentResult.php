@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Dto\Payment;
+namespace GoldeneZeiten\Products\Core\Domain\Dto\Payment;
 
-use GoldeneZeiten\Products\Domain\Enum\PaymentResultState;
-use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentResultState;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 #[Exclude]

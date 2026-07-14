@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article',
+        'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article',
         'label' => 'title',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -17,10 +17,10 @@ return [
         'enablecolumns' => [
             'disabled' => 'hidden',
         ],
-        'iconfile' => 'EXT:products/Resources/Public/Icons/Article.svg',
+        'iconfile' => 'EXT:products_core/Resources/Public/Icons/Article.svg',
     ],
     'types' => [
-        '1' => ['showitem' => '--div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_general, product, title, slug, --palette--;;identifiers, attribute_values, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_prices, --palette--;;pricing, price_tiers, price_periods, --linebreak--, --palette--;;unitPricing, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_stock, --palette--;;stock, --palette--;;basketLimits, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_shipping, --palette--;;shipping, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_media, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => '--div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_general, product, title, slug, --palette--;;identifiers, attribute_values, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_prices, --palette--;;pricing, price_tiers, price_periods, --linebreak--, --palette--;;unitPricing, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_stock, --palette--;;stock, --palette--;;basketLimits, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_shipping, --palette--;;shipping, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_media, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
     ],
     'palettes' => [
         'identifiers' => [
@@ -70,7 +70,7 @@ return [
             ],
         ],
         'product' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.product',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.product',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -80,7 +80,7 @@ return [
             ],
         ],
         'title' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.title',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.title',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -89,7 +89,7 @@ return [
             ],
         ],
         'slug' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.slug',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.slug',
             'config' => [
                 'type' => 'slug',
                 'generatorOptions' => [
@@ -105,7 +105,7 @@ return [
             ],
         ],
         'item_number' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.item_number',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.item_number',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -113,7 +113,7 @@ return [
             ],
         ],
         'ean' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.ean',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.ean',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -121,7 +121,7 @@ return [
             ],
         ],
         'price' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
@@ -130,19 +130,19 @@ return [
             ],
         ],
         'price_mode' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_mode',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_mode',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_mode.override', 'value' => 'override'],
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_mode.surcharge', 'value' => 'surcharge'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_mode.override', 'value' => 'override'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_mode.surcharge', 'value' => 'surcharge'],
                 ],
                 'default' => 'override',
             ],
         ],
         'direct_cost' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.direct_cost',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.direct_cost',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
@@ -151,7 +151,7 @@ return [
             ],
         ],
         'deposit' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.deposit',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.deposit',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
@@ -160,7 +160,7 @@ return [
             ],
         ],
         'price_tiers' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_tiers',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_tiers',
             'config' => [
                 'type' => 'inline',
                 'foreign_table' => 'tx_products_domain_model_pricetier',
@@ -174,7 +174,7 @@ return [
             ],
         ],
         'price_periods' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_periods',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.price_periods',
             'config' => [
                 'type' => 'inline',
                 'foreign_table' => 'tx_products_domain_model_priceperiod',
@@ -188,7 +188,7 @@ return [
             ],
         ],
         'attribute_values' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.attribute_values',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.attribute_values',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
@@ -199,14 +199,14 @@ return [
             ],
         ],
         'in_stock' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.in_stock',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.in_stock',
             'config' => [
                 'type' => 'number',
                 'size' => 10,
             ],
         ],
         'unlimited_stock' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.unlimited_stock',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.unlimited_stock',
             'config' => [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
@@ -214,7 +214,7 @@ return [
             ],
         ],
         'basket_min_quantity' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.basket_min_quantity',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.basket_min_quantity',
             'config' => [
                 'type' => 'number',
                 'size' => 10,
@@ -222,7 +222,7 @@ return [
             ],
         ],
         'basket_max_quantity' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.basket_max_quantity',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.basket_max_quantity',
             'config' => [
                 'type' => 'number',
                 'size' => 10,
@@ -230,7 +230,7 @@ return [
             ],
         ],
         'weight' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.weight',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.weight',
             'config' => [
                 'type' => 'number',
                 'size' => 10,
@@ -238,7 +238,7 @@ return [
             ],
         ],
         'bulky' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.bulky',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.bulky',
             'config' => [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
@@ -246,7 +246,7 @@ return [
             ],
         ],
         'content_amount' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.content_amount',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.content_amount',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
@@ -255,7 +255,7 @@ return [
             ],
         ],
         'content_unit' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.content_unit',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.content_unit',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -281,7 +281,7 @@ return [
             ],
         ],
         'images' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.images',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.images',
             'config' => [
                 'type' => 'file',
                 'allowed' => 'common-image-types',
@@ -289,7 +289,7 @@ return [
             ],
         ],
         'downloads' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.downloads',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.downloads',
             'config' => [
                 'type' => 'file',
                 'allowed' => 'pdf,doc,docx,xls,xlsx,zip,txt',

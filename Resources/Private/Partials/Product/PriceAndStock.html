@@ -1,6 +1,6 @@
 <html data-namespace-typo3-fluid="true"
       xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
-      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/ViewHelpers"
+      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/Core/ViewHelpers"
 >
 <f:variable name="displayedPrice" value="{p:pricing.displayPrice(product: product, article: selectedArticle)}" />
 <f:variable name="displayedItemNumber" value="{f:if(condition: selectedArticle, then: selectedArticle.itemNumber, else: product.itemNumber)}" />

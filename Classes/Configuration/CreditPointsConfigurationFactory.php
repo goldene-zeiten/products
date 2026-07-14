@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Configuration;
+namespace GoldeneZeiten\Products\Core\Configuration;
 
-use GoldeneZeiten\Products\Domain\Dto\CreditPointsEarningTier;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Domain\Dto\CreditPointsEarningTier;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 

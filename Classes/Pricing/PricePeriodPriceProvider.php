@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Pricing;
+namespace GoldeneZeiten\Products\Core\Pricing;
 
-use GoldeneZeiten\Products\Domain\Model\Article;
-use GoldeneZeiten\Products\Domain\Model\PricePeriod;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Domain\Model\Article;
+use GoldeneZeiten\Products\Core\Domain\Model\PricePeriod;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 

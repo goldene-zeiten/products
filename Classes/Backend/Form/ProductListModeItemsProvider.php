@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Backend\Form;
+namespace GoldeneZeiten\Products\Core\Backend\Form;
 
-use GoldeneZeiten\Products\Catalog\ProductListModeRegistry;
+use GoldeneZeiten\Products\Core\Catalog\ProductListModeRegistry;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
 /**

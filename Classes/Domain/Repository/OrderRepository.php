@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Repository;
+namespace GoldeneZeiten\Products\Core\Domain\Repository;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;

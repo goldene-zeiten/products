@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Event;
+namespace GoldeneZeiten\Products\Core\Event;
 
-use GoldeneZeiten\Products\Controller\ProductController;
-use GoldeneZeiten\Products\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Controller\ProductController;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**

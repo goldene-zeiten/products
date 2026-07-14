@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\EndToEnd;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\EndToEnd;
 
-use GoldeneZeiten\Products\Discount\Voucher\VoucherCheckoutState;
-use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Event\AfterOrderPlacedEvent;
-use GoldeneZeiten\Products\EventListener\IssueGainedVoucherListener;
-use GoldeneZeiten\Products\Service\Basket\BasketService;
-use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Discount\Voucher\VoucherCheckoutState;
+use GoldeneZeiten\Products\Core\Domain\Dto\Address;
+use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutChoices;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Event\AfterOrderPlacedEvent;
+use GoldeneZeiten\Products\Core\EventListener\IssueGainedVoucherListener;
+use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -26,7 +26,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

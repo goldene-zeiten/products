@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Controller;
+namespace GoldeneZeiten\Products\Core\Controller;
 
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Service\Basket\BasketService;
-use GoldeneZeiten\Products\Service\Variant\ArticleVariantResolver;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Service\Variant\ArticleVariantResolver;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 

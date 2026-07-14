@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Unit\Domain\Dto;
+namespace GoldeneZeiten\Products\Core\Tests\Unit\Domain\Dto;
 
-use GoldeneZeiten\Products\Domain\Dto\Basket;
-use GoldeneZeiten\Products\Domain\Dto\BasketItem;
+use GoldeneZeiten\Products\Core\Domain\Dto\Basket;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketItem;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 

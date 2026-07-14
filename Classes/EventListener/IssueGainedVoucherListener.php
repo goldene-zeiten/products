@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\EventListener;
+namespace GoldeneZeiten\Products\Core\EventListener;
 
-use GoldeneZeiten\Products\Configuration\GainedVoucherConfigurationFactory;
-use GoldeneZeiten\Products\Event\AfterOrderPlacedEvent;
-use GoldeneZeiten\Products\Service\Voucher\GainedVoucherService;
+use GoldeneZeiten\Products\Core\Configuration\GainedVoucherConfigurationFactory;
+use GoldeneZeiten\Products\Core\Event\AfterOrderPlacedEvent;
+use GoldeneZeiten\Products\Core\Service\Voucher\GainedVoucherService;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 

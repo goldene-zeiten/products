@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\RecentlyViewed;
+namespace GoldeneZeiten\Products\Core\Service\RecentlyViewed;
 
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
@@ -71,7 +71,7 @@ final class RecentlyViewedStorage
         $this->configurationManager->setRequest($request);
         $settings = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
+            'ProductsCore'
         );
         return (bool)($settings['session']['requireCookieConsent'] ?? false);
     }
@@ -90,7 +90,7 @@ final class RecentlyViewedStorage
         $this->configurationManager->setRequest($request);
         $settings = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
+            'ProductsCore'
         );
         return max(1, (int)($settings['recentlyViewed']['limit'] ?? self::DEFAULT_LIMIT));
     }

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Dto;
+namespace GoldeneZeiten\Products\Core\Domain\Dto;
 
-use GoldeneZeiten\Products\Domain\Model\Article;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Domain\Model\Article;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 #[Exclude]

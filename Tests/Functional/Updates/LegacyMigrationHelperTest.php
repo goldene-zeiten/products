@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Updates;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Updates;
 
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
-use GoldeneZeiten\Products\Updates\LegacyMigrationHelper;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Updates\LegacyMigrationHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class LegacyMigrationHelperTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
         'goldene-zeiten/products-legacy-fixture',
     ];
 

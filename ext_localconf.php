@@ -1,20 +1,20 @@
 <?php
 
-use GoldeneZeiten\Products\Controller\BasketController;
-use GoldeneZeiten\Products\Controller\VoucherController;
-use GoldeneZeiten\Products\Controller\CategoryController;
-use GoldeneZeiten\Products\Controller\CheckoutController;
-use GoldeneZeiten\Products\Controller\DownloadController;
-use GoldeneZeiten\Products\Controller\InvoiceController;
-use GoldeneZeiten\Products\Controller\OrderController;
-use GoldeneZeiten\Products\Controller\ProductController;
-use GoldeneZeiten\Products\Controller\RecentlyViewedController;
-use GoldeneZeiten\Products\Controller\SearchController;
-use GoldeneZeiten\Products\Controller\WishlistController;
-use GoldeneZeiten\Products\Controller\WithdrawalController;
-use GoldeneZeiten\Products\Hooks\CategoryMountAccessHook;
-use GoldeneZeiten\Products\Hooks\PriceAuditHook;
-use GoldeneZeiten\Products\PageTitle\ProductPageTitleProvider;
+use GoldeneZeiten\Products\Core\Controller\BasketController;
+use GoldeneZeiten\Products\Core\Controller\VoucherController;
+use GoldeneZeiten\Products\Core\Controller\CategoryController;
+use GoldeneZeiten\Products\Core\Controller\CheckoutController;
+use GoldeneZeiten\Products\Core\Controller\DownloadController;
+use GoldeneZeiten\Products\Core\Controller\InvoiceController;
+use GoldeneZeiten\Products\Core\Controller\OrderController;
+use GoldeneZeiten\Products\Core\Controller\ProductController;
+use GoldeneZeiten\Products\Core\Controller\RecentlyViewedController;
+use GoldeneZeiten\Products\Core\Controller\SearchController;
+use GoldeneZeiten\Products\Core\Controller\WishlistController;
+use GoldeneZeiten\Products\Core\Controller\WithdrawalController;
+use GoldeneZeiten\Products\Core\Hooks\CategoryMountAccessHook;
+use GoldeneZeiten\Products\Core\Hooks\PriceAuditHook;
+use GoldeneZeiten\Products\Core\PageTitle\ProductPageTitleProvider;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
@@ -32,7 +32,7 @@ config.pageTitleProviders.products.before = record'
 );
 
 ExtensionUtility::configurePlugin(
-    'Products',
+    'ProductsCore',
     'ProductList',
     [
         ProductController::class => 'list, listByAjax',
@@ -42,7 +42,7 @@ ExtensionUtility::configurePlugin(
 );
 
 ExtensionUtility::configurePlugin(
-    'Products',
+    'ProductsCore',
     'ProductDetail',
     [
         ProductController::class => 'show',
@@ -57,7 +57,7 @@ ExtensionUtility::configurePlugin(
 // posts back to the basket page, and only a plugin actually placed on that page is dispatched. An addon
 // registers its controller the same way, via ExtensionUtility::registerControllerActions().
 ExtensionUtility::configurePlugin(
-    'Products',
+    'ProductsCore',
     'Basket',
     [
         BasketController::class => 'show, add, update, remove',
@@ -71,7 +71,7 @@ ExtensionUtility::configurePlugin(
 );
 
 ExtensionUtility::configurePlugin(
-    'Products',
+    'ProductsCore',
     'Checkout',
     [
         CheckoutController::class => 'address, submitAddress, shippingMethod, submitShippingMethod, payment, submitPayment, review, finalize, paymentReturn, paymentCancel, thankYou',
@@ -83,7 +83,7 @@ ExtensionUtility::configurePlugin(
 );
 
 ExtensionUtility::configurePlugin(
-    'Products',
+    'ProductsCore',
     'OrderHistory',
     [
         OrderController::class => 'list, show',
@@ -95,7 +95,7 @@ ExtensionUtility::configurePlugin(
 );
 
 ExtensionUtility::configurePlugin(
-    'Products',
+    'ProductsCore',
     'Wishlist',
     [
         WishlistController::class => 'show, add, remove, moveUp, moveDown',
@@ -107,7 +107,7 @@ ExtensionUtility::configurePlugin(
 );
 
 ExtensionUtility::configurePlugin(
-    'Products',
+    'ProductsCore',
     'RecentlyViewed',
     [
         RecentlyViewedController::class => 'list, mostViewed, myMostViewed',
@@ -119,7 +119,7 @@ ExtensionUtility::configurePlugin(
 );
 
 ExtensionUtility::configurePlugin(
-    'Products',
+    'ProductsCore',
     'Search',
     [
         SearchController::class => 'search',
@@ -131,7 +131,7 @@ ExtensionUtility::configurePlugin(
 );
 
 ExtensionUtility::configurePlugin(
-    'Products',
+    'ProductsCore',
     'CategoryNavigation',
     [
         CategoryController::class => 'navigation',
@@ -141,7 +141,7 @@ ExtensionUtility::configurePlugin(
 );
 
 ExtensionUtility::configurePlugin(
-    'Products',
+    'ProductsCore',
     'CategoryList',
     [
         CategoryController::class => 'list',
@@ -151,7 +151,7 @@ ExtensionUtility::configurePlugin(
 );
 
 ExtensionUtility::configurePlugin(
-    'Products',
+    'ProductsCore',
     'Invoice',
     [
         InvoiceController::class => 'download',
@@ -163,7 +163,7 @@ ExtensionUtility::configurePlugin(
 );
 
 ExtensionUtility::configurePlugin(
-    'Products',
+    'ProductsCore',
     'Withdrawal',
     [
         WithdrawalController::class => 'form, confirm',
@@ -175,7 +175,7 @@ ExtensionUtility::configurePlugin(
 );
 
 ExtensionUtility::configurePlugin(
-    'Products',
+    'ProductsCore',
     'Download',
     [
         DownloadController::class => 'list',

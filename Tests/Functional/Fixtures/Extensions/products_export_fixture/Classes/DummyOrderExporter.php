@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\ExportFixture;
 
-use GoldeneZeiten\Products\Domain\Dto\Export\ExportContext;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Export\OrderExportInterface;
+use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Export\OrderExportInterface;
 
 /**
  * Fixture-only exporter proving OrderExportRegistry's tagged_iterator wiring.

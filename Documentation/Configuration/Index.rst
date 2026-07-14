@@ -15,7 +15,7 @@ Configuration
 Site set
 ========
 
-Activate the :guilabel:`Products` site set (``goldene-zeiten/products``) on every site that should
+Activate the :guilabel:`Products` site set (``goldene-zeiten/products-core``) on every site that should
 show the shop, then adjust its settings under :guilabel:`Site Management > Sites > Edit settings`.
 
 ..  _configuration-storage-folder:
@@ -183,15 +183,15 @@ from. Set it before creating any content.
 
     ..  confval:: products.email.templateRootPaths
         :type: stringlist
-        :Default: EXT:products/Resources/Private/Templates/Email/
+        :Default: EXT:products_core/Resources/Private/Templates/Email/
 
     ..  confval:: products.email.partialRootPaths
         :type: stringlist
-        :Default: EXT:products/Resources/Private/Partials/
+        :Default: EXT:products_core/Resources/Private/Partials/
 
     ..  confval:: products.email.layoutRootPaths
         :type: stringlist
-        :Default: EXT:products/Resources/Private/Layouts/
+        :Default: EXT:products_core/Resources/Private/Layouts/
 
         Override any of the three email path settings from your own extension to replace the
         shipped order confirmation and merchant notification templates.
@@ -204,15 +204,15 @@ from. Set it before creating any content.
 
     ..  confval:: products.invoice.templateRootPaths
         :type: stringlist
-        :Default: EXT:products/Resources/Private/Templates/Invoice/
+        :Default: EXT:products_core/Resources/Private/Templates/Invoice/
 
     ..  confval:: products.invoice.partialRootPaths
         :type: stringlist
-        :Default: EXT:products/Resources/Private/Partials/
+        :Default: EXT:products_core/Resources/Private/Partials/
 
     ..  confval:: products.invoice.layoutRootPaths
         :type: stringlist
-        :Default: EXT:products/Resources/Private/Layouts/
+        :Default: EXT:products_core/Resources/Private/Layouts/
 
         Override any of the three invoice path settings from your own extension to replace the
         shipped invoice PDF template. See :ref:`Invoice PDF <users-manual-invoice>`.

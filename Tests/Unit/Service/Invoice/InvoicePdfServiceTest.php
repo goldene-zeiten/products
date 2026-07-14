@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Unit\Service\Invoice;
+namespace GoldeneZeiten\Products\Core\Tests\Unit\Service\Invoice;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Event\BeforeInvoiceRenderedEvent;
-use GoldeneZeiten\Products\Service\Invoice\InvoicePdfService;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Event\BeforeInvoiceRenderedEvent;
+use GoldeneZeiten\Products\Core\Service\Invoice\InvoicePdfService;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;

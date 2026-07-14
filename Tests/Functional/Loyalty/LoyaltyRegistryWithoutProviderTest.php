@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Loyalty;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Loyalty;
 
-use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Dto\Loyalty\LoyaltyContext;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Loyalty\LoyaltyRegistry;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewItem;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Core\Domain\Dto\Loyalty\LoyaltyContext;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Loyalty\LoyaltyRegistry;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -23,7 +23,7 @@ use TYPO3\CMS\Core\Http\ServerRequest;
 final class LoyaltyRegistryWithoutProviderTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

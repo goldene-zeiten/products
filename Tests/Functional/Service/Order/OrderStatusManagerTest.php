@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Order;
 
-use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
-use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Service\Order\Exception\InvalidOrderStatusTransitionException;
-use GoldeneZeiten\Products\Service\Order\Exception\InvalidPaymentStatusTransitionException;
-use GoldeneZeiten\Products\Service\Order\OrderStatusManager;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\InvalidOrderStatusTransitionException;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\InvalidPaymentStatusTransitionException;
+use GoldeneZeiten\Products\Core\Service\Order\OrderStatusManager;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class OrderStatusManagerTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     #[Test]

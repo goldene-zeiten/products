@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Basket;
+namespace GoldeneZeiten\Products\Core\Service\Basket;
 
-use GoldeneZeiten\Products\Domain\Model\Article;
-use GoldeneZeiten\Products\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Model\Article;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
 
 /**
  * Resolves basket quantity bounds: article min/max overrides product when set; 0 = unlimited.

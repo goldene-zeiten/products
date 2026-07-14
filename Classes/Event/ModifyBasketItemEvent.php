@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Event;
+namespace GoldeneZeiten\Products\Core\Event;
 
-use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
-use GoldeneZeiten\Products\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewItem;
+use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**

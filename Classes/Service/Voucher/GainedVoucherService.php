@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Voucher;
+namespace GoldeneZeiten\Products\Core\Service\Voucher;
 
-use GoldeneZeiten\Products\Configuration\GainedVoucherConfiguration;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Model\Voucher;
-use GoldeneZeiten\Products\Domain\Repository\GainedVoucherRepository;
-use GoldeneZeiten\Products\Domain\Repository\VoucherRepository;
-use GoldeneZeiten\Products\Event\VoucherGeneratedEvent;
-use GoldeneZeiten\Products\Service\Voucher\Exception\GainedVoucherCodeGenerationFailedException;
+use GoldeneZeiten\Products\Core\Configuration\GainedVoucherConfiguration;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\Voucher;
+use GoldeneZeiten\Products\Core\Domain\Repository\GainedVoucherRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\VoucherRepository;
+use GoldeneZeiten\Products\Core\Event\VoucherGeneratedEvent;
+use GoldeneZeiten\Products\Core\Service\Voucher\Exception\GainedVoucherCodeGenerationFailedException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Unit\Pricing;
+namespace GoldeneZeiten\Products\Core\Tests\Unit\Pricing;
 
-use GoldeneZeiten\Products\Domain\Model\Category;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Pricing\CategoryDiscountResolver;
+use GoldeneZeiten\Products\Core\Domain\Model\Category;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Pricing\CategoryDiscountResolver;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;

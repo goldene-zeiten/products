@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Controller;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Service\Order\OrderTokenService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Service\Order\OrderTokenService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\Session\SessionManager;
@@ -32,7 +32,7 @@ final class DownloadControllerTest extends AbstractFunctionalTestCase
     ];
 
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void
@@ -53,16 +53,16 @@ final class DownloadControllerTest extends AbstractFunctionalTestCase
         $this->setUpFrontendRootPage(1, [
             'constants' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
-                'EXT:products/Configuration/TypoScript/constants.typoscript',
+                'EXT:products_core/Configuration/TypoScript/constants.typoscript',
             ],
             'setup' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
-                'EXT:products/Configuration/TypoScript/setup.typoscript',
-                'EXT:products/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
+                'EXT:products_core/Configuration/TypoScript/setup.typoscript',
+                'EXT:products_core/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
             ],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
-            plugin.tx_products.persistence.storagePid = 2
+            plugin.tx_productscore.persistence.storagePid = 2
             page = PAGE
             page.10 = CONTENT
             page.10 {
@@ -126,10 +126,10 @@ final class DownloadControllerTest extends AbstractFunctionalTestCase
     private function downloadRequest(int $order, ?string $hash): InternalRequest
     {
         $queryParameters = [
-            'tx_products_download[order]' => $order,
+            'tx_productscore_download[order]' => $order,
         ];
         if ($hash !== null) {
-            $queryParameters['tx_products_download[hash]'] = $hash;
+            $queryParameters['tx_productscore_download[hash]'] = $hash;
         }
 
         $parameterString = '&id=2';

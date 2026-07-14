@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\ViewHelpers\Category;
+namespace GoldeneZeiten\Products\Core\ViewHelpers\Category;
 
-use GoldeneZeiten\Products\Domain\Model\Category;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Domain\Model\Category;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 final class ProductCountViewHelper extends AbstractViewHelper

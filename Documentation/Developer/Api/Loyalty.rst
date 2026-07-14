@@ -13,7 +13,7 @@ also gives something back once the order exists.
 Loyalty is on-top functionality. The extension ships the credit-points programme as one such provider,
 but a shop with no loyalty provider at all still checks out.
 
-**Location:** :php:`GoldeneZeiten\Products\Loyalty\LoyaltyProviderInterface`
+**Location:** :php:`GoldeneZeiten\Products\Core\Loyalty\LoyaltyProviderInterface`
 
 The Lifecycle
 =============
@@ -68,7 +68,7 @@ The contract has four steps, and each runs at a different moment of the checkout
 The Context
 ===========
 
-:php:`GoldeneZeiten\Products\Domain\Dto\Loyalty\LoyaltyContext` is immutable and carries everything a
+:php:`GoldeneZeiten\Products\Core\Domain\Dto\Loyalty\LoyaltyContext` is immutable and carries everything a
 programme needs for both directions:
 
 ..  code-block:: php
@@ -98,7 +98,7 @@ Registration
 
 Implement the interface. The :php:`#[AutoconfigureTag('products.loyalty_provider')]` sits on the
 *interface*, so an implementation is collected automatically with no :file:`Services.yaml` entry, given
-the usual ``autoconfigure``. :php:`GoldeneZeiten\Products\Loyalty\LoyaltyRegistry` collects the providers
+the usual ``autoconfigure``. :php:`GoldeneZeiten\Products\Core\Loyalty\LoyaltyRegistry` collects the providers
 via :php:`#[TaggedIterator]` and serves each step of the lifecycle to the checkout.
 
 The interface is the registration mechanism. There is no loyalty event, because an event cannot answer
@@ -108,7 +108,7 @@ transaction.
 The Bundled Programme
 =====================
 
-:php:`GoldeneZeiten\Products\Loyalty\CreditPointsLoyaltyProvider` is the credit-points programme, and it
+:php:`GoldeneZeiten\Products\Core\Loyalty\CreditPointsLoyaltyProvider` is the credit-points programme, and it
 is nothing more than an implementation of this interface. The checkout reaches it only through the
 registry, which is what allows it to move into its own extension without the core changing.
 
@@ -126,12 +126,12 @@ Example
 
     namespace MyVendor\MyExtension\Loyalty;
 
-    use GoldeneZeiten\Products\Domain\Dto\Loyalty\LoyaltyContext;
-    use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
-    use GoldeneZeiten\Products\Domain\Model\Order;
-    use GoldeneZeiten\Products\Domain\ValueObject\CheckoutAdjustment;
-    use GoldeneZeiten\Products\Domain\ValueObject\Money;
-    use GoldeneZeiten\Products\Loyalty\LoyaltyProviderInterface;
+    use GoldeneZeiten\Products\Core\Domain\Dto\Loyalty\LoyaltyContext;
+    use GoldeneZeiten\Products\Core\Domain\Enum\AdjustmentType;
+    use GoldeneZeiten\Products\Core\Domain\Model\Order;
+    use GoldeneZeiten\Products\Core\Domain\ValueObject\CheckoutAdjustment;
+    use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+    use GoldeneZeiten\Products\Core\Loyalty\LoyaltyProviderInterface;
     use MyVendor\MyExtension\Service\CashbackAccount;
 
     /**

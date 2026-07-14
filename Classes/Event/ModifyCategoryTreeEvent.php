@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Event;
+namespace GoldeneZeiten\Products\Core\Event;
 
-use GoldeneZeiten\Products\Domain\Dto\Category\CategoryTreeNode;
-use GoldeneZeiten\Products\Service\Category\CategoryTreeService;
+use GoldeneZeiten\Products\Core\Domain\Dto\Category\CategoryTreeNode;
+use GoldeneZeiten\Products\Core\Service\Category\CategoryTreeService;
 
 /**
  * Lets integrators reshape the built category tree - reorder branches, prune empty categories,

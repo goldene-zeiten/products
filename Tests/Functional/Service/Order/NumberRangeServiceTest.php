@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Order;
 
-use GoldeneZeiten\Products\Service\Order\NumberRangeService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Service\Order\NumberRangeService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class NumberRangeServiceTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     #[Test]

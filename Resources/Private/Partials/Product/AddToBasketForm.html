@@ -1,5 +1,5 @@
 <div class="add-to-basket mt-3">
-    <f:form action="add" controller="Basket" extensionName="Products" pluginName="Basket" pageUid="{settings.pids.basketPage}">
+    <f:form action="add" controller="Basket" extensionName="ProductsCore" pluginName="Basket" pageUid="{settings.pids.basketPage}">
         <f:form.hidden name="product" value="{product.uid}" />
         <div class="mb-3">
             <f:form.textfield name="quantity" value="1" type="number" class="form-control" additionalAttributes="{min: 1}" />

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Validation;
+namespace GoldeneZeiten\Products\Core\Domain\Validation;
 
-use GoldeneZeiten\Products\Exception\PricePeriodOverlapException;
+use GoldeneZeiten\Products\Core\Exception\PricePeriodOverlapException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;

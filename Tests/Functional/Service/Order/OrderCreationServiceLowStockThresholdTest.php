@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Order;
 
-use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
-use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
-use GoldeneZeiten\Products\Service\Order\OrderCreationService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
-use GoldeneZeiten\Products\Tests\Functional\Fixtures\TestMailer;
+use GoldeneZeiten\Products\Core\Domain\Dto\Address;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewItem;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutSelections;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
+use GoldeneZeiten\Products\Core\Service\Order\OrderCreationService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\TestMailer;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
@@ -40,7 +40,7 @@ final class OrderCreationServiceLowStockThresholdTest extends AbstractFunctional
     ];
 
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
         'goldene-zeiten/frontend-test',
     ];
 
@@ -88,7 +88,7 @@ final class OrderCreationServiceLowStockThresholdTest extends AbstractFunctional
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
                 'settings' => [
                     'products' => [
                         'email' => ['merchantRecipient' => 'merchant@example.com'],

@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Controller\Backend;
+namespace GoldeneZeiten\Products\Core\Controller\Backend;
 
-use GoldeneZeiten\Products\Backend\OrderListFilter;
-use GoldeneZeiten\Products\Backend\OrderManagementRepository;
-use GoldeneZeiten\Products\Domain\Dto\Export\ExportContext;
-use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
-use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Export\Exception\OrderExporterNotAvailableException;
-use GoldeneZeiten\Products\Export\Exception\OrderExporterNotFoundException;
-use GoldeneZeiten\Products\Export\OrderExportInterface;
-use GoldeneZeiten\Products\Export\OrderExportService;
-use GoldeneZeiten\Products\Payment\Exception\PaymentMethodNotFoundException;
-use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
-use GoldeneZeiten\Products\Payment\RefundablePaymentMethodInterface;
-use GoldeneZeiten\Products\Service\Order\Exception\InvalidOrderStatusTransitionException;
-use GoldeneZeiten\Products\Service\Order\Exception\InvalidPaymentStatusTransitionException;
-use GoldeneZeiten\Products\Service\Order\OrderStatusManager;
+use GoldeneZeiten\Products\Core\Backend\OrderListFilter;
+use GoldeneZeiten\Products\Core\Backend\OrderManagementRepository;
+use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Export\Exception\OrderExporterNotAvailableException;
+use GoldeneZeiten\Products\Core\Export\Exception\OrderExporterNotFoundException;
+use GoldeneZeiten\Products\Core\Export\OrderExportInterface;
+use GoldeneZeiten\Products\Core\Export\OrderExportService;
+use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
+use GoldeneZeiten\Products\Core\Payment\RefundablePaymentMethodInterface;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\InvalidOrderStatusTransitionException;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\InvalidPaymentStatusTransitionException;
+use GoldeneZeiten\Products\Core\Service\Order\OrderStatusManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
@@ -259,7 +259,7 @@ final class OrderManagementModuleController
 
     private function translate(string $key): string
     {
-        return $this->getLanguageService()->sL('LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:' . $key);
+        return $this->getLanguageService()->sL('LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:' . $key);
     }
 
     private function getLanguageService(): LanguageService

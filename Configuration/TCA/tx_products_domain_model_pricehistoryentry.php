@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricehistoryentry',
+        'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricehistoryentry',
         'label' => 'price',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -38,7 +38,7 @@ return [
             ],
         ],
         'price' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricehistoryentry.price',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricehistoryentry.price',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
@@ -48,7 +48,7 @@ return [
             ],
         ],
         'valid_from' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricehistoryentry.valid_from',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricehistoryentry.valid_from',
             'config' => [
                 'type' => 'datetime',
                 'size' => 13,
@@ -58,7 +58,7 @@ return [
             ],
         ],
         'valid_until' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricehistoryentry.valid_until',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricehistoryentry.valid_until',
             'config' => [
                 'type' => 'datetime',
                 'size' => 13,
@@ -68,7 +68,7 @@ return [
             ],
         ],
         'recorded_at' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricehistoryentry.recorded_at',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricehistoryentry.recorded_at',
             'config' => [
                 'type' => 'datetime',
                 'size' => 13,

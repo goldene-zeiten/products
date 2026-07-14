@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Invoice;
+namespace GoldeneZeiten\Products\Core\Service\Invoice;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Event\BeforeInvoiceRenderedEvent;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Event\BeforeInvoiceRenderedEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class InvoicePdfService

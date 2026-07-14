@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Order;
+namespace GoldeneZeiten\Products\Core\Service\Order;
 
-use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementDetails;
-use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
-use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
-use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Model\OrderAddress;
-use GoldeneZeiten\Products\Domain\Model\OrderItem;
-use GoldeneZeiten\Products\Domain\ValueObject\AdjustmentCollection;
-use GoldeneZeiten\Products\Event\MapBillingToDeliveryAddressEvent;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
-use GoldeneZeiten\Products\Service\PriceRoundingService;
+use GoldeneZeiten\Products\Core\Domain\Dto\Address;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewItem;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\PlacementDetails;
+use GoldeneZeiten\Products\Core\Domain\Enum\AdjustmentType;
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\OrderAddress;
+use GoldeneZeiten\Products\Core\Domain\Model\OrderItem;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\AdjustmentCollection;
+use GoldeneZeiten\Products\Core\Event\MapBillingToDeliveryAddressEvent;
+use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Service\PriceRoundingService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;

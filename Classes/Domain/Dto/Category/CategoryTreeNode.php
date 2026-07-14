@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Dto\Category;
+namespace GoldeneZeiten\Products\Core\Domain\Dto\Category;
 
-use GoldeneZeiten\Products\Domain\Model\Category;
+use GoldeneZeiten\Products\Core\Domain\Model\Category;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 #[Exclude]

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Updates;
+namespace GoldeneZeiten\Products\Core\Updates;
 
 use Symfony\Component\Console\Output\OutputInterface;
 

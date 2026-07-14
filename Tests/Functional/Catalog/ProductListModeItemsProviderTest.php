@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Catalog;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Catalog;
 
-use GoldeneZeiten\Products\Backend\Form\ProductListModeItemsProvider;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Backend\Form\ProductListModeItemsProvider;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class ProductListModeItemsProviderTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
         'goldene-zeiten/products-listmode-fixture',
     ];
 

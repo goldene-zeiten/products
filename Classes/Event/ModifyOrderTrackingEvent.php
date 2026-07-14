@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Event;
+namespace GoldeneZeiten\Products\Core\Event;
 
-use GoldeneZeiten\Products\Controller\OrderController;
-use GoldeneZeiten\Products\Domain\Dto\OrderTrackingLink;
-use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Controller\OrderController;
+use GoldeneZeiten\Products\Core\Domain\Dto\OrderTrackingLink;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
 
 /**
  * Lets shipping/fulfilment extensions attach tracking links to an order as its detail page

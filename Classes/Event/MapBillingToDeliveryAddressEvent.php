@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Event;
+namespace GoldeneZeiten\Products\Core\Event;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Model\OrderAddress;
-use GoldeneZeiten\Products\Service\Order\OrderFactory;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\OrderAddress;
+use GoldeneZeiten\Products\Core\Service\Order\OrderFactory;
 
 /**
  * Lets integrators derive or adjust the delivery address from the billing address while the order

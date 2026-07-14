@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\CreditPoints;
+namespace GoldeneZeiten\Products\Core\Service\CreditPoints;
 
-use GoldeneZeiten\Products\Configuration\CreditPointsConfiguration;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Dto\CreditPointsRedemption;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\CreditPoints\Exception\InsufficientCreditPointsException;
+use GoldeneZeiten\Products\Core\Configuration\CreditPointsConfiguration;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Core\Domain\Dto\CreditPointsRedemption;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\CreditPoints\Exception\InsufficientCreditPointsException;
 
 final class CreditPointsService
 {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Controller;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Service\Order\OrderTokenService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Service\Order\OrderTokenService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Session\SessionManager;
@@ -50,13 +50,13 @@ final class OrderControllerTest extends AbstractFrontendTestCase
     public function showActionRedirectsWhenOrderBelongsToAnotherFrontendUser(): void
     {
         $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
-            '&id=2&tx_products_orderhistory[action]=show&tx_products_orderhistory[order]=1'
+            '&id=2&tx_productscore_orderhistory[action]=show&tx_productscore_orderhistory[order]=1'
         );
         $request = (new InternalRequest('http://localhost/shop'))
             ->withCookieParams(['fe_typo_user' => $this->loginFrontendUser(2)])
             ->withQueryParameters([
-                'tx_products_orderhistory[action]' => 'show',
-                'tx_products_orderhistory[order]' => 1,
+                'tx_productscore_orderhistory[action]' => 'show',
+                'tx_productscore_orderhistory[order]' => 1,
                 'cHash' => $cHash,
             ]);
         $response = $this->executeFrontendSubRequest($request);
@@ -100,11 +100,11 @@ final class OrderControllerTest extends AbstractFrontendTestCase
     private function orderShowRequest(int $order, ?string $hash): InternalRequest
     {
         $queryParameters = [
-            'tx_products_orderhistory[action]' => 'show',
-            'tx_products_orderhistory[order]' => $order,
+            'tx_productscore_orderhistory[action]' => 'show',
+            'tx_productscore_orderhistory[order]' => $order,
         ];
         if ($hash !== null) {
-            $queryParameters['tx_products_orderhistory[hash]'] = $hash;
+            $queryParameters['tx_productscore_orderhistory[hash]'] = $hash;
         }
 
         $parameterString = '&id=2';

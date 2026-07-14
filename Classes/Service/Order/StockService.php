@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Order;
+namespace GoldeneZeiten\Products\Core\Service\Order;
 
 use Doctrine\DBAL\ParameterType;
-use GoldeneZeiten\Products\Service\Order\Exception\InsufficientStockException;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\InsufficientStockException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 final class StockService

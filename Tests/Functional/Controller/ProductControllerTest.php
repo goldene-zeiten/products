@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Controller;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
@@ -27,7 +27,7 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
     ];
 
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     #[Test]
@@ -45,19 +45,19 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         $this->setUpFrontendRootPage(1, [
             'constants' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
-                'EXT:products/Configuration/TypoScript/constants.typoscript',
+                'EXT:products_core/Configuration/TypoScript/constants.typoscript',
             ],
             'setup' => [
-                'EXT:products/Configuration/TypoScript/setup.typoscript',
+                'EXT:products_core/Configuration/TypoScript/setup.typoscript',
             ],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
-            plugin.tx_products.persistence.storagePid = 2
+            plugin.tx_productscore.persistence.storagePid = 2
             page = PAGE
             page.10 = USER
             page.10 {
                 userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
-                extensionName = Products
+                extensionName = ProductsCore
                 pluginName = ProductList
                 vendorName = GoldeneZeiten
             }
@@ -81,7 +81,7 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
                 'routeEnhancers' => [
                     'ProductsDetail' => [
                         'type' => 'Extbase',
-                        'extension' => 'Products',
+                        'extension' => 'ProductsCore',
                         'plugin' => 'ProductDetail',
                         'routes' => [
                             [
@@ -109,19 +109,19 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         $this->setUpFrontendRootPage(1, [
             'constants' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
-                'EXT:products/Configuration/TypoScript/constants.typoscript',
+                'EXT:products_core/Configuration/TypoScript/constants.typoscript',
             ],
             'setup' => [
-                'EXT:products/Configuration/TypoScript/setup.typoscript',
+                'EXT:products_core/Configuration/TypoScript/setup.typoscript',
             ],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
-            plugin.tx_products.persistence.storagePid = 2
+            plugin.tx_productscore.persistence.storagePid = 2
             page = PAGE
             page.10 = USER
             page.10 {
                 userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
-                extensionName = Products
+                extensionName = ProductsCore
                 pluginName = ProductDetail
                 vendorName = GoldeneZeiten
             }
@@ -145,7 +145,7 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
                 'routeEnhancers' => [
                     'ProductsDetail' => [
                         'type' => 'Extbase',
-                        'extension' => 'Products',
+                        'extension' => 'ProductsCore',
                         'plugin' => 'ProductDetail',
                         'routes' => [
                             [
@@ -173,19 +173,19 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         $this->setUpFrontendRootPage(1, [
             'constants' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
-                'EXT:products/Configuration/TypoScript/constants.typoscript',
+                'EXT:products_core/Configuration/TypoScript/constants.typoscript',
             ],
             'setup' => [
-                'EXT:products/Configuration/TypoScript/setup.typoscript',
+                'EXT:products_core/Configuration/TypoScript/setup.typoscript',
             ],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
-            plugin.tx_products.persistence.storagePid = 2
+            plugin.tx_productscore.persistence.storagePid = 2
             page = PAGE
             page.10 = USER
             page.10 {
                 userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
-                extensionName = Products
+                extensionName = ProductsCore
                 pluginName = ProductDetail
                 vendorName = GoldeneZeiten
             }
@@ -216,19 +216,19 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         $this->setUpFrontendRootPage(1, [
             'constants' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
-                'EXT:products/Configuration/TypoScript/constants.typoscript',
+                'EXT:products_core/Configuration/TypoScript/constants.typoscript',
             ],
             'setup' => [
-                'EXT:products/Configuration/TypoScript/setup.typoscript',
+                'EXT:products_core/Configuration/TypoScript/setup.typoscript',
             ],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
-            plugin.tx_products.persistence.storagePid = 2
+            plugin.tx_productscore.persistence.storagePid = 2
             page = PAGE
             page.10 = USER
             page.10 {
                 userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
-                extensionName = Products
+                extensionName = ProductsCore
                 pluginName = ProductList
                 vendorName = GoldeneZeiten
             }
@@ -264,16 +264,16 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         $this->setUpFrontendRootPage(1, [
             'constants' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
-                'EXT:products/Configuration/TypoScript/constants.typoscript',
+                'EXT:products_core/Configuration/TypoScript/constants.typoscript',
             ],
             'setup' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
-                'EXT:products/Configuration/TypoScript/setup.typoscript',
-                'EXT:products/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
+                'EXT:products_core/Configuration/TypoScript/setup.typoscript',
+                'EXT:products_core/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
             ],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
-            plugin.tx_products.persistence.storagePid = 2
+            plugin.tx_productscore.persistence.storagePid = 2
             page = PAGE
             page.10 = CONTENT
             page.10 {
@@ -313,16 +313,16 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         $this->setUpFrontendRootPage(1, [
             'constants' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
-                'EXT:products/Configuration/TypoScript/constants.typoscript',
+                'EXT:products_core/Configuration/TypoScript/constants.typoscript',
             ],
             'setup' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
-                'EXT:products/Configuration/TypoScript/setup.typoscript',
-                'EXT:products/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
+                'EXT:products_core/Configuration/TypoScript/setup.typoscript',
+                'EXT:products_core/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
             ],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
-            plugin.tx_products.persistence.storagePid = 2
+            plugin.tx_productscore.persistence.storagePid = 2
             page = PAGE
             page.10 = CONTENT
             page.10 {
@@ -366,16 +366,16 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         $this->setUpFrontendRootPage(1, [
             'constants' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
-                'EXT:products/Configuration/TypoScript/constants.typoscript',
+                'EXT:products_core/Configuration/TypoScript/constants.typoscript',
             ],
             'setup' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
-                'EXT:products/Configuration/TypoScript/setup.typoscript',
-                'EXT:products/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
+                'EXT:products_core/Configuration/TypoScript/setup.typoscript',
+                'EXT:products_core/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
             ],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
-            plugin.tx_products.persistence.storagePid = 2
+            plugin.tx_productscore.persistence.storagePid = 2
             page = PAGE
             page.10 = CONTENT
             page.10 {
@@ -419,16 +419,16 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
         $this->setUpFrontendRootPage(1, [
             'constants' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
-                'EXT:products/Configuration/TypoScript/constants.typoscript',
+                'EXT:products_core/Configuration/TypoScript/constants.typoscript',
             ],
             'setup' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
-                'EXT:products/Configuration/TypoScript/setup.typoscript',
-                'EXT:products/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
+                'EXT:products_core/Configuration/TypoScript/setup.typoscript',
+                'EXT:products_core/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
             ],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
-            plugin.tx_products.persistence.storagePid = 2
+            plugin.tx_productscore.persistence.storagePid = 2
             page = PAGE
             page.10 = CONTENT
             page.10 {

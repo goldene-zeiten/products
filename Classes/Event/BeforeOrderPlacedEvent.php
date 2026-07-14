@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Event;
+namespace GoldeneZeiten\Products\Core\Event;
 
-use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
-use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
+use GoldeneZeiten\Products\Core\Domain\Dto\Address;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
+use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementService;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**

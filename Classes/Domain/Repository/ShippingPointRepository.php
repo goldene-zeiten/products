@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Repository;
+namespace GoldeneZeiten\Products\Core\Domain\Repository;
 
-use GoldeneZeiten\Products\Domain\Model\ShippingPoint;
+use GoldeneZeiten\Products\Core\Domain\Model\ShippingPoint;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
 /**

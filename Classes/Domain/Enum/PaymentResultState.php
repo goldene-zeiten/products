@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Enum;
+namespace GoldeneZeiten\Products\Core\Domain\Enum;
 
 enum PaymentResultState: string
 {

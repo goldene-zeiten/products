@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\PaymentFixture;
 
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
-use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 
 /**
  * Fixture payment method that is unavailable, proving isAvailable() filtering is honoured.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional;
+namespace GoldeneZeiten\Products\Core\Tests\Functional;
 
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 
@@ -19,7 +19,7 @@ abstract class AbstractFrontendTestCase extends AbstractFunctionalTestCase
     ];
 
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
         'goldene-zeiten/frontend-test',
     ];
 
@@ -35,7 +35,7 @@ abstract class AbstractFrontendTestCase extends AbstractFunctionalTestCase
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration($rootPageUid, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
             ]),
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );

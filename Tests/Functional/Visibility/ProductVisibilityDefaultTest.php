@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Visibility;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Visibility;
 
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
-use GoldeneZeiten\Products\Visibility\ProductVisibilityResolver;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -21,7 +21,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class ProductVisibilityDefaultTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
         'goldene-zeiten/frontend-test',
     ];
 
@@ -34,7 +34,7 @@ final class ProductVisibilityDefaultTest extends AbstractFunctionalTestCase
         $productRepository = $this->get(ProductRepository::class);
 
         $product = $productRepository->findByUid(1);
-        $this->assertInstanceOf(\GoldeneZeiten\Products\Domain\Model\Product::class, $product);
+        $this->assertInstanceOf(\GoldeneZeiten\Products\Core\Domain\Model\Product::class, $product);
 
         $this->assertTrue($resolver->isVisible($product, $request));
     }

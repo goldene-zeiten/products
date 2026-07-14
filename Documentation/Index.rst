@@ -10,7 +10,7 @@ Products
    products
 
 :Package name:
-   goldene-zeiten/products
+   goldene-zeiten/products-core
 
 :Version:
    |release|

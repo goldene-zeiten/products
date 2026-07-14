@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Controller;
+namespace GoldeneZeiten\Products\Core\Controller;
 
-use GoldeneZeiten\Products\Service\Wishlist\WishlistService;
+use GoldeneZeiten\Products\Core\Service\Wishlist\WishlistService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 

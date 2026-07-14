@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Event;
+namespace GoldeneZeiten\Products\Core\Event;
 
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
-use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
-use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 
 /**
  * Lets integrators add or filter payment methods shown to customers — inject custom payment

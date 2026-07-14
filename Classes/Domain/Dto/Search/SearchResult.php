@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Dto\Search;
+namespace GoldeneZeiten\Products\Core\Domain\Dto\Search;
 
-use GoldeneZeiten\Products\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 #[Exclude]

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\PriceHistory;
+namespace GoldeneZeiten\Products\Core\Service\PriceHistory;
 
 use Doctrine\DBAL\ParameterType;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 final class PriceHistoryLookbackService

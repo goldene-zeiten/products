@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\LoyaltyFixture;
 
-use GoldeneZeiten\Products\Domain\Dto\Loyalty\LoyaltyContext;
-use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\ValueObject\CheckoutAdjustment;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Loyalty\LoyaltyProviderInterface;
+use GoldeneZeiten\Products\Core\Domain\Dto\Loyalty\LoyaltyContext;
+use GoldeneZeiten\Products\Core\Domain\Enum\AdjustmentType;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\CheckoutAdjustment;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Loyalty\LoyaltyProviderInterface;
 
 /**
  * Fixture loyalty provider with a deterministic, in-memory balance keyed by frontend user.

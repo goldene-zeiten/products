@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Controller;
+namespace GoldeneZeiten\Products\Core\Controller;
 
-use GoldeneZeiten\Products\Discount\Voucher\VoucherCheckoutState;
-use GoldeneZeiten\Products\Domain\Model\Voucher;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\Basket\BasketService;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
-use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherExceptionInterface;
-use GoldeneZeiten\Products\Service\Voucher\VoucherService;
+use GoldeneZeiten\Products\Core\Discount\Voucher\VoucherCheckoutState;
+use GoldeneZeiten\Products\Core\Domain\Model\Voucher;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Service\Voucher\Exception\VoucherExceptionInterface;
+use GoldeneZeiten\Products\Core\Service\Voucher\VoucherService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;

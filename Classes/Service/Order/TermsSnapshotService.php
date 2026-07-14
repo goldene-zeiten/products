@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Order;
+namespace GoldeneZeiten\Products\Core\Service\Order;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Service\OrderSettingsResolver;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Service\OrderSettingsResolver;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\ResourceFactory;

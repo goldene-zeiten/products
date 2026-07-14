@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Updates;
+namespace GoldeneZeiten\Products\Core\Updates;
 
 /**
  * Maps a legacy tt_products `display_mode` to the CType (plus TCA field values) that replaces it.
@@ -18,32 +18,32 @@ final class LegacyPluginModeMap
      * @var array<string, array{ctype: string, fields: array<string, string>}>
      */
     private const MODE_TARGETS = [
-        'LIST' => ['ctype' => 'products_productlist', 'fields' => ['tx_products_list_mode' => 'all']],
-        'LISTOFFERS' => ['ctype' => 'products_productlist', 'fields' => ['tx_products_list_mode' => 'offers']],
-        'LISTHIGHLIGHTS' => ['ctype' => 'products_productlist', 'fields' => ['tx_products_list_mode' => 'highlights']],
-        'LISTNEWITEMS' => ['ctype' => 'products_productlist', 'fields' => ['tx_products_list_mode' => 'new']],
-        'LISTAFFORDABLE' => ['ctype' => 'products_productlist', 'fields' => ['tx_products_list_mode' => 'affordable']],
-        'LISTARTICLES' => ['ctype' => 'products_productlist', 'fields' => ['tx_products_list_mode' => 'articles']],
-        'LISTVIEWEDITEMS' => ['ctype' => 'products_recentlyviewed', 'fields' => ['tx_products_recentlyviewed_mode' => 'recent']],
-        'LISTVIEWEDMOST' => ['ctype' => 'products_recentlyviewed', 'fields' => ['tx_products_recentlyviewed_mode' => 'mostviewed']],
-        'LISTVIEWEDMOSTOTHERS' => ['ctype' => 'products_recentlyviewed', 'fields' => ['tx_products_recentlyviewed_mode' => 'mostviewedglobal']],
-        'SINGLE' => ['ctype' => 'products_productdetail', 'fields' => []],
-        'SEARCH' => ['ctype' => 'products_search', 'fields' => ['tx_products_search_browse_mode' => 'text']],
-        'MEMO' => ['ctype' => 'products_wishlist', 'fields' => []],
-        'BASKET' => ['ctype' => 'products_basket', 'fields' => []],
-        'ORDERS' => ['ctype' => 'products_orderhistory', 'fields' => []],
+        'LIST' => ['ctype' => 'productscore_productlist', 'fields' => ['tx_products_list_mode' => 'all']],
+        'LISTOFFERS' => ['ctype' => 'productscore_productlist', 'fields' => ['tx_products_list_mode' => 'offers']],
+        'LISTHIGHLIGHTS' => ['ctype' => 'productscore_productlist', 'fields' => ['tx_products_list_mode' => 'highlights']],
+        'LISTNEWITEMS' => ['ctype' => 'productscore_productlist', 'fields' => ['tx_products_list_mode' => 'new']],
+        'LISTAFFORDABLE' => ['ctype' => 'productscore_productlist', 'fields' => ['tx_products_list_mode' => 'affordable']],
+        'LISTARTICLES' => ['ctype' => 'productscore_productlist', 'fields' => ['tx_products_list_mode' => 'articles']],
+        'LISTVIEWEDITEMS' => ['ctype' => 'productscore_recentlyviewed', 'fields' => ['tx_products_recentlyviewed_mode' => 'recent']],
+        'LISTVIEWEDMOST' => ['ctype' => 'productscore_recentlyviewed', 'fields' => ['tx_products_recentlyviewed_mode' => 'mostviewed']],
+        'LISTVIEWEDMOSTOTHERS' => ['ctype' => 'productscore_recentlyviewed', 'fields' => ['tx_products_recentlyviewed_mode' => 'mostviewedglobal']],
+        'SINGLE' => ['ctype' => 'productscore_productdetail', 'fields' => []],
+        'SEARCH' => ['ctype' => 'productscore_search', 'fields' => ['tx_products_search_browse_mode' => 'text']],
+        'MEMO' => ['ctype' => 'productscore_wishlist', 'fields' => []],
+        'BASKET' => ['ctype' => 'productscore_basket', 'fields' => []],
+        'ORDERS' => ['ctype' => 'productscore_orderhistory', 'fields' => []],
         'BILL' => ['ctype' => 'products_invoice', 'fields' => []],
-        'WITHDRAWAL' => ['ctype' => 'products_withdrawal', 'fields' => []],
-        'DOWNLOAD' => ['ctype' => 'products_download', 'fields' => []],
-        'LISTCAT' => ['ctype' => 'products_categorylist', 'fields' => []],
-        'SELECTCAT' => ['ctype' => 'products_categorynavigation', 'fields' => ['tx_products_navigation_style' => 'dropdown']],
-        'MENUCAT' => ['ctype' => 'products_categorynavigation', 'fields' => ['tx_products_navigation_style' => 'menu']],
-        'INFO' => ['ctype' => 'products_checkout', 'fields' => []],
-        'PAYMENT' => ['ctype' => 'products_checkout', 'fields' => []],
-        'FINALIZE' => ['ctype' => 'products_checkout', 'fields' => []],
-        'DELIVERY' => ['ctype' => 'products_checkout', 'fields' => []],
-        'TRACKING' => ['ctype' => 'products_checkout', 'fields' => []],
-        'OVERVIEW' => ['ctype' => 'products_checkout', 'fields' => []],
+        'WITHDRAWAL' => ['ctype' => 'productscore_withdrawal', 'fields' => []],
+        'DOWNLOAD' => ['ctype' => 'productscore_download', 'fields' => []],
+        'LISTCAT' => ['ctype' => 'productscore_categorylist', 'fields' => []],
+        'SELECTCAT' => ['ctype' => 'productscore_categorynavigation', 'fields' => ['tx_products_navigation_style' => 'dropdown']],
+        'MENUCAT' => ['ctype' => 'productscore_categorynavigation', 'fields' => ['tx_products_navigation_style' => 'menu']],
+        'INFO' => ['ctype' => 'productscore_checkout', 'fields' => []],
+        'PAYMENT' => ['ctype' => 'productscore_checkout', 'fields' => []],
+        'FINALIZE' => ['ctype' => 'productscore_checkout', 'fields' => []],
+        'DELIVERY' => ['ctype' => 'productscore_checkout', 'fields' => []],
+        'TRACKING' => ['ctype' => 'productscore_checkout', 'fields' => []],
+        'OVERVIEW' => ['ctype' => 'productscore_checkout', 'fields' => []],
     ];
 
     /**

@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service\Withdrawal;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Withdrawal;
 
-use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Service\Withdrawal\Exception\InvalidWithdrawalTokenException;
-use GoldeneZeiten\Products\Service\Withdrawal\Exception\OrderNotWithdrawableException;
-use GoldeneZeiten\Products\Service\Withdrawal\Exception\WithdrawalEmailMismatchException;
-use GoldeneZeiten\Products\Service\Withdrawal\Exception\WithdrawalPeriodExpiredException;
-use GoldeneZeiten\Products\Service\Withdrawal\WithdrawalService;
-use GoldeneZeiten\Products\Service\Withdrawal\WithdrawalTokenService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
-use GoldeneZeiten\Products\Tests\Functional\Fixtures\TestMailer;
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\InvalidWithdrawalTokenException;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\OrderNotWithdrawableException;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalEmailMismatchException;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalPeriodExpiredException;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalService;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalTokenService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\TestMailer;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -80,7 +80,7 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
                 'settings' => [
                     'products' => [
                         'email' => ['merchantRecipient' => 'merchant@example.com'],

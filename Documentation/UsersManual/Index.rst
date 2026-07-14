@@ -245,7 +245,7 @@ Exporting orders
 
 This extension does not ship an order export format itself; third-party extensions can add one
 (CSV, a specific ERP's import format, a marketplace feed, ...) by registering against
-:php:`GoldeneZeiten\Products\Export\OrderExportRegistry`. See
+:php:`GoldeneZeiten\Products\Core\Export\OrderExportRegistry`. See
 :ref:`Order export <introduction-order-export>` in the introduction for the technical extension
 point.
 

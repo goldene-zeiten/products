@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\ViewHelpers\Format;
+namespace GoldeneZeiten\Products\Core\ViewHelpers\Format;
 
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;

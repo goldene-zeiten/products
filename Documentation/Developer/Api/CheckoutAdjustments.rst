@@ -11,7 +11,7 @@ do so by contributing a signed money adjustment — never by writing directly in
 isolation lets features live in separate extensions without knowing about each other; a voucher
 does not need to know about shipping, and a loyalty system does not need to know about deposits.
 
-**Location:** :php:`GoldeneZeiten\Products\Domain\ValueObject\CheckoutAdjustment`
+**Location:** :php:`GoldeneZeiten\Products\Core\Domain\ValueObject\CheckoutAdjustment`
 
 The Adjustment Type System
 ==========================
@@ -165,10 +165,10 @@ This example constructs a collection of adjustments for a typical order:
 
     namespace MyVendor\MyExtension\Service;
 
-    use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
-    use GoldeneZeiten\Products\Domain\ValueObject\AdjustmentCollection;
-    use GoldeneZeiten\Products\Domain\ValueObject\CheckoutAdjustment;
-    use GoldeneZeiten\Products\Domain\ValueObject\Money;
+    use GoldeneZeiten\Products\Core\Domain\Enum\AdjustmentType;
+    use GoldeneZeiten\Products\Core\Domain\ValueObject\AdjustmentCollection;
+    use GoldeneZeiten\Products\Core\Domain\ValueObject\CheckoutAdjustment;
+    use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 
     final class CheckoutAdjustmentExample
     {

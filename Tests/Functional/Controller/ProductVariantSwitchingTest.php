@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Controller;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
@@ -69,14 +69,14 @@ final class ProductVariantSwitchingTest extends AbstractFrontendTestCase
      */
     private function requestFor(array $attributeValueUids = []): InternalRequest
     {
-        $queryParameters = ['tx_products_productdetail[product]' => 1];
+        $queryParameters = ['tx_productscore_productdetail[product]' => 1];
         foreach ($attributeValueUids as $index => $uid) {
-            $queryParameters[sprintf('tx_products_productdetail[attributeValues][%d]', $index)] = $uid;
+            $queryParameters[sprintf('tx_productscore_productdetail[attributeValues][%d]', $index)] = $uid;
         }
 
-        $hashString = '&id=2&tx_products_productdetail[product]=1';
+        $hashString = '&id=2&tx_productscore_productdetail[product]=1';
         foreach ($attributeValueUids as $index => $uid) {
-            $hashString .= sprintf('&tx_products_productdetail[attributeValues][%d]=%d', $index, $uid);
+            $hashString .= sprintf('&tx_productscore_productdetail[attributeValues][%d]=%d', $index, $uid);
         }
         $cHash = $this->get(CacheHashCalculator::class)->generateForParameters($hashString);
         $queryParameters['cHash'] = $cHash;

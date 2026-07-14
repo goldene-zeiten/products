@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Unit\Configuration;
+namespace GoldeneZeiten\Products\Core\Tests\Unit\Configuration;
 
-use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
-use GoldeneZeiten\Products\Service\PriceRoundingService;
+use GoldeneZeiten\Products\Core\Configuration\ProductsConfigurationFactory;
+use GoldeneZeiten\Products\Core\Service\PriceRoundingService;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;

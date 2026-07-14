@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\ViewHelpers\Discount;
+namespace GoldeneZeiten\Products\Core\ViewHelpers\Discount;
 
-use GoldeneZeiten\Products\Discount\Voucher\VoucherCheckoutState;
-use GoldeneZeiten\Products\Domain\Dto\Discount\VoucherBasketSummary;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\Basket\BasketService;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
-use GoldeneZeiten\Products\Service\Voucher\VoucherService;
-use GoldeneZeiten\Products\ViewHelpers\Format\RenderingContextRequestResolverInterface;
+use GoldeneZeiten\Products\Core\Discount\Voucher\VoucherCheckoutState;
+use GoldeneZeiten\Products\Core\Domain\Dto\Discount\VoucherBasketSummary;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Service\Voucher\VoucherService;
+use GoldeneZeiten\Products\Core\ViewHelpers\Format\RenderingContextRequestResolverInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**

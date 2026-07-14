@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\EventListener;
+namespace GoldeneZeiten\Products\Core\EventListener;
 
-use GoldeneZeiten\Products\Service\Wishlist\WishlistService;
+use GoldeneZeiten\Products\Core\Service\Wishlist\WishlistService;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Authentication\Event\AfterUserLoggedInEvent;

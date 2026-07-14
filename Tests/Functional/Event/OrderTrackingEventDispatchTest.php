@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Event;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Event;
 
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Service\Order\OrderTokenService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
 use GoldeneZeiten\Products\EventFixture\OrderTrackingListener;
-use GoldeneZeiten\Products\Service\Order\OrderTokenService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
@@ -15,7 +15,7 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 final class OrderTrackingEventDispatchTest extends AbstractFrontendTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
         'goldene-zeiten/frontend-test',
         'goldene-zeiten/products-event-fixture',
     ];
@@ -52,11 +52,11 @@ final class OrderTrackingEventDispatchTest extends AbstractFrontendTestCase
     private function orderShowRequest(int $order, ?string $hash): InternalRequest
     {
         $queryParameters = [
-            'tx_products_orderhistory[action]' => 'show',
-            'tx_products_orderhistory[order]' => $order,
+            'tx_productscore_orderhistory[action]' => 'show',
+            'tx_productscore_orderhistory[order]' => $order,
         ];
         if ($hash !== null) {
-            $queryParameters['tx_products_orderhistory[hash]'] = $hash;
+            $queryParameters['tx_productscore_orderhistory[hash]'] = $hash;
         }
 
         $parameterString = '&id=2';

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Event;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Event;
 
+use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Service\Basket\BasketStorage;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
 use GoldeneZeiten\Products\EventFixture\BasketUpdatedListener;
 use GoldeneZeiten\Products\EventFixture\ModifyBasketItemListener;
-use GoldeneZeiten\Products\Service\Basket\BasketService;
-use GoldeneZeiten\Products\Service\Basket\BasketStorage;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -19,7 +19,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class BasketEventDispatchTest extends AbstractFrontendTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
         'goldene-zeiten/frontend-test',
         'goldene-zeiten/products-event-fixture',
     ];

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Shipping;
+namespace GoldeneZeiten\Products\Core\Shipping;
 
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingContext;
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingOption;
-use GoldeneZeiten\Products\Event\ShippingOptionsCollectedEvent;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
+use GoldeneZeiten\Products\Core\Event\ShippingOptionsCollectedEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\CreditPoints;
+namespace GoldeneZeiten\Products\Core\Service\CreditPoints;
 
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -10,7 +10,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 /**
  * Atomic per-user balance guarded against concurrent over-spend.
  *
- * @see \GoldeneZeiten\Products\Service\Order\StockService::decrementForItem()
+ * @see \GoldeneZeiten\Products\Core\Service\Order\StockService::decrementForItem()
  */
 final class CreditPointsBalanceService
 {

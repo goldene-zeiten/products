@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Catalog;
+namespace GoldeneZeiten\Products\Core\Catalog;
 
-use GoldeneZeiten\Products\Domain\Dto\Catalog\ProductListContext;
-use GoldeneZeiten\Products\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListContext;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 /**

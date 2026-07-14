@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Wishlist;
+namespace GoldeneZeiten\Products\Core\Service\Wishlist;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\Model\WishlistItem;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Domain\Repository\WishlistItemRepository;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Model\WishlistItem;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\WishlistItemRepository;
+use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;

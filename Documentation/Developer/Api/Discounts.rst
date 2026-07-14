@@ -12,7 +12,7 @@ applies, and optionally books the redemption after payment. Because discounting 
 shop-specific, **the extension ships with only the voucher feature** (a built-in discount provider);
 integrators add custom discounts by implementing the interface.
 
-**Location:** :php:`GoldeneZeiten\Products\Discount\DiscountProviderInterface`
+**Location:** :php:`GoldeneZeiten\Products\Core\Discount\DiscountProviderInterface`
 
 The Two Phases: Quote and Apply
 ================================
@@ -244,12 +244,12 @@ applied:
 
     namespace Acme\MyDiscount;
 
-    use GoldeneZeiten\Products\Discount\DiscountProviderInterface;
-    use GoldeneZeiten\Products\Domain\Dto\Discount\DiscountContext;
-    use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
-    use GoldeneZeiten\Products\Domain\Model\Order;
-    use GoldeneZeiten\Products\Domain\ValueObject\CheckoutAdjustment;
-    use GoldeneZeiten\Products\Domain\ValueObject\Money;
+    use GoldeneZeiten\Products\Core\Discount\DiscountProviderInterface;
+    use GoldeneZeiten\Products\Core\Domain\Dto\Discount\DiscountContext;
+    use GoldeneZeiten\Products\Core\Domain\Enum\AdjustmentType;
+    use GoldeneZeiten\Products\Core\Domain\Model\Order;
+    use GoldeneZeiten\Products\Core\Domain\ValueObject\CheckoutAdjustment;
+    use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 
     final class FlatDiscountProvider implements DiscountProviderInterface
     {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Shipping;
+namespace GoldeneZeiten\Products\Core\Shipping;
 
-use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingContext;
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingContextItem;
+use GoldeneZeiten\Products\Core\Domain\Dto\Address;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewItem;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContextItem;
 
 /**
  * Builds the immutable view of a basket that carriers decide on, so a carrier never has to reach into the

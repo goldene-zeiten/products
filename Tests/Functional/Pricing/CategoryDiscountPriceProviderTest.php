@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Pricing;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Pricing;
 
-use GoldeneZeiten\Products\Domain\Model\Category;
-use GoldeneZeiten\Products\Domain\Model\PriceTier;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Pricing\CategoryDiscountPriceProvider;
-use GoldeneZeiten\Products\Pricing\CategoryDiscountResolver;
-use GoldeneZeiten\Products\Pricing\GraduatedPriceProvider;
-use GoldeneZeiten\Products\Pricing\PriceProviderInterface;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
-use GoldeneZeiten\Products\Tests\Functional\Fixtures\FixtureConfigurationManager;
+use GoldeneZeiten\Products\Core\Domain\Model\Category;
+use GoldeneZeiten\Products\Core\Domain\Model\PriceTier;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Pricing\CategoryDiscountPriceProvider;
+use GoldeneZeiten\Products\Core\Pricing\CategoryDiscountResolver;
+use GoldeneZeiten\Products\Core\Pricing\GraduatedPriceProvider;
+use GoldeneZeiten\Products\Core\Pricing\PriceProviderInterface;
+use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\FixtureConfigurationManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
@@ -28,7 +28,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

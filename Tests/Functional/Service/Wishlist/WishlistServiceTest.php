@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service\Wishlist;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Wishlist;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Model\OrderItem;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Service\Wishlist\WishlistService;
-use GoldeneZeiten\Products\Service\Wishlist\WishlistStorage;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\OrderItem;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Service\Wishlist\WishlistService;
+use GoldeneZeiten\Products\Core\Service\Wishlist\WishlistStorage;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,7 +22,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class WishlistServiceTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

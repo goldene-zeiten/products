@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Export;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Export;
 
-use GoldeneZeiten\Products\Domain\Dto\Export\ExportContext;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Export\Exception\OrderExporterNotAvailableException;
-use GoldeneZeiten\Products\Export\Exception\OrderExporterNotFoundException;
-use GoldeneZeiten\Products\Export\OrderExportService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Export\Exception\OrderExporterNotAvailableException;
+use GoldeneZeiten\Products\Core\Export\Exception\OrderExporterNotFoundException;
+use GoldeneZeiten\Products\Core\Export\OrderExportService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class OrderExportServiceTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
         'goldene-zeiten/products-export-fixture',
     ];
 

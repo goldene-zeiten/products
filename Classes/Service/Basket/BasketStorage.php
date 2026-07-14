@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Basket;
+namespace GoldeneZeiten\Products\Core\Service\Basket;
 
-use GoldeneZeiten\Products\Domain\Dto\Basket;
-use GoldeneZeiten\Products\Domain\Dto\BasketItem;
+use GoldeneZeiten\Products\Core\Domain\Dto\Basket;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketItem;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 

@@ -2,30 +2,30 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Order;
+namespace GoldeneZeiten\Products\Core\Service\Order;
 
-use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
-use GoldeneZeiten\Products\Discount\Voucher\VoucherCheckoutState;
-use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\OrderPlacementResult;
-use GoldeneZeiten\Products\Domain\Dto\Loyalty\LoyaltyContext;
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
-use GoldeneZeiten\Products\Domain\Enum\PaymentResultState;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Event\BeforeOrderPlacedEvent;
-use GoldeneZeiten\Products\Event\PaymentInitiatedEvent;
-use GoldeneZeiten\Products\Loyalty\LoyaltyRegistry;
-use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
-use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
-use GoldeneZeiten\Products\Service\Basket\BasketService;
-use GoldeneZeiten\Products\Service\Checkout\PriceQuoteService;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
-use GoldeneZeiten\Products\Service\Order\Exception\EmptyBasketException;
-use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementVetoedException;
-use GoldeneZeiten\Products\Service\Order\Exception\TermsNotAcceptedException;
+use GoldeneZeiten\Products\Core\Configuration\ProductsConfigurationFactory;
+use GoldeneZeiten\Products\Core\Discount\Voucher\VoucherCheckoutState;
+use GoldeneZeiten\Products\Core\Domain\Dto\Address;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutChoices;
+use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutSelections;
+use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\OrderPlacementResult;
+use GoldeneZeiten\Products\Core\Domain\Dto\Loyalty\LoyaltyContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentResultState;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Event\BeforeOrderPlacedEvent;
+use GoldeneZeiten\Products\Core\Event\PaymentInitiatedEvent;
+use GoldeneZeiten\Products\Core\Loyalty\LoyaltyRegistry;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
+use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Service\Checkout\PriceQuoteService;
+use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\EmptyBasketException;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\OrderPlacementVetoedException;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\TermsNotAcceptedException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

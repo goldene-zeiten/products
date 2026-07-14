@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Catalog;
+namespace GoldeneZeiten\Products\Core\Catalog;
 
-use GoldeneZeiten\Products\Configuration\CreditPointsConfigurationFactory;
-use GoldeneZeiten\Products\Domain\Dto\Catalog\ProductListContext;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsBalanceService;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Configuration\CreditPointsConfigurationFactory;
+use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListContext;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Service\CreditPoints\CreditPointsBalanceService;
+use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -32,11 +32,11 @@ final class AffordableProductListModeProvider implements ProductListModeProvider
 
     public function getLabel(): string
     {
-        return (string)LocalizationUtility::translate('tt_content.tx_products_list_mode.affordable', 'Products');
+        return (string)LocalizationUtility::translate('tt_content.tx_products_list_mode.affordable', 'ProductsCore');
     }
 
     /**
-     * @return \GoldeneZeiten\Products\Domain\Model\Product[]
+     * @return \GoldeneZeiten\Products\Core\Domain\Model\Product[]
      */
     public function findProducts(ProductListContext $context): array
     {

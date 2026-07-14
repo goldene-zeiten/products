@@ -1,7 +1,7 @@
-<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:order_status_changed" />
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:order_status_changed" />
 
-<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:hello" />
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:hello" />
 
-<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:status_changed_from_to" arguments="{0: order.orderNumber, 1: previousStatus.value, 2: newStatus.value}" />
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:status_changed_from_to" arguments="{0: order.orderNumber, 1: previousStatus.value, 2: newStatus.value}" />
 
 <f:render partial="Email/Signature" arguments="{_all}" />

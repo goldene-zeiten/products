@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-	<file source-language="en" datatype="plaintext" original="EXT:products/Resources/Private/Language/locallang_tca.xlf" date="2026-07-05T20:00:00Z" product-name="products">
+	<file source-language="en" datatype="plaintext" original="EXT:products_core/Resources/Private/Language/locallang_tca.xlf" date="2026-07-05T20:00:00Z" product-name="products">
 		<header/>
 		<body>
 			<trans-unit id="tx_products_domain_model_taxclass" resname="tx_products_domain_model_taxclass">

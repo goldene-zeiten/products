@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\PageTitle;
+namespace GoldeneZeiten\Products\Core\PageTitle;
 
-use GoldeneZeiten\Products\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\PageTitle\PageTitleProviderInterface;
@@ -35,7 +35,7 @@ final class ProductPageTitleProvider implements PageTitleProviderInterface
         $this->configurationManager->setRequest($request);
         $this->settings = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
+            'ProductsCore'
         );
     }
 

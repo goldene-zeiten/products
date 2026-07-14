@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\ViewHelpers\Pricing;
+namespace GoldeneZeiten\Products\Core\ViewHelpers\Pricing;
 
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 

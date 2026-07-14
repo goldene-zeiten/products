@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service\Invoice;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Invoice;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Service\Invoice\InvoiceRenderer;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceRenderer;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\ValueObject;
+namespace GoldeneZeiten\Products\Core\Domain\ValueObject;
 
 /**
  * The provider identifiers the extension itself puts on the checkout adjustments it produces. Naming them

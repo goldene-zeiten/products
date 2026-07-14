@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\EventListener;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\EventListener;
 
-use GoldeneZeiten\Products\EventListener\MergeWishlistOnLoginListener;
-use GoldeneZeiten\Products\Service\Wishlist\WishlistService;
-use GoldeneZeiten\Products\Service\Wishlist\WishlistStorage;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\EventListener\MergeWishlistOnLoginListener;
+use GoldeneZeiten\Products\Core\Service\Wishlist\WishlistService;
+use GoldeneZeiten\Products\Core\Service\Wishlist\WishlistStorage;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Authentication\Event\AfterUserLoggedInEvent;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -22,7 +22,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class MergeWishlistOnLoginListenerTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     #[Test]

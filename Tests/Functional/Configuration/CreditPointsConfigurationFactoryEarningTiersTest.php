@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Configuration;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Configuration;
 
-use GoldeneZeiten\Products\Configuration\CreditPointsConfigurationFactory;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Configuration\CreditPointsConfigurationFactory;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
@@ -29,7 +29,7 @@ final class CreditPointsConfigurationFactoryEarningTiersTest extends AbstractFun
     ];
 
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     /**
@@ -73,7 +73,7 @@ final class CreditPointsConfigurationFactoryEarningTiersTest extends AbstractFun
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products'],
+                'dependencies' => ['goldene-zeiten/products-core'],
                 'settings' => [
                     'products' => [
                         'creditPoints' => ['earningTiers' => $earningTiers],

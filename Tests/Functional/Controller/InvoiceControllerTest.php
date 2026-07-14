@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Controller;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Service\Invoice\Exception\InvalidInvoiceTokenException;
-use GoldeneZeiten\Products\Service\Invoice\InvoiceTokenService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Service\Invoice\Exception\InvalidInvoiceTokenException;
+use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceTokenService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
@@ -52,15 +52,15 @@ final class InvoiceControllerTest extends AbstractFrontendTestCase
     private function requestFor(Order $order, string $hash): InternalRequest
     {
         $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
-            sprintf('&id=2&tx_products_invoice[action]=download&tx_products_invoice[order]=%d&tx_products_invoice[hash]=%s', $order->getUid(), $hash)
+            sprintf('&id=2&tx_productscore_invoice[action]=download&tx_productscore_invoice[order]=%d&tx_productscore_invoice[hash]=%s', $order->getUid(), $hash)
         );
 
         return (new InternalRequest('http://localhost/shop'))
             ->withQueryParameters([
                 'type' => 1729512001,
-                'tx_products_invoice[action]' => 'download',
-                'tx_products_invoice[order]' => $order->getUid(),
-                'tx_products_invoice[hash]' => $hash,
+                'tx_productscore_invoice[action]' => 'download',
+                'tx_productscore_invoice[order]' => $order->getUid(),
+                'tx_productscore_invoice[hash]' => $hash,
                 'cHash' => $cHash,
             ]);
     }

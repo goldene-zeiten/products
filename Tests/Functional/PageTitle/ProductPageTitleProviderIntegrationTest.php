@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\PageTitle;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\PageTitle;
 
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
@@ -22,7 +22,7 @@ final class ProductPageTitleProviderIntegrationTest extends AbstractFunctionalTe
     ];
 
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     #[Test]
@@ -46,8 +46,8 @@ final class ProductPageTitleProviderIntegrationTest extends AbstractFunctionalTe
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
         $this->setUpFrontendRootPage(1, [
-            'constants' => ['EXT:products/Configuration/TypoScript/constants.typoscript'],
-            'setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript'],
+            'constants' => ['EXT:products_core/Configuration/TypoScript/constants.typoscript'],
+            'setup' => ['EXT:products_core/Configuration/TypoScript/setup.typoscript'],
         ]);
         $this->addTypoScriptToTemplateRecord(1, 'page = PAGE');
 
@@ -67,7 +67,7 @@ final class ProductPageTitleProviderIntegrationTest extends AbstractFunctionalTe
                 'routeEnhancers' => [
                     'ProductsDetail' => [
                         'type' => 'Extbase',
-                        'extension' => 'Products',
+                        'extension' => 'ProductsCore',
                         'plugin' => 'ProductDetail',
                         'routes' => [
                             [
@@ -91,16 +91,16 @@ final class ProductPageTitleProviderIntegrationTest extends AbstractFunctionalTe
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
         $this->setUpFrontendRootPage(1, [
-            'constants' => ['EXT:products/Configuration/TypoScript/constants.typoscript'],
-            'setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript'],
+            'constants' => ['EXT:products_core/Configuration/TypoScript/constants.typoscript'],
+            'setup' => ['EXT:products_core/Configuration/TypoScript/setup.typoscript'],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
-            plugin.tx_products.persistence.storagePid = 2
+            plugin.tx_productscore.persistence.storagePid = 2
             page = PAGE
             page.10 = USER
             page.10 {
                 userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
-                extensionName = Products
+                extensionName = ProductsCore
                 pluginName = ProductDetail
                 vendorName = GoldeneZeiten
             }

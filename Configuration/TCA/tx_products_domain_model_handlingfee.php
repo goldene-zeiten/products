@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use GoldeneZeiten\Products\Backend\Form\CountryItemsProcFunc;
+use GoldeneZeiten\Products\Core\Backend\Form\CountryItemsProcFunc;
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee',
+        'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee',
         'label' => 'title',
         'label_alt' => 'country, rate',
         'tstamp' => 'tstamp',
@@ -17,7 +17,7 @@ return [
         'enablecolumns' => [
             'disabled' => 'hidden',
         ],
-        'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
+        'iconfile' => 'EXT:products_core/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
         '1' => ['showitem' => 'title, country, --palette--;;range, rate'],
@@ -29,7 +29,7 @@ return [
     ],
     'columns' => [
         'title' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.title',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.title',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -38,7 +38,7 @@ return [
             ],
         ],
         'country' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.country',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.country',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -46,7 +46,7 @@ return [
             ],
         ],
         'min_order_value' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.min_order_value',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.min_order_value',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
@@ -55,7 +55,7 @@ return [
             ],
         ],
         'max_order_value' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.max_order_value',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.max_order_value',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
@@ -64,21 +64,21 @@ return [
             ],
         ],
         'min_weight' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.min_weight',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.min_weight',
             'config' => [
                 'type' => 'number',
                 'size' => 10,
             ],
         ],
         'max_weight' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.max_weight',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.max_weight',
             'config' => [
                 'type' => 'number',
                 'size' => 10,
             ],
         ],
         'rate' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.rate',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_handlingfee.rate',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',

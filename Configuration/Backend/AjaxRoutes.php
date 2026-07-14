@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use GoldeneZeiten\Products\Controller\Backend\CategoryTreeController;
+use GoldeneZeiten\Products\Core\Controller\Backend\CategoryTreeController;
 
 return [
     'products_category_tree_configuration' => [

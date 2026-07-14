@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Event;
+namespace GoldeneZeiten\Products\Core\Event;
 
-use GoldeneZeiten\Products\Domain\Dto\Export\ExportContext;
-use GoldeneZeiten\Products\Export\OrderExportInterface;
-use GoldeneZeiten\Products\Export\OrderExportRegistry;
+use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
+use GoldeneZeiten\Products\Core\Export\OrderExportInterface;
+use GoldeneZeiten\Products\Core\Export\OrderExportRegistry;
 
 /**
  * Lets integrators reorder or filter the order exporters the backend is about to offer — hide an ERP

@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-use GoldeneZeiten\Products\Domain\Enum\CreditPointsTransactionType;
+use GoldeneZeiten\Products\Core\Domain\Enum\CreditPointsTransactionType;
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction',
+        'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction',
         'label' => 'frontend_user',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'delete' => 'deleted',
-        'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
+        'iconfile' => 'EXT:products_core/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
         '1' => ['showitem' => 'frontend_user, order_uid, points, type, created'],
     ],
     'columns' => [
         'frontend_user' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.frontend_user',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.frontend_user',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -28,7 +28,7 @@ return [
             ],
         ],
         'order_uid' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.order_uid',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.order_uid',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -37,7 +37,7 @@ return [
             ],
         ],
         'points' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.points',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.points',
             'config' => [
                 'type' => 'number',
                 'size' => 10,
@@ -45,28 +45,28 @@ return [
             ],
         ],
         'type' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.type',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.type',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
                     [
-                        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.type.earn',
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.type.earn',
                         'value' => CreditPointsTransactionType::EARN->value,
                     ],
                     [
-                        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.type.redeem',
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.type.redeem',
                         'value' => CreditPointsTransactionType::REDEEM->value,
                     ],
                     [
-                        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.type.adjustment',
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.type.adjustment',
                         'value' => CreditPointsTransactionType::ADJUSTMENT->value,
                     ],
                 ],
             ],
         ],
         'created' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.created',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_creditpointstransaction.created',
             'config' => [
                 'type' => 'datetime',
                 'size' => 13,

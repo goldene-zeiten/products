@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Unit\Configuration;
+namespace GoldeneZeiten\Products\Core\Tests\Unit\Configuration;
 
-use GoldeneZeiten\Products\Configuration\CreditPointsConfigurationFactory;
+use GoldeneZeiten\Products\Core\Configuration\CreditPointsConfigurationFactory;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\Entity\Site;

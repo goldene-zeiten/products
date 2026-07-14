@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Enum;
+namespace GoldeneZeiten\Products\Core\Domain\Enum;
 
 /**
  * The kinds of money effect a checkout adjustment can have on an order total. Every feature that changes

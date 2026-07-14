@@ -6,6 +6,6 @@ return [
     'dependencies' => ['backend'],
     'tags' => ['backend.module'],
     'imports' => [
-        '@goldene-zeiten/products/' => 'EXT:products/Resources/Public/JavaScript/',
+        '@goldene-zeiten/products/' => 'EXT:products_core/Resources/Public/JavaScript/',
     ],
 ];

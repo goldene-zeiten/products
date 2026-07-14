@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Payment;
+namespace GoldeneZeiten\Products\Core\Payment;
 
-use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
-use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Dto\Address;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class PaymentContextFactory

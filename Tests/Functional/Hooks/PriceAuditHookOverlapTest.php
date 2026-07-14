@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Hooks;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Hooks;
 
-use GoldeneZeiten\Products\Domain\Validation\PricePeriodOverlapGuard;
-use GoldeneZeiten\Products\Exception\PricePeriodOverlapException;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Domain\Validation\PricePeriodOverlapGuard;
+use GoldeneZeiten\Products\Core\Exception\PricePeriodOverlapException;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -16,7 +16,7 @@ use PHPUnit\Framework\Attributes\Test;
 final class PriceAuditHookOverlapTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

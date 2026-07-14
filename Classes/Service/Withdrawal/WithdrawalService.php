@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Withdrawal;
+namespace GoldeneZeiten\Products\Core\Service\Withdrawal;
 
-use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Service\Order\OrderStatusManager;
-use GoldeneZeiten\Products\Service\OrderMailService;
-use GoldeneZeiten\Products\Service\Withdrawal\Exception\InvalidWithdrawalTokenException;
-use GoldeneZeiten\Products\Service\Withdrawal\Exception\OrderNotWithdrawableException;
-use GoldeneZeiten\Products\Service\Withdrawal\Exception\WithdrawalEmailMismatchException;
-use GoldeneZeiten\Products\Service\Withdrawal\Exception\WithdrawalPeriodExpiredException;
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Service\Order\OrderStatusManager;
+use GoldeneZeiten\Products\Core\Service\OrderMailService;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\InvalidWithdrawalTokenException;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\OrderNotWithdrawableException;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalEmailMismatchException;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalPeriodExpiredException;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
@@ -103,7 +103,7 @@ final class WithdrawalService
         $this->configurationManager->setRequest($request);
         $settings = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
+            'ProductsCore'
         );
         $days = (int)($settings['checkout']['withdrawalPeriodDays'] ?? 14);
         $orderDate = $order->getOrderDate();

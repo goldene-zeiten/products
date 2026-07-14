@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Pricing;
+namespace GoldeneZeiten\Products\Core\Pricing;
 
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Pricing\Unit\UnitPrice;
-use GoldeneZeiten\Products\Pricing\Unit\UnitRegistry;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Pricing\Unit\UnitPrice;
+use GoldeneZeiten\Products\Core\Pricing\Unit\UnitRegistry;
 
 final class UnitPriceCalculator
 {

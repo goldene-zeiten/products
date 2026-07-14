@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Controller;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Service\Withdrawal\WithdrawalTokenService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
-use GoldeneZeiten\Products\Tests\Functional\Fixtures\TestMailer;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalTokenService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\TestMailer;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
@@ -41,9 +41,9 @@ final class WithdrawalControllerTest extends AbstractFrontendTestCase
 
         $this->assertSame(200, $response->getStatusCode());
         if ($expectFormVisible) {
-            $this->assertStringContainsString('tx_products_withdrawal[email]', (string)$response->getBody());
+            $this->assertStringContainsString('tx_productscore_withdrawal[email]', (string)$response->getBody());
         } else {
-            $this->assertStringNotContainsString('tx_products_withdrawal[email]', (string)$response->getBody());
+            $this->assertStringNotContainsString('tx_productscore_withdrawal[email]', (string)$response->getBody());
         }
     }
 
@@ -103,9 +103,9 @@ final class WithdrawalControllerTest extends AbstractFrontendTestCase
      */
     private function requestFor(string $action, array $arguments): InternalRequest
     {
-        $queryParameters = ['tx_products_withdrawal[action]' => $action];
+        $queryParameters = ['tx_productscore_withdrawal[action]' => $action];
         foreach ($arguments as $name => $value) {
-            $queryParameters[sprintf('tx_products_withdrawal[%s]', $name)] = $value;
+            $queryParameters[sprintf('tx_productscore_withdrawal[%s]', $name)] = $value;
         }
 
         // RFC3986 encoding required; RFC1738 "+" breaks cHash for values with spaces.

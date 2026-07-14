@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Search;
+namespace GoldeneZeiten\Products\Core\Service\Search;
 
-use GoldeneZeiten\Products\Domain\Dto\Search\SearchResult;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Domain\Dto\Search\SearchResult;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
@@ -38,7 +38,7 @@ final class SearchService
         $this->configurationManager->setRequest($request);
         $settings = $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
+            'ProductsCore'
         );
         return max(1, (int)($settings['search']['resultsPerPage'] ?? self::DEFAULT_RESULTS_PER_PAGE));
     }

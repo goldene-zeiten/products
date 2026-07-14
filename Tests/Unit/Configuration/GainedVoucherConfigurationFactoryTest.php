@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Unit\Configuration;
+namespace GoldeneZeiten\Products\Core\Tests\Unit\Configuration;
 
-use GoldeneZeiten\Products\Configuration\GainedVoucherConfigurationFactory;
-use GoldeneZeiten\Products\Domain\Enum\VoucherDiscountType;
+use GoldeneZeiten\Products\Core\Configuration\GainedVoucherConfigurationFactory;
+use GoldeneZeiten\Products\Core\Domain\Enum\VoucherDiscountType;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\Entity\Site;

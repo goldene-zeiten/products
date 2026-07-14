@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Export\Exception;
+namespace GoldeneZeiten\Products\Core\Export\Exception;
 
 /**
  * Thrown when an exporter is requested for an order it denied itself for during discovery.

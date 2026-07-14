@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\EventListener;
+namespace GoldeneZeiten\Products\Core\EventListener;
 
-use GoldeneZeiten\Products\Event\LowStockThresholdReachedEvent;
-use GoldeneZeiten\Products\Service\OrderMailService;
+use GoldeneZeiten\Products\Core\Event\LowStockThresholdReachedEvent;
+use GoldeneZeiten\Products\Core\Service\OrderMailService;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 

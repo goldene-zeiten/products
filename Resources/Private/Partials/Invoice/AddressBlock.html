@@ -1,7 +1,7 @@
 <table style="width: 100%; margin-bottom: 20px;">
     <tr>
         <td style="width: 50%; vertical-align: top;">
-            <strong><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_invoice.xlf:billing_address" /></strong><br>
+            <strong><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:billing_address" /></strong><br>
             {order.billingAddress.company}<br>
             {order.billingAddress.firstName} {order.billingAddress.lastName}<br>
             {order.billingAddress.street} {order.billingAddress.houseNumber}<br>
@@ -11,7 +11,7 @@
         <td style="width: 50%; vertical-align: top;">
             <f:if condition="{order.deliveryAddress}">
                 <f:then>
-                    <strong><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_invoice.xlf:delivery_address" /></strong><br>
+                    <strong><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:delivery_address" /></strong><br>
                     {order.deliveryAddress.company}<br>
                     {order.deliveryAddress.firstName} {order.deliveryAddress.lastName}<br>
                     {order.deliveryAddress.street} {order.deliveryAddress.houseNumber}<br>

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Updates;
+namespace GoldeneZeiten\Products\Core\Updates;
 
 use Doctrine\DBAL\ParameterType;
 use TYPO3\CMS\Core\Core\Environment;

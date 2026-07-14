@@ -4,7 +4,7 @@
 
 "tt_content",,,,,,
 ,"uid","pid","sorting","deleted","colPos","CType"
-,2,3,256,0,0,"products_checkout"
+,2,3,256,0,0,"productscore_checkout"
 
 "tx_products_domain_model_taxclass",,,
 ,"uid","title","code"

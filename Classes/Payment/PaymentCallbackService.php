@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Payment;
+namespace GoldeneZeiten\Products\Core\Payment;
 
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Payment\Exception\PaymentCallbackException;
-use GoldeneZeiten\Products\Payment\Exception\PaymentMethodNotFoundException;
-use GoldeneZeiten\Products\Service\Order\OrderFinalizationService;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Payment\Exception\PaymentCallbackException;
+use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException;
+use GoldeneZeiten\Products\Core\Service\Order\OrderFinalizationService;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**

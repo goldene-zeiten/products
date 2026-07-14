@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Model;
+namespace GoldeneZeiten\Products\Core\Domain\Model;
 
-use GoldeneZeiten\Products\Domain\Enum\CreditPointsTransactionType;
+use GoldeneZeiten\Products\Core\Domain\Enum\CreditPointsTransactionType;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 

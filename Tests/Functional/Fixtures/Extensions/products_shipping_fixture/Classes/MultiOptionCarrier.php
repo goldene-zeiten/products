@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\ShippingFixture;
 
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingContext;
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingOption;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Shipping\ShippingProviderInterface;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Shipping\ShippingProviderInterface;
 
 /**
  * Fixture shipping provider with multiple options, proving tagged_iterator wiring and composite key resolution.

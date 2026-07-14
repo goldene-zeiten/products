@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Controller;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Service\RecentlyViewed\ProductViewTrackingService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Service\RecentlyViewed\ProductViewTrackingService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
@@ -34,7 +34,7 @@ final class RecentlyViewedControllerTest extends AbstractFunctionalTestCase
     ];
 
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void
@@ -66,16 +66,16 @@ final class RecentlyViewedControllerTest extends AbstractFunctionalTestCase
         $this->setUpFrontendRootPage(1, [
             'constants' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
-                'EXT:products/Configuration/TypoScript/constants.typoscript',
+                'EXT:products_core/Configuration/TypoScript/constants.typoscript',
             ],
             'setup' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
-                'EXT:products/Configuration/TypoScript/setup.typoscript',
-                'EXT:products/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
+                'EXT:products_core/Configuration/TypoScript/setup.typoscript',
+                'EXT:products_core/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
             ],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
-            plugin.tx_products.persistence.storagePid = 2
+            plugin.tx_productscore.persistence.storagePid = 2
         ');
     }
 
@@ -117,7 +117,7 @@ final class RecentlyViewedControllerTest extends AbstractFunctionalTestCase
         // constraining to the top-1 isolates "which product ranks first", which is what
         // this test is actually about.
         $this->addTypoScriptToTemplateRecord(1, '
-            plugin.tx_products.settings.mostViewed.limit = 1
+            plugin.tx_productscore.settings.mostViewed.limit = 1
         ');
         $response = $this->executeFrontendSubRequest($request);
 

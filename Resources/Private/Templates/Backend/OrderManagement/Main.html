@@ -1,45 +1,45 @@
-{namespace p=GoldeneZeiten\Products\ViewHelpers}
+{namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
 <f:layout name="Module" />
 <f:section name="Content">
     <f:if condition="{mode} == 'detail'">
         <f:then>
             <f:if condition="{order}">
                 <f:then>
-                    <p><a href="{listUrl}">&larr; <f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.back_to_list" /></a></p>
-                    <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.detail_title" arguments="{0: order.orderNumber}" /></h2>
+                    <p><a href="{listUrl}">&larr; <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.back_to_list" /></a></p>
+                    <h2><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.detail_title" arguments="{0: order.orderNumber}" /></h2>
                     <table class="table table-striped w-auto">
                         <tr>
-                            <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.date" /></th>
+                            <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.date" /></th>
                             <td>{order.orderDate}</td>
                         </tr>
                         <tr>
-                            <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.email" /></th>
+                            <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.email" /></th>
                             <td>{order.email}</td>
                         </tr>
                         <tr>
-                            <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.status" /></th>
+                            <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.status" /></th>
                             <td>{order.status}</td>
                         </tr>
                         <tr>
-                            <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.payment_status" /></th>
+                            <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.payment_status" /></th>
                             <td>{order.paymentStatus}</td>
                         </tr>
                         <tr>
-                            <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.payment_method" /></th>
+                            <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.payment_method" /></th>
                             <td>{order.paymentMethod}</td>
                         </tr>
                         <tr>
-                            <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.total" /></th>
+                            <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.total" /></th>
                             <td><p:format.money value="{order.totalGrossCents}" currency="{order.currency}" /></td>
                         </tr>
                         <f:if condition="{order.voucherCodes}">
                             <f:then>
                                 <tr>
-                                    <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.vouchers" /></th>
+                                    <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.vouchers" /></th>
                                     <td><f:for each="{order.voucherCodes}" as="voucherCode" iteration="iterator">{voucherCode}<f:if condition="{iterator.isLast} == 0"><f:then>, </f:then></f:if></f:for></td>
                                 </tr>
                                 <tr>
-                                    <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.discount" /></th>
+                                    <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.discount" /></th>
                                     <td><p:format.money value="{order.discountTotalCents}" currency="{order.currency}" /></td>
                                 </tr>
                             </f:then>
@@ -47,7 +47,7 @@
                         <f:if condition="{order.shippingLabel}">
                             <f:then>
                                 <tr>
-                                    <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.shipping" /></th>
+                                    <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.shipping" /></th>
                                     <td>{order.shippingLabel} &ndash; <p:format.money value="{order.shippingTotalCents}" currency="{order.currency}" /></td>
                                 </tr>
                             </f:then>
@@ -55,7 +55,7 @@
                         <f:if condition="{order.customerNote}">
                             <f:then>
                                 <tr>
-                                    <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.note" /></th>
+                                    <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.note" /></th>
                                     <td>{order.customerNote}</td>
                                 </tr>
                             </f:then>
@@ -64,15 +64,15 @@
 
                     <f:if condition="{voucherRedemptions} || {gainedVoucher} || {creditPointsLedger}">
                         <f:then>
-                            <h3><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.section.discounts_and_rewards" /></h3>
+                            <h3><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.section.discounts_and_rewards" /></h3>
                             <f:if condition="{voucherRedemptions}">
                                 <f:then>
                                     <table class="table table-striped w-auto">
                                         <thead>
                                             <tr>
-                                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.vouchers" /></th>
-                                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.discount" /></th>
-                                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.redeemed_at" /></th>
+                                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.vouchers" /></th>
+                                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.discount" /></th>
+                                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.redeemed_at" /></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -90,10 +90,10 @@
                             <f:if condition="{gainedVoucher}">
                                 <f:then>
                                     <p>
-                                        <f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.gained_voucher" arguments="{0: gainedVoucher.code}" />
+                                        <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.gained_voucher" arguments="{0: gainedVoucher.code}" />
                                         <f:if condition="{gainedVoucher.used}">
-                                            <f:then> (<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.gained_voucher.used" />)</f:then>
-                                            <f:else> (<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.gained_voucher.unused" />)</f:else>
+                                            <f:then> (<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.gained_voucher.used" />)</f:then>
+                                            <f:else> (<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.gained_voucher.unused" />)</f:else>
                                         </f:if>
                                     </p>
                                 </f:then>
@@ -103,9 +103,9 @@
                                     <table class="table table-striped w-auto">
                                         <thead>
                                             <tr>
-                                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.credit_points_type" /></th>
-                                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.credit_points_points" /></th>
-                                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.date" /></th>
+                                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.credit_points_type" /></th>
+                                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.credit_points_points" /></th>
+                                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.date" /></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -130,7 +130,7 @@
                                     <input type="hidden" name="orderUid" value="{order.uid}" />
                                     <input type="hidden" name="action" value="markPaid" />
                                     <button type="submit" class="btn btn-success">
-                                        <f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.action.mark_paid" />
+                                        <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.action.mark_paid" />
                                     </button>
                                 </form>
                             </f:then>
@@ -141,7 +141,7 @@
                                     <input type="hidden" name="orderUid" value="{order.uid}" />
                                     <input type="hidden" name="action" value="refund" />
                                     <button type="submit" class="btn btn-warning">
-                                        <f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.action.refund" />
+                                        <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.action.refund" />
                                     </button>
                                 </form>
                             </f:then>
@@ -152,7 +152,7 @@
                                 <input type="hidden" name="action" value="transition" />
                                 <input type="hidden" name="targetStatus" value="{targetStatus.value}" />
                                 <button type="submit" class="btn btn-default">
-                                    <f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.action.transition_to" arguments="{0: targetStatus.value}" />
+                                    <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.action.transition_to" arguments="{0: targetStatus.value}" />
                                 </button>
                             </form>
                         </f:for>
@@ -161,7 +161,7 @@
                     <f:if condition="{exporters}">
                         <f:then>
                             <div class="mt-4">
-                                <h3><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.export.title" /></h3>
+                                <h3><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.export.title" /></h3>
                                 <div class="d-flex gap-2 flex-wrap">
                                     <f:for each="{exporters}" as="exporter">
                                         <a class="btn btn-default" href="{listUrl}&amp;order={order.uid}&amp;export={exporter.identifier}">
@@ -174,17 +174,17 @@
                     </f:if>
                 </f:then>
                 <f:else>
-                    <p><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:message.no_records" /></p>
+                    <p><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:message.no_records" /></p>
                 </f:else>
             </f:if>
         </f:then>
         <f:else>
             <form method="get" class="row row-cols-lg-auto g-2 align-items-center mb-3">
                 <div class="col-12">
-                    <input type="text" name="orderNumber" value="{filter.orderNumber}" class="form-control" placeholder="{f:translate(key: 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.order_number')}" />
+                    <input type="text" name="orderNumber" value="{filter.orderNumber}" class="form-control" placeholder="{f:translate(key: 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.order_number')}" />
                 </div>
                 <div class="col-12">
-                    <input type="text" name="email" value="{filter.email}" class="form-control" placeholder="{f:translate(key: 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.email')}" />
+                    <input type="text" name="email" value="{filter.email}" class="form-control" placeholder="{f:translate(key: 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.email')}" />
                 </div>
                 <div class="col-12">
                     <select name="status" class="form-select">
@@ -195,7 +195,7 @@
                     </select>
                 </div>
                 <div class="col-12">
-                    <button type="submit" class="btn btn-default"><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.action.filter" /></button>
+                    <button type="submit" class="btn btn-default"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.action.filter" /></button>
                 </div>
             </form>
 
@@ -204,12 +204,12 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.order_number" /></th>
-                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.date" /></th>
-                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.email" /></th>
-                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.status" /></th>
-                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.payment_status" /></th>
-                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:order.column.total" /></th>
+                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.order_number" /></th>
+                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.date" /></th>
+                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.email" /></th>
+                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.status" /></th>
+                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.payment_status" /></th>
+                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.total" /></th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -233,7 +233,7 @@
                     </table>
                 </f:then>
                 <f:else>
-                    <p><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:message.no_records" /></p>
+                    <p><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:message.no_records" /></p>
                 </f:else>
             </f:if>
         </f:else>

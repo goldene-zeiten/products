@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Repository;
+namespace GoldeneZeiten\Products\Core\Domain\Repository;
 
-use GoldeneZeiten\Products\Domain\Model\Voucher;
+use GoldeneZeiten\Products\Core\Domain\Model\Voucher;
 
 /**
  * @extends AbstractReadOnlyRepository<Voucher>

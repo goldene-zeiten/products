@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Payment;
+namespace GoldeneZeiten\Products\Core\Payment;
 
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
-use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Event\InvoiceNumberGeneratedEvent;
-use GoldeneZeiten\Products\Service\Order\NumberRangeService;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Event\InvoiceNumberGeneratedEvent;
+use GoldeneZeiten\Products\Core\Service\Order\NumberRangeService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -39,7 +39,7 @@ final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePa
 
     public function getLabel(): string
     {
-        return (string)LocalizationUtility::translate('payment_method_invoice', 'Products');
+        return (string)LocalizationUtility::translate('payment_method_invoice', 'ProductsCore');
     }
 
     public function isAvailable(PaymentContext $context): bool
@@ -88,7 +88,7 @@ final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePa
     {
         return $this->settings ??= $this->configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'Products'
+            'ProductsCore'
         );
     }
 

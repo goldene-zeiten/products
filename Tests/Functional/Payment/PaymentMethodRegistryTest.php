@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Payment;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Payment;
 
-use GoldeneZeiten\Products\Payment\Exception\PaymentMethodNotFoundException;
-use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class PaymentMethodRegistryTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     #[Test]

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service\RecentlyViewed;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\RecentlyViewed;
 
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Service\RecentlyViewed\ProductViewTrackingService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Service\RecentlyViewed\ProductViewTrackingService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -16,7 +16,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class ProductViewTrackingServiceTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

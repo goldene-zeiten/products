@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service;
+namespace GoldeneZeiten\Products\Core\Service;
 
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 
 /**
  * Applied only at final total-computation points (basket/order gross total) - never to per-line

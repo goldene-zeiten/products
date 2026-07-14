@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Domain\Repository;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Domain\Repository;
 
-use GoldeneZeiten\Products\Domain\Model\PaymentTransaction;
-use GoldeneZeiten\Products\Domain\Repository\PaymentTransactionRepository;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Domain\Model\PaymentTransaction;
+use GoldeneZeiten\Products\Core\Domain\Repository\PaymentTransactionRepository;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class PaymentTransactionRepositoryTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

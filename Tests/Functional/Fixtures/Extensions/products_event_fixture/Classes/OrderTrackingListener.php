@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\EventFixture;
 
-use GoldeneZeiten\Products\Domain\Dto\OrderTrackingLink;
-use GoldeneZeiten\Products\Event\ModifyOrderTrackingEvent;
+use GoldeneZeiten\Products\Core\Domain\Dto\OrderTrackingLink;
+use GoldeneZeiten\Products\Core\Event\ModifyOrderTrackingEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
 #[AsEventListener]

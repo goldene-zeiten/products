@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Invoice;
+namespace GoldeneZeiten\Products\Core\Service\Invoice;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Service\OrderSettingsResolver;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Service\OrderSettingsResolver;
 use TYPO3\CMS\Core\View\ViewFactoryData;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
 
@@ -14,9 +14,9 @@ use TYPO3\CMS\Core\View\ViewFactoryInterface;
  */
 final class InvoiceRenderer
 {
-    private const DEFAULT_TEMPLATE_ROOT_PATHS = ['EXT:products/Resources/Private/Templates/Invoice/'];
-    private const DEFAULT_PARTIAL_ROOT_PATHS = ['EXT:products/Resources/Private/Partials/'];
-    private const DEFAULT_LAYOUT_ROOT_PATHS = ['EXT:products/Resources/Private/Layouts/'];
+    private const DEFAULT_TEMPLATE_ROOT_PATHS = ['EXT:products_core/Resources/Private/Templates/Invoice/'];
+    private const DEFAULT_PARTIAL_ROOT_PATHS = ['EXT:products_core/Resources/Private/Partials/'];
+    private const DEFAULT_LAYOUT_ROOT_PATHS = ['EXT:products_core/Resources/Private/Layouts/'];
 
     public function __construct(
         private readonly ViewFactoryInterface $viewFactory,

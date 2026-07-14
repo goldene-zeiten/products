@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Withdrawal;
+namespace GoldeneZeiten\Products\Core\Service\Withdrawal;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use TYPO3\CMS\Core\Crypto\HashService;
 
 /**

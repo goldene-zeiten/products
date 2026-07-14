@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Order;
+namespace GoldeneZeiten\Products\Core\Service\Order;
 
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
-use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Event\AfterOrderFinalizedEvent;
-use GoldeneZeiten\Products\Event\BeforeOrderFinalizedEvent;
-use GoldeneZeiten\Products\Service\Basket\BasketService;
-use GoldeneZeiten\Products\Service\Checkout\CheckoutService;
-use GoldeneZeiten\Products\Service\Checkout\CheckoutStateStore;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Event\AfterOrderFinalizedEvent;
+use GoldeneZeiten\Products\Core\Event\BeforeOrderFinalizedEvent;
+use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Service\Checkout\CheckoutService;
+use GoldeneZeiten\Products\Core\Service\Checkout\CheckoutStateStore;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;

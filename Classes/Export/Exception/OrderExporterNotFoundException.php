@@ -2,6 +2,6 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Export\Exception;
+namespace GoldeneZeiten\Products\Core\Export\Exception;
 
 final class OrderExporterNotFoundException extends \RuntimeException {}

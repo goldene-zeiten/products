@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Updates\Prerequisites;
+namespace GoldeneZeiten\Products\Core\Updates\Prerequisites;
 
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 

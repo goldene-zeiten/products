@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Updates;
+namespace GoldeneZeiten\Products\Core\Updates;
 
-use GoldeneZeiten\Products\Updates\Prerequisites\ArticleMigrationPrerequisite;
-use GoldeneZeiten\Products\Updates\Prerequisites\CategoryMigrationPrerequisite;
-use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
+use GoldeneZeiten\Products\Core\Updates\Prerequisites\ArticleMigrationPrerequisite;
+use GoldeneZeiten\Products\Core\Updates\Prerequisites\CategoryMigrationPrerequisite;
+use GoldeneZeiten\Products\Core\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\ConnectionPool;

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service;
+namespace GoldeneZeiten\Products\Core\Service;
 
-use GoldeneZeiten\Products\Configuration\ProductsConfiguration;
-use GoldeneZeiten\Products\Domain\Model\TaxClass;
-use GoldeneZeiten\Products\Domain\Repository\TaxClassRepository;
-use GoldeneZeiten\Products\Domain\Repository\TaxRateRepository;
-use GoldeneZeiten\Products\Service\Exception\MissingTaxRateException;
+use GoldeneZeiten\Products\Core\Configuration\ProductsConfiguration;
+use GoldeneZeiten\Products\Core\Domain\Model\TaxClass;
+use GoldeneZeiten\Products\Core\Domain\Repository\TaxClassRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\TaxRateRepository;
+use GoldeneZeiten\Products\Core\Service\Exception\MissingTaxRateException;
 
 /**
  * Stateless by design - takes an already-resolved ProductsConfiguration rather than reading

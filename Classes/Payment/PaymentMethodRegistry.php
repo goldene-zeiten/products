@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Payment;
+namespace GoldeneZeiten\Products\Core\Payment;
 
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
-use GoldeneZeiten\Products\Event\PaymentMethodsCollectedEvent;
-use GoldeneZeiten\Products\Payment\Exception\PaymentMethodNotFoundException;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
+use GoldeneZeiten\Products\Core\Event\PaymentMethodsCollectedEvent;
+use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 

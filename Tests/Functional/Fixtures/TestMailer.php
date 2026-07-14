@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Fixtures;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Fixtures;
 
 use Symfony\Component\Mailer\Envelope;
 use Symfony\Component\Mailer\SentMessage;

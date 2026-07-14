@@ -13,7 +13,7 @@ the callback. Because payment is inherently shop-specific, **the extension ships
 invoice payment** (pay by bank transfer); integrators add payment gateways by implementing
 the interfaces.
 
-**Location:** :php:`GoldeneZeiten\Products\Payment\PaymentMethodInterface`
+**Location:** :php:`GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface`
 
 Lifecycle: Registration, Discovery, Fee, Execution, and Callbacks
 =================================================================
@@ -324,12 +324,12 @@ This example implements a credit card payment method backed by Stripe's Hosted C
 
     namespace MyVendor\MyExtension\Payment;
 
-    use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
-    use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
-    use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
-    use GoldeneZeiten\Products\Domain\Model\Order;
-    use GoldeneZeiten\Products\Domain\ValueObject\Money;
-    use GoldeneZeiten\Products\Payment\RedirectPaymentMethodInterface;
+    use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
+    use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
+    use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+    use GoldeneZeiten\Products\Core\Domain\Model\Order;
+    use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+    use GoldeneZeiten\Products\Core\Payment\RedirectPaymentMethodInterface;
     use Psr\Http\Message\ServerRequestInterface;
     use Stripe\Checkout\Session;
     use Stripe\Exception\ApiErrorException;

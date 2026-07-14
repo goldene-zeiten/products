@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use GoldeneZeiten\Products\Middleware\PaymentWebhookMiddleware;
+use GoldeneZeiten\Products\Core\Middleware\PaymentWebhookMiddleware;
 
 /**
  * The payment webhook runs after the site has been resolved - it needs the site's database context - but

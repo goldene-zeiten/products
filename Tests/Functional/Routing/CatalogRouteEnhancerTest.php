@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Routing;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Routing;
 
-use GoldeneZeiten\Products\Controller\Exception\ProductPathMismatchException;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Controller\Exception\ProductPathMismatchException;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 
 /**
- * Proves the routeEnhancers shipped by the goldene-zeiten/products Site Set are actually
+ * Proves the routeEnhancers shipped by the goldene-zeiten/products-core Site Set are actually
  * auto-loaded end-to-end: this test's own site configuration only declares a `dependencies`
  * entry, never a `routeEnhancers` key of its own - everything routing-related comes from
  * Core13/Routing/SiteSetRouteEnhancerListener.php picking up
@@ -32,7 +32,7 @@ final class CatalogRouteEnhancerTest extends AbstractFunctionalTestCase
     ];
 
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void
@@ -42,13 +42,13 @@ final class CatalogRouteEnhancerTest extends AbstractFunctionalTestCase
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1, '/', 'Home', [
-                'dependencies' => ['goldene-zeiten/products'],
+                'dependencies' => ['goldene-zeiten/products-core'],
             ]),
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
         $this->setUpFrontendRootPage(1, [
-            'constants' => ['EXT:products/Configuration/TypoScript/constants.typoscript'],
-            'setup' => ['EXT:products/Configuration/TypoScript/setup.typoscript'],
+            'constants' => ['EXT:products_core/Configuration/TypoScript/constants.typoscript'],
+            'setup' => ['EXT:products_core/Configuration/TypoScript/setup.typoscript'],
         ]);
     }
 
@@ -146,12 +146,12 @@ final class CatalogRouteEnhancerTest extends AbstractFunctionalTestCase
     private function configurePlugin(string $pluginName): void
     {
         $this->addTypoScriptToTemplateRecord(1, sprintf('
-            plugin.tx_products.persistence.storagePid = 2
+            plugin.tx_productscore.persistence.storagePid = 2
             page = PAGE
             page.10 = USER
             page.10 {
                 userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
-                extensionName = Products
+                extensionName = ProductsCore
                 pluginName = %s
                 vendorName = GoldeneZeiten
             }

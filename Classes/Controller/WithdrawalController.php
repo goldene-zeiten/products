@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Controller;
+namespace GoldeneZeiten\Products\Core\Controller;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Service\Withdrawal\Exception\InvalidWithdrawalTokenException;
-use GoldeneZeiten\Products\Service\Withdrawal\Exception\OrderNotWithdrawableException;
-use GoldeneZeiten\Products\Service\Withdrawal\Exception\WithdrawalEmailMismatchException;
-use GoldeneZeiten\Products\Service\Withdrawal\Exception\WithdrawalPeriodExpiredException;
-use GoldeneZeiten\Products\Service\Withdrawal\WithdrawalService;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\InvalidWithdrawalTokenException;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\OrderNotWithdrawableException;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalEmailMismatchException;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalPeriodExpiredException;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -66,6 +66,6 @@ final class WithdrawalController extends ActionController
             $exception instanceof WithdrawalPeriodExpiredException => 'withdrawal_period_expired',
             default => 'withdrawal_not_allowed',
         };
-        return (string)LocalizationUtility::translate($key, 'Products');
+        return (string)LocalizationUtility::translate($key, 'ProductsCore');
     }
 }

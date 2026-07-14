@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Updates;
+namespace GoldeneZeiten\Products\Core\Updates;
 
-use GoldeneZeiten\Products\Backend\StorageFolderResolver;
+use GoldeneZeiten\Products\Core\Backend\StorageFolderResolver;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 // TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.

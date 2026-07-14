@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Updates;
+namespace GoldeneZeiten\Products\Core\Updates;
 
 /**
  * Resolves duplicate translations: visible (`hidden=0`) rows win, then highest uid.

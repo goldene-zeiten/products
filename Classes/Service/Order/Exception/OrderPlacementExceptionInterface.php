@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Order\Exception;
+namespace GoldeneZeiten\Products\Core\Service\Order\Exception;
 
 /**
  * Marker for exceptions that a checkout controller can recover from

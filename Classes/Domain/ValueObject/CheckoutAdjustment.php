@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\ValueObject;
+namespace GoldeneZeiten\Products\Core\Domain\ValueObject;
 
-use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
+use GoldeneZeiten\Products\Core\Domain\Enum\AdjustmentType;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**

@@ -23,9 +23,9 @@ Installation with Composer
 
 ..  code-block:: bash
 
-    composer require goldene-zeiten/products
+    composer require goldene-zeiten/products-core
 
-Then activate the site set :guilabel:`Products` (``goldene-zeiten/products``) on the site(s) that
+Then activate the site set :guilabel:`Products` (``goldene-zeiten/products-core``) on the site(s) that
 should show the shop, and configure the settings described under
 :ref:`Configuration <configuration>` — most importantly the storage folder, since none of the
 extension's records are organised by page.

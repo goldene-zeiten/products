@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Pricing\Unit;
+namespace GoldeneZeiten\Products\Core\Pricing\Unit;
 
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 
 final readonly class UnitPrice
 {

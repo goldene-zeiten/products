@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Backend;
+namespace GoldeneZeiten\Products\Core\Backend;
 
 use TYPO3\CMS\Core\Site\SiteFinder;
 

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Order;
 
-use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Service\Basket\BasketService;
-use GoldeneZeiten\Products\Service\Checkout\PriceQuoteService;
-use GoldeneZeiten\Products\Service\Order\Exception\PriceQuoteExpiredException;
-use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Domain\Dto\Address;
+use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutChoices;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Service\Checkout\PriceQuoteService;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\PriceQuoteExpiredException;
+use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -31,7 +31,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class OrderPlacementServiceQuoteTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

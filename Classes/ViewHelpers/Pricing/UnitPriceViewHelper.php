@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\ViewHelpers\Pricing;
+namespace GoldeneZeiten\Products\Core\ViewHelpers\Pricing;
 
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Pricing\UnitPriceCalculator;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Pricing\UnitPriceCalculator;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 final class UnitPriceViewHelper extends AbstractViewHelper

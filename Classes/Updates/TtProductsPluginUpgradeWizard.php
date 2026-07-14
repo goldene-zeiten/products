@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Updates;
+namespace GoldeneZeiten\Products\Core\Updates;
 
-use GoldeneZeiten\Products\Updates\Prerequisites\CategoryMigrationPrerequisite;
-use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
+use GoldeneZeiten\Products\Core\Updates\Prerequisites\CategoryMigrationPrerequisite;
+use GoldeneZeiten\Products\Core\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\Connection;
@@ -41,8 +41,8 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
     private const LOCAL_PRODUCT_TABLE = 'tx_products_domain_model_product';
     private const LEGACY_CATEGORY_TABLE = 'tt_products_cat';
     private const LOCAL_CATEGORY_TABLE = 'tx_products_domain_model_category';
-    private const PRODUCT_SELECTION_CTYPES = ['products_productlist'];
-    private const CATEGORY_SELECTION_CTYPES = ['products_productlist', 'products_categorylist'];
+    private const PRODUCT_SELECTION_CTYPES = ['productscore_productlist'];
+    private const CATEGORY_SELECTION_CTYPES = ['productscore_productlist', 'productscore_categorylist'];
 
     private OutputInterface $output;
 
@@ -243,7 +243,7 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         if ($searchField !== '') {
             $fields['tx_products_search_field'] = $searchField;
         }
-        return ['ctype' => 'products_search', 'fields' => $fields];
+        return ['ctype' => 'productscore_search', 'fields' => $fields];
     }
 
     /**

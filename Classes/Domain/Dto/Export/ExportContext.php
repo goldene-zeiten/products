@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Dto\Export;
+namespace GoldeneZeiten\Products\Core\Domain\Dto\Export;
 
-use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**

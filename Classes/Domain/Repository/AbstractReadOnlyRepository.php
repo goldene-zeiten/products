@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Repository;
+namespace GoldeneZeiten\Products\Core\Domain\Repository;
 
-use GoldeneZeiten\Products\Domain\Repository\Exception\RepositoryIsReadOnlyException;
+use GoldeneZeiten\Products\Core\Domain\Repository\Exception\RepositoryIsReadOnlyException;
 use TYPO3\CMS\Extbase\DomainObject\DomainObjectInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 

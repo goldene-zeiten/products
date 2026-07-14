@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Shipping;
+namespace GoldeneZeiten\Products\Core\Service\Shipping;
 
-use GoldeneZeiten\Products\Configuration\ProductsConfiguration;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Model\HandlingFee;
-use GoldeneZeiten\Products\Domain\Repository\HandlingFeeRepository;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Configuration\ProductsConfiguration;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Core\Domain\Model\HandlingFee;
+use GoldeneZeiten\Products\Core\Domain\Repository\HandlingFeeRepository;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class HandlingFeeService

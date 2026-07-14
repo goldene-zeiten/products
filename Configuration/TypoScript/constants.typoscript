@@ -1,63 +1,63 @@
-plugin.tx_products {
+plugin.tx_productscore {
     settings {
         pids {
-            # cat=plugin.tx_products.pids; type=int; label=Storage folder UID
+            # cat=plugin.tx_productscore.pids; type=int; label=Storage folder UID
             storageFolder = 0
-            # cat=plugin.tx_products.pids; type=int; label=Detail page UID
+            # cat=plugin.tx_productscore.pids; type=int; label=Detail page UID
             detailPage = 0
-            # cat=plugin.tx_products.pids; type=int; label=Basket page UID
+            # cat=plugin.tx_productscore.pids; type=int; label=Basket page UID
             basketPage = 0
-            # cat=plugin.tx_products.pids; type=int; label=Checkout page UID
+            # cat=plugin.tx_productscore.pids; type=int; label=Checkout page UID
             checkoutPage = 0
-            # cat=plugin.tx_products.pids; type=int; label=Order history page UID
+            # cat=plugin.tx_productscore.pids; type=int; label=Order history page UID
             orderHistoryPage = 0
-            # cat=plugin.tx_products.pids; type=int; label=Category navigation/listing page UID
+            # cat=plugin.tx_productscore.pids; type=int; label=Category navigation/listing page UID
             categoryPage = 0
-            # cat=plugin.tx_products.pids; type=int; label=Order withdrawal/cancellation page UID
+            # cat=plugin.tx_productscore.pids; type=int; label=Order withdrawal/cancellation page UID
             withdrawalPage = 0
-            # cat=plugin.tx_products.pids; type=int; label=Wishlist page UID
+            # cat=plugin.tx_productscore.pids; type=int; label=Wishlist page UID
             wishlistPage = 0
         }
         pricing {
-            # cat=plugin.tx_products.pricing; type=string; label=Pricing mode (gross|net)
+            # cat=plugin.tx_productscore.pricing; type=string; label=Pricing mode (gross|net)
             mode = gross
-            # cat=plugin.tx_products.pricing; type=string; label=Currency
+            # cat=plugin.tx_productscore.pricing; type=string; label=Currency
             currency = EUR
         }
         tax {
-            # cat=plugin.tx_products.tax; type=string; label=Default tax country (alpha-2)
+            # cat=plugin.tx_productscore.tax; type=string; label=Default tax country (alpha-2)
             defaultCountry = DE
-            # cat=plugin.tx_products.tax; type=string; label=Tax rounding (perLine|perTotal)
+            # cat=plugin.tx_productscore.tax; type=string; label=Tax rounding (perLine|perTotal)
             rounding = perLine
         }
         order {
-            # cat=plugin.tx_products.order; type=string; label=Order number prefix
+            # cat=plugin.tx_productscore.order; type=string; label=Order number prefix
             numberPrefix = ORD-
-            # cat=plugin.tx_products.order; type=boolean; label=Store client IP address
+            # cat=plugin.tx_productscore.order; type=boolean; label=Store client IP address
             storeClientIp = 0
         }
         email {
-            # cat=plugin.tx_products.email; type=string; label=Sender email
+            # cat=plugin.tx_productscore.email; type=string; label=Sender email
             senderEmail =
-            # cat=plugin.tx_products.email; type=string; label=Sender name
+            # cat=plugin.tx_productscore.email; type=string; label=Sender name
             senderName =
-            # cat=plugin.tx_products.email; type=string; label=Merchant notification recipient (empty disables the notification)
+            # cat=plugin.tx_productscore.email; type=string; label=Merchant notification recipient (empty disables the notification)
             merchantRecipient =
         }
         ajax {
-            # cat=plugin.tx_products.ajax; type=int; label=AJAX page typeNum
+            # cat=plugin.tx_productscore.ajax; type=int; label=AJAX page typeNum
             pageType = 1729512000
         }
         invoice {
-            # cat=plugin.tx_products.invoice; type=int; label=Invoice download page typeNum
+            # cat=plugin.tx_productscore.invoice; type=int; label=Invoice download page typeNum
             pageType = 1729512001
         }
         catalog {
-            # cat=plugin.tx_products.catalog; type=string; label=Article variant switch mode (reload|ajax)
+            # cat=plugin.tx_productscore.catalog; type=string; label=Article variant switch mode (reload|ajax)
             articleSwitchMode = reload
         }
         stock {
-            # cat=plugin.tx_products.stock; type=int; label=Stock level at/below which a low-stock warning email is sent
+            # cat=plugin.tx_productscore.stock; type=int; label=Stock level at/below which a low-stock warning email is sent
             lowStockThreshold = 5
         }
     }

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Loyalty;
+namespace GoldeneZeiten\Products\Core\Loyalty;
 
-use GoldeneZeiten\Products\Domain\Dto\Loyalty\LoyaltyContext;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\ValueObject\CheckoutAdjustment;
+use GoldeneZeiten\Products\Core\Domain\Dto\Loyalty\LoyaltyContext;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\CheckoutAdjustment;
 use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 
 /**

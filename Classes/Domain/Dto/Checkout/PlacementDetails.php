@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Dto\Checkout;
+namespace GoldeneZeiten\Products\Core\Domain\Dto\Checkout;
 
-use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingSelection;
-use GoldeneZeiten\Products\Domain\ValueObject\AdjustmentCollection;
+use GoldeneZeiten\Products\Core\Domain\Dto\Address;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingSelection;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\AdjustmentCollection;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**

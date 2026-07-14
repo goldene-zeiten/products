@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Order;
+namespace GoldeneZeiten\Products\Core\Service\Order;
 
-use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
-use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Event\OrderStatusChangedEvent;
-use GoldeneZeiten\Products\Event\PaymentStatusChangedEvent;
-use GoldeneZeiten\Products\Service\Order\Exception\InvalidOrderStatusTransitionException;
-use GoldeneZeiten\Products\Service\Order\Exception\InvalidPaymentStatusTransitionException;
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Event\OrderStatusChangedEvent;
+use GoldeneZeiten\Products\Core\Event\PaymentStatusChangedEvent;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\InvalidOrderStatusTransitionException;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\InvalidPaymentStatusTransitionException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class OrderStatusManager

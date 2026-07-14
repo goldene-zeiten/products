@@ -12,7 +12,7 @@ shipping options with prices. Because shipping is inherently shop-specific, **th
 with only table-rate shipping** (static shipping methods maintained in the backend); integrators
 add carriers by implementing the interface.
 
-**Location:** :php:`GoldeneZeiten\Products\Shipping\ShippingProviderInterface`
+**Location:** :php:`GoldeneZeiten\Products\Core\Shipping\ShippingProviderInterface`
 
 Who Decides What
 ================
@@ -260,10 +260,10 @@ and quotes by weight:
 
     namespace MyVendor\MyExtension\Shipping;
 
-    use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingContext;
-    use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingOption;
-    use GoldeneZeiten\Products\Domain\ValueObject\Money;
-    use GoldeneZeiten\Products\Shipping\ShippingProviderInterface;
+    use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
+    use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
+    use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+    use GoldeneZeiten\Products\Core\Shipping\ShippingProviderInterface;
 
     /**
      * Example carrier: ships to EU only, refuses hazmat, quotes by weight.
@@ -369,7 +369,7 @@ attach a listener:
 
     namespace MyVendor\MyExtension\EventListener;
 
-    use GoldeneZeiten\Products\Event\ShippingOptionsCollectedEvent;
+    use GoldeneZeiten\Products\Core\Event\ShippingOptionsCollectedEvent;
     use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
     #[AsEventListener]

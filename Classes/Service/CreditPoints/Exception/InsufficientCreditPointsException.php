@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\CreditPoints\Exception;
+namespace GoldeneZeiten\Products\Core\Service\CreditPoints\Exception;
 
-use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementExceptionInterface;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\OrderPlacementExceptionInterface;
 
 final class InsufficientCreditPointsException extends \RuntimeException implements OrderPlacementExceptionInterface {}

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Controller\Backend;
+namespace GoldeneZeiten\Products\Core\Controller\Backend;
 
-use GoldeneZeiten\Products\Backend\CategoryAccessGuard;
-use GoldeneZeiten\Products\Backend\CategoryMountResolver;
-use GoldeneZeiten\Products\Backend\CategoryPermissionGuard;
-use GoldeneZeiten\Products\Backend\CategoryTreeRepository;
-use GoldeneZeiten\Products\Backend\Exception\ProductArchiveFailedException;
-use GoldeneZeiten\Products\Backend\ProductArchiveService;
-use GoldeneZeiten\Products\Backend\StorageFolderResolver;
+use GoldeneZeiten\Products\Core\Backend\CategoryAccessGuard;
+use GoldeneZeiten\Products\Core\Backend\CategoryMountResolver;
+use GoldeneZeiten\Products\Core\Backend\CategoryPermissionGuard;
+use GoldeneZeiten\Products\Core\Backend\CategoryTreeRepository;
+use GoldeneZeiten\Products\Core\Backend\Exception\ProductArchiveFailedException;
+use GoldeneZeiten\Products\Core\Backend\ProductArchiveService;
+use GoldeneZeiten\Products\Core\Backend\StorageFolderResolver;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
@@ -610,7 +610,7 @@ final class ProductManagementModuleController
 
     private function translate(string $key): string
     {
-        return $this->getLanguageService()->sL('LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:' . $key);
+        return $this->getLanguageService()->sL('LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:' . $key);
     }
 
     private function buildEditUrl(string $table, int $uid, string $returnUrl): string

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Search;
+namespace GoldeneZeiten\Products\Core\Service\Search;
 
-use GoldeneZeiten\Products\Domain\Repository\ArticleRepository;
-use GoldeneZeiten\Products\Domain\Repository\CategoryRepository;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\ArticleRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\CategoryRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 
 final class FacetedBrowseService
 {

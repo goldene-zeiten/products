@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Basket;
+namespace GoldeneZeiten\Products\Core\Service\Basket;
 
-use GoldeneZeiten\Products\Configuration\ProductsConfiguration;
-use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
-use GoldeneZeiten\Products\Domain\Dto\Basket;
-use GoldeneZeiten\Products\Domain\Dto\BasketItem;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
-use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Model\Article;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\Repository\ArticleRepository;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Event\BasketUpdatedEvent;
-use GoldeneZeiten\Products\Event\ModifyBasketItemEvent;
-use GoldeneZeiten\Products\Pricing\GraduatedPriceProvider;
-use GoldeneZeiten\Products\Pricing\PriceProviderInterface;
-use GoldeneZeiten\Products\Service\PriceRoundingService;
-use GoldeneZeiten\Products\Service\TaxService;
+use GoldeneZeiten\Products\Core\Configuration\ProductsConfiguration;
+use GoldeneZeiten\Products\Core\Configuration\ProductsConfigurationFactory;
+use GoldeneZeiten\Products\Core\Domain\Dto\Basket;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketItem;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewItem;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Core\Domain\Model\Article;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Repository\ArticleRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Event\BasketUpdatedEvent;
+use GoldeneZeiten\Products\Core\Event\ModifyBasketItemEvent;
+use GoldeneZeiten\Products\Core\Pricing\GraduatedPriceProvider;
+use GoldeneZeiten\Products\Core\Pricing\PriceProviderInterface;
+use GoldeneZeiten\Products\Core\Service\PriceRoundingService;
+use GoldeneZeiten\Products\Core\Service\TaxService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

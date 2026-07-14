@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Discount;
+namespace GoldeneZeiten\Products\Core\Discount;
 
-use GoldeneZeiten\Products\Domain\Dto\BasketDiscountSummary;
-use GoldeneZeiten\Products\Domain\Dto\Discount\DiscountContext;
-use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Model\Voucher;
-use GoldeneZeiten\Products\Domain\Model\VoucherRedemption;
-use GoldeneZeiten\Products\Domain\Repository\VoucherRedemptionRepository;
-use GoldeneZeiten\Products\Domain\ValueObject\CheckoutAdjustment;
-use GoldeneZeiten\Products\Domain\ValueObject\CoreAdjustmentProvider;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Event\VoucherRedeemedEvent;
-use GoldeneZeiten\Products\Service\Order\Exception\VoucherRedemptionFailedException;
-use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherExceptionInterface;
-use GoldeneZeiten\Products\Service\Voucher\VoucherService;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketDiscountSummary;
+use GoldeneZeiten\Products\Core\Domain\Dto\Discount\DiscountContext;
+use GoldeneZeiten\Products\Core\Domain\Enum\AdjustmentType;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\Voucher;
+use GoldeneZeiten\Products\Core\Domain\Model\VoucherRedemption;
+use GoldeneZeiten\Products\Core\Domain\Repository\VoucherRedemptionRepository;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\CheckoutAdjustment;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\CoreAdjustmentProvider;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Event\VoucherRedeemedEvent;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\VoucherRedemptionFailedException;
+use GoldeneZeiten\Products\Core\Service\Voucher\Exception\VoucherExceptionInterface;
+use GoldeneZeiten\Products\Core\Service\Voucher\VoucherService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 

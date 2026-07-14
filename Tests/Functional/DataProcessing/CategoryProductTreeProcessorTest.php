@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\DataProcessing;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\DataProcessing;
 
-use GoldeneZeiten\Products\DataProcessing\CategoryProductTreeProcessor;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\DataProcessing\CategoryProductTreeProcessor;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 final class CategoryProductTreeProcessorTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

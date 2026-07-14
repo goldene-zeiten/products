@@ -9,5 +9,5 @@
 # InsufficientStockException is thrown and the transaction rolled back before
 # OrderFinalizationService::finalize() is ever reached. Extbase's addFlashMessage() call in
 # CheckoutController::finalizeAction()'s catch block adds one new session key of its own
-# (extbase.flashmessages.tx_products_checkout) holding the exact rejection message.
-,"0c947c423565c09c2d1a3e62ec95e9a2cf33a7feb6fee3e489c5122a69fb0549","[DISABLED]",0,"a:3:{s:18:""tx_products_basket"";s:59:""{""items"":[{""productUid"":1,""articleUid"":null,""quantity"":1}]}"";s:28:""tx_products_checkout_payment"";s:7:""invoice"";s:42:""extbase.flashmessages.tx_products_checkout"";a:1:{i:0;s:131:""{""severity"":2,""title"":"""",""message"":""Insufficient stock for uid 1 in table tx_products_domain_model_product."",""storeInSession"":true}"";}}",0
+# (extbase.flashmessages.tx_productscore_checkout) holding the exact rejection message.
+,"0c947c423565c09c2d1a3e62ec95e9a2cf33a7feb6fee3e489c5122a69fb0549","[DISABLED]",0,"a:3:{s:18:""tx_products_basket"";s:59:""{""items"":[{""productUid"":1,""articleUid"":null,""quantity"":1}]}"";s:28:""tx_products_checkout_payment"";s:7:""invoice"";s:46:""extbase.flashmessages.tx_productscore_checkout"";a:1:{i:0;s:131:""{""severity"":2,""title"":"""",""message"":""Insufficient stock for uid 1 in table tx_products_domain_model_product."",""storeInSession"":true}"";}}",0

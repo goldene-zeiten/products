@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Exception;
+namespace GoldeneZeiten\Products\Core\Exception;
 
 /**
  * Thrown when a price period being saved overlaps with an existing period

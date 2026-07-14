@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Shipping\Exception;
+namespace GoldeneZeiten\Products\Core\Shipping\Exception;
 
-use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementExceptionInterface;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\OrderPlacementExceptionInterface;
 
 /**
  * No carrier can ship this basket to this address. Checkout must stop: an order nobody can deliver must

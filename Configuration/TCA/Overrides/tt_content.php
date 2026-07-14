@@ -2,135 +2,135 @@
 
 declare(strict_types=1);
 
-use GoldeneZeiten\Products\Backend\Form\ProductListModeItemsProvider;
+use GoldeneZeiten\Products\Core\Backend\Form\ProductListModeItemsProvider;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
 defined('TYPO3') or die();
 
 ExtensionUtility::registerPlugin(
-    'Products',
+    'ProductsCore',
     'ProductList',
-    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.product_list',
-    'EXT:products/Resources/Public/Icons/Extension.svg'
+    'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.product_list',
+    'EXT:products_core/Resources/Public/Icons/Extension.svg'
 );
 
 ExtensionUtility::registerPlugin(
-    'Products',
+    'ProductsCore',
     'ProductDetail',
-    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.product_detail',
-    'EXT:products/Resources/Public/Icons/Extension.svg'
+    'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.product_detail',
+    'EXT:products_core/Resources/Public/Icons/Extension.svg'
 );
 
 ExtensionUtility::registerPlugin(
-    'Products',
+    'ProductsCore',
     'Basket',
-    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.basket',
-    'EXT:products/Resources/Public/Icons/Extension.svg'
+    'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.basket',
+    'EXT:products_core/Resources/Public/Icons/Extension.svg'
 );
 
 ExtensionUtility::registerPlugin(
-    'Products',
+    'ProductsCore',
     'Checkout',
-    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.checkout',
-    'EXT:products/Resources/Public/Icons/Extension.svg'
+    'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.checkout',
+    'EXT:products_core/Resources/Public/Icons/Extension.svg'
 );
 
 ExtensionUtility::registerPlugin(
-    'Products',
+    'ProductsCore',
     'OrderHistory',
-    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.order_history',
-    'EXT:products/Resources/Public/Icons/Extension.svg'
+    'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.order_history',
+    'EXT:products_core/Resources/Public/Icons/Extension.svg'
 );
 
 ExtensionUtility::registerPlugin(
-    'Products',
+    'ProductsCore',
     'Wishlist',
-    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.wishlist',
-    'EXT:products/Resources/Public/Icons/Extension.svg'
+    'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.wishlist',
+    'EXT:products_core/Resources/Public/Icons/Extension.svg'
 );
 
 ExtensionUtility::registerPlugin(
-    'Products',
+    'ProductsCore',
     'RecentlyViewed',
-    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.recently_viewed',
-    'EXT:products/Resources/Public/Icons/Extension.svg'
+    'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.recently_viewed',
+    'EXT:products_core/Resources/Public/Icons/Extension.svg'
 );
 
 ExtensionUtility::registerPlugin(
-    'Products',
+    'ProductsCore',
     'Search',
-    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.search',
-    'EXT:products/Resources/Public/Icons/Extension.svg'
+    'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.search',
+    'EXT:products_core/Resources/Public/Icons/Extension.svg'
 );
 
 ExtensionUtility::registerPlugin(
-    'Products',
+    'ProductsCore',
     'CategoryNavigation',
-    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.category_navigation',
-    'EXT:products/Resources/Public/Icons/Extension.svg'
+    'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.category_navigation',
+    'EXT:products_core/Resources/Public/Icons/Extension.svg'
 );
 
 ExtensionUtility::registerPlugin(
-    'Products',
+    'ProductsCore',
     'CategoryList',
-    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.category_list',
-    'EXT:products/Resources/Public/Icons/Extension.svg'
+    'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.category_list',
+    'EXT:products_core/Resources/Public/Icons/Extension.svg'
 );
 
 ExtensionUtility::registerPlugin(
-    'Products',
+    'ProductsCore',
     'Withdrawal',
-    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.withdrawal',
-    'EXT:products/Resources/Public/Icons/Extension.svg'
+    'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.withdrawal',
+    'EXT:products_core/Resources/Public/Icons/Extension.svg'
 );
 
 ExtensionUtility::registerPlugin(
-    'Products',
+    'ProductsCore',
     'Download',
-    'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:plugin.download',
-    'EXT:products/Resources/Public/Icons/Extension.svg'
+    'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.download',
+    'EXT:products_core/Resources/Public/Icons/Extension.svg'
 );
 
 ExtensionManagementUtility::addTCAcolumns('tt_content', [
     'tx_products_list_mode' => [
-        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode',
+        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode',
         'config' => [
             'type' => 'select',
             'renderType' => 'selectSingle',
             // The built-in listings; a feature can register more, which itemsProcFunc appends.
             'items' => [
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.all', 'value' => 'all'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.offers', 'value' => 'offers'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.highlights', 'value' => 'highlights'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.new', 'value' => 'new'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.articles', 'value' => 'articles'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.all', 'value' => 'all'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.offers', 'value' => 'offers'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.highlights', 'value' => 'highlights'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.new', 'value' => 'new'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.articles', 'value' => 'articles'],
             ],
             'itemsProcFunc' => ProductListModeItemsProvider::class . '->populate',
             'default' => 'all',
         ],
     ],
     'tx_products_recentlyviewed_mode' => [
-        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_recentlyviewed_mode',
+        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_recentlyviewed_mode',
         'config' => [
             'type' => 'select',
             'renderType' => 'selectSingle',
             'items' => [
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_recentlyviewed_mode.recent', 'value' => 'recent'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_recentlyviewed_mode.mostviewed', 'value' => 'mostviewed'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_recentlyviewed_mode.mostviewedglobal', 'value' => 'mostviewedglobal'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_recentlyviewed_mode.recent', 'value' => 'recent'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_recentlyviewed_mode.mostviewed', 'value' => 'mostviewed'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_recentlyviewed_mode.mostviewedglobal', 'value' => 'mostviewedglobal'],
             ],
             'default' => 'recent',
         ],
     ],
     'tx_products_navigation_style' => [
-        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_navigation_style',
+        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_navigation_style',
         'config' => [
             'type' => 'select',
             'renderType' => 'selectSingle',
             'items' => [
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_navigation_style.menu', 'value' => 'menu'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_navigation_style.dropdown', 'value' => 'dropdown'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_navigation_style.menu', 'value' => 'menu'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_navigation_style.dropdown', 'value' => 'dropdown'],
             ],
             'default' => 'menu',
         ],
@@ -139,36 +139,36 @@ ExtensionManagementUtility::addTCAcolumns('tt_content', [
 
 ExtensionManagementUtility::addTCAcolumns('tt_content', [
     'tx_products_search_browse_mode' => [
-        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode',
+        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode',
         'config' => [
             'type' => 'select',
             'renderType' => 'selectSingle',
             'items' => [
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.text', 'value' => 'text'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.firstletter', 'value' => 'firstletter'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.year', 'value' => 'year'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.field', 'value' => 'field'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.keyfield', 'value' => 'keyfield'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.lastentries', 'value' => 'lastentries'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.text', 'value' => 'text'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.firstletter', 'value' => 'firstletter'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.year', 'value' => 'year'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.field', 'value' => 'field'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.keyfield', 'value' => 'keyfield'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_browse_mode.lastentries', 'value' => 'lastentries'],
             ],
             'default' => 'text',
         ],
     ],
     'tx_products_search_target' => [
-        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_target',
+        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_target',
         'config' => [
             'type' => 'select',
             'renderType' => 'selectSingle',
             'items' => [
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_target.products', 'value' => 'products'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_target.articles', 'value' => 'articles'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_target.categories', 'value' => 'categories'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_target.products', 'value' => 'products'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_target.articles', 'value' => 'articles'],
+                ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_target.categories', 'value' => 'categories'],
             ],
             'default' => 'products',
         ],
     ],
     'tx_products_search_field' => [
-        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_field',
+        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_search_field',
         'config' => [
             'type' => 'input',
             'size' => 20,
@@ -179,7 +179,7 @@ ExtensionManagementUtility::addTCAcolumns('tt_content', [
 
 ExtensionManagementUtility::addTCAcolumns('tt_content', [
     'tx_products_category' => [
-        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_category',
+        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_category',
         'config' => [
             'type' => 'select',
             'renderType' => 'selectTree',
@@ -198,15 +198,15 @@ ExtensionManagementUtility::addTCAcolumns('tt_content', [
     ],
 ]);
 
-ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_list_mode', 'products_productlist');
-ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_recentlyviewed_mode', 'products_recentlyviewed');
-ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_navigation_style', 'products_categorynavigation');
-ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_search_browse_mode', 'products_search');
-ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_search_target', 'products_search');
-ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_search_field', 'products_search');
+ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_list_mode', 'productscore_productlist');
+ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_recentlyviewed_mode', 'productscore_recentlyviewed');
+ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_navigation_style', 'productscore_categorynavigation');
+ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_search_browse_mode', 'productscore_search');
+ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_search_target', 'productscore_search');
+ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_search_field', 'productscore_search');
 
-$GLOBALS['TCA']['tt_content']['types']['products_productlist']['columnsOverrides']['records']['config']['allowed'] = 'tx_products_domain_model_product';
+$GLOBALS['TCA']['tt_content']['types']['productscore_productlist']['columnsOverrides']['records']['config']['allowed'] = 'tx_products_domain_model_product';
 
-ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'records', 'products_productlist');
-ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_category', 'products_productlist', 'after:records');
-ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_category', 'products_categorylist');
+ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'records', 'productscore_productlist');
+ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_category', 'productscore_productlist', 'after:records');
+ExtensionManagementUtility::addToAllTCAtypes('tt_content', 'tx_products_category', 'productscore_categorylist');

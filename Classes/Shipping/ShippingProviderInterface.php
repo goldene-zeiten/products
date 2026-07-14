@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Shipping;
+namespace GoldeneZeiten\Products\Core\Shipping;
 
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingContext;
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingOption;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 /**

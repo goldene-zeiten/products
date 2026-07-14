@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Controller;
+namespace GoldeneZeiten\Products\Core\Controller;
 
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Service\Invoice\Exception\InvalidInvoiceTokenException;
-use GoldeneZeiten\Products\Service\Invoice\InvoicePdfService;
-use GoldeneZeiten\Products\Service\Invoice\InvoiceRenderer;
-use GoldeneZeiten\Products\Service\Invoice\InvoiceTokenService;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Service\Invoice\Exception\InvalidInvoiceTokenException;
+use GoldeneZeiten\Products\Core\Service\Invoice\InvoicePdfService;
+use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceRenderer;
+use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceTokenService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 

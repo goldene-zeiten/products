@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Controller;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Session\SessionManager;
@@ -26,12 +26,12 @@ final class CheckoutAddressPrefillTest extends AbstractFrontendTestCase
     public function addressActionPrefillsFromCustomerData(int $frontendUserUid, string $expectedStreet, string $expectedCity, string $expectedEmail): void
     {
         $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
-            '&id=2&tx_products_checkout[action]=address'
+            '&id=2&tx_productscore_checkout[action]=address'
         );
         $request = (new InternalRequest('http://localhost/shop'))
             ->withCookieParams(['fe_typo_user' => $this->loginFrontendUser($frontendUserUid)])
             ->withQueryParameters([
-                'tx_products_checkout[action]' => 'address',
+                'tx_productscore_checkout[action]' => 'address',
                 'cHash' => $cHash,
             ]);
         $response = $this->executeFrontendSubRequest($request);
@@ -64,11 +64,11 @@ final class CheckoutAddressPrefillTest extends AbstractFrontendTestCase
     public function addressActionIsBlankForAnonymousVisitor(): void
     {
         $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
-            '&id=2&tx_products_checkout[action]=address'
+            '&id=2&tx_productscore_checkout[action]=address'
         );
         $request = (new InternalRequest('http://localhost/shop'))
             ->withQueryParameters([
-                'tx_products_checkout[action]' => 'address',
+                'tx_productscore_checkout[action]' => 'address',
                 'cHash' => $cHash,
             ]);
         $response = $this->executeFrontendSubRequest($request);

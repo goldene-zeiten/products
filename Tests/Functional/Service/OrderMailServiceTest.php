@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service;
 
-use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Model\OrderItem;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\OrderMailService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
-use GoldeneZeiten\Products\Tests\Functional\Fixtures\TestMailer;
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\OrderItem;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\OrderMailService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\TestMailer;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Mime\Part\DataPart;
@@ -57,7 +57,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->writeSiteConfiguration(
             'products-with-order-bcc',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
                 'settings' => [
                     'products' => [
                         'email' => ['orderBccRecipient' => 'accounting@example.com'],
@@ -93,7 +93,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->writeSiteConfiguration(
             'products-with-merchant-notification',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
                 'settings' => [
                     'products' => [
                         'email' => ['merchantRecipient' => 'merchant@example.com'],
@@ -121,13 +121,13 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->writeSiteConfiguration(
             'products-with-partial-override',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
                 'settings' => [
                     'products' => [
                         'email' => [
                             // Later paths in TemplatePaths override earlier ones; list fixtures last.
                             'partialRootPaths' => [
-                                'EXT:products/Resources/Private/Partials/',
+                                'EXT:products_core/Resources/Private/Partials/',
                                 'EXT:frontend_test/Resources/Private/Partials/',
                             ],
                         ],
@@ -168,7 +168,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->writeSiteConfiguration(
             'products-with-status-changed-disabled',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
                 'settings' => [
                     'products' => [
                         'email' => ['orderStatusChanged' => ['enabled' => false]],
@@ -202,7 +202,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->writeSiteConfiguration(
             'products-with-withdrawal-notification',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
                 'settings' => [
                     'products' => [
                         'email' => ['merchantRecipient' => 'merchant@example.com'],
@@ -244,7 +244,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
                 'settings' => [
                     'products' => [
                         'email' => ['merchantRecipient' => 'merchant@example.com'],
@@ -275,7 +275,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->writeSiteConfiguration(
             $siteIdentifier,
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
                 'settings' => [
                     'products' => [
                         'email' => ['merchantRecipient' => 'shop@example.com'],
@@ -329,7 +329,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->writeSiteConfiguration(
             $siteIdentifier,
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
                 'settings' => [
                     'products' => [
                         'email' => ['merchantRecipient' => $merchantRecipient],
@@ -375,7 +375,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->writeSiteConfiguration(
             'products-with-agb-attachment',
             $this->buildSiteConfiguration(2, additionalRootConfiguration: [
-                'dependencies' => ['goldene-zeiten/products', 'goldene-zeiten/frontend-test'],
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
                 'settings' => [
                     'products' => [
                         'email' => ['agbAttachment' => $file->getCombinedIdentifier()],

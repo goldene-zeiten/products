@@ -11,27 +11,27 @@ return [
     'products-module' => [
         'provider' => SvgIconProvider::class,
         'source' => $isTYPO3v14OrHigher
-            ? 'EXT:products/Resources/Public/Icons/Extension-v14.svg'
-            : 'EXT:products/Resources/Public/Icons/Extension.svg',
+            ? 'EXT:products_core/Resources/Public/Icons/Extension-v14.svg'
+            : 'EXT:products_core/Resources/Public/Icons/Extension.svg',
     ],
     'products-order' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:products/Resources/Public/Icons/Order.svg',
+        'source' => 'EXT:products_core/Resources/Public/Icons/Order.svg',
     ],
     'products-categories' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:products/Resources/Public/Icons/Categories.svg',
+        'source' => 'EXT:products_core/Resources/Public/Icons/Categories.svg',
     ],
     'products-category' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:products/Resources/Public/Icons/Category.svg',
+        'source' => 'EXT:products_core/Resources/Public/Icons/Category.svg',
     ],
     'products-product' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:products/Resources/Public/Icons/Product.svg',
+        'source' => 'EXT:products_core/Resources/Public/Icons/Product.svg',
     ],
     'products-article' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:products/Resources/Public/Icons/Article.svg',
+        'source' => 'EXT:products_core/Resources/Public/Icons/Article.svg',
     ],
 ];

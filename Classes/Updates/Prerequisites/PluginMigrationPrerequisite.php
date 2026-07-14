@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Updates\Prerequisites;
+namespace GoldeneZeiten\Products\Core\Updates\Prerequisites;
 
-use GoldeneZeiten\Products\Updates\TtProductsPluginUpgradeWizard;
+use GoldeneZeiten\Products\Core\Updates\TtProductsPluginUpgradeWizard;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Install\Updates\ChattyInterface;

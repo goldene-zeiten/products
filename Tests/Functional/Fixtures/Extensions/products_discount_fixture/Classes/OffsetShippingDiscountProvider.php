@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\DiscountFixture;
 
-use GoldeneZeiten\Products\Discount\DiscountProviderInterface;
-use GoldeneZeiten\Products\Domain\Dto\Discount\DiscountContext;
-use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\ValueObject\CheckoutAdjustment;
-use GoldeneZeiten\Products\Domain\ValueObject\CoreAdjustmentProvider;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Discount\DiscountProviderInterface;
+use GoldeneZeiten\Products\Core\Domain\Dto\Discount\DiscountContext;
+use GoldeneZeiten\Products\Core\Domain\Enum\AdjustmentType;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\CheckoutAdjustment;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\CoreAdjustmentProvider;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 
 /**
  * Fixture discount provider that offers free shipping when the 'FREESHIP' code is applied.

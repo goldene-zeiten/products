@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Pricing;
+namespace GoldeneZeiten\Products\Core\Pricing;
 
-use GoldeneZeiten\Products\Domain\Model\Category;
-use GoldeneZeiten\Products\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Model\Category;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
 
 /**
  * Category-cascading flat-percentage discount. "maxAcrossTree" takes the highest discount across

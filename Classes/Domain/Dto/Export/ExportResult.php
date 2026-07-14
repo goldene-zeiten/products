@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Dto\Export;
+namespace GoldeneZeiten\Products\Core\Domain\Dto\Export;
 
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 

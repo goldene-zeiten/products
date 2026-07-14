@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Voucher;
+namespace GoldeneZeiten\Products\Core\Service\Voucher;
 
-use GoldeneZeiten\Products\Domain\Dto\BasketDiscountSummary;
-use GoldeneZeiten\Products\Domain\Model\Voucher;
-use GoldeneZeiten\Products\Domain\Repository\VoucherRedemptionRepository;
-use GoldeneZeiten\Products\Domain\Repository\VoucherRepository;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherNotApplicableException;
-use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherNotFoundException;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketDiscountSummary;
+use GoldeneZeiten\Products\Core\Domain\Model\Voucher;
+use GoldeneZeiten\Products\Core\Domain\Repository\VoucherRedemptionRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\VoucherRepository;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\Voucher\Exception\VoucherNotApplicableException;
+use GoldeneZeiten\Products\Core\Service\Voucher\Exception\VoucherNotFoundException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
@@ -150,7 +150,7 @@ final class VoucherService
      * Atomic UPDATE...WHERE guard against concurrent over-redemption.
      *
      * @throws VoucherNotApplicableException
-     * @see \GoldeneZeiten\Products\Service\Order\StockService::decrementForItem()
+     * @see \GoldeneZeiten\Products\Core\Service\Order\StockService::decrementForItem()
      */
     public function redeemAtomically(Voucher $voucher): void
     {

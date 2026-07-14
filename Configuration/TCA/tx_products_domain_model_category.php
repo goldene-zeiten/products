@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category',
+        'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category',
         'label' => 'title',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -17,10 +17,10 @@ return [
         'enablecolumns' => [
             'disabled' => 'hidden',
         ],
-        'iconfile' => 'EXT:products/Resources/Public/Icons/Category.svg',
+        'iconfile' => 'EXT:products_core/Resources/Public/Icons/Category.svg',
     ],
     'types' => [
-        '1' => ['showitem' => '--div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_general, --palette--;;titleAndSlug, parent_category, image, description, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_discount, --palette--;;discount, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_notification, --palette--;;notification, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource, --div--;LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_access, --palette--;;access'],
+        '1' => ['showitem' => '--div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_general, --palette--;;titleAndSlug, parent_category, image, description, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_discount, --palette--;;discount, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_notification, --palette--;;notification, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.tab_access, --palette--;;access'],
     ],
     'palettes' => [
         'titleAndSlug' => [
@@ -64,7 +64,7 @@ return [
             ],
         ],
         'title' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.title',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.title',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -73,7 +73,7 @@ return [
             ],
         ],
         'slug' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.slug',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.slug',
             'config' => [
                 'type' => 'slug',
                 'generatorOptions' => [
@@ -89,7 +89,7 @@ return [
             ],
         ],
         'image' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.image',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.image',
             'config' => [
                 'type' => 'file',
                 'allowed' => 'common-image-types',
@@ -97,14 +97,14 @@ return [
             ],
         ],
         'description' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.description',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.description',
             'config' => [
                 'type' => 'text',
                 'enableRichtext' => true,
             ],
         ],
         'notification_email' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.notification_email',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.notification_email',
             'config' => [
                 'type' => 'email',
                 'size' => 30,
@@ -112,7 +112,7 @@ return [
             ],
         ],
         'notification_recipient_name' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.notification_recipient_name',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.notification_recipient_name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -120,7 +120,7 @@ return [
             ],
         ],
         'discount_percent' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.discount_percent',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.discount_percent',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
@@ -129,7 +129,7 @@ return [
             ],
         ],
         'discount_disabled' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.discount_disabled',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.discount_disabled',
             'config' => [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
@@ -137,7 +137,7 @@ return [
             ],
         ],
         'hide_in_slug_path' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.hide_in_slug_path',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.hide_in_slug_path',
             'config' => [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
@@ -145,7 +145,7 @@ return [
             ],
         ],
         'parent_category' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.parent_category',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.parent_category',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectTree',
@@ -161,7 +161,7 @@ return [
             ],
         ],
         'perms_userid' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_userid',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_userid',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -170,7 +170,7 @@ return [
             ],
         ],
         'perms_groupid' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_groupid',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_groupid',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -179,38 +179,38 @@ return [
             ],
         ],
         'perms_user' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_user',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_user',
             'config' => [
                 'type' => 'check',
                 'items' => [
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.show'],
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.edit'],
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.delete'],
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.new'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.show'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.edit'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.delete'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.new'],
                 ],
             ],
         ],
         'perms_group' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_group',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_group',
             'config' => [
                 'type' => 'check',
                 'items' => [
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.show'],
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.edit'],
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.delete'],
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.new'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.show'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.edit'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.delete'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.new'],
                 ],
             ],
         ],
         'perms_everybody' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_everybody',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_everybody',
             'config' => [
                 'type' => 'check',
                 'items' => [
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.show'],
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.edit'],
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.delete'],
-                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:permission.new'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.show'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.edit'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.delete'],
+                    ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.new'],
                 ],
             ],
         ],

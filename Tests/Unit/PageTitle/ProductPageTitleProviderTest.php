@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Unit\PageTitle;
+namespace GoldeneZeiten\Products\Core\Tests\Unit\PageTitle;
 
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\PageTitle\CurrentProductHolder;
-use GoldeneZeiten\Products\PageTitle\ProductPageTitleProvider;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\PageTitle\CurrentProductHolder;
+use GoldeneZeiten\Products\Core\PageTitle\ProductPageTitleProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;

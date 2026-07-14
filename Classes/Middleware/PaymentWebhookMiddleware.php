@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Middleware;
+namespace GoldeneZeiten\Products\Core\Middleware;
 
-use GoldeneZeiten\Products\Payment\Exception\PaymentCallbackException;
-use GoldeneZeiten\Products\Payment\PaymentCallbackService;
-use GoldeneZeiten\Products\Payment\PaymentUrlFactory;
+use GoldeneZeiten\Products\Core\Payment\Exception\PaymentCallbackException;
+use GoldeneZeiten\Products\Core\Payment\PaymentCallbackService;
+use GoldeneZeiten\Products\Core\Payment\PaymentUrlFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

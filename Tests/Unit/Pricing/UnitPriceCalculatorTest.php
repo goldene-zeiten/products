@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Unit\Pricing;
+namespace GoldeneZeiten\Products\Core\Tests\Unit\Pricing;
 
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Pricing\Unit\UnitRegistry;
-use GoldeneZeiten\Products\Pricing\UnitPriceCalculator;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Pricing\Unit\UnitRegistry;
+use GoldeneZeiten\Products\Core\Pricing\UnitPriceCalculator;
 use PHPUnit\Framework\TestCase;
 
 final class UnitPriceCalculatorTest extends TestCase

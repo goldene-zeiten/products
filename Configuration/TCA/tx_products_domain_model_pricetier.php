@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricetier',
+        'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricetier',
         'label' => 'min_quantity',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -39,7 +39,7 @@ return [
             ],
         ],
         'min_quantity' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricetier.min_quantity',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricetier.min_quantity',
             'config' => [
                 'type' => 'number',
                 'size' => 10,
@@ -48,7 +48,7 @@ return [
             ],
         ],
         'price' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricetier.price',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_pricetier.price',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',

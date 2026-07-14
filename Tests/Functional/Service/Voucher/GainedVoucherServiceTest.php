@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service\Voucher;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Voucher;
 
-use GoldeneZeiten\Products\Configuration\GainedVoucherConfiguration;
-use GoldeneZeiten\Products\Domain\Enum\VoucherDiscountType;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Domain\Repository\VoucherRepository;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\Voucher\GainedVoucherService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Configuration\GainedVoucherConfiguration;
+use GoldeneZeiten\Products\Core\Domain\Enum\VoucherDiscountType;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\VoucherRepository;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\Voucher\GainedVoucherService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
@@ -19,7 +19,7 @@ use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     #[Test]

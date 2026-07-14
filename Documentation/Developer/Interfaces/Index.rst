@@ -14,7 +14,7 @@ allow for stronger fail-closed behavior than event listeners can achieve.
 ProductVisibilityInterface
 ==========================
 
-**Location:** :php:`GoldeneZeiten\Products\Visibility\ProductVisibilityInterface`
+**Location:** :php:`GoldeneZeiten\Products\Core\Visibility\ProductVisibilityInterface`
 
 **Purpose:**
 
@@ -51,8 +51,8 @@ visibility decisions.
 
     namespace MyVendor\MyExtension;
 
-    use GoldeneZeiten\Products\Domain\Model\Product;
-    use GoldeneZeiten\Products\Visibility\ProductVisibilityInterface;
+    use GoldeneZeiten\Products\Core\Domain\Model\Product;
+    use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityInterface;
     use Psr\Http\Message\ServerRequestInterface;
 
     /**

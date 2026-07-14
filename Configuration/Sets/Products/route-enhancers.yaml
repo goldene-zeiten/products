@@ -1,7 +1,7 @@
-# Shipped catalog routing for the goldene-zeiten/products Site Set.
+# Shipped catalog routing for the goldene-zeiten/products-core Site Set.
 #
 # Native on TYPO3 14.1+: automatically merged into any site declaring
-# `dependencies: [goldene-zeiten/products]`, per core's "route enhancers in site sets"
+# `dependencies: [goldene-zeiten/products-core]`, per core's "route enhancers in site sets"
 # feature (Feature-107837). On TYPO3 13.4 this same file is read and injected by
 # Core13/Routing/SiteSetRouteEnhancerListener.php, so this file is the single source of
 # truth for both supported core versions.
@@ -25,7 +25,7 @@
 routeEnhancers:
   ProductsCategoryList:
     type: Extbase
-    extension: Products
+    extension: ProductsCore
     plugin: CategoryList
     routes:
       -
@@ -59,7 +59,7 @@ routeEnhancers:
 
   ProductsDetail:
     type: Extbase
-    extension: Products
+    extension: ProductsCore
     plugin: ProductDetail
     routes:
       -
@@ -139,7 +139,7 @@ routeEnhancers:
 # routeEnhancers:
 #   ProductsDetail:
 #     type: Extbase
-#     extension: Products
+#     extension: ProductsCore
 #     plugin: ProductDetail
 #     routes:
 #       - routePath: '/{product}'

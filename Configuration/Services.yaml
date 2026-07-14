@@ -4,6 +4,6 @@ services:
     autoconfigure: true
     public: false
 
-  GoldeneZeiten\Products\:
+  GoldeneZeiten\Products\Core\:
     resource: '../Classes/*'
     exclude: '../Classes/Exception/*'

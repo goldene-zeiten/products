@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\EventFixture;
 
-use GoldeneZeiten\Products\Event\ModifyCategoryQueryEvent;
+use GoldeneZeiten\Products\Core\Event\ModifyCategoryQueryEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
 #[AsEventListener]

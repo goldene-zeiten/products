@@ -10,7 +10,7 @@ formats tailored to ERP systems, fulfillment partners, analytics platforms, or a
 software. Because order export is inherently shop-specific, **no concrete exporter ships with
 this extension** — integrators register their own implementations.
 
-**Location:** :php:`GoldeneZeiten\Products\Export\OrderExportInterface`
+**Location:** :php:`GoldeneZeiten\Products\Core\Export\OrderExportInterface`
 
 Lifecycle: Discovery & Execution
 =================================
@@ -148,10 +148,10 @@ This example exports paid orders to CSV, with products and totals:
 
     namespace MyVendor\MyExtension\Export;
 
-    use GoldeneZeiten\Products\Domain\Dto\Export\ExportContext;
-    use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
-    use GoldeneZeiten\Products\Domain\Model\Order;
-    use GoldeneZeiten\Products\Export\OrderExportInterface;
+    use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
+    use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+    use GoldeneZeiten\Products\Core\Domain\Model\Order;
+    use GoldeneZeiten\Products\Core\Export\OrderExportInterface;
 
     /**
      * Export paid orders to CSV for fulfillment partners.
@@ -258,7 +258,7 @@ attach a listener:
 
     namespace MyVendor\MyExtension\EventListener;
 
-    use GoldeneZeiten\Products\Event\OrderExportersCollectedEvent;
+    use GoldeneZeiten\Products\Core\Event\OrderExportersCollectedEvent;
     use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
     #[AsEventListener]

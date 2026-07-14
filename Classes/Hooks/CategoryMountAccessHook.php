@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Hooks;
+namespace GoldeneZeiten\Products\Core\Hooks;
 
-use GoldeneZeiten\Products\Backend\CategoryAccessGuard;
-use GoldeneZeiten\Products\Backend\CategoryMountResolver;
-use GoldeneZeiten\Products\Backend\CategoryPermissionGuard;
-use GoldeneZeiten\Products\Backend\CategoryTreeRepository;
-use GoldeneZeiten\Products\Exception\CategoryAccessDeniedException;
+use GoldeneZeiten\Products\Core\Backend\CategoryAccessGuard;
+use GoldeneZeiten\Products\Core\Backend\CategoryMountResolver;
+use GoldeneZeiten\Products\Core\Backend\CategoryPermissionGuard;
+use GoldeneZeiten\Products\Core\Backend\CategoryTreeRepository;
+use GoldeneZeiten\Products\Core\Exception\CategoryAccessDeniedException;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SysLog\Action\Database as SystemLogDatabaseAction;

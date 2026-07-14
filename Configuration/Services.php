@@ -16,7 +16,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->private();
 
     $services->load(
-        sprintf('GoldeneZeiten\\Products\\Core%d\\', $majorVersion),
+        sprintf('GoldeneZeiten\\Products\\Core\\Core%d\\', $majorVersion),
         sprintf(__DIR__ . '/../Core%d/', $majorVersion),
     );
 };

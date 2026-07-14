@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Dto\Checkout;
+namespace GoldeneZeiten\Products\Core\Domain\Dto\Checkout;
 
-use GoldeneZeiten\Products\Domain\Dto\Discount\DiscountContext;
-use GoldeneZeiten\Products\Domain\Dto\Loyalty\LoyaltyContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Discount\DiscountContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Loyalty\LoyaltyContext;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**

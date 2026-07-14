@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Discount;
+namespace GoldeneZeiten\Products\Core\Discount;
 
-use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
-use GoldeneZeiten\Products\Domain\Dto\Discount\DiscountContext;
-use GoldeneZeiten\Products\Domain\ValueObject\AdjustmentCollection;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Core\Domain\Dto\Discount\DiscountContext;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\AdjustmentCollection;
 
 /**
  * Builds the immutable view a discount provider decides on, so a provider never reads the basket, the

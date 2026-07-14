@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\ValueObject;
+namespace GoldeneZeiten\Products\Core\Domain\ValueObject;
 
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 

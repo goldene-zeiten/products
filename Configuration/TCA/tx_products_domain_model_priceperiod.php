@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_priceperiod',
+        'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_priceperiod',
         'label' => 'price',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -46,7 +46,7 @@ return [
             ],
         ],
         'fe_group' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_priceperiod.fe_group',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_priceperiod.fe_group',
             'description' => 'Empty/"Public" = general advertised price reduction. A specific group = reseller/tier pricing, excluded from the public price-history ledger.',
             'config' => [
                 'type' => 'select',
@@ -59,7 +59,7 @@ return [
             ],
         ],
         'price' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_priceperiod.price',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_priceperiod.price',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
@@ -69,7 +69,7 @@ return [
             ],
         ],
         'valid_from' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_priceperiod.valid_from',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_priceperiod.valid_from',
             'config' => [
                 'type' => 'datetime',
                 'size' => 13,
@@ -78,7 +78,7 @@ return [
             ],
         ],
         'valid_until' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_priceperiod.valid_until',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_priceperiod.valid_until',
             'config' => [
                 'type' => 'datetime',
                 'size' => 13,
@@ -90,7 +90,7 @@ return [
             ],
         ],
         'note' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_priceperiod.note',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_priceperiod.note',
             'description' => 'Editor-facing reason for this price period (e.g. "Summer sale", "Reseller tier B"). Not used by any logic.',
             'config' => [
                 'type' => 'input',

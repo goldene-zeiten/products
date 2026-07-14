@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Command;
+namespace GoldeneZeiten\Products\Core\Command;
 
-use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

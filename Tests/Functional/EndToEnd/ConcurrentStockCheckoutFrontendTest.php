@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\EndToEnd;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\EndToEnd;
 
-use GoldeneZeiten\Products\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamFactoryInterface;
 use TYPO3\CMS\Core\Information\Typo3Version;
@@ -43,15 +43,15 @@ final class ConcurrentStockCheckoutFrontendTest extends AbstractFrontendTestCase
     {
         return $this->coreVersionSuffix() === 'v13'
             ? [
-                'cHash' => 'ec6f9d330cea28e55834e92f106c133c',
+                'cHash' => 'b9f292e6f81e2effc2e7adedf316b835',
                 'referrerArguments' => 'YToxOntzOjY6ImFjdGlvbiI7czo2OiJyZXZpZXciO30=c00eb9b6b946e8aaef9780e313d95770cb6a0ca4',
-                'referrerRequest' => '{"@extension":"Products","@controller":"Checkout","@action":"review"}615d0c1e1285276c8c78ed26c9ee830afc280033',
+                'referrerRequest' => '{"@extension":"ProductsCore","@controller":"Checkout","@action":"review"}7ee936d98a790e2b9144ff030bf31a15ba291c45',
                 'trustedProperties' => '{"termsAccepted":1}c40101db1a5f068ba6637fbf13e0a35a4fb5c8c5',
             ]
             : [
-                'cHash' => '635c3c02e5ff1a38f8a215d87528941ea9446353a71ddc2eb6e6332b3dffd03c',
+                'cHash' => '4fa761796a3288c467e083fae1bae96b4d29d5ec8569eed4b1cb6f1e64db8494',
                 'referrerArguments' => 'YToyOntzOjY6ImFjdGlvbiI7czo2OiJyZXZpZXciO3M6MTA6ImNvbnRyb2xsZXIiO3M6ODoiQ2hlY2tvdXQiO30=97627a9eaaf8e6b920ca85a4ff1236e49b514b64306090036d772458caae4478',
-                'referrerRequest' => '{"@extension":"Products","@controller":"Checkout","@action":"review"}9933483dca4a9755ffffca110908282eb22cc0b60b0b42eed265c0b29c330813',
+                'referrerRequest' => '{"@extension":"ProductsCore","@controller":"Checkout","@action":"review"}4908ac736b93c2a9e0b89fef9369d5f40d729100cf7ec58afd4051335df42011',
                 'trustedProperties' => '{"termsAccepted":1}a6f4fec891056adb7746c8ee60bebea2ed2d731ff9df2fe070f81cd93298dc4f',
             ];
     }
@@ -61,9 +61,9 @@ final class ConcurrentStockCheckoutFrontendTest extends AbstractFrontendTestCase
     {
         $tokens = $this->finalizeFormTokens();
         $parsedBody = [
-            'tx_products_checkout' => [
+            'tx_productscore_checkout' => [
                 '__referrer' => [
-                    '@extension' => 'Products',
+                    '@extension' => 'ProductsCore',
                     '@controller' => 'Checkout',
                     '@action' => 'review',
                     'arguments' => $tokens['referrerArguments'],
@@ -84,8 +84,8 @@ final class ConcurrentStockCheckoutFrontendTest extends AbstractFrontendTestCase
         $body = $this->get(StreamFactoryInterface::class)->createStream(http_build_query($parsedBody));
         $preparedRequest = (new InternalRequest('http://localhost/checkout'))
             ->withQueryParameters([
-                'tx_products_checkout[action]' => 'finalize',
-                'tx_products_checkout[controller]' => 'Checkout',
+                'tx_productscore_checkout[action]' => 'finalize',
+                'tx_productscore_checkout[controller]' => 'Checkout',
                 'cHash' => $tokens['cHash'],
             ])
             ->withMethod('POST')

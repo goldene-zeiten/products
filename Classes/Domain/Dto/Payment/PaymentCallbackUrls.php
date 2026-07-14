@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Dto\Payment;
+namespace GoldeneZeiten\Products\Core\Domain\Dto\Payment;
 
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 

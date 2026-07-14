@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Controller\Exception;
+namespace GoldeneZeiten\Products\Core\Controller\Exception;
 
 use TYPO3\CMS\Core\Error\Http\PageNotFoundException;
 

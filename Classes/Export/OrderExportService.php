@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Export;
+namespace GoldeneZeiten\Products\Core\Export;
 
-use GoldeneZeiten\Products\Domain\Dto\Export\ExportContext;
-use GoldeneZeiten\Products\Domain\Dto\Export\ExportResult;
-use GoldeneZeiten\Products\Export\Exception\OrderExporterNotAvailableException;
+use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportResult;
+use GoldeneZeiten\Products\Core\Export\Exception\OrderExporterNotAvailableException;
 
 /**
  * Serves order exporters to their consumers: the discovery phase, listing what may be offered for an

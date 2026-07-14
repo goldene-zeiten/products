@@ -16,7 +16,7 @@ shipping/handling/deposits, self-service order withdrawal, wishlists and more).
 ## Installation
 
 ```bash
-composer require goldene-zeiten/products
+composer require goldene-zeiten/products-core
 ```
 
 Activate the `Products` site set on the site(s) that should show the shop and configure its

@@ -27,14 +27,14 @@ for its own Site Settings categories (for example
 
     categories:
       storage:
-        label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:category.storage'
+        label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.storage'
         parent: products
 
     settings:
       products.pids.storageFolder:
         type: int
         default: 0
-        label: 'LLL:EXT:products/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.storageFolder'
+        label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.storageFolder'
         category: storage
 
 Label id convention
@@ -59,7 +59,7 @@ code, keeping every ``id``/``resname`` identical and only translating ``<source>
     <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
     <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
         <file source-language="en" target-language="de" datatype="plaintext"
-              original="EXT:products/Resources/Private/Language/locallang_settings.xlf" product-name="products">
+              original="EXT:products_core/Resources/Private/Language/locallang_settings.xlf" product-name="products">
             <header/>
             <body>
                 <trans-unit id="category.storage" resname="category.storage">

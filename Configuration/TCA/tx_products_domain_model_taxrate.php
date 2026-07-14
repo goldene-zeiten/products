@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use GoldeneZeiten\Products\Backend\Form\CountryItemsProcFunc;
+use GoldeneZeiten\Products\Core\Backend\Form\CountryItemsProcFunc;
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_taxrate',
+        'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_taxrate',
         'label' => 'rate',
         'label_alt' => 'tax_class, country',
         'label_alt_force' => true,
@@ -19,14 +19,14 @@ return [
             'starttime' => 'valid_from',
             'endtime' => 'valid_until',
         ],
-        'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
+        'iconfile' => 'EXT:products_core/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
         '1' => ['showitem' => 'tax_class, country, rate, valid_from, valid_until'],
     ],
     'columns' => [
         'tax_class' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_taxrate.tax_class',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_taxrate.tax_class',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -36,7 +36,7 @@ return [
             ],
         ],
         'country' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_taxrate.country',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_taxrate.country',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -44,7 +44,7 @@ return [
             ],
         ],
         'rate' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_taxrate.rate',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_taxrate.rate',
             'config' => [
                 'type' => 'number',
                 'format' => 'decimal',
@@ -54,7 +54,7 @@ return [
             ],
         ],
         'valid_from' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_taxrate.valid_from',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_taxrate.valid_from',
             'config' => [
                 'type' => 'datetime',
                 'size' => 13,
@@ -63,7 +63,7 @@ return [
             ],
         ],
         'valid_until' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_taxrate.valid_until',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_taxrate.valid_until',
             'config' => [
                 'type' => 'datetime',
                 'size' => 13,

@@ -1,5 +1,5 @@
 {
-  "name": "goldene-zeiten/products",
+  "name": "goldene-zeiten/products-core",
   "description": "TYPO3 Shop system",
   "type": "typo3-cms-extension",
   "license": [
@@ -17,14 +17,14 @@
   },
   "autoload": {
     "psr-4": {
-      "GoldeneZeiten\\Products\\": "Classes/",
-      "GoldeneZeiten\\Products\\Core13\\": "Core13/",
-      "GoldeneZeiten\\Products\\Core14\\": "Core14/"
+      "GoldeneZeiten\\Products\\Core\\": "Classes/",
+      "GoldeneZeiten\\Products\\Core\\Core13\\": "Core13/",
+      "GoldeneZeiten\\Products\\Core\\Core14\\": "Core14/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "GoldeneZeiten\\Products\\Tests\\": "Tests/"
+      "GoldeneZeiten\\Products\\Core\\Tests\\": "Tests/"
     }
   },
   "require": {
@@ -53,7 +53,7 @@
   },
   "extra": {
     "typo3/cms": {
-      "extension-key": "products",
+      "extension-key": "products_core",
       "web-dir": ".Build/Web",
       "version": "1.0.0",
       "Package": {

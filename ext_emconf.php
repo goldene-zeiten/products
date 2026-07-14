@@ -1,7 +1,7 @@
 <?php
 
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'Products',
+    'title' => 'ProductsCore',
     'description' => 'A modern shop system for TYPO3',
     'category' => 'plugin',
     'author' => 'Markus Hofmann',

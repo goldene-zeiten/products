@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\ContentElement;
+namespace GoldeneZeiten\Products\Core\Service\ContentElement;
 
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Database\RelationHandler;

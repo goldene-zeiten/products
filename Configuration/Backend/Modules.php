@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use GoldeneZeiten\Products\Controller\Backend\OrderManagementModuleController;
-use GoldeneZeiten\Products\Controller\Backend\ProductManagementModuleController;
+use GoldeneZeiten\Products\Core\Controller\Backend\OrderManagementModuleController;
+use GoldeneZeiten\Products\Core\Controller\Backend\ProductManagementModuleController;
 
 return [
     'products' => [
         'labels' => [
-            'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:module.products.title',
+            'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:module.products.title',
         ],
         'iconIdentifier' => 'products-module',
     ],
@@ -19,8 +19,8 @@ return [
         'workspaces' => 'live',
         'iconIdentifier' => 'products-order',
         'labels' => [
-            'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:module.products_order.title',
-            'shortDescription' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:module.products_order.shortDescription',
+            'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:module.products_order.title',
+            'shortDescription' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:module.products_order.shortDescription',
         ],
         'routes' => [
             '_default' => [
@@ -36,8 +36,8 @@ return [
         'iconIdentifier' => 'products-categories',
         'navigationComponent' => '@goldene-zeiten/products/backend/category-tree',
         'labels' => [
-            'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:module.products_management.title',
-            'shortDescription' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:module.products_management.shortDescription',
+            'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:module.products_management.title',
+            'shortDescription' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:module.products_management.shortDescription',
         ],
         'routes' => [
             '_default' => [

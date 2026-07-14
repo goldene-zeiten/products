@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Shipping;
+namespace GoldeneZeiten\Products\Core\Shipping;
 
-use GoldeneZeiten\Products\Configuration\ProductsConfiguration;
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingContext;
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingOption;
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingSelection;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
-use GoldeneZeiten\Products\Service\TaxService;
-use GoldeneZeiten\Products\Shipping\Exception\NoShippingOptionAvailableException;
+use GoldeneZeiten\Products\Core\Configuration\ProductsConfiguration;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingSelection;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Service\TaxService;
+use GoldeneZeiten\Products\Core\Shipping\Exception\NoShippingOptionAvailableException;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**

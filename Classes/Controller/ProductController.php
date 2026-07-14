@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Controller;
+namespace GoldeneZeiten\Products\Core\Controller;
 
-use GoldeneZeiten\Products\Catalog\ProductListModeRegistry;
-use GoldeneZeiten\Products\Controller\Exception\ProductNotVisibleException;
-use GoldeneZeiten\Products\Controller\Exception\ProductPathMismatchException;
-use GoldeneZeiten\Products\Domain\Dto\Catalog\ProductListContext;
-use GoldeneZeiten\Products\Domain\Model\Article;
-use GoldeneZeiten\Products\Domain\Model\Category;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\Repository\ArticleRepository;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Event\ModifyProductListEvent;
-use GoldeneZeiten\Products\PageTitle\CurrentProductHolder;
-use GoldeneZeiten\Products\Service\Category\CategoryTreeService;
-use GoldeneZeiten\Products\Service\ContentElement\RecordsFieldResolver;
-use GoldeneZeiten\Products\Service\ContentElement\SelectedCategoriesResolver;
-use GoldeneZeiten\Products\Service\RecentlyViewed\ProductViewTrackingService;
-use GoldeneZeiten\Products\Service\RecentlyViewed\RecentlyViewedStorage;
-use GoldeneZeiten\Products\Service\Variant\ArticleVariantResolver;
-use GoldeneZeiten\Products\Service\Wishlist\WishlistService;
-use GoldeneZeiten\Products\Visibility\ProductVisibilityResolver;
+use GoldeneZeiten\Products\Core\Catalog\ProductListModeRegistry;
+use GoldeneZeiten\Products\Core\Controller\Exception\ProductNotVisibleException;
+use GoldeneZeiten\Products\Core\Controller\Exception\ProductPathMismatchException;
+use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListContext;
+use GoldeneZeiten\Products\Core\Domain\Model\Article;
+use GoldeneZeiten\Products\Core\Domain\Model\Category;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Repository\ArticleRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Event\ModifyProductListEvent;
+use GoldeneZeiten\Products\Core\PageTitle\CurrentProductHolder;
+use GoldeneZeiten\Products\Core\Service\Category\CategoryTreeService;
+use GoldeneZeiten\Products\Core\Service\ContentElement\RecordsFieldResolver;
+use GoldeneZeiten\Products\Core\Service\ContentElement\SelectedCategoriesResolver;
+use GoldeneZeiten\Products\Core\Service\RecentlyViewed\ProductViewTrackingService;
+use GoldeneZeiten\Products\Core\Service\RecentlyViewed\RecentlyViewedStorage;
+use GoldeneZeiten\Products\Core\Service\Variant\ArticleVariantResolver;
+use GoldeneZeiten\Products\Core\Service\Wishlist\WishlistService;
+use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 

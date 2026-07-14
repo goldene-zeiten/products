@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Loyalty;
+namespace GoldeneZeiten\Products\Core\Loyalty;
 
-use GoldeneZeiten\Products\Configuration\CreditPointsConfiguration;
-use GoldeneZeiten\Products\Configuration\CreditPointsConfigurationFactory;
-use GoldeneZeiten\Products\Domain\Dto\CreditPointsRedemption;
-use GoldeneZeiten\Products\Domain\Dto\Loyalty\LoyaltyContext;
-use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
-use GoldeneZeiten\Products\Domain\Enum\CreditPointsTransactionType;
-use GoldeneZeiten\Products\Domain\Model\CreditPointsTransaction;
-use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Repository\CreditPointsTransactionRepository;
-use GoldeneZeiten\Products\Domain\ValueObject\CheckoutAdjustment;
-use GoldeneZeiten\Products\Domain\ValueObject\CoreAdjustmentProvider;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsBalanceService;
-use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
-use GoldeneZeiten\Products\Service\CreditPoints\Exception\InsufficientCreditPointsException;
+use GoldeneZeiten\Products\Core\Configuration\CreditPointsConfiguration;
+use GoldeneZeiten\Products\Core\Configuration\CreditPointsConfigurationFactory;
+use GoldeneZeiten\Products\Core\Domain\Dto\CreditPointsRedemption;
+use GoldeneZeiten\Products\Core\Domain\Dto\Loyalty\LoyaltyContext;
+use GoldeneZeiten\Products\Core\Domain\Enum\AdjustmentType;
+use GoldeneZeiten\Products\Core\Domain\Enum\CreditPointsTransactionType;
+use GoldeneZeiten\Products\Core\Domain\Model\CreditPointsTransaction;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Repository\CreditPointsTransactionRepository;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\CheckoutAdjustment;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\CoreAdjustmentProvider;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\CreditPoints\CreditPointsBalanceService;
+use GoldeneZeiten\Products\Core\Service\CreditPoints\CreditPointsService;
+use GoldeneZeiten\Products\Core\Service\CreditPoints\Exception\InsufficientCreditPointsException;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 /**

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service;
+namespace GoldeneZeiten\Products\Core\Service;
 
 use Doctrine\DBAL\ArrayParameterType;
 use Psr\Http\Message\ServerRequestInterface;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Command;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Command;
 
-use GoldeneZeiten\Products\Command\InvoiceRetentionCleanupCommand;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Command\InvoiceRetentionCleanupCommand;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -24,7 +24,7 @@ final class InvoiceRetentionCleanupCommandTest extends AbstractFunctionalTestCas
     ];
 
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     #[Test]

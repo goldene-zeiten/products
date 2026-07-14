@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\ViewHelpers\Format;
+namespace GoldeneZeiten\Products\Core\ViewHelpers\Format;
 
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;

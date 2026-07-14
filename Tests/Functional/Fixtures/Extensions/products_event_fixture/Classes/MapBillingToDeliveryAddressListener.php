@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\EventFixture;
 
-use GoldeneZeiten\Products\Domain\Model\OrderAddress;
-use GoldeneZeiten\Products\Event\MapBillingToDeliveryAddressEvent;
+use GoldeneZeiten\Products\Core\Domain\Model\OrderAddress;
+use GoldeneZeiten\Products\Core\Event\MapBillingToDeliveryAddressEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
 #[AsEventListener]

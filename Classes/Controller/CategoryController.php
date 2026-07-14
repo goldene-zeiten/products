@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Controller;
+namespace GoldeneZeiten\Products\Core\Controller;
 
-use GoldeneZeiten\Products\Controller\Exception\CategoryPathMismatchException;
-use GoldeneZeiten\Products\Domain\Model\Category;
-use GoldeneZeiten\Products\Domain\Repository\CategoryRepository;
-use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Service\Category\CategoryTreeService;
-use GoldeneZeiten\Products\Service\ContentElement\SelectedCategoriesResolver;
+use GoldeneZeiten\Products\Core\Controller\Exception\CategoryPathMismatchException;
+use GoldeneZeiten\Products\Core\Domain\Model\Category;
+use GoldeneZeiten\Products\Core\Domain\Repository\CategoryRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Service\Category\CategoryTreeService;
+use GoldeneZeiten\Products\Core\Service\ContentElement\SelectedCategoriesResolver;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 

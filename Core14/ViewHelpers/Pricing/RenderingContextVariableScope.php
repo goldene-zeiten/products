@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core14\ViewHelpers\Pricing;
+namespace GoldeneZeiten\Products\Core\Core14\ViewHelpers\Pricing;
 
-use GoldeneZeiten\Products\ViewHelpers\Pricing\RenderingContextVariableScopeInterface;
+use GoldeneZeiten\Products\Core\ViewHelpers\Pricing\RenderingContextVariableScopeInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 

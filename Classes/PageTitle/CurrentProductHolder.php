@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\PageTitle;
+namespace GoldeneZeiten\Products\Core\PageTitle;
 
-use GoldeneZeiten\Products\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
 
 /**
  * Bridges the product controller to {@see ProductPageTitleProvider} via DI's per-request

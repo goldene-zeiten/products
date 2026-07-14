@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Backend;
+namespace GoldeneZeiten\Products\Core\Backend;
 
 use Doctrine\DBAL\ParameterType;
-use GoldeneZeiten\Products\Backend\Exception\ProductArchiveFailedException;
+use GoldeneZeiten\Products\Core\Backend\Exception\ProductArchiveFailedException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Backend;
+namespace GoldeneZeiten\Products\Core\Backend;
 
 /**
  * Filter criteria for `OrderManagementRepository::fetchFiltered()`.

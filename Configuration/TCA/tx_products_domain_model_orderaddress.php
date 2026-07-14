@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress',
+        'title' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress',
         'label' => 'last_name',
         'label_alt' => 'first_name, city',
         'label_alt_force' => true,
@@ -12,7 +12,7 @@ return [
         'crdate' => 'crdate',
         'delete' => 'deleted',
         'enablecolumns' => [],
-        'iconfile' => 'EXT:products/Resources/Public/Icons/Extension.svg',
+        'iconfile' => 'EXT:products_core/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
         '1' => ['showitem' => 'address_type, company, --palette--;;name, --palette--;;address, country, --palette--;;contact'],
@@ -30,7 +30,7 @@ return [
     ],
     'columns' => [
         'address_type' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.address_type',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.address_type',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -38,7 +38,7 @@ return [
             ],
         ],
         'company' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.company',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.company',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -46,7 +46,7 @@ return [
             ],
         ],
         'salutation' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.salutation',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.salutation',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -54,7 +54,7 @@ return [
             ],
         ],
         'first_name' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.first_name',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.first_name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -62,7 +62,7 @@ return [
             ],
         ],
         'last_name' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.last_name',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.last_name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -70,7 +70,7 @@ return [
             ],
         ],
         'street' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.street',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.street',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -78,7 +78,7 @@ return [
             ],
         ],
         'house_number' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.house_number',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.house_number',
             'config' => [
                 'type' => 'input',
                 'size' => 10,
@@ -86,7 +86,7 @@ return [
             ],
         ],
         'zip' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.zip',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.zip',
             'config' => [
                 'type' => 'input',
                 'size' => 10,
@@ -94,7 +94,7 @@ return [
             ],
         ],
         'city' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.city',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.city',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -102,7 +102,7 @@ return [
             ],
         ],
         'country' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.country',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.country',
             'config' => [
                 'type' => 'input',
                 'size' => 10,
@@ -110,7 +110,7 @@ return [
             ],
         ],
         'telephone' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.telephone',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.telephone',
             'config' => [
                 'type' => 'input',
                 'size' => 20,
@@ -118,7 +118,7 @@ return [
             ],
         ],
         'vat_id' => [
-            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.vat_id',
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderaddress.vat_id',
             'config' => [
                 'type' => 'input',
                 'size' => 20,

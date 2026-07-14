@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Cache;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Cache;
 
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Frontend\Cache\CacheLifetimeCalculator;
 
@@ -15,7 +15,7 @@ use TYPO3\CMS\Frontend\Cache\CacheLifetimeCalculator;
 final class PricePeriodCacheLifetimeTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     #[Test]

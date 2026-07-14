@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\EventFixture;
 
-use GoldeneZeiten\Products\Domain\Dto\BasketItem;
-use GoldeneZeiten\Products\Event\BasketUpdatedEvent;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketItem;
+use GoldeneZeiten\Products\Core\Event\BasketUpdatedEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
 #[AsEventListener]

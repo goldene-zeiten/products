@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Service\Category;
+namespace GoldeneZeiten\Products\Core\Service\Category;
 
-use GoldeneZeiten\Products\Domain\Dto\Category\CategoryTreeNode;
-use GoldeneZeiten\Products\Domain\Model\Category;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\Repository\CategoryRepository;
-use GoldeneZeiten\Products\Event\ModifyCategoryTreeEvent;
+use GoldeneZeiten\Products\Core\Domain\Dto\Category\CategoryTreeNode;
+use GoldeneZeiten\Products\Core\Domain\Model\Category;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Repository\CategoryRepository;
+use GoldeneZeiten\Products\Core\Event\ModifyCategoryTreeEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class CategoryTreeService

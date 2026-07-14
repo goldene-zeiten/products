@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Domain\Repository;
+namespace GoldeneZeiten\Products\Core\Domain\Repository;
 
-use GoldeneZeiten\Products\Domain\Model\TaxClass;
-use GoldeneZeiten\Products\Domain\Model\TaxRate;
+use GoldeneZeiten\Products\Core\Domain\Model\TaxClass;
+use GoldeneZeiten\Products\Core\Domain\Model\TaxRate;
 
 /**
  * @extends AbstractReadOnlyRepository<TaxRate>

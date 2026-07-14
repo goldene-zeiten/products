@@ -10,55 +10,55 @@
 // populates currentContentObject) include this file instead.
 //
 // lib.contentElement itself comes from typo3/cms-fluid-styled-content's own
-// constants/setup (see the "goldene-zeiten/products" testExtensionsToLoad + the
+// constants/setup (see the "goldene-zeiten/products-core" testExtensionsToLoad + the
 // constants/setup file list of any test using this fixture) - not redefined here.
 
-tt_content.products_productlist =< lib.contentElement
-tt_content.products_productlist {
+tt_content.productscore_productlist =< lib.contentElement
+tt_content.productscore_productlist {
     templateName = Generic
     20 = EXTBASEPLUGIN
     20 {
-        extensionName = Products
+        extensionName = ProductsCore
         pluginName = ProductList
     }
 }
 
-tt_content.products_categorylist =< lib.contentElement
-tt_content.products_categorylist {
+tt_content.productscore_categorylist =< lib.contentElement
+tt_content.productscore_categorylist {
     templateName = Generic
     20 = EXTBASEPLUGIN
     20 {
-        extensionName = Products
+        extensionName = ProductsCore
         pluginName = CategoryList
     }
 }
 
-tt_content.products_recentlyviewed =< lib.contentElement
-tt_content.products_recentlyviewed {
+tt_content.productscore_recentlyviewed =< lib.contentElement
+tt_content.productscore_recentlyviewed {
     templateName = Generic
     20 = EXTBASEPLUGIN
     20 {
-        extensionName = Products
+        extensionName = ProductsCore
         pluginName = RecentlyViewed
     }
 }
 
-tt_content.products_search =< lib.contentElement
-tt_content.products_search {
+tt_content.productscore_search =< lib.contentElement
+tt_content.productscore_search {
     templateName = Generic
     20 = EXTBASEPLUGIN
     20 {
-        extensionName = Products
+        extensionName = ProductsCore
         pluginName = Search
     }
 }
 
-tt_content.products_download =< lib.contentElement
-tt_content.products_download {
+tt_content.productscore_download =< lib.contentElement
+tt_content.productscore_download {
     templateName = Generic
     20 = EXTBASEPLUGIN
     20 {
-        extensionName = Products
+        extensionName = ProductsCore
         pluginName = Download
     }
 }

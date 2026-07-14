@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Unit\Updates;
+namespace GoldeneZeiten\Products\Core\Tests\Unit\Updates;
 
-use GoldeneZeiten\Products\Updates\LegacyOverlayDeduplicator;
+use GoldeneZeiten\Products\Core\Updates\LegacyOverlayDeduplicator;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 

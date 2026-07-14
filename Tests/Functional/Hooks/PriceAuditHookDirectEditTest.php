@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Hooks;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Hooks;
 
-use GoldeneZeiten\Products\Hooks\PriceAuditHook;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Hooks\PriceAuditHook;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -22,7 +22,7 @@ final class PriceAuditHookDirectEditTest extends AbstractFunctionalTestCase
     private const TABLE_PRICEHISTORYENTRY = 'tx_products_domain_model_pricehistoryentry';
 
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

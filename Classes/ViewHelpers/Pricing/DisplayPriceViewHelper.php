@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\ViewHelpers\Pricing;
+namespace GoldeneZeiten\Products\Core\ViewHelpers\Pricing;
 
-use GoldeneZeiten\Products\Domain\Model\Article;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Pricing\PriceProviderInterface;
-use GoldeneZeiten\Products\ViewHelpers\Format\RenderingContextRequestResolverInterface;
+use GoldeneZeiten\Products\Core\Domain\Model\Article;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Pricing\PriceProviderInterface;
+use GoldeneZeiten\Products\Core\ViewHelpers\Format\RenderingContextRequestResolverInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Resolves the same period/tier/category-discount-adjusted unit price
- * {@see \GoldeneZeiten\Products\Service\Basket\BasketService} charges at checkout, so product
+ * {@see \GoldeneZeiten\Products\Core\Service\Basket\BasketService} charges at checkout, so product
  * listing/detail pages show the price a shopper will actually pay rather than the raw stored
  * base price.
  */

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Shipping;
+namespace GoldeneZeiten\Products\Core\Shipping;
 
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingContext;
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingOption;
-use GoldeneZeiten\Products\Domain\Model\ShippingMethod;
-use GoldeneZeiten\Products\Domain\Repository\ShippingMethodRepository;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
+use GoldeneZeiten\Products\Core\Domain\Model\ShippingMethod;
+use GoldeneZeiten\Products\Core\Domain\Repository\ShippingMethodRepository;
 
 /**
  * The carrier every shop has without installing anything: the shipping methods maintained as records in

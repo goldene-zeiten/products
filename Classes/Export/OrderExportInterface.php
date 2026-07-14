@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Export;
+namespace GoldeneZeiten\Products\Core\Export;
 
-use GoldeneZeiten\Products\Domain\Dto\Export\ExportContext;
-use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 /**

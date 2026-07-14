@@ -71,7 +71,7 @@ The extension registers ten content element plugins:
 Payment
 =======
 
-Payment methods are registered against :php:`GoldeneZeiten\Products\Payment\PaymentMethodRegistry`
+Payment methods are registered against :php:`GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry`
 by implementing :php:`PaymentMethodInterface` and tagging the service, so third-party extensions can
 add further payment methods without modifying this extension. Only invoice payment
 (:php:`InvoicePaymentMethod`) ships out of the box.
@@ -80,7 +80,7 @@ Pricing
 =======
 
 The unit price for a basket line is resolved by a small decorator chain behind
-:php:`GoldeneZeiten\Products\Pricing\PriceProviderInterface`:
+:php:`GoldeneZeiten\Products\Core\Pricing\PriceProviderInterface`:
 :php:`ProductPriceProvider` (the base article/product price) is wrapped by
 :php:`GraduatedPriceProvider` (quantity-based tiers), which is in turn wrapped by
 :php:`CategoryDiscountPriceProvider` — the actual DI alias for :php:`PriceProviderInterface`. That
@@ -94,7 +94,7 @@ needing a genuinely different pricing strategy overrides that alias.
 Invoice rendering
 =================
 
-:php:`GoldeneZeiten\Products\Service\Invoice\InvoicePdfService` dispatches a
+:php:`GoldeneZeiten\Products\Core\Service\Invoice\InvoicePdfService` dispatches a
 :php:`BeforeInvoiceRenderedEvent` (order + rendered HTML) before converting that HTML to a PDF
 with dompdf. A listener calling :php:`$event->setReplacementPdf()` replaces the document entirely —
 a different PDF engine, or a wholly custom layout — without reimplementing
@@ -107,7 +107,7 @@ Order export
 
 Third-party extensions can offer shop operators an export format (CSV, a specific ERP's import
 format, a marketplace feed, ...) by implementing
-:php:`GoldeneZeiten\Products\Export\OrderExportInterface` and tagging the service - the same
+:php:`GoldeneZeiten\Products\Core\Export\OrderExportInterface` and tagging the service - the same
 tagged-service pattern payment methods use. :php:`OrderExportRegistry` collects every registered
 exporter; this extension ships no exporter of its own, since the format an operator actually
 needs depends entirely on what they integrate with.

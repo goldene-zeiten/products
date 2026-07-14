@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional;
+namespace GoldeneZeiten\Products\Core\Tests\Functional;
 
 use TYPO3\CMS\Core\Cache\Backend\TransientMemoryBackend;
 use TYPO3\CMS\Core\Utility\GeneralUtility;

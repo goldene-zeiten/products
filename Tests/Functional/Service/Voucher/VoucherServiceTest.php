@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service\Voucher;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Voucher;
 
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherNotApplicableException;
-use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherNotFoundException;
-use GoldeneZeiten\Products\Service\Voucher\VoucherService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\Voucher\Exception\VoucherNotApplicableException;
+use GoldeneZeiten\Products\Core\Service\Voucher\Exception\VoucherNotFoundException;
+use GoldeneZeiten\Products\Core\Service\Voucher\VoucherService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class VoucherServiceTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Event;
+namespace GoldeneZeiten\Products\Core\Event;
 
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingContext;
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingOption;
-use GoldeneZeiten\Products\Shipping\ShippingProviderInterface;
-use GoldeneZeiten\Products\Shipping\ShippingProviderRegistry;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
+use GoldeneZeiten\Products\Core\Shipping\ShippingProviderInterface;
+use GoldeneZeiten\Products\Core\Shipping\ShippingProviderRegistry;
 
 /**
  * Lets integrators reorder or hide the shipping options the checkout is about to offer - promote a

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Unit\Domain\Model;
+namespace GoldeneZeiten\Products\Core\Tests\Unit\Domain\Model;
 
-use GoldeneZeiten\Products\Domain\Model\ShippingMethod;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Domain\Model\ShippingMethod;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 

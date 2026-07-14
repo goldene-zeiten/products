@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Service\CreditPoints;
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\CreditPoints;
 
-use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsBalanceService;
-use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Core\Service\CreditPoints\CreditPointsBalanceService;
+use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -14,7 +14,7 @@ use PHPUnit\Framework\Attributes\Test;
 final class ConcurrentCreditPointsSpendRaceTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products',
+        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

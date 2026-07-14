@@ -7,17 +7,17 @@
 
     <f:if condition="{selectedCategory}">
         <f:then>
-            <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:labels.category" />: {selectedCategory.title}</h2>
+            <h2><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:labels.category" />: {selectedCategory.title}</h2>
         </f:then>
     </f:if>
     <f:if condition="{selectedProduct}">
         <f:then>
-            <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:labels.product" />: {selectedProduct.title}</h2>
+            <h2><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:labels.product" />: {selectedProduct.title}</h2>
         </f:then>
     </f:if>
     <f:if condition="{selectedArticle}">
         <f:then>
-            <h2><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:labels.article" />: {selectedArticle.title}</h2>
+            <h2><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:labels.article" />: {selectedArticle.title}</h2>
         </f:then>
     </f:if>
 
@@ -46,7 +46,7 @@
                         <thead>
                             <tr>
                                 <th>{itemsLabel}</th>
-                                <th><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:column.item_number" /></th>
+                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:column.item_number" /></th>
                                 <f:for each="{extraColumns}" as="columnLabel">
                                     <th>{columnLabel}</th>
                                 </f:for>
@@ -88,7 +88,7 @@
                     </table>
                 </f:then>
                 <f:else>
-                    <p><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:message.no_records" /></p>
+                    <p><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:message.no_records" /></p>
                 </f:else>
             </f:if>
         </f:else>

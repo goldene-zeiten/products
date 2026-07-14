@@ -6,7 +6,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 $columns = [
     'tx_products_category_mounts' => [
-        'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:be_users.tx_products_category_mounts',
+        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:be_users.tx_products_category_mounts',
         'config' => [
             'type' => 'select',
             'renderType' => 'selectTree',

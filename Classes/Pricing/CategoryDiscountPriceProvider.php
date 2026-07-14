@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Pricing;
+namespace GoldeneZeiten\Products\Core\Pricing;
 
-use GoldeneZeiten\Products\Domain\Model\Article;
-use GoldeneZeiten\Products\Domain\Model\Product;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Domain\Model\Article;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -37,7 +37,7 @@ final class CategoryDiscountPriceProvider implements PriceProviderInterface
             $this->configurationManager->setRequest($request);
             $settings = $this->configurationManager->getConfiguration(
                 ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-                'Products'
+                'ProductsCore'
             );
             $mode = (string)($settings['pricing']['discountFieldMode'] ?? 'maxAcrossTree');
         } else {

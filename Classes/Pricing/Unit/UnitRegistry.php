@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Pricing\Unit;
+namespace GoldeneZeiten\Products\Core\Pricing\Unit;
 
 final class UnitRegistry
 {

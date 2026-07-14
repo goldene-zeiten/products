@@ -2,32 +2,32 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Controller;
+namespace GoldeneZeiten\Products\Core\Controller;
 
-use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
-use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
-use GoldeneZeiten\Products\Domain\Dto\Loyalty\LoyaltyContext;
-use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingContext;
-use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingOption;
-use GoldeneZeiten\Products\Loyalty\LoyaltyRegistry;
-use GoldeneZeiten\Products\Payment\Exception\PaymentCallbackException;
-use GoldeneZeiten\Products\Payment\Exception\PaymentMethodNotFoundException;
-use GoldeneZeiten\Products\Payment\PaymentCallbackService;
-use GoldeneZeiten\Products\Payment\PaymentContextFactory;
-use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
-use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
-use GoldeneZeiten\Products\Service\Checkout\CheckoutService;
-use GoldeneZeiten\Products\Service\Checkout\PriceQuoteService;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
-use GoldeneZeiten\Products\Service\Invoice\InvoiceTokenService;
-use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementExceptionInterface;
-use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
-use GoldeneZeiten\Products\Service\Order\OrderTokenService;
-use GoldeneZeiten\Products\Service\Withdrawal\WithdrawalTokenService;
-use GoldeneZeiten\Products\Shipping\ShippingContextFactory;
-use GoldeneZeiten\Products\Shipping\ShippingQuoteService;
+use GoldeneZeiten\Products\Core\Configuration\ProductsConfigurationFactory;
+use GoldeneZeiten\Products\Core\Domain\Dto\Address;
+use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutChoices;
+use GoldeneZeiten\Products\Core\Domain\Dto\Loyalty\LoyaltyContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
+use GoldeneZeiten\Products\Core\Loyalty\LoyaltyRegistry;
+use GoldeneZeiten\Products\Core\Payment\Exception\PaymentCallbackException;
+use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException;
+use GoldeneZeiten\Products\Core\Payment\PaymentCallbackService;
+use GoldeneZeiten\Products\Core\Payment\PaymentContextFactory;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
+use GoldeneZeiten\Products\Core\Service\Checkout\CheckoutService;
+use GoldeneZeiten\Products\Core\Service\Checkout\PriceQuoteService;
+use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceTokenService;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\OrderPlacementExceptionInterface;
+use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementService;
+use GoldeneZeiten\Products\Core\Service\Order\OrderTokenService;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalTokenService;
+use GoldeneZeiten\Products\Core\Shipping\ShippingContextFactory;
+use GoldeneZeiten\Products\Core\Shipping\ShippingQuoteService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
@@ -142,7 +142,7 @@ final class CheckoutController extends ActionController
 
     private function translate(string $key): string
     {
-        return (string)LocalizationUtility::translate($key, 'Products');
+        return (string)LocalizationUtility::translate($key, 'ProductsCore');
     }
 
     public function paymentAction(): ResponseInterface

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\ViewHelpers\Pricing;
+namespace GoldeneZeiten\Products\Core\ViewHelpers\Pricing;
 
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Service\PriceHistory\PriceHistoryLookbackService;
-use GoldeneZeiten\Products\ViewHelpers\Format\RenderingContextRequestResolverInterface;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Service\PriceHistory\PriceHistoryLookbackService;
+use GoldeneZeiten\Products\Core\ViewHelpers\Format\RenderingContextRequestResolverInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
