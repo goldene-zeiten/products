@@ -13,7 +13,7 @@ use GoldeneZeiten\Products\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
-use GoldeneZeiten\Products\Service\Order\OrderCreationService;
+use GoldeneZeiten\Products\Service\Order\OrderPlacementTransaction;
 use GoldeneZeiten\Products\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\TransactionFixture\AbortPlacementListener;
 use GoldeneZeiten\Products\TransactionFixture\PlacementAbortedException;
@@ -28,10 +28,14 @@ use TYPO3\CMS\Core\Http\ServerRequest;
  * Order placement writes the order, decrements stock and burns vouchers. These writes must be atomic: a
  * failure part-way through may not leave a burned voucher behind for an order that does not exist.
  *
- * The fixture listener aborts the placement from inside the transaction, after every one of those writes
- * has already happened - so what these tests assert is that they are undone, not that they never ran.
+ * {@see OrderPlacementTransaction::run()} is the only production entry point into order creation and the
+ * one that owns the transaction, so it - not the creation service beneath it - is what has to be proven
+ * to roll back.
+ *
+ * The fixture listener aborts the placement from inside that transaction, after every one of those writes
+ * has already happened, so what these tests assert is that they are undone, not that they never ran.
  */
-final class OrderCreationServiceTransactionTest extends AbstractFunctionalTestCase
+final class OrderPlacementTransactionRollbackTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products',
@@ -86,10 +90,10 @@ final class OrderCreationServiceTransactionTest extends AbstractFunctionalTestCa
 
     private function placeAndExpectAbort(): void
     {
-        $subject = $this->get(OrderCreationService::class);
+        $subject = $this->get(OrderPlacementTransaction::class);
 
         try {
-            $subject->create(
+            $subject->run(
                 $this->request(),
                 $this->basketViewModel($this->product()),
                 new CheckoutSelections(['SAVE10'], 0),

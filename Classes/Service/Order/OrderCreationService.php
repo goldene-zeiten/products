@@ -32,6 +32,7 @@ use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Event\AfterOrderPlacedEvent;
 use GoldeneZeiten\Products\Event\LowStockThresholdReachedEvent;
 use GoldeneZeiten\Products\Event\VoucherRedeemedEvent;
+use GoldeneZeiten\Products\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsBalanceService;
 use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
@@ -44,16 +45,14 @@ use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherExceptionInterface;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 final class OrderCreationService
 {
     private const DEFAULT_LOW_STOCK_THRESHOLD = 5;
-    private const ORDER_TABLE = 'tx_products_domain_model_order';
 
     public function __construct(
-        private readonly ConnectionPool $connectionPool,
+        private readonly PaymentContextFactory $paymentContextFactory,
         private readonly StockService $stockService,
         private readonly OrderRepository $orderRepository,
         private readonly OrderFactory $orderFactory,
@@ -73,9 +72,10 @@ final class OrderCreationService
     ) {}
 
     /**
-     * Order placement is atomic: stock decrements, voucher redemptions and credit-point bookings either
-     * all land with the order or none of them do. Without the transaction a failure between them would
-     * burn a voucher for an order that never came into existence.
+     * Stock decrements, voucher redemptions and credit-point bookings must not survive a failed
+     * placement. They are made atomic by the transaction {@see OrderPlacementTransaction::run()} opens
+     * around this service and the payment initiation that follows it - this service deliberately opens
+     * none of its own, so that payment failures roll back the bookings too.
      */
     public function create(
         ServerRequestInterface $request,
@@ -84,29 +84,7 @@ final class OrderCreationService
         Address $address,
         PaymentMethodInterface $paymentMethod
     ): Order {
-        $connection = $this->connectionPool->getConnectionForTable(self::ORDER_TABLE);
-        $connection->beginTransaction();
-        try {
-            $order = $this->persistOrder($request, $basketViewModel, $checkoutSelections, $address, $paymentMethod);
-            $connection->commit();
-        } catch (\Throwable $exception) {
-            $connection->rollBack();
-            throw $exception;
-        }
-
-        $this->eventDispatcher->dispatch(new AfterOrderPlacedEvent($order, $request));
-
-        return $order;
-    }
-
-    private function persistOrder(
-        ServerRequestInterface $request,
-        BasketViewModel $basketViewModel,
-        CheckoutSelections $checkoutSelections,
-        Address $address,
-        PaymentMethodInterface $paymentMethod
-    ): Order {
-        $context = $this->resolvePlacementContext($request, $basketViewModel, $checkoutSelections, $address);
+        $context = $this->resolvePlacementContext($request, $basketViewModel, $checkoutSelections, $address, $paymentMethod);
         $this->decrementStock($basketViewModel, $request);
 
         $order = $this->orderFactory->create($request, $basketViewModel, $address, $paymentMethod->getIdentifier(), $context->getDetails());
@@ -118,6 +96,7 @@ final class OrderCreationService
 
         $this->redeemVouchers($context->getVoucherSummary(), $order, $context->getFrontendUser(), $basketViewModel->getTotalGross());
         $this->recordCreditPoints($basketViewModel, $context->getPointsRedemption(), $order, $context->getFrontendUser(), $context->getCreditPointsConfiguration());
+        $this->eventDispatcher->dispatch(new AfterOrderPlacedEvent($order, $request));
 
         return $order;
     }
@@ -126,7 +105,8 @@ final class OrderCreationService
         ServerRequestInterface $request,
         BasketViewModel $basketViewModel,
         CheckoutSelections $checkoutSelections,
-        Address $address
+        Address $address,
+        PaymentMethodInterface $paymentMethod
     ): PlacementContext {
         $configuration = $this->configurationFactory->create($request);
         $creditPointsConfiguration = $this->creditPointsConfigurationFactory->create($request);
@@ -142,8 +122,9 @@ final class OrderCreationService
         $shippingSelection = $this->shippingCostService->resolveSelection($configuration, $shippingCriteria, $request);
         $handlingFeeCost = $this->handlingFeeService->resolveCost($configuration, $basketViewModel, $address->getCountry(), $request);
 
+        $adjustments = $this->buildAdjustments($basketViewModel, $voucherSummary, $pointsRedemption, $shippingSelection, $handlingFeeCost);
         $details = new PlacementDetails(
-            $this->buildAdjustments($basketViewModel, $voucherSummary, $pointsRedemption, $shippingSelection, $handlingFeeCost),
+            $this->withPaymentFee($adjustments, $paymentMethod, $basketViewModel, $address, $frontendUser),
             $this->voucherCodes($voucherSummary),
             $shippingSelection->getShippingMethodUid(),
             $checkoutSelections->getDeliveryAddress(),
@@ -151,6 +132,31 @@ final class OrderCreationService
         );
 
         return new PlacementContext($details, $voucherSummary, $pointsRedemption, $creditPointsConfiguration, $frontendUser);
+    }
+
+    /**
+     * A payment method may charge a surcharge for paying that way. It is the last adjustment, so the fee
+     * applies to the total the customer actually owes after discounts.
+     */
+    private function withPaymentFee(
+        AdjustmentCollection $adjustments,
+        PaymentMethodInterface $paymentMethod,
+        BasketViewModel $basketViewModel,
+        Address $address,
+        int $frontendUser
+    ): AdjustmentCollection {
+        $paymentContext = $this->paymentContextFactory->createFromBasket($basketViewModel, $address, $frontendUser);
+        $fee = $paymentMethod->calculateFee($paymentContext);
+        if ($fee === 0) {
+            return $adjustments;
+        }
+
+        return $adjustments->with(new CheckoutAdjustment(
+            AdjustmentType::PAYMENT_FEE,
+            'core.payment.' . $paymentMethod->getIdentifier(),
+            $paymentMethod->getLabel(),
+            Money::fromCents($fee)
+        ));
     }
 
     /**

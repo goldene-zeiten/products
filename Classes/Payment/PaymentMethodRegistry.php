@@ -31,6 +31,8 @@ final class PaymentMethodRegistry
     }
 
     /**
+     * Discovery phase: the methods that may be offered for this context, highest priority first.
+     *
      * @return array<PaymentMethodInterface>
      */
     public function getAvailable(PaymentContext $context): array
@@ -39,6 +41,11 @@ final class PaymentMethodRegistry
             $this->paymentMethods,
             static fn(PaymentMethodInterface $method): bool => $method->isAvailable($context)
         ));
+
+        usort(
+            $available,
+            static fn(PaymentMethodInterface $a, PaymentMethodInterface $b): int => $b->getPriority() <=> $a->getPriority()
+        );
 
         $event = new PaymentMethodsCollectedEvent($context, $available);
         $this->eventDispatcher->dispatch($event);

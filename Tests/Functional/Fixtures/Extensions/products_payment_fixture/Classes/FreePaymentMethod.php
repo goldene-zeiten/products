@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Tests\Functional\Fixtures;
+namespace GoldeneZeiten\Products\PaymentFixture;
 
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
@@ -11,32 +11,18 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 
 /**
- * Test double for {@see PaymentMethodInterface} returning a caller-chosen {@see PaymentResult}.
+ * Fixture payment method with zero fee, proving tagged_iterator wiring.
  */
-final class FixturePaymentMethod implements PaymentMethodInterface
+final class FreePaymentMethod implements PaymentMethodInterface
 {
-    public function __construct(
-        private readonly PaymentResult $result
-    ) {}
-
-    public static function pending(string $externalId = 'FIXTURE-PENDING'): self
-    {
-        return new self(PaymentResult::pending($externalId));
-    }
-
-    public static function completed(string $externalId = 'FIXTURE-COMPLETED'): self
-    {
-        return new self(PaymentResult::completed(PaymentStatus::PENDING, $externalId));
-    }
-
     public function getIdentifier(): string
     {
-        return 'fixture';
+        return 'fixture-free';
     }
 
     public function getLabel(): string
     {
-        return 'Fixture Payment Method';
+        return 'Free Fixture Payment';
     }
 
     public function isAvailable(PaymentContext $context): bool
@@ -56,6 +42,6 @@ final class FixturePaymentMethod implements PaymentMethodInterface
 
     public function initiate(Order $order, PaymentContext $context): PaymentResult
     {
-        return $this->result;
+        return PaymentResult::completed(PaymentStatus::PENDING, 'FIXTURE-FREE');
     }
 }

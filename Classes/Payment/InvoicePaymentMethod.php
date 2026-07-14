@@ -49,6 +49,14 @@ final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePa
         return (bool)($invoiceSettings['enabled'] ?? true);
     }
 
+    /**
+     * The default method every shop falls back to, so it sorts below anything an integrator registers.
+     */
+    public function getPriority(): int
+    {
+        return 0;
+    }
+
     public function calculateFee(PaymentContext $context): int
     {
         return 0;
