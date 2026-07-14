@@ -13,6 +13,9 @@ use GoldeneZeiten\Products\Tests\Functional\Fixtures\FixturePaymentMethod;
 use GoldeneZeiten\Products\Tests\Functional\Fixtures\InvoiceNumberMutatingPaymentMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
+use TYPO3\CMS\Core\Http\ServerRequest;
 
 /**
  * Regression: resubmitted initiate() calls should reuse still-open transactions.
@@ -38,9 +41,10 @@ final class PaymentInitiationServiceTest extends AbstractFunctionalTestCase
     {
         $subject = $this->get(PaymentInitiationService::class);
         $order = $this->fetchOrder();
+        $request = $this->request();
 
         foreach ($paymentMethods as $paymentMethod) {
-            $subject->initiate($order, $paymentMethod);
+            $subject->initiate($order, $paymentMethod, $request);
         }
 
         $this->assertCSVDataSet($resultFixturePath);
@@ -73,8 +77,9 @@ final class PaymentInitiationServiceTest extends AbstractFunctionalTestCase
     {
         $subject = $this->get(PaymentInitiationService::class);
         $order = $this->fetchOrder();
+        $request = $this->request();
 
-        $subject->initiate($order, new InvoiceNumberMutatingPaymentMethod());
+        $subject->initiate($order, new InvoiceNumberMutatingPaymentMethod(), $request);
 
         $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/payment_initiation_mutated_invoice_number.csv');
     }
@@ -84,5 +89,11 @@ final class PaymentInitiationServiceTest extends AbstractFunctionalTestCase
         $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
         $this->assertInstanceOf(Order::class, $order);
         return $order;
+    }
+
+    private function request(): ServerRequestInterface
+    {
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 }

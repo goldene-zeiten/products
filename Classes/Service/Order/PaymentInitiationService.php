@@ -13,6 +13,7 @@ use GoldeneZeiten\Products\Domain\Repository\PaymentTransactionRepository;
 use GoldeneZeiten\Products\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Service\Order\Exception\PaymentFailedException;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 final class PaymentInitiationService
@@ -24,9 +25,9 @@ final class PaymentInitiationService
         private readonly PersistenceManagerInterface $persistenceManager
     ) {}
 
-    public function initiate(Order $order, PaymentMethodInterface $paymentMethod): PaymentResult
+    public function initiate(Order $order, PaymentMethodInterface $paymentMethod, ServerRequestInterface $request): PaymentResult
     {
-        $paymentContext = $this->paymentContextFactory->createFromOrder($order);
+        $paymentContext = $this->paymentContextFactory->createFromOrder($order, $request);
         $paymentResult = $paymentMethod->initiate($order, $paymentContext);
         // Explicit update() needed—Extbase won't auto-flush fetched+mutated entities.
         $this->orderRepository->update($order);
