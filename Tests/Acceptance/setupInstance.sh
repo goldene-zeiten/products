@@ -5,13 +5,11 @@
 # INSIDE a container (see Build/Scripts/runTests.sh's "acceptance" suite) - never on the host,
 # same rule as every other composer/php invocation in this repository.
 #
-# IMPORTANT: Tests/Acceptance/Instance/vendor/goldene-zeiten/products is a symlink back to this
-# repository root (composer path-repo). If left on disk while running -s functional/cgl/phpstan/
-# lintPhp, TYPO3's own recursive directory scans (autoload generation, extension copying) walk
-# straight into that symlink and loop infinitely. Always `rm -rf Tests/Acceptance/Instance/`
-# (or `Build/Scripts/runTests.sh -s cleanTests`) before running any other suite - this script
-# already does that at the top of every run, but manual poking around after a debugging session
-# must clean up the same way.
+# The instance's vendor/goldene-zeiten/products is a symlink back to this repository root (composer
+# path-repo), so anything that scans it recursively walks into itself forever. It therefore lives
+# beside the functional tests' own throwaway instances, under .Build/Web/typo3temp/var/tests/: nothing
+# analyses that directory - cgl and phpstan look at Classes, Configuration, Core* and Tests - so a
+# leftover instance cannot poison another suite, and one clean rule already removes them all.
 #
 # Usage: setupInstance.sh <core-version:13|14> <db-driver:sqlite|mysqli> [db-host] [db-name] [db-user] [db-password]
 #
@@ -25,7 +23,7 @@ DB_USER="${5:-}"
 DB_PASSWORD="${6:-}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-INSTANCE_PATH="${ROOT_DIR}/Tests/Acceptance/Instance"
+INSTANCE_PATH="${ROOT_DIR}/.Build/Web/typo3temp/var/tests/acceptance"
 
 rm -rf "${INSTANCE_PATH}"
 mkdir -p "${INSTANCE_PATH}"
