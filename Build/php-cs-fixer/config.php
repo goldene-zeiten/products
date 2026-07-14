@@ -45,6 +45,13 @@ return (new \PhpCsFixer\Config())
     ->setFinder(
         (new PhpCsFixer\Finder())
             ->ignoreVCSIgnored(true)
+            // Composer's generated autoload cache, not source.
+            ->exclude('autoload-tests')
+            // TYPO3 requires these to be plain top-level scripts: they run before
+            // any autoloader and carry no strict_types declaration by design.
+            ->notName('ext_emconf.php')
+            ->notName('ext_localconf.php')
+            ->notName('ext_tables.php')
             ->in([
                 __DIR__ . '/../../packages',
                 __DIR__ . '/../../packages-dev',

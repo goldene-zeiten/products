@@ -1,4 +1,4 @@
-import type { NodeType, SearchMatch, TreeNode } from './TreeTypes';
+import type { NodeType, SearchMatch, TreeNode } from './tree-types.js';
 
 const TABLES: Record<NodeType, string> = {
   category: 'tx_products_domain_model_category',

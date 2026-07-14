@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit';
 import '@typo3/backend/element/icon-element.js';
-import { NEW_CATEGORY_DATA_TRANSFER_TYPE, NEW_PRODUCT_DATA_TRANSFER_TYPE } from './TreeTypes';
+import { NEW_CATEGORY_DATA_TRANSFER_TYPE, NEW_PRODUCT_DATA_TRANSFER_TYPE } from './tree-types.js';
 
 export class ProductsTreeToolbar extends LitElement {
   static properties = {

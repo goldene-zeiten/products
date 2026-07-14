@@ -1,12 +1,14 @@
 {
-    "name": "@goldene-zeiten/products-core",
+    "name": "@goldene-zeiten/products-monorepo",
     "version": "0.1.0",
     "private": true,
     "type": "module",
-    "description": "Products TYPO3 backend module frontend sources",
+    "description": "Build and test toolchain for the products monorepo",
+    "workspaces": [
+        "packages/*/*/Build"
+    ],
     "scripts": {
-        "build": "rollup -c rollup.config.mjs",
-        "build:watch": "rollup -c rollup.config.mjs --watch",
+        "build": "npm run build --workspaces --if-present",
         "lint:js": "eslint .",
         "lint:js:fix": "eslint . --fix",
         "test:acceptance": "playwright test --config=Tests/Acceptance/playwright.config.js"
@@ -14,20 +16,12 @@
     "devDependencies": {
         "@eslint/js": "^10.0.1",
         "@playwright/test": "1.61.1",
-        "@rollup/plugin-commonjs": "^28.0.0",
-        "@rollup/plugin-node-resolve": "^15.0.0",
-        "@rollup/plugin-typescript": "^12.0.0",
         "eslint": "^10.6.0",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.6",
         "globals": "^17.7.0",
-        "lit": "^3.0.0",
         "prettier": "^3.9.4",
-        "rollup": "^4.0.0",
         "typescript": "^5.7.0",
         "typescript-eslint": "^8.63.0"
-    },
-    "dependencies": {
-        "tslib": "^2.8.1"
     }
 }

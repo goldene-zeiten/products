@@ -1,0 +1,50 @@
+name: split packages
+
+# Mirrors every package in this monorepo into its own read-only repository, so
+# Packagist and TER can identify each extension as a package of its own. The
+# monorepo stays the single source of truth: never commit into a split
+# repository, its history is overwritten from here.
+#
+# A tagged release propagates the tag to every split repository, which is what
+# Packagist publishes as a release; pushes to main keep their dev-main branches
+# current in between.
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  split:
+    name: "split ${{ matrix.package }}"
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Add one entry per package. `directory` is the path inside this
+          # monorepo, `repository` the read-only target in the same organisation.
+          - package: products-core
+            directory: packages/goldene-zeiten/products-core
+            repository: products-core
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          # The split needs the full history, not just the tip commit.
+          fetch-depth: 0
+
+      - name: "Split ${{ matrix.directory }} into goldene-zeiten/${{ matrix.repository }}"
+        uses: danharrin/monorepo-split-github-action@v2.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.MONOREPO_SPLIT_TOKEN }}
+        with:
+          package_directory: ${{ matrix.directory }}
+          repository_organization: goldene-zeiten
+          repository_name: ${{ matrix.repository }}
+          user_name: "goldene-zeiten-bot"
+          user_email: "noreply@goldene-zeiten.de"
+          # Only set on tag pushes: this is what Packagist publishes as a release.
+          tag: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}

@@ -4,11 +4,11 @@ import '@typo3/backend/element/icon-element.js';
 import { ModuleStateStorage } from '@typo3/backend/storage/module-state-storage.js';
 import { ModuleUtility } from '@typo3/backend/module.js';
 import ContextMenu from '@typo3/backend/context-menu.js';
-import './TreeToolbar';
-import { CategoryTreeClient, tableForType } from './CategoryTreeClient';
-import { TreeState } from './TreeState';
-import { NEW_CATEGORY_DATA_TRANSFER_TYPE, NEW_PRODUCT_DATA_TRANSFER_TYPE } from './TreeTypes';
-import type { DropPosition, NewNodeType, NodeType, SearchMatch, TreeNode } from './TreeTypes';
+import './tree-toolbar.js';
+import { CategoryTreeClient, tableForType } from './category-tree-client.js';
+import { TreeState } from './tree-state.js';
+import { NEW_CATEGORY_DATA_TRANSFER_TYPE, NEW_PRODUCT_DATA_TRANSFER_TYPE } from './tree-types.js';
+import type { DropPosition, NewNodeType, NodeType, SearchMatch, TreeNode } from './tree-types.js';
 
 const MODULE_TYPE = 'products_management';
 

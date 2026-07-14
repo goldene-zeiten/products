@@ -1,6 +1,14 @@
+/*
+ * This file is part of the TYPO3 CMS extension "products_core".
+ *
+ * It is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License, either version 2 of the License, or any
+ * later version.
+ *
+ * Generated from Build/Sources/TypeScript - do not edit directly.
+ */
 import AjaxDataHandler from '@typo3/backend/ajax-data-handler.js';
 import Notification from '@typo3/backend/notification.js';
-
 const TOGGLE_SELECTOR = '[data-products-visibility-toggle]';
 /**
  * Hide/show toggle for this module's own Fluid-rendered rows and its
@@ -37,7 +45,4 @@ class ProductVisibilityToggle {
         window.location.reload();
     }
 }
-var ProductVisibilityToggle_default = new ProductVisibilityToggle();
-
-export { ProductVisibilityToggle_default as default };
-//# sourceMappingURL=product-visibility-toggle.js.map
+export default new ProductVisibilityToggle();

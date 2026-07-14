@@ -1,192 +1,21 @@
+/*
+ * This file is part of the TYPO3 CMS extension "products_core".
+ *
+ * It is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License, either version 2 of the License, or any
+ * later version.
+ *
+ * Generated from Build/Sources/TypeScript - do not edit directly.
+ */
 import { LitElement, html, nothing } from 'lit';
 import '@typo3/backend/element/icon-element.js';
 import { ModuleStateStorage } from '@typo3/backend/storage/module-state-storage.js';
 import { ModuleUtility } from '@typo3/backend/module.js';
 import ContextMenu from '@typo3/backend/context-menu.js';
-
-/**
- * Custom dataTransfer types identifying a drag originating from one of the
- * toolbar's "new node" drag handles, mirroring PageTree's own newTreenode
- * pattern (see @typo3/backend/enum/data-transfer-types.js) so drop handlers
- * can tell "create a new node here" apart from "move this existing node here".
- */
-const NEW_CATEGORY_DATA_TRANSFER_TYPE = 'application/x-goldene-zeiten-new-category';
-const NEW_PRODUCT_DATA_TRANSFER_TYPE = 'application/x-goldene-zeiten-new-product';
-
-class ProductsTreeToolbar extends LitElement {
-    constructor() {
-        super();
-        this.searchLabel = 'Search...';
-        this.newCategoryLabel = 'New category';
-        this.newProductLabel = 'New product';
-    }
-    createRenderRoot() {
-        return this;
-    }
-    onInput(event) {
-        const query = event.target.value;
-        this.dispatchEvent(new CustomEvent('tree-search', { detail: query, bubbles: true, composed: true }));
-    }
-    onDragStart(event, dataTransferType) {
-        event.dataTransfer?.setData(dataTransferType, '1');
-        if (event.dataTransfer) {
-            event.dataTransfer.effectAllowed = 'copy';
-        }
-    }
-    render() {
-        return html `
-      <div class="tree-toolbar">
-        <div class="tree-toolbar__menu">
-          <div class="tree-toolbar__search">
-            <label for="productsTreeToolbarSearch" class="visually-hidden">${this.searchLabel}</label>
-            <input
-              type="search"
-              id="productsTreeToolbarSearch"
-              class="form-control form-control-sm search-input"
-              placeholder="${this.searchLabel}"
-              @input="${this.onInput}"
-            />
-          </div>
-        </div>
-        <div class="tree-toolbar__submenu">
-          <div
-            class="tree-toolbar__menuitem tree-toolbar__drag-node"
-            title="${this.newCategoryLabel}"
-            draggable="true"
-            aria-hidden="true"
-            @dragstart="${(event) => this.onDragStart(event, NEW_CATEGORY_DATA_TRANSFER_TYPE)}"
-          >
-            <typo3-backend-icon identifier="products-category" size="small"></typo3-backend-icon>
-          </div>
-          <div
-            class="tree-toolbar__menuitem tree-toolbar__drag-node"
-            title="${this.newProductLabel}"
-            draggable="true"
-            aria-hidden="true"
-            @dragstart="${(event) => this.onDragStart(event, NEW_PRODUCT_DATA_TRANSFER_TYPE)}"
-          >
-            <typo3-backend-icon identifier="products-product" size="small"></typo3-backend-icon>
-          </div>
-        </div>
-      </div>
-    `;
-    }
-}
-ProductsTreeToolbar.properties = {
-    searchLabel: { attribute: 'search-label' },
-    newCategoryLabel: { attribute: 'new-category-label' },
-    newProductLabel: { attribute: 'new-product-label' },
-};
-customElements.define('goldene-zeiten-products-tree-toolbar', ProductsTreeToolbar);
-
-const TABLES = {
-    category: 'tx_products_domain_model_category',
-    product: 'tx_products_domain_model_product',
-    article: 'tx_products_domain_model_article',
-};
-function typo3$1() {
-    return window.top.TYPO3;
-}
-function ajaxUrl(routeIdentifier) {
-    return typo3$1().settings.ajaxUrls[routeIdentifier];
-}
-function tableForType(type) {
-    return TABLES[type];
-}
-class CategoryTreeClient {
-    async fetchConfiguration() {
-        return this.getJson(new URL(ajaxUrl('products_category_tree_configuration'), window.location.href), { storageFolderPid: 0 });
-    }
-    async fetchNodes(parentIdentifier) {
-        const url = new URL(ajaxUrl('products_category_tree_data'), window.location.href);
-        url.searchParams.set('parent', parentIdentifier);
-        return this.getJson(url, []);
-    }
-    async filter(query) {
-        const url = new URL(ajaxUrl('products_category_tree_filter'), window.location.href);
-        url.searchParams.set('query', query);
-        return this.getJson(url, []);
-    }
-    async fetchRootline(identifier) {
-        const url = new URL(ajaxUrl('products_category_tree_rootline'), window.location.href);
-        url.searchParams.set('identifier', identifier);
-        return this.getJson(url, []);
-    }
-    async reorder(identifier, beforeIdentifier) {
-        const body = new URLSearchParams();
-        body.set('identifier', identifier);
-        body.set('beforeIdentifier', beforeIdentifier ?? '');
-        const response = await fetch(ajaxUrl('products_category_tree_reorder'), { method: 'POST', body });
-        return response.ok;
-    }
-    async createCategory(title, parentCategoryUid, storageFolderPid) {
-        const newId = `NEW${Math.floor(Math.random() * 1e9).toString(16)}`;
-        const body = new URLSearchParams();
-        body.set(`data[${TABLES.category}][${newId}][pid]`, String(storageFolderPid));
-        body.set(`data[${TABLES.category}][${newId}][title]`, title);
-        body.set(`data[${TABLES.category}][${newId}][parent_category]`, String(parentCategoryUid));
-        return this.submitDataHandler(body);
-    }
-    async createProduct(title, categoryUid, storageFolderPid) {
-        const newId = `NEW${Math.floor(Math.random() * 1e9).toString(16)}`;
-        const body = new URLSearchParams();
-        body.set(`data[${TABLES.product}][${newId}][pid]`, String(storageFolderPid));
-        body.set(`data[${TABLES.product}][${newId}][title]`, title);
-        body.set(`data[${TABLES.product}][${newId}][categories]`, String(categoryUid));
-        return this.submitDataHandler(body);
-    }
-    async reparentCategory(uid, newParentUid) {
-        const body = new URLSearchParams();
-        body.set(`data[${TABLES.category}][${uid}][parent_category]`, String(newParentUid));
-        return this.submitDataHandler(body);
-    }
-    async assignProductToCategory(uid, categoryUid) {
-        const body = new URLSearchParams();
-        body.set(`data[${TABLES.product}][${uid}][categories]`, String(categoryUid));
-        return this.submitDataHandler(body);
-    }
-    async submitDataHandler(body) {
-        const response = await fetch(ajaxUrl('record_process'), { method: 'POST', body });
-        if (!response.ok) {
-            return false;
-        }
-        const result = (await response.json());
-        return !result.hasErrors;
-    }
-    async getJson(url, fallback) {
-        const response = await fetch(url);
-        return response.ok ? (await response.json()) : fallback;
-    }
-}
-
-const EXPANDED_STORAGE_KEY = 'products-category-tree-expanded';
-/**
- * Persists expand state in localStorage (survives browser restarts, like the
- * page tree). Selection state is a separate concern handled by TYPO3 core's
- * own ModuleStateStorage (sessionStorage), since this element lives in the
- * persistent navigation slot and TYPO3.Backend.ContentContainer/
- * ModuleStateStorage are the mechanism core itself uses for that.
- */
-class TreeState {
-    getExpanded() {
-        try {
-            const raw = window.localStorage.getItem(EXPANDED_STORAGE_KEY);
-            return new Set(raw ? JSON.parse(raw) : []);
-        }
-        catch {
-            return new Set();
-        }
-    }
-    setExpanded(expanded) {
-        try {
-            window.localStorage.setItem(EXPANDED_STORAGE_KEY, JSON.stringify([...expanded]));
-        }
-        catch {
-            // Storage unavailable (private browsing, quota) - expand state simply won't persist.
-        }
-    }
-}
-
+import './tree-toolbar.js';
+import { CategoryTreeClient, tableForType } from './category-tree-client.js';
+import { TreeState } from './tree-state.js';
+import { NEW_CATEGORY_DATA_TRANSFER_TYPE, NEW_PRODUCT_DATA_TRANSFER_TYPE } from './tree-types.js';
 const MODULE_TYPE = 'products_management';
 function typo3() {
     return window.top.TYPO3;
@@ -216,7 +45,7 @@ function label(key, fallback) {
  * on expand rather than trusting the cache, so any such change is visible the
  * next time a branch is opened, not just after a full module reload.
  */
-class ProductsCategoryTree extends LitElement {
+export class ProductsCategoryTree extends LitElement {
     constructor() {
         super();
         this.client = new CategoryTreeClient();
@@ -855,7 +684,4 @@ customElements.define('goldene-zeiten-products-category-tree', ProductsCategoryT
  * its legacy AMD-style `.initialize()` path) - required for navigationComponent
  * wiring in Configuration/Backend/Modules.php to find the right tag name.
  */
-const navigationComponentName = 'goldene-zeiten-products-category-tree';
-
-export { ProductsCategoryTree, navigationComponentName };
-//# sourceMappingURL=category-tree.js.map
+export const navigationComponentName = 'goldene-zeiten-products-category-tree';
