@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use GoldeneZeiten\Products\Backend\Form\ProductListModeItemsProvider;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
@@ -97,14 +98,15 @@ ExtensionManagementUtility::addTCAcolumns('tt_content', [
         'config' => [
             'type' => 'select',
             'renderType' => 'selectSingle',
+            // The built-in listings; a feature can register more, which itemsProcFunc appends.
             'items' => [
                 ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.all', 'value' => 'all'],
                 ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.offers', 'value' => 'offers'],
                 ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.highlights', 'value' => 'highlights'],
                 ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.new', 'value' => 'new'],
-                ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.affordable', 'value' => 'affordable'],
                 ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_list_mode.articles', 'value' => 'articles'],
             ],
+            'itemsProcFunc' => ProductListModeItemsProvider::class . '->populate',
             'default' => 'all',
         ],
     ],
