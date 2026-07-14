@@ -10,7 +10,7 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "exactOptionalPropertyTypes": true,
-        "outDir": "./Resources/Public/JavaScript",
+        "outDir": "./packages/goldene-zeiten/products-core/Resources/Public/JavaScript",
         "rootDir": "./Build/TypeScript/src",
         "declaration": false,
         "sourceMap": true,

@@ -35,7 +35,8 @@ jobs:
         id: documentation-artifact
         with:
           name: documentation-${{ github.event.pull_request.number }}-${{ github.run_id }}
-          path: Documentation-GENERATED-temp/
+          # Each package renders its own documentation next to itself.
+          path: packages/*/*/Documentation-GENERATED-temp/
           compression-level: 9
           if-no-files-found: error
           retention-days: 5

@@ -15,7 +15,7 @@ export default [
   {
     input: 'Build/TypeScript/src/backend/CategoryTree.ts',
     output: {
-      file: 'Resources/Public/JavaScript/backend/category-tree.js',
+      file: 'packages/goldene-zeiten/products-core/Resources/Public/JavaScript/backend/category-tree.js',
       format: 'es',
       sourcemap: true,
     },
@@ -25,7 +25,7 @@ export default [
   {
     input: 'Build/TypeScript/src/backend/ProductVisibilityToggle.ts',
     output: {
-      file: 'Resources/Public/JavaScript/backend/product-visibility-toggle.js',
+      file: 'packages/goldene-zeiten/products-core/Resources/Public/JavaScript/backend/product-visibility-toggle.js',
       format: 'es',
       sourcemap: true,
     },

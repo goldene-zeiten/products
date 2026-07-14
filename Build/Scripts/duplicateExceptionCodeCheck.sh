@@ -14,7 +14,8 @@
 # --- default parameters ---
 # --------------------------
 print=0
-scanPath="Classes/"
+# Every package keeps its own Classes/, and an exception code must be unique across all of them.
+scanPath="packages/"
 
 ignoreFiles=()
 ignoreFiles+="Service/Client/Client.php"

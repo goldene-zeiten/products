@@ -1,41 +1,27 @@
 {
-  "name": "goldene-zeiten/products-core",
-  "description": "TYPO3 Shop system",
-  "type": "typo3-cms-extension",
+  "name": "goldene-zeiten/products-monorepo",
+  "description": "Monorepo for the products TYPO3 shop system (core extension plus add-ons)",
+  "type": "project",
   "license": [
     "GPL-2.0-or-later"
   ],
   "config": {
     "vendor-dir": ".Build/vendor",
-    "sort-packages": true,
     "bin-dir": ".Build/bin",
+    "sort-packages": true,
     "allow-plugins": {
       "typo3/cms-composer-installers": true,
       "typo3/class-alias-loader": true,
       "sbuerk/fixture-packages": true
     }
   },
-  "autoload": {
-    "psr-4": {
-      "GoldeneZeiten\\Products\\Core\\": "Classes/",
-      "GoldeneZeiten\\Products\\Core\\Core13\\": "Core13/",
-      "GoldeneZeiten\\Products\\Core\\Core14\\": "Core14/"
-    }
+  "require": {
+    "goldene-zeiten/products-core": "^1.0"
   },
   "autoload-dev": {
     "psr-4": {
-      "GoldeneZeiten\\Products\\Core\\Tests\\": "Tests/"
+      "GoldeneZeiten\\Products\\Core\\Tests\\": "packages/goldene-zeiten/products-core/Tests/"
     }
-  },
-  "require": {
-    "php": "^8.2 || ^8.3 || ^8.4 || ^8.5",
-    "ext-intl": "*",
-    "dompdf/dompdf": "^3.1",
-    "typo3/cms-backend": "^13.4 || ^14.3",
-    "typo3/cms-core": "^13.4 || ^14.3",
-    "typo3/cms-fluid": "^13.4 || ^14.3",
-    "typo3/cms-frontend": "^13.4 || ^14.3",
-    "typo3/cms-install": "^13.4 || ^14.3"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.64",
@@ -51,18 +37,26 @@
     "typo3/cms-tstemplate": "^13.4 || ^14.3",
     "typo3/testing-framework": "^9.0"
   },
+  "repositories": {
+    "packages": {
+      "type": "path",
+      "url": "packages/*/*",
+      "options": {
+        "versions": {
+          "goldene-zeiten/products-core": "1.0.0"
+        }
+      }
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "extra": {
     "typo3/cms": {
-      "extension-key": "products_core",
-      "web-dir": ".Build/Web",
-      "version": "1.0.0",
-      "Package": {
-        "providesPackages": {}
-      }
+      "web-dir": ".Build/Web"
     },
     "sbuerk/fixture-packages": {
       "paths": [
-        "Tests/Functional/Fixtures/Extensions/*"
+        "packages-dev/*"
       ]
     }
   }

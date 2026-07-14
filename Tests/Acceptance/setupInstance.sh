@@ -5,11 +5,11 @@
 # INSIDE a container (see Build/Scripts/runTests.sh's "acceptance" suite) - never on the host,
 # same rule as every other composer/php invocation in this repository.
 #
-# The instance's vendor/goldene-zeiten/products is a symlink back to this repository root (composer
-# path-repo), so anything that scans it recursively walks into itself forever. It therefore lives
-# beside the functional tests' own throwaway instances, under .Build/Web/typo3temp/var/tests/: nothing
-# analyses that directory - cgl and phpstan look at Classes, Configuration, Core* and Tests - so a
-# leftover instance cannot poison another suite, and one clean rule already removes them all.
+# The instance's vendor/goldene-zeiten/* packages are symlinks back to this monorepo's packages/
+# (composer path-repo). The instance lives beside the functional tests' own throwaway instances,
+# under .Build/Web/typo3temp/var/tests/: nothing analyses that directory - cgl and phpstan look at
+# packages/ and packages-dev/ - so a leftover instance cannot poison another suite, and one clean
+# rule already removes them all.
 #
 # Usage: setupInstance.sh <core-version:13|14> <db-driver:sqlite|mysqli> [db-host] [db-name] [db-user] [db-password]
 #
@@ -35,12 +35,12 @@ cat > "${INSTANCE_PATH}/composer.json" <<EOF
     "description": "Disposable TYPO3 instance for EXT:products Playwright acceptance tests. Rebuilt by Tests/Acceptance/setupInstance.sh on every run - never committed.",
     "license": "GPL-2.0-or-later",
     "repositories": [
-        {"type": "path", "url": "${ROOT_DIR}", "options": {"symlink": true}},
+        {"type": "path", "url": "${ROOT_DIR}/packages/*/*", "options": {"symlink": true}},
         {"type": "path", "url": "${ROOT_DIR}/Tests/Acceptance/Packages/dataset_import", "options": {"symlink": true}}
     ],
     "require": {
         "typo3/cms-base-distribution": "^${CORE_VERSION}",
-        "goldene-zeiten/products": "*",
+        "goldene-zeiten/products-core": "*",
         "goldene-zeiten/products-dataset-import": "*"
     },
     "config": {

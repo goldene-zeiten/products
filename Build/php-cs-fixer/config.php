@@ -46,9 +46,8 @@ return (new \PhpCsFixer\Config())
         (new PhpCsFixer\Finder())
             ->ignoreVCSIgnored(true)
             ->in([
-                __DIR__ . '/../../Classes',
-                __DIR__ . '/../../Configuration',
-                __DIR__ . '/../../Tests',
+                __DIR__ . '/../../packages',
+                __DIR__ . '/../../packages-dev',
             ])
     )
     ->setRiskyAllowed(true)
