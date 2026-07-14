@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Updates\Prerequisites\ArticleMigrationPrerequisite;
 use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Country\Country;
 use TYPO3\CMS\Core\Country\CountryProvider;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -23,7 +24,11 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 /**
  * Migrates orders and line items to new domain models. Requires
  * {@see ProductMigrationPrerequisite} and {@see ArticleMigrationPrerequisite} to have run first.
+ *
+ * Public, because the Install Tool instantiates upgrade wizards through makeInstance, which only
+ * injects dependencies into a public service.
  */
+#[Autoconfigure(public: true)]
 #[UpgradeWizard('products_ttProductsOrderMigration')]
 final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, ChattyInterface, RepeatableInterface
 {

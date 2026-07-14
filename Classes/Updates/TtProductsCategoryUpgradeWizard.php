@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Updates;
 
 use GoldeneZeiten\Products\Backend\StorageFolderResolver;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 // TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
@@ -16,7 +17,11 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
 /**
  * Migrates `tt_products_cat` and overlays to `tx_products_domain_model_category`.
+ *
+ * Public, because the Install Tool instantiates upgrade wizards through makeInstance, which only
+ * injects dependencies into a public service.
  */
+#[Autoconfigure(public: true)]
 #[UpgradeWizard('products_ttProductsCategoryMigration')]
 final class TtProductsCategoryUpgradeWizard implements UpgradeWizardInterface, ChattyInterface, RepeatableInterface
 {

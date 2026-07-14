@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Hooks;
 
 use GoldeneZeiten\Products\Domain\Validation\PricePeriodOverlapGuard;
 use GoldeneZeiten\Products\Service\PriceHistory\PriceHistoryRecorder;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SysLog\Action\Database as SystemLogDatabaseAction;
 use TYPO3\CMS\Core\SysLog\Error as SystemLogErrorClassification;
@@ -16,7 +17,11 @@ use TYPO3\CMS\Core\SysLog\Error as SystemLogErrorClassification;
  * price period is saved.
  *
  * @internal Registered as a classic DataHandler hook in ext_localconf.php.
+ *
+ * Public, because TYPO3 instantiates a hook through makeInstance, which only injects dependencies
+ * into a public service.
  */
+#[Autoconfigure(public: true)]
 final class PriceAuditHook
 {
     private const TABLE_PRICEPERIOD = 'tx_products_domain_model_priceperiod';

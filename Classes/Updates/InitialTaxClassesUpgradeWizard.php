@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Updates;
 
 use GoldeneZeiten\Products\Backend\StorageFolderResolver;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 // TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
@@ -12,6 +13,11 @@ use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
 use TYPO3\CMS\Install\Updates\RepeatableInterface;
 use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 
+/**
+ * Public, because the Install Tool instantiates upgrade wizards through makeInstance, which only
+ * injects dependencies into a public service.
+ */
+#[Autoconfigure(public: true)]
 #[UpgradeWizard('products_initialTaxClasses')]
 final class InitialTaxClassesUpgradeWizard implements UpgradeWizardInterface, RepeatableInterface
 {

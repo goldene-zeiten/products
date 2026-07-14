@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Backend\CategoryMountResolver;
 use GoldeneZeiten\Products\Backend\CategoryPermissionGuard;
 use GoldeneZeiten\Products\Backend\CategoryTreeRepository;
 use GoldeneZeiten\Products\Exception\CategoryAccessDeniedException;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\SysLog\Action\Database as SystemLogDatabaseAction;
 use TYPO3\CMS\Core\SysLog\Error as SystemLogErrorClassification;
@@ -18,7 +19,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Enforces category-mount restrictions for every DataHandler write, regardless of entry point.
  *
  * @internal Registered as a classic DataHandler hook in ext_localconf.php.
+ *
+ * Public, because TYPO3 instantiates a hook through makeInstance, which only injects dependencies
+ * into a public service.
  */
+#[Autoconfigure(public: true)]
 final class CategoryMountAccessHook
 {
     private const TABLE_CATEGORY = 'tx_products_domain_model_category';

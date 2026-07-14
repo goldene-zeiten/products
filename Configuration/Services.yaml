@@ -10,23 +10,3 @@ services:
 
   GoldeneZeiten\Products\Pricing\PriceProviderInterface:
     alias: GoldeneZeiten\Products\Pricing\CategoryDiscountPriceProvider
-
-  GoldeneZeiten\Products\Hooks\CategoryMountAccessHook:
-    public: true
-
-  GoldeneZeiten\Products\Hooks\PriceAuditHook:
-    public: true
-
-  GoldeneZeiten\Products\Updates\:
-    resource: '../Classes/Updates/*UpgradeWizard.php'
-    public: true
-
-  GoldeneZeiten\Products\Updates\Prerequisites\:
-    resource: '../Classes/Updates/Prerequisites/*'
-    public: true
-
-  GoldeneZeiten\Products\Export\OrderExportRegistry:
-    public: true
-
-  GoldeneZeiten\Products\PageTitle\ProductPageTitleProvider:
-    public: true

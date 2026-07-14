@@ -6,15 +6,18 @@ namespace GoldeneZeiten\Products\PageTitle;
 
 use GoldeneZeiten\Products\Domain\Model\Product;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\PageTitle\PageTitleProviderInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Substitutes the product's title/subtitle for the page title on a product single-view page.
- * Registered via `config.pageTitleProviders` in ext_localconf.php (needs `public: true` in
- * Services.yaml), ordered `before` core's `record` provider so an empty string here falls
- * through to the page's own title.
+ * Registered via `config.pageTitleProviders` in ext_localconf.php, ordered `before` core's
+ * `record` provider so an empty string here falls through to the page's own title.
+ *
+ * Public, because TYPO3 instantiates page-title providers through makeInstance.
  */
+#[Autoconfigure(public: true)]
 final class ProductPageTitleProvider implements PageTitleProviderInterface
 {
     /**

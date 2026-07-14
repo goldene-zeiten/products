@@ -6,13 +6,15 @@ namespace GoldeneZeiten\Products\Updates\Prerequisites;
 
 use GoldeneZeiten\Products\Updates\LegacyMigrationHelper;
 use Symfony\Component\Console\Output\OutputInterface;
-// TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Updates\ChattyInterface;
 use TYPO3\CMS\Install\Updates\PrerequisiteInterface;
 
 /**
  * Blocks a dependent upgrade wizard until an earlier entity migration has fully run.
  * `ensure()` deliberately never auto-runs the dependency wizard; it only reports the gap.
+ *
+ * Carries no service attribute of its own: an abstract class is never registered as a service, so each
+ * concrete prerequisite declares that it is public itself.
  */
 abstract class AbstractEntityMigratedPrerequisite implements PrerequisiteInterface, ChattyInterface
 {
