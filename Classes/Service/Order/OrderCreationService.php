@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Service\Order;
 
-use GoldeneZeiten\Products\Configuration\CreditPointsConfiguration;
-use GoldeneZeiten\Products\Configuration\CreditPointsConfigurationFactory;
 use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Discount\DiscountContextFactory;
 use GoldeneZeiten\Products\Discount\DiscountRegistry;
@@ -15,13 +13,10 @@ use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementContext;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementDetails;
-use GoldeneZeiten\Products\Domain\Dto\CreditPointsRedemption;
+use GoldeneZeiten\Products\Domain\Dto\Loyalty\LoyaltyContext;
 use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingSelection;
 use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
-use GoldeneZeiten\Products\Domain\Enum\CreditPointsTransactionType;
-use GoldeneZeiten\Products\Domain\Model\CreditPointsTransaction;
 use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Repository\CreditPointsTransactionRepository;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\AdjustmentCollection;
 use GoldeneZeiten\Products\Domain\ValueObject\CheckoutAdjustment;
@@ -29,11 +24,9 @@ use GoldeneZeiten\Products\Domain\ValueObject\CoreAdjustmentProvider;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Event\AfterOrderPlacedEvent;
 use GoldeneZeiten\Products\Event\LowStockThresholdReachedEvent;
+use GoldeneZeiten\Products\Loyalty\LoyaltyRegistry;
 use GoldeneZeiten\Products\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
-use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsBalanceService;
-use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
-use GoldeneZeiten\Products\Service\CreditPoints\Exception\InsufficientCreditPointsException;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Shipping\HandlingFeeService;
 use GoldeneZeiten\Products\Shipping\ShippingContextFactory;
@@ -55,15 +48,12 @@ final class OrderCreationService
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly DiscountRegistry $discountRegistry,
         private readonly DiscountContextFactory $discountContextFactory,
-        private readonly CreditPointsService $creditPointsService,
-        private readonly CreditPointsBalanceService $creditPointsBalanceService,
-        private readonly CreditPointsTransactionRepository $creditPointsTransactionRepository,
+        private readonly LoyaltyRegistry $loyaltyRegistry,
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly ShippingQuoteService $shippingQuoteService,
         private readonly ShippingContextFactory $shippingContextFactory,
         private readonly HandlingFeeService $handlingFeeService,
         private readonly ProductsConfigurationFactory $configurationFactory,
-        private readonly CreditPointsConfigurationFactory $creditPointsConfigurationFactory,
         private readonly TermsSnapshotService $termsSnapshotService
     ) {}
 
@@ -91,7 +81,8 @@ final class OrderCreationService
         $this->persistenceManager->persistAll();
 
         $this->discountRegistry->apply($order, $context->getDiscountContext());
-        $this->recordCreditPoints($basketViewModel, $context->getPointsRedemption(), $order, $context->getFrontendUser(), $context->getCreditPointsConfiguration());
+        $this->loyaltyRegistry->applyRedemption($order, $context->getLoyaltyContext());
+        $this->loyaltyRegistry->award($order, $context->getLoyaltyContext());
         $this->eventDispatcher->dispatch(new AfterOrderPlacedEvent($order, $request));
 
         return $order;
@@ -105,7 +96,6 @@ final class OrderCreationService
         PaymentMethodInterface $paymentMethod
     ): PlacementContext {
         $configuration = $this->configurationFactory->create($request);
-        $creditPointsConfiguration = $this->creditPointsConfigurationFactory->create($request);
         $frontendUser = $this->frontendUserResolver->getUid($request);
         $shippingContext = $this->shippingContextFactory->createFromBasket($basketViewModel, $address, $frontendUser);
         $shippingSelection = $this->shippingQuoteService->resolveSelection($configuration, $shippingContext, $checkoutSelections->getShippingOptionKey(), $request);
@@ -118,8 +108,16 @@ final class OrderCreationService
         foreach ($this->discountRegistry->collect($discountContext) as $discountAdjustment) {
             $adjustments = $adjustments->with($discountAdjustment);
         }
-        $pointsRedemption = $this->resolvePointsRedemption($checkoutSelections->getSpendPoints(), $basketViewModel, $adjustments->getDiscountTotal(), $frontendUser, $creditPointsConfiguration);
-        $adjustments = $this->withLoyalty($adjustments, $pointsRedemption);
+        $loyaltyContext = new LoyaltyContext(
+            $request,
+            $basketViewModel,
+            $basketViewModel->getTotalGross()->subtract($adjustments->getDiscountTotal()),
+            $frontendUser,
+            $checkoutSelections->getSpendPoints()
+        );
+        foreach ($this->loyaltyRegistry->collectRedemption($loyaltyContext) as $loyaltyAdjustment) {
+            $adjustments = $adjustments->with($loyaltyAdjustment);
+        }
         $adjustments = $this->withPaymentFee($adjustments, $paymentMethod, $basketViewModel, $address, $frontendUser);
 
         $details = new PlacementDetails(
@@ -129,21 +127,7 @@ final class OrderCreationService
             $checkoutSelections->getGiftMessage()
         );
 
-        return new PlacementContext($details, $discountContext, $pointsRedemption, $creditPointsConfiguration, $frontendUser);
-    }
-
-    private function withLoyalty(AdjustmentCollection $adjustments, CreditPointsRedemption $pointsRedemption): AdjustmentCollection
-    {
-        if ($pointsRedemption->getDiscountAmount()->getCents() === 0) {
-            return $adjustments;
-        }
-
-        return $adjustments->with(new CheckoutAdjustment(
-            AdjustmentType::LOYALTY,
-            CoreAdjustmentProvider::CREDIT_POINTS,
-            '',
-            $this->negate($pointsRedemption->getDiscountAmount())
-        ));
+        return new PlacementContext($details, $discountContext, $loyaltyContext, $frontendUser);
     }
 
     /**
@@ -207,11 +191,6 @@ final class OrderCreationService
         ));
     }
 
-    private function negate(Money $amount): Money
-    {
-        return Money::fromCents(-$amount->getCents());
-    }
-
     private function decrementStock(BasketViewModel $basketViewModel, ServerRequestInterface $request): void
     {
         $threshold = $this->lowStockThreshold($request);
@@ -255,57 +234,4 @@ final class OrderCreationService
         return (int)($threshold ?? self::DEFAULT_LOW_STOCK_THRESHOLD);
     }
 
-    private function resolvePointsRedemption(
-        int $spendPoints,
-        BasketViewModel $basketViewModel,
-        Money $discountTotal,
-        int $frontendUser,
-        CreditPointsConfiguration $creditPointsConfiguration
-    ): CreditPointsRedemption {
-        $remainingGoodsTotal = $basketViewModel->getTotalGross()->subtract($discountTotal);
-        return $this->creditPointsService->redeem($frontendUser, $spendPoints, $remainingGoodsTotal, $creditPointsConfiguration);
-    }
-
-    private function recordCreditPoints(BasketViewModel $basketViewModel, CreditPointsRedemption $pointsRedemption, Order $order, int $frontendUser, CreditPointsConfiguration $creditPointsConfiguration): void
-    {
-        if (!$creditPointsConfiguration->isEnabled() || $frontendUser === 0) {
-            return;
-        }
-        $earned = $this->creditPointsService->calculateEarnedPoints($basketViewModel, $creditPointsConfiguration);
-        if ($pointsRedemption->getPoints() > 0) {
-            $this->redeemCreditPointsAtomically($frontendUser, $pointsRedemption->getPoints());
-            $this->creditPointsTransactionRepository->add($this->buildTransaction($frontendUser, $order, -$pointsRedemption->getPoints(), CreditPointsTransactionType::REDEEM));
-        }
-        if ($earned > 0) {
-            $this->creditPointsBalanceService->credit($frontendUser, $earned);
-            $this->creditPointsTransactionRepository->add($this->buildTransaction($frontendUser, $order, $earned, CreditPointsTransactionType::EARN));
-        }
-        if ($earned > 0 || $pointsRedemption->getPoints() > 0) {
-            $this->persistenceManager->persistAll();
-        }
-    }
-
-    /**
-     * Atomic guard prevents concurrent redemption bypass. {@see StockService::decrementForItem()}
-     */
-    private function redeemCreditPointsAtomically(int $frontendUser, int $points): void
-    {
-        if (!$this->creditPointsBalanceService->debitIfAffordable($frontendUser, $points)) {
-            throw new InsufficientCreditPointsException(
-                sprintf('Requested %d credit points but the balance could not afford it at redemption time.', $points),
-                1783430100
-            );
-        }
-    }
-
-    private function buildTransaction(int $frontendUser, Order $order, int $points, CreditPointsTransactionType $type): CreditPointsTransaction
-    {
-        $transaction = new CreditPointsTransaction();
-        $transaction->setFrontendUser($frontendUser);
-        $transaction->setOrderUid($order->getUid() ?? 0);
-        $transaction->setPoints($points);
-        $transaction->setType($type);
-        $transaction->setCreated(new \DateTime());
-        return $transaction;
-    }
 }
