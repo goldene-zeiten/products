@@ -200,8 +200,8 @@ Managing orders
 The :guilabel:`Orders` submodule (under the :guilabel:`Products` main module) lists all orders,
 filterable by status, order number and email. Opening an order shows a summary (date, email,
 status, payment status, payment method, total, customer note — plus any applied voucher code(s),
-the combined voucher/credit-points discount, and the shipping cost, when present) and the actions
-available for it:
+the combined voucher/credit-points discount, and the shipping option the customer chose with its
+cost, when present) and the actions available for it:
 
 *   :guilabel:`Mark paid` — sets the payment status to "paid". Shown only while the order's current
     payment status can actually move there (mirrors the invoice workflow: confirm payment once the
@@ -223,6 +223,12 @@ its payment method supports refunds. The invoice payment method shipped with thi
 supports it as an acknowledgement (there is no gateway to call back — refunding an invoice payment
 just records that the money was returned outside the system); third-party payment methods can
 implement the same contract to wire up a real refund call.
+
+An :guilabel:`Export order` section appears when an order exporter is installed, with one button per
+exporter that applies to that order; choosing one downloads the order in that exporter's format. No
+exporter ships with this extension, because what an order has to look like for an ERP, an accounting
+system or a fulfilment partner is specific to the shop — so an integrator adds the one you need (see
+:ref:`developer-api-order-export`). With none installed, the section is not shown.
 
 Order status and low-stock notifications
 -------------------------------------------
@@ -442,6 +448,21 @@ A product or article can be flagged :guilabel:`Bulky` (e.g. furniture, anything 
 item unit in the basket, on top of the chosen shipping method's rate — and survives a
 free-shipping voucher, since an oversized item still costs extra to handle regardless of who pays
 the base shipping rate.
+
+Shipping classes
+-----------------
+
+A product can be assigned a :guilabel:`Shipping class` (on the :guilabel:`Shipping` tab), restricting
+which carriers may ship it. The extension defines four options: leave it empty for no restriction,
+or select :guilabel:`Hazardous goods`, :guilabel:`Freight only`, or :guilabel:`Refrigerated`.
+The extension itself never interprets these values — each carrier decides which classes it is
+willing to carry and refuses a basket it cannot serve.
+
+**Important:** if a basket contains a product whose shipping class no installed carrier will carry,
+no shipping option is offered and the customer cannot complete checkout — they are shown an error at
+the shipping step instead. This is deliberate: an order nobody can deliver must not be payable. Do
+not set a shipping class unless at least one carrier that handles it is installed. The built-in
+table-rate carrier (shipping-method records) does not filter by shipping class.
 
 Basket/checkout notices
 --------------------------

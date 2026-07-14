@@ -9,15 +9,6 @@ Some extension points in the Products extension are defined as contracts (interf
 events. These interfaces enforce explicit implementations that become visible in the codebase and
 allow for stronger fail-closed behavior than event listeners can achieve.
 
-**Table of Contents:**
-
-..  toctree::
-    :maxdepth: 1
-    :titlesonly:
-
-    ProductVisibility
-
-
 ..  _developer-interfaces-product-visibility:
 
 ProductVisibilityInterface

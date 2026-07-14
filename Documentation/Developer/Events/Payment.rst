@@ -57,8 +57,10 @@ Example listener:
 PaymentMethodsCollectedEvent
 ----------------------------
 
-Lets integrators add or filter payment methods shown to customers — inject custom payment
-providers, restrict methods by region or cart value, or reorder them. Listeners can call
+Lets integrators reorder or hide the payment methods shown to customers — restrict methods by
+region or cart value, or prioritize premium gateways. Registering a payment method is done by
+implementing :php:`PaymentMethodInterface` (see :ref:`developer-api-payment-methods`); this event
+only post-filters the methods the registry already collected. Listeners can call
 ``setPaymentMethods()`` to replace the available methods.
 
 Mutable: Yes (via ``setPaymentMethods(array $methods)``)
@@ -74,7 +76,7 @@ Example listener:
         {
             $context = $event->getContext();
             $methods = $event->getPaymentMethods();
-            // Filter or reorder methods by region
+            // Filter or reorder methods by customer region, order value, or account status
             $event->setPaymentMethods($filtered);
         }
     }
