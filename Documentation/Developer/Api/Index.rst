@@ -32,6 +32,7 @@ availability checks and priority, plus a registry service that collects and quer
     :titlesonly:
 
     CheckoutAdjustments
+    Discounts
     OrderExport
     PaymentMethods
     ShippingProviders
