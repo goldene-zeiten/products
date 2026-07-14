@@ -16,5 +16,5 @@ test('user removes the suggested product, leaving only the product added twice',
   await expect(page.locator('tr', { hasText: 'Photon Phone Case' })).toHaveCount(0);
   const smartphoneRow = page.locator('tr', { hasText: 'Photon X100 Smartphone' });
   await expect(smartphoneRow).toBeVisible();
-  await expect(smartphoneRow.locator('input[name="tx_products_basket[quantity]"]')).toHaveValue('2');
+  await expect(smartphoneRow.locator('input[name="tx_productscore_basket[quantity]"]')).toHaveValue('2');
 });

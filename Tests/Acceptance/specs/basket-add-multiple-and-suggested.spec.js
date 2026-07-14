@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('user searches a product, adds it twice, then adds a suggested product from its detail page', async ({ page }) => {
   await page.goto('/');
   const results = page.locator('.product-search');
-  await results.locator('input[name="tx_products_search[term]"]').fill('Photon X100');
+  await results.locator('input[name="tx_productssearch_search[term]"]').fill('Photon X100');
   await results.locator('input[type=submit]').click();
   await results.getByRole('link', { name: 'Details' }).first().click();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Photon X100');
@@ -22,8 +22,8 @@ test('user searches a product, adds it twice, then adds a suggested product from
   const caseRow = page.locator('tr', { hasText: 'Photon Phone Case' });
   await expect(smartphoneRow).toBeVisible();
   await expect(caseRow).toBeVisible();
-  await expect(smartphoneRow.locator('input[name="tx_products_basket[quantity]"]')).toHaveValue('2');
-  await expect(caseRow.locator('input[name="tx_products_basket[quantity]"]')).toHaveValue('1');
+  await expect(smartphoneRow.locator('input[name="tx_productscore_basket[quantity]"]')).toHaveValue('2');
+  await expect(caseRow.locator('input[name="tx_productscore_basket[quantity]"]')).toHaveValue('1');
 
   // 2 x 499.00 + 19.99 = 1017.99
   await expect(page.getByText('1017.99', { exact: false }).first()).toBeVisible();
