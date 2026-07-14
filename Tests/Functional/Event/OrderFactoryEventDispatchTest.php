@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Tests\Functional\Event;
 
 use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\BasketDiscountSummary;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementDetails;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelection;
 use GoldeneZeiten\Products\Domain\Model\Product;
+use GoldeneZeiten\Products\Domain\ValueObject\AdjustmentCollection;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\EventFixture\MapBillingToDeliveryAddressListener;
 use GoldeneZeiten\Products\Service\Order\OrderFactory;
@@ -57,10 +56,7 @@ final class OrderFactoryEventDispatchTest extends AbstractFunctionalTestCase
     private function placementDetails(): PlacementDetails
     {
         return new PlacementDetails(
-            new BasketDiscountSummary([], Money::fromCents(0)),
-            Money::fromCents(0),
-            ShippingSelection::none(),
-            Money::fromCents(0)
+            new AdjustmentCollection()
         );
     }
 

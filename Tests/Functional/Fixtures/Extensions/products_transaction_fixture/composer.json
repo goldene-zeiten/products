@@ -1,0 +1,23 @@
+{
+  "name": "goldene-zeiten/products-transaction-fixture",
+  "type": "typo3-cms-extension",
+  "description": "Aborts an order placement from inside the placement transaction, proving it rolls back.",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "typo3/cms-core": "^13.4 || ^14.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\TransactionFixture\\": "Classes/"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "products_transaction_fixture",
+      "version": "1.0.0",
+      "Package": {
+        "providesPackages": {}
+      }
+    }
+  }
+}

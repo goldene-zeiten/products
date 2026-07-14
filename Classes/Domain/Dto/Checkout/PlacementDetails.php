@@ -5,26 +5,30 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Domain\Dto\Checkout;
 
 use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\BasketDiscountSummary;
-use GoldeneZeiten\Products\Domain\Model\Voucher;
-use GoldeneZeiten\Products\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Domain\ValueObject\AdjustmentCollection;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
+/**
+ * Everything the order factory needs beyond the basket itself. The money side is carried entirely by the
+ * adjustment collection - the factory never asks for a shipping cost or a discount by name.
+ */
 #[Exclude]
 final readonly class PlacementDetails
 {
+    /**
+     * @param string[] $voucherCodes
+     */
     public function __construct(
-        private BasketDiscountSummary $voucherSummary,
-        private Money $pointsDiscountAmount,
-        private ShippingSelection $shippingSelection,
-        private Money $handlingFeeCost,
+        private AdjustmentCollection $adjustments,
+        private array $voucherCodes = [],
+        private int $shippingMethodUid = 0,
         private ?Address $deliveryAddress = null,
         private string $giftMessage = ''
     ) {}
 
-    public function getTotalDiscount(): Money
+    public function getAdjustments(): AdjustmentCollection
     {
-        return $this->voucherSummary->getDiscountTotal()->add($this->pointsDiscountAmount);
+        return $this->adjustments;
     }
 
     /**
@@ -32,30 +36,12 @@ final readonly class PlacementDetails
      */
     public function getVoucherCodes(): array
     {
-        return array_map(
-            static fn(Voucher $voucher): string => $voucher->getCode(),
-            $this->voucherSummary->getAppliedVouchers()
-        );
-    }
-
-    public function getShippingCost(): Money
-    {
-        return $this->shippingSelection->getCost();
+        return $this->voucherCodes;
     }
 
     public function getShippingMethodUid(): int
     {
-        return $this->shippingSelection->getShippingMethodUid();
-    }
-
-    public function getShippingTaxRate(): float
-    {
-        return $this->shippingSelection->getTaxRate();
-    }
-
-    public function getHandlingFeeCost(): Money
-    {
-        return $this->handlingFeeCost;
+        return $this->shippingMethodUid;
     }
 
     public function getDeliveryAddress(): ?Address

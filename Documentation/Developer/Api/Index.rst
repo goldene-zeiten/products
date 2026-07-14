@@ -31,4 +31,5 @@ availability checks and priority, plus a registry service that collects and quer
     :maxdepth: 1
     :titlesonly:
 
+    CheckoutAdjustments
     OrderExport

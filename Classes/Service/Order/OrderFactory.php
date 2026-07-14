@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementDetails;
+use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
 use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
@@ -66,26 +67,24 @@ final class OrderFactory
     }
 
     /**
-     * total_gross adjusted by discounts/shipping/fees; shipping's tax split into total_net/total_tax.
+     * Folds the adjustment collection into the order totals: the signed sum moves the gross total, and
+     * adjustments carrying a tax rate additionally split into a net and a tax share. The per-type totals
+     * written afterwards are derived values for invoices and the backend - the collection stays the
+     * source of truth.
      */
     private function applyAdjustments(Order $order, BasketViewModel $basketViewModel, PlacementDetails $details, ?Site $site): void
     {
-        $depositTotal = $basketViewModel->getDepositTotal();
-        $adjustedTotalGross = $basketViewModel->getTotalGross()
-            ->subtract($details->getTotalDiscount())
-            ->add($details->getShippingCost())
-            ->add($details->getHandlingFeeCost())
-            ->add($depositTotal);
+        $adjustments = $details->getAdjustments();
+        $adjustedTotalGross = $basketViewModel->getTotalGross()->add($adjustments->getTotal());
         $order->setTotalGross($this->priceRoundingService->round($adjustedTotalGross, $this->roundingMode($site)));
-        $shippingNet = $details->getShippingCost()->netFromGross($details->getShippingTaxRate());
-        $order->setTotalNet($order->getTotalNet()->add($shippingNet));
-        $order->setTotalTax($order->getTotalTax()->add($details->getShippingCost()->subtract($shippingNet)));
-        $order->setDiscountTotal($details->getTotalDiscount());
+        $order->setTotalNet($order->getTotalNet()->add($adjustments->getNetTotal()));
+        $order->setTotalTax($order->getTotalTax()->add($adjustments->getTaxTotal()));
+        $order->setDiscountTotal($adjustments->getDiscountTotal());
         $order->setVoucherCodes($details->getVoucherCodes());
         $order->setShippingMethod($details->getShippingMethodUid());
-        $order->setShippingTotal($details->getShippingCost());
-        $order->setHandlingFeeTotal($details->getHandlingFeeCost());
-        $order->setDepositTotal($depositTotal);
+        $order->setShippingTotal($adjustments->getTotalByType(AdjustmentType::SHIPPING));
+        $order->setHandlingFeeTotal($adjustments->getTotalByType(AdjustmentType::HANDLING));
+        $order->setDepositTotal($adjustments->getTotalByType(AdjustmentType::DEPOSIT));
     }
 
     private function applyGiftOrderDetails(Order $order, PlacementDetails $details): void
