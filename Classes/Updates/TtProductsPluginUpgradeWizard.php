@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Updates;
 use GoldeneZeiten\Products\Updates\Prerequisites\CategoryMigrationPrerequisite;
 use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -25,7 +26,11 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
  * Elements selecting a mode without an equivalent here are left completely untouched and reported,
  * never migrated half-way - which is also why they keep matching this wizard's query forever, and
  * why iteration is a uid cursor rather than a "fetch pending rows until none are left" loop.
+ *
+ * Public, because the Install Tool instantiates upgrade wizards through makeInstance, which only
+ * injects dependencies into a public service.
  */
+#[Autoconfigure(public: true)]
 #[UpgradeWizard('products_ttProductsPluginMigration')]
 final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, ChattyInterface, RepeatableInterface
 {

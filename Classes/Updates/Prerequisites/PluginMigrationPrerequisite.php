@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Updates\Prerequisites;
 
 use GoldeneZeiten\Products\Updates\TtProductsPluginUpgradeWizard;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Install\Updates\ChattyInterface;
 use TYPO3\CMS\Install\Updates\PrerequisiteInterface;
 
@@ -13,7 +14,10 @@ use TYPO3\CMS\Install\Updates\PrerequisiteInterface;
  * Blocks dependent wizards while legacy tt_products plugin elements are still migratable. Elements
  * whose modes have no equivalent here stay in tt_content by design, so they must not count as
  * pending - the wizard itself decides what is left to do.
+ *
+ * Public for use as an upgrade wizard prerequisite.
  */
+#[Autoconfigure(public: true)]
 final class PluginMigrationPrerequisite implements PrerequisiteInterface, ChattyInterface
 {
     private TtProductsPluginUpgradeWizard $pluginUpgradeWizard;

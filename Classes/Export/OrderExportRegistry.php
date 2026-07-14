@@ -8,12 +8,16 @@ use GoldeneZeiten\Products\Domain\Dto\Export\ExportContext;
 use GoldeneZeiten\Products\Event\OrderExportersCollectedEvent;
 use GoldeneZeiten\Products\Export\Exception\OrderExporterNotFoundException;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 
 /**
  * Serves the order exporters registered by integrators: discovery, for the backend to offer a choice,
  * and resolution by identifier, for executing the one an editor selected.
+ *
+ * Public, because the backend instantiates it through makeInstance to discover available exporters.
  */
+#[Autoconfigure(public: true)]
 final class OrderExportRegistry
 {
     /**

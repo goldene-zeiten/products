@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Updates\Prerequisites;
 
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+
+/**
+ * Public for use as an upgrade wizard prerequisite.
+ */
+#[Autoconfigure(public: true)]
 final class ArticleMigrationPrerequisite extends AbstractEntityMigratedPrerequisite
 {
     protected function legacyTable(): string

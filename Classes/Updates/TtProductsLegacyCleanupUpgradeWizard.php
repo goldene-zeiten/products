@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Updates\Prerequisites\OrderMigrationPrerequisite;
 use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
 use GoldeneZeiten\Products\Updates\Prerequisites\VisitedProductsMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 // TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
@@ -23,7 +24,11 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
  * Drops legacy `tt_products` tables and visited-product tracking tables once all entity wizards
  * report nothing left to migrate. Media migration completeness cannot be checked automatically
  * (no reliable per-row signal), so operators must confirm the media wizard already ran.
+ *
+ * Public, because the Install Tool instantiates upgrade wizards through makeInstance, which only
+ * injects dependencies into a public service.
  */
+#[Autoconfigure(public: true)]
 #[UpgradeWizard('products_ttProductsLegacyCleanup')]
 final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterface, ConfirmableInterface, ChattyInterface
 {

@@ -6,12 +6,16 @@ namespace GoldeneZeiten\Products\Updates\Prerequisites;
 
 use GoldeneZeiten\Products\Updates\LegacyMigrationHelper;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Install\Updates\ChattyInterface;
 use TYPO3\CMS\Install\Updates\PrerequisiteInterface;
 
 /**
  * Blocks dependent wizards until both legacy visited-products tables are fully migrated.
+ *
+ * Public for use as an upgrade wizard prerequisite.
  */
+#[Autoconfigure(public: true)]
 final class VisitedProductsMigrationPrerequisite implements PrerequisiteInterface, ChattyInterface
 {
     private const LEGACY_GLOBAL_TABLE = 'sys_products_visited_products';

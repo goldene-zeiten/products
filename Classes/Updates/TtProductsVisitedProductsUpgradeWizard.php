@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Updates;
 
 use GoldeneZeiten\Products\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 // TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
@@ -19,7 +20,11 @@ use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
  * Migrates `sys_products_visited_products` (global view counts) and
  * `sys_products_fe_users_mm_visited_products` (per-user view counts) to
  * `tx_products_visitedproduct` and `tx_products_fe_users_visitedproduct`, remapping product uids.
+ *
+ * Public, because the Install Tool instantiates upgrade wizards through makeInstance, which only
+ * injects dependencies into a public service.
  */
+#[Autoconfigure(public: true)]
 #[UpgradeWizard('products_ttProductsVisitedProductsMigration')]
 final class TtProductsVisitedProductsUpgradeWizard implements UpgradeWizardInterface, ChattyInterface, RepeatableInterface
 {
