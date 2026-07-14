@@ -9,18 +9,18 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Export\OrderExportInterface;
 
 /**
- * Fixture-only exporter proving OrderExportRegistry's tagged_iterator wiring.
+ * Proves isAvailable() is honoured — this exporter is never offered.
  */
-final class DummyOrderExporter implements OrderExportInterface
+final class UnavailableOrderExporter implements OrderExportInterface
 {
     public function getIdentifier(): string
     {
-        return 'dummy';
+        return 'unavailable';
     }
 
     public function getLabel(): string
     {
-        return 'Dummy Export';
+        return 'Unavailable Export';
     }
 
     public function getContentType(): string
@@ -35,7 +35,7 @@ final class DummyOrderExporter implements OrderExportInterface
 
     public function isAvailable(ExportContext $context): bool
     {
-        return true;
+        return false;
     }
 
     public function getPriority(): int
@@ -45,6 +45,6 @@ final class DummyOrderExporter implements OrderExportInterface
 
     public function export(Order $order): string
     {
-        return sprintf('order:%s', $order->getOrderNumber());
+        return sprintf('unavailable:%s', $order->getOrderNumber());
     }
 }

@@ -129,6 +129,9 @@
 			<trans-unit id="order.action.refund" resname="order.action.refund">
 				<source>Refund</source>
 			</trans-unit>
+			<trans-unit id="order.export.title" resname="order.export.title">
+				<source>Export order</source>
+			</trans-unit>
 			<trans-unit id="order.action.transition_to" resname="order.action.transition_to">
 				<source>Set status: %s</source>
 			</trans-unit>

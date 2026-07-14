@@ -6,9 +6,14 @@ namespace GoldeneZeiten\Products\Controller\Backend;
 
 use GoldeneZeiten\Products\Backend\OrderListFilter;
 use GoldeneZeiten\Products\Backend\OrderManagementRepository;
+use GoldeneZeiten\Products\Domain\Dto\Export\ExportContext;
 use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Domain\Model\Order;
+use GoldeneZeiten\Products\Export\Exception\OrderExporterNotAvailableException;
+use GoldeneZeiten\Products\Export\Exception\OrderExporterNotFoundException;
+use GoldeneZeiten\Products\Export\OrderExportInterface;
+use GoldeneZeiten\Products\Export\OrderExportService;
 use GoldeneZeiten\Products\Payment\Exception\PaymentMethodNotFoundException;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Payment\RefundablePaymentMethodInterface;
@@ -21,6 +26,8 @@ use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
@@ -36,6 +43,7 @@ final class OrderManagementModuleController
         private readonly OrderManagementRepository $orderRepository,
         private readonly OrderStatusManager $orderStatusManager,
         private readonly PaymentMethodRegistry $paymentMethodRegistry,
+        private readonly OrderExportService $orderExportService,
     ) {}
 
     public function mainAction(ServerRequestInterface $request): ResponseInterface
@@ -46,10 +54,50 @@ final class OrderManagementModuleController
             $this->handlePostedAction($request, $moduleTemplate);
         }
         $orderUid = (int)($request->getQueryParams()['order'] ?? 0);
+        $exportResponse = $this->handleExportRequest($orderUid, $request, $moduleTemplate);
+        if ($exportResponse !== null) {
+            return $exportResponse;
+        }
         $moduleTemplate->assignMultiple(
             $orderUid > 0 ? $this->buildDetailView($orderUid, $request) : $this->buildListView($request)
         );
         return $moduleTemplate->renderResponse('Backend/OrderManagement/Main');
+    }
+
+    /**
+     * Execution phase of the order-export API: streams the payload of the exporter the editor selected.
+     * Returns null when no export was requested, so the module renders normally.
+     */
+    private function handleExportRequest(
+        int $orderUid,
+        ServerRequestInterface $request,
+        ModuleTemplate $moduleTemplate
+    ): ?ResponseInterface {
+        $identifier = $this->stringOrNull($request->getQueryParams()['export'] ?? null);
+        $order = $identifier !== null && $orderUid > 0 ? $this->orderRepository->findForEditing($orderUid) : null;
+        if ($identifier === null || $order === null) {
+            return null;
+        }
+        try {
+            $result = $this->orderExportService->export($identifier, $this->buildExportContext($order, $request));
+        } catch (OrderExporterNotFoundException|OrderExporterNotAvailableException $exception) {
+            $moduleTemplate->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
+            return null;
+        }
+        $response = (new Response())
+            ->withHeader('Content-Type', $result->getContentType())
+            ->withHeader('Content-Disposition', 'attachment; filename="' . $result->getFileName() . '"');
+        $response->getBody()->write($result->getPayload());
+        return $response;
+    }
+
+    private function buildExportContext(Order $order, ServerRequestInterface $request): ExportContext
+    {
+        $backendUser = $request->getAttribute('backend.user');
+        return new ExportContext(
+            $order,
+            $backendUser instanceof BackendUserAuthentication ? (int)$backendUser->getUserId() : 0
+        );
     }
 
     /**
@@ -83,7 +131,22 @@ final class OrderManagementModuleController
             'voucherRedemptions' => $order !== null ? $this->orderRepository->fetchVoucherRedemptions($orderUid) : [],
             'gainedVoucher' => $order !== null ? $this->orderRepository->fetchGainedVoucher($orderUid) : null,
             'creditPointsLedger' => $order !== null ? $this->orderRepository->fetchCreditPointsLedger($orderUid) : [],
+            'exporters' => $this->availableExporters($orderUid, $request),
         ];
+    }
+
+    /**
+     * Discovery phase of the order-export API: the exporters the backend may offer for this order.
+     *
+     * @return array<OrderExportInterface>
+     */
+    private function availableExporters(int $orderUid, ServerRequestInterface $request): array
+    {
+        $order = $this->orderRepository->findForEditing($orderUid);
+        if ($order === null) {
+            return [];
+        }
+        return $this->orderExportService->availableFor($this->buildExportContext($order, $request));
     }
 
     private function canRefund(string $paymentMethodIdentifier, string $paymentStatusValue): bool

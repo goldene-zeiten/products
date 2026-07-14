@@ -9,18 +9,18 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Export\OrderExportInterface;
 
 /**
- * Fixture-only exporter proving OrderExportRegistry's tagged_iterator wiring.
+ * Proves priority sorting — this exporter is offered before the dummy exporter.
  */
-final class DummyOrderExporter implements OrderExportInterface
+final class HighPriorityOrderExporter implements OrderExportInterface
 {
     public function getIdentifier(): string
     {
-        return 'dummy';
+        return 'high-priority';
     }
 
     public function getLabel(): string
     {
-        return 'Dummy Export';
+        return 'High Priority Export';
     }
 
     public function getContentType(): string
@@ -40,11 +40,11 @@ final class DummyOrderExporter implements OrderExportInterface
 
     public function getPriority(): int
     {
-        return 0;
+        return 100;
     }
 
     public function export(Order $order): string
     {
-        return sprintf('order:%s', $order->getOrderNumber());
+        return sprintf('high-priority:%s', $order->getOrderNumber());
     }
 }

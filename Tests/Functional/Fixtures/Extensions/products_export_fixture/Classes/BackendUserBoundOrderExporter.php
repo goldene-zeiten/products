@@ -9,18 +9,18 @@ use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Export\OrderExportInterface;
 
 /**
- * Fixture-only exporter proving OrderExportRegistry's tagged_iterator wiring.
+ * Proves the context actually reaches the exporter with real data — available only for backend user 1.
  */
-final class DummyOrderExporter implements OrderExportInterface
+final class BackendUserBoundOrderExporter implements OrderExportInterface
 {
     public function getIdentifier(): string
     {
-        return 'dummy';
+        return 'be-user-bound';
     }
 
     public function getLabel(): string
     {
-        return 'Dummy Export';
+        return 'Backend User Bound Export';
     }
 
     public function getContentType(): string
@@ -35,7 +35,7 @@ final class DummyOrderExporter implements OrderExportInterface
 
     public function isAvailable(ExportContext $context): bool
     {
-        return true;
+        return $context->getBackendUserUid() === 1;
     }
 
     public function getPriority(): int
@@ -45,6 +45,6 @@ final class DummyOrderExporter implements OrderExportInterface
 
     public function export(Order $order): string
     {
-        return sprintf('order:%s', $order->getOrderNumber());
+        return sprintf('be-user-bound:%s', $order->getOrderNumber());
     }
 }
