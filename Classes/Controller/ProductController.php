@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Controller;
 
+use GoldeneZeiten\Products\Catalog\ProductListModeRegistry;
 use GoldeneZeiten\Products\Controller\Exception\ProductNotVisibleException;
 use GoldeneZeiten\Products\Controller\Exception\ProductPathMismatchException;
+use GoldeneZeiten\Products\Domain\Dto\Catalog\ProductListContext;
 use GoldeneZeiten\Products\Domain\Model\Article;
 use GoldeneZeiten\Products\Domain\Model\Category;
 use GoldeneZeiten\Products\Domain\Model\Product;
@@ -16,8 +18,6 @@ use GoldeneZeiten\Products\PageTitle\CurrentProductHolder;
 use GoldeneZeiten\Products\Service\Category\CategoryTreeService;
 use GoldeneZeiten\Products\Service\ContentElement\RecordsFieldResolver;
 use GoldeneZeiten\Products\Service\ContentElement\SelectedCategoriesResolver;
-use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsBalanceService;
-use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\RecentlyViewed\ProductViewTrackingService;
 use GoldeneZeiten\Products\Service\RecentlyViewed\RecentlyViewedStorage;
 use GoldeneZeiten\Products\Service\Variant\ArticleVariantResolver;
@@ -41,9 +41,8 @@ final class ProductController extends ActionController
         private readonly CategoryTreeService $categoryTreeService,
         private readonly RecordsFieldResolver $recordsFieldResolver,
         private readonly SelectedCategoriesResolver $selectedCategoriesResolver,
-        private readonly CreditPointsBalanceService $creditPointsBalanceService,
-        private readonly FrontendUserResolver $frontendUserResolver,
-        private readonly ProductVisibilityResolver $productVisibilityResolver
+        private readonly ProductVisibilityResolver $productVisibilityResolver,
+        private readonly ProductListModeRegistry $productListModeRegistry
     ) {}
 
     public function listAction(): ResponseInterface
@@ -171,11 +170,13 @@ final class ProductController extends ActionController
      */
     private function resolveProducts(string $mode): array
     {
+        if ($this->productListModeRegistry->has($mode)) {
+            return $this->productListModeRegistry->findProducts($mode, new ProductListContext($this->request));
+        }
         $result = match ($mode) {
             'offers' => $this->productRepository->findOffers(),
             'highlights' => $this->productRepository->findHighlights(),
             'new' => $this->productRepository->findNew($this->getNewItemDays()),
-            'affordable' => $this->productRepository->findAffordable($this->getCreditPointsBalance()),
             'articles' => $this->resolveProductsFromArticles(),
             default => $this->productRepository->findAll(),
         };
@@ -209,12 +210,6 @@ final class ProductController extends ActionController
             return max(1, (int)$days);
         }
         return self::DEFAULT_NEW_ITEM_DAYS;
-    }
-
-    private function getCreditPointsBalance(): int
-    {
-        $uid = $this->frontendUserResolver->getUid($this->request);
-        return $this->creditPointsBalanceService->getBalance($uid);
     }
 
     /**
