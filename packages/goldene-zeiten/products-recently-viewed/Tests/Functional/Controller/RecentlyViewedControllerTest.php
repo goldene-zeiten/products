@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
+namespace GoldeneZeiten\Products\RecentlyViewed\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Core\Service\RecentlyViewed\ProductViewTrackingService;
+use GoldeneZeiten\Products\RecentlyViewed\Service\ProductViewTrackingService;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,6 +26,10 @@ final class RecentlyViewedControllerTest extends AbstractFunctionalTestCase
             'title' => 'English',
             'locale' => 'en_US.UTF-8',
         ],
+    ];
+
+    protected array $testExtensionsToLoad = [
+        'goldene-zeiten/products-recently-viewed',
     ];
 
     protected array $coreExtensionsToLoad = [
@@ -66,7 +70,8 @@ final class RecentlyViewedControllerTest extends AbstractFunctionalTestCase
             'setup' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
                 'EXT:products_core/Configuration/TypoScript/setup.typoscript',
-                'EXT:products_core/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
+                'EXT:products_recently_viewed/Configuration/TypoScript/setup.typoscript',
+                'EXT:products_recently_viewed/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
             ],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
@@ -112,7 +117,7 @@ final class RecentlyViewedControllerTest extends AbstractFunctionalTestCase
         // constraining to the top-1 isolates "which product ranks first", which is what
         // this test is actually about.
         $this->addTypoScriptToTemplateRecord(1, '
-            plugin.tx_productscore.settings.mostViewed.limit = 1
+            plugin.tx_productsrecentlyviewed.settings.mostViewed.limit = 1
         ');
         $response = $this->executeFrontendSubRequest($request);
 

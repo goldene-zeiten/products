@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core\Service\RecentlyViewed;
+namespace GoldeneZeiten\Products\RecentlyViewed\Service;
 
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;

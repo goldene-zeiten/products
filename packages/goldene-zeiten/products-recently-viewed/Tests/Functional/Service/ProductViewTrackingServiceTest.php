@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\RecentlyViewed;
+namespace GoldeneZeiten\Products\RecentlyViewed\Tests\Functional\Service;
 
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
-use GoldeneZeiten\Products\Core\Service\RecentlyViewed\ProductViewTrackingService;
+use GoldeneZeiten\Products\RecentlyViewed\Service\ProductViewTrackingService;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
@@ -15,10 +15,14 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class ProductViewTrackingServiceTest extends AbstractFunctionalTestCase
 {
+    protected array $testExtensionsToLoad = [
+        'goldene-zeiten/products-recently-viewed',
+    ];
+
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/Fixtures/ProductViewTrackingServiceTest/product_view_tracking.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/product_view_tracking.csv');
     }
 
     #[Test]

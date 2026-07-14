@@ -27,9 +27,6 @@
 			<trans-unit id="plugin.wishlist" resname="plugin.wishlist">
 				<source>Wishlist</source>
 			</trans-unit>
-			<trans-unit id="plugin.recently_viewed" resname="plugin.recently_viewed">
-				<source>Recently Viewed Products</source>
-			</trans-unit>
 			<trans-unit id="plugin.category_navigation" resname="plugin.category_navigation">
 				<source>Category Navigation</source>
 			</trans-unit>
@@ -254,18 +251,6 @@
 			</trans-unit>
 			<trans-unit id="tt_content.tx_products_list_mode.articles" resname="tt_content.tx_products_list_mode.articles">
 				<source>Articles (flat listing)</source>
-			</trans-unit>
-			<trans-unit id="tt_content.tx_products_recentlyviewed_mode" resname="tt_content.tx_products_recentlyviewed_mode">
-				<source>Recently Viewed Mode</source>
-			</trans-unit>
-			<trans-unit id="tt_content.tx_products_recentlyviewed_mode.recent" resname="tt_content.tx_products_recentlyviewed_mode.recent">
-				<source>My recently viewed</source>
-			</trans-unit>
-			<trans-unit id="tt_content.tx_products_recentlyviewed_mode.mostviewed" resname="tt_content.tx_products_recentlyviewed_mode.mostviewed">
-				<source>My most viewed</source>
-			</trans-unit>
-			<trans-unit id="tt_content.tx_products_recentlyviewed_mode.mostviewedglobal" resname="tt_content.tx_products_recentlyviewed_mode.mostviewedglobal">
-				<source>Site-wide most viewed</source>
 			</trans-unit>
 			<trans-unit id="tt_content.tx_products_navigation_style" resname="tt_content.tx_products_navigation_style">
 				<source>Navigation Style</source>

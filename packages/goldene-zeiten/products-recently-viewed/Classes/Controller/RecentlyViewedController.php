@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core\Controller;
+namespace GoldeneZeiten\Products\RecentlyViewed\Controller;
 
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Core\Service\RecentlyViewed\ProductViewTrackingService;
-use GoldeneZeiten\Products\Core\Service\RecentlyViewed\RecentlyViewedStorage;
+use GoldeneZeiten\Products\RecentlyViewed\Service\ProductViewTrackingService;
+use GoldeneZeiten\Products\RecentlyViewed\Service\RecentlyViewedStorage;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 

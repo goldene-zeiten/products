@@ -53,13 +53,6 @@ defined('TYPO3') or die();
 
     ExtensionUtility::registerPlugin(
         'ProductsCore',
-        'RecentlyViewed',
-        'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.recently_viewed',
-        'EXT:products_core/Resources/Public/Icons/Extension.svg'
-    );
-
-    ExtensionUtility::registerPlugin(
-        'ProductsCore',
         'CategoryNavigation',
         'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.category_navigation',
         'EXT:products_core/Resources/Public/Icons/Extension.svg'
@@ -119,28 +112,6 @@ defined('TYPO3') or die();
                 'default' => 'all',
             ],
         ],
-        'tx_products_recentlyviewed_mode' => [
-            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_recentlyviewed_mode',
-            'config' => [
-                'type' => 'select',
-                'renderType' => 'selectSingle',
-                'items' => [
-                    [
-                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_recentlyviewed_mode.recent',
-                        'value' => 'recent',
-                    ],
-                    [
-                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_recentlyviewed_mode.mostviewed',
-                        'value' => 'mostviewed',
-                    ],
-                    [
-                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_recentlyviewed_mode.mostviewedglobal',
-                        'value' => 'mostviewedglobal',
-                    ],
-                ],
-                'default' => 'recent',
-            ],
-        ],
         'tx_products_navigation_style' => [
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_navigation_style',
             'config' => [
@@ -188,11 +159,6 @@ defined('TYPO3') or die();
         'tt_content',
         'tx_products_list_mode',
         'productscore_productlist',
-    );
-    ExtensionManagementUtility::addToAllTCAtypes(
-        'tt_content',
-        'tx_products_recentlyviewed_mode',
-        'productscore_recentlyviewed',
     );
     ExtensionManagementUtility::addToAllTCAtypes(
         'tt_content',

@@ -35,13 +35,14 @@ cat > "${INSTANCE_PATH}/composer.json" <<EOF
     "description": "Disposable TYPO3 instance for EXT:products Playwright acceptance tests. Rebuilt by Tests/Acceptance/setupInstance.sh on every run - never committed.",
     "license": "GPL-2.0-or-later",
     "repositories": [
-        {"type": "path", "url": "${ROOT_DIR}/packages/*/*", "options": {"symlink": true, "versions": {"goldene-zeiten/products-core": "1.0.0", "goldene-zeiten/products-search": "1.0.0"}}},
+        {"type": "path", "url": "${ROOT_DIR}/packages/*/*", "options": {"symlink": true, "versions": {"goldene-zeiten/products-core": "1.0.0", "goldene-zeiten/products-search": "1.0.0", "goldene-zeiten/products-recently-viewed": "1.0.0"}}},
         {"type": "path", "url": "${ROOT_DIR}/Tests/Acceptance/Packages/dataset_import", "options": {"symlink": true}}
     ],
     "require": {
         "typo3/cms-base-distribution": "^${CORE_VERSION}",
         "goldene-zeiten/products-core": "*",
         "goldene-zeiten/products-search": "*",
+        "goldene-zeiten/products-recently-viewed": "*",
         "goldene-zeiten/products-dataset-import": "*"
     },
     "config": {

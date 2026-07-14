@@ -33,15 +33,6 @@ tt_content.productscore_categorylist {
     }
 }
 
-tt_content.productscore_recentlyviewed =< lib.contentElement
-tt_content.productscore_recentlyviewed {
-    templateName = Generic
-    20 = EXTBASEPLUGIN
-    20 {
-        extensionName = ProductsCore
-        pluginName = RecentlyViewed
-    }
-}
 
 
 tt_content.productscore_download =< lib.contentElement

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core\Service\RecentlyViewed;
+namespace GoldeneZeiten\Products\RecentlyViewed\Service;
 
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;

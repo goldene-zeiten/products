@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core\Updates;
+namespace GoldeneZeiten\Products\RecentlyViewed\Updates;
 
+use GoldeneZeiten\Products\Core\Updates\LegacyMigrationHelper;
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;

@@ -165,12 +165,6 @@
 			<trans-unit id="setting.products.wishlist.enabled" resname="setting.products.wishlist.enabled">
 				<source>Show the add-to-wishlist affordance on product listings</source>
 			</trans-unit>
-			<trans-unit id="setting.products.recentlyViewed.limit" resname="setting.products.recentlyViewed.limit">
-				<source>Maximum number of recently-viewed products remembered per visitor</source>
-			</trans-unit>
-			<trans-unit id="setting.products.mostViewed.limit" resname="setting.products.mostViewed.limit">
-				<source>Maximum number of products shown in the site-wide/per-shopper "most viewed" listings</source>
-			</trans-unit>
 			<trans-unit id="setting.products.list.newItemDays" resname="setting.products.list.newItemDays">
 				<source>Number of days a product counts as "new" in the new-items listing</source>
 			</trans-unit>

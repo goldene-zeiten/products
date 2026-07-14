@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Updates;
 
+use GoldeneZeiten\Products\Core\Updates\Cleanup\LegacyCleanupGuardRegistry;
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\ArticleMigrationPrerequisite;
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\CategoryMigrationPrerequisite;
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\OrderMigrationPrerequisite;
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\ProductMigrationPrerequisite;
-use GoldeneZeiten\Products\Core\Updates\Prerequisites\VisitedProductsMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -62,7 +62,7 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
         private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
         private readonly ArticleMigrationPrerequisite $articleMigrationPrerequisite,
         private readonly OrderMigrationPrerequisite $orderMigrationPrerequisite,
-        private readonly VisitedProductsMigrationPrerequisite $visitedProductsMigrationPrerequisite,
+        private readonly LegacyCleanupGuardRegistry $cleanupGuardRegistry,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -109,6 +109,16 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
         if (!$this->prerequisitesFulfilled()) {
             return false;
         }
+        // An installed add-on may still owe a migration of legacy data - a dedicated table, or a column on
+        // a shared legacy table - that this drop would destroy. Each such add-on registers a guard, and we
+        // refuse while any of them objects, without core having to know the add-on.
+        $blockingReasons = $this->cleanupGuardRegistry->blockingReasons();
+        if ($blockingReasons !== []) {
+            foreach ($blockingReasons as $reason) {
+                $this->output->writeln('Cannot drop the legacy tables yet: ' . $reason);
+            }
+            return false;
+        }
         foreach (self::TABLES_TO_DROP as $table) {
             $this->dropTableIfExists($table);
         }
@@ -126,7 +136,6 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
             ProductMigrationPrerequisite::class,
             ArticleMigrationPrerequisite::class,
             OrderMigrationPrerequisite::class,
-            VisitedProductsMigrationPrerequisite::class,
         ];
     }
 
@@ -145,8 +154,7 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
         $fulfilled = $this->categoryMigrationPrerequisite->isFulfilled()
             && $this->productMigrationPrerequisite->isFulfilled()
             && $this->articleMigrationPrerequisite->isFulfilled()
-            && $this->orderMigrationPrerequisite->isFulfilled()
-            && $this->visitedProductsMigrationPrerequisite->isFulfilled();
+            && $this->orderMigrationPrerequisite->isFulfilled();
         if (!$fulfilled) {
             $this->output->writeln(
                 '<error>Not all tt_products data has been migrated yet; refusing to drop legacy tables.</error>'

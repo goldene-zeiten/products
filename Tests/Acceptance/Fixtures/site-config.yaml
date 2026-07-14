@@ -15,6 +15,7 @@ websiteTitle: 'Products Acceptance'
 dependencies:
   - goldene-zeiten/products-core
   - goldene-zeiten/products-search
+  - goldene-zeiten/products-recently-viewed
 settings:
   products:
     creditPoints:

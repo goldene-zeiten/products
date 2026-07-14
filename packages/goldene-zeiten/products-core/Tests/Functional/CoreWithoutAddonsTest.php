@@ -25,6 +25,7 @@ final class CoreWithoutAddonsTest extends AbstractFunctionalTestCase
     {
         return [
             'search' => ['productssearch_search'],
+            'recently viewed' => ['productsrecentlyviewed_recentlyviewed'],
         ];
     }
 
@@ -37,6 +38,7 @@ final class CoreWithoutAddonsTest extends AbstractFunctionalTestCase
             'search browse mode' => ['tx_products_search_browse_mode'],
             'search target' => ['tx_products_search_target'],
             'search field' => ['tx_products_search_field'],
+            'recently viewed mode' => ['tx_products_recentlyviewed_mode'],
         ];
     }
 

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core\Tests\Functional\Updates;
+namespace GoldeneZeiten\Products\RecentlyViewed\Tests\Functional\Updates;
 
-use GoldeneZeiten\Products\Core\Updates\TtProductsVisitedProductsUpgradeWizard;
+use GoldeneZeiten\Products\RecentlyViewed\Updates\TtProductsVisitedProductsUpgradeWizard;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 final class TtProductsVisitedProductsUpgradeWizardTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
+        'goldene-zeiten/products-recently-viewed',
         'goldene-zeiten/products-legacy-fixture',
     ];
 

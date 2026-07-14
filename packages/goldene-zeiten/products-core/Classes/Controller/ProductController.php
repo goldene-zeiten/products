@@ -14,12 +14,11 @@ use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\Repository\ArticleRepository;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Event\ModifyProductListEvent;
+use GoldeneZeiten\Products\Core\Event\ProductViewedEvent;
 use GoldeneZeiten\Products\Core\PageTitle\CurrentProductHolder;
 use GoldeneZeiten\Products\Core\Service\Category\CategoryTreeService;
 use GoldeneZeiten\Products\Core\Service\ContentElement\RecordsFieldResolver;
 use GoldeneZeiten\Products\Core\Service\ContentElement\SelectedCategoriesResolver;
-use GoldeneZeiten\Products\Core\Service\RecentlyViewed\ProductViewTrackingService;
-use GoldeneZeiten\Products\Core\Service\RecentlyViewed\RecentlyViewedStorage;
 use GoldeneZeiten\Products\Core\Service\Variant\ArticleVariantResolver;
 use GoldeneZeiten\Products\Core\Service\Wishlist\WishlistService;
 use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
@@ -34,8 +33,6 @@ final class ProductController extends ActionController
         private readonly ProductRepository $productRepository,
         private readonly ArticleRepository $articleRepository,
         private readonly WishlistService $wishlistService,
-        private readonly RecentlyViewedStorage $recentlyViewedStorage,
-        private readonly ProductViewTrackingService $productViewTrackingService,
         private readonly ArticleVariantResolver $articleVariantResolver,
         private readonly CurrentProductHolder $currentProductHolder,
         private readonly CategoryTreeService $categoryTreeService,
@@ -89,10 +86,7 @@ final class ProductController extends ActionController
         }
 
         $this->currentProductHolder->setProduct($product);
-        if ($product->getUid() !== null) {
-            $this->recentlyViewedStorage->record($this->request, $product->getUid());
-            $this->productViewTrackingService->record($this->request, $product->getUid());
-        }
+        $this->eventDispatcher->dispatch(new ProductViewedEvent($product, $this->request));
         $this->view->assignMultiple([
             'product' => $product,
             'variantAttributes' => $product->getVariantAttributes(),
