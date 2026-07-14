@@ -11,16 +11,17 @@ use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\OrderPlacementResult;
+use GoldeneZeiten\Products\Domain\Dto\Loyalty\LoyaltyContext;
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
 use GoldeneZeiten\Products\Domain\Enum\PaymentResultState;
 use GoldeneZeiten\Products\Domain\Model\Order;
 use GoldeneZeiten\Products\Event\BeforeOrderPlacedEvent;
 use GoldeneZeiten\Products\Event\PaymentInitiatedEvent;
+use GoldeneZeiten\Products\Loyalty\LoyaltyRegistry;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Service\Basket\BasketService;
 use GoldeneZeiten\Products\Service\Checkout\PriceQuoteService;
-use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Order\Exception\EmptyBasketException;
 use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementVetoedException;
@@ -36,7 +37,7 @@ final class OrderPlacementService
         private readonly OrderPlacementTransaction $orderPlacementTransaction,
         private readonly OrderFinalizationService $orderFinalizationService,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly CreditPointsService $creditPointsService,
+        private readonly LoyaltyRegistry $loyaltyRegistry,
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly PriceQuoteService $priceQuoteService,
         private readonly ProductsConfigurationFactory $configurationFactory,
@@ -56,9 +57,14 @@ final class OrderPlacementService
         if (!$choices->isTermsAccepted()) {
             throw new TermsNotAcceptedException('Please accept the terms and conditions before placing your order.', 1752422400);
         }
-        if ($choices->getSpendPoints() > 0) {
-            $this->creditPointsService->assertSpendable($this->frontendUserResolver->getUid($request), $choices->getSpendPoints());
-        }
+        $liveBasket = $this->basketService->getBasketViewModel($request);
+        $this->loyaltyRegistry->assertRedeemable(new LoyaltyContext(
+            $request,
+            $liveBasket,
+            $liveBasket->getTotalGross(),
+            $this->frontendUserResolver->getUid($request),
+            $choices->getSpendPoints()
+        ));
         $checkoutSelections = new CheckoutSelections(
             $this->voucherCheckoutState->getCodes($request),
             $choices->getSpendPoints(),

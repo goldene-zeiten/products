@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Controller;
 
-use GoldeneZeiten\Products\Configuration\CreditPointsConfigurationFactory;
 use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
+use GoldeneZeiten\Products\Domain\Dto\Loyalty\LoyaltyContext;
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingContext;
 use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingOption;
+use GoldeneZeiten\Products\Loyalty\LoyaltyRegistry;
 use GoldeneZeiten\Products\Payment\Exception\PaymentCallbackException;
 use GoldeneZeiten\Products\Payment\Exception\PaymentMethodNotFoundException;
 use GoldeneZeiten\Products\Payment\PaymentCallbackService;
@@ -19,7 +20,6 @@ use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Service\Checkout\CheckoutService;
 use GoldeneZeiten\Products\Service\Checkout\PriceQuoteService;
-use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Invoice\InvoiceTokenService;
 use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementExceptionInterface;
@@ -40,17 +40,16 @@ final class CheckoutController extends ActionController
         private readonly CheckoutService $checkoutService,
         private readonly PaymentMethodRegistry $paymentMethodRegistry,
         private readonly PaymentCallbackService $paymentCallbackService,
+        private readonly LoyaltyRegistry $loyaltyRegistry,
         private readonly PaymentContextFactory $paymentContextFactory,
         private readonly OrderPlacementService $orderPlacementService,
         private readonly FrontendUserResolver $frontendUserResolver,
-        private readonly CreditPointsService $creditPointsService,
         private readonly ShippingQuoteService $shippingQuoteService,
         private readonly ShippingContextFactory $shippingContextFactory,
         private readonly InvoiceTokenService $invoiceTokenService,
         private readonly WithdrawalTokenService $withdrawalTokenService,
         private readonly OrderTokenService $orderTokenService,
         private readonly ProductsConfigurationFactory $configurationFactory,
-        private readonly CreditPointsConfigurationFactory $creditPointsConfigurationFactory,
         private readonly PriceQuoteService $priceQuoteService
     ) {}
 
@@ -185,11 +184,19 @@ final class CheckoutController extends ActionController
      */
     private function creditPointsBalance(): int
     {
-        $configuration = $this->creditPointsConfigurationFactory->create($this->request);
-        if (!$configuration->isEnabled()) {
-            return 0;
-        }
-        return $this->creditPointsService->getBalance($this->frontendUserResolver->getUid($this->request));
+        return $this->loyaltyRegistry->getBalance($this->loyaltyContext());
+    }
+
+    private function loyaltyContext(): LoyaltyContext
+    {
+        $basket = $this->checkoutService->getBasketViewModel($this->request);
+
+        return new LoyaltyContext(
+            $this->request,
+            $basket,
+            $basket->getTotalGross(),
+            $this->frontendUserResolver->getUid($this->request)
+        );
     }
 
     private function findPaymentMethod(string $identifier): ?PaymentMethodInterface

@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Domain\Dto\Checkout;
 
-use GoldeneZeiten\Products\Configuration\CreditPointsConfiguration;
-use GoldeneZeiten\Products\Domain\Dto\CreditPointsRedemption;
 use GoldeneZeiten\Products\Domain\Dto\Discount\DiscountContext;
+use GoldeneZeiten\Products\Domain\Dto\Loyalty\LoyaltyContext;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**
@@ -20,8 +19,7 @@ final readonly class PlacementContext
     public function __construct(
         private PlacementDetails $details,
         private DiscountContext $discountContext,
-        private CreditPointsRedemption $pointsRedemption,
-        private CreditPointsConfiguration $creditPointsConfiguration,
+        private LoyaltyContext $loyaltyContext,
         private int $frontendUser
     ) {}
 
@@ -35,14 +33,9 @@ final readonly class PlacementContext
         return $this->discountContext;
     }
 
-    public function getPointsRedemption(): CreditPointsRedemption
+    public function getLoyaltyContext(): LoyaltyContext
     {
-        return $this->pointsRedemption;
-    }
-
-    public function getCreditPointsConfiguration(): CreditPointsConfiguration
-    {
-        return $this->creditPointsConfiguration;
+        return $this->loyaltyContext;
     }
 
     public function getFrontendUser(): int
