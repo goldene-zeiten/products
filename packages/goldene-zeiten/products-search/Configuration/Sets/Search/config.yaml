@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-search
+label: Products Search
+dependencies:
+  - goldene-zeiten/products-core

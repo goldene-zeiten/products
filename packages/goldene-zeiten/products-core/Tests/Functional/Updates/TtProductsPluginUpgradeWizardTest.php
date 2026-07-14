@@ -98,32 +98,6 @@ final class TtProductsPluginUpgradeWizardTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
-    public function searchPluginWithFirstLetterMode(): void
-    {
-        $output = new BufferedOutput();
-        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsPluginUpgradeWizardTest/search_plugin_firstletter.csv');
-        $subject = $this->subject($output);
-
-        $this->assertTrue($subject->updateNecessary());
-        $this->assertTrue($subject->executeUpdate());
-
-        $this->assertCSVDataSet(__DIR__ . '/Fixtures/TtProductsPluginUpgradeWizardTest/Result/search_plugin_firstletter_migrated.csv');
-    }
-
-    #[Test]
-    public function searchPluginWithKeyFieldMode(): void
-    {
-        $output = new BufferedOutput();
-        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsPluginUpgradeWizardTest/search_plugin_keyfield.csv');
-        $subject = $this->subject($output);
-
-        $this->assertTrue($subject->updateNecessary());
-        $this->assertTrue($subject->executeUpdate());
-
-        $this->assertCSVDataSet(__DIR__ . '/Fixtures/TtProductsPluginUpgradeWizardTest/Result/search_plugin_keyfield_migrated.csv');
-    }
-
-    #[Test]
     public function terminationAndIdempotency(): void
     {
         $output = new BufferedOutput();

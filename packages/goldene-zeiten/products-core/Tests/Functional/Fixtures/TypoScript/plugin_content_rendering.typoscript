@@ -43,15 +43,6 @@ tt_content.productscore_recentlyviewed {
     }
 }
 
-tt_content.productscore_search =< lib.contentElement
-tt_content.productscore_search {
-    templateName = Generic
-    20 = EXTBASEPLUGIN
-    20 {
-        extensionName = ProductsCore
-        pluginName = Search
-    }
-}
 
 tt_content.productscore_download =< lib.contentElement
 tt_content.productscore_download {

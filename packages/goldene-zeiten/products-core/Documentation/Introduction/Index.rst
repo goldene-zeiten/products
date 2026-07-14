@@ -50,10 +50,6 @@ The extension registers ten content element plugins:
     Shows the products the current visitor looked at most recently, independent of the
     :rst:dir:`ProductDetail` page — place it anywhere, e.g. a sidebar.
 
-..  confval:: Search
-
-    A simple catalog search across title, subtitle, item number, description and EAN.
-
 ..  confval:: Invoice
 
     Not meant to be placed by an editor - registered so the secured invoice PDF download link

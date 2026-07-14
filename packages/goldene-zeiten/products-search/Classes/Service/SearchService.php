@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core\Service\Search;
+namespace GoldeneZeiten\Products\Search\Service;
 
-use GoldeneZeiten\Products\Core\Domain\Dto\Search\SearchResult;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Search\Domain\Dto\SearchResult;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 

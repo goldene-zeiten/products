@@ -243,7 +243,7 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         if ($searchField !== '') {
             $fields['tx_products_search_field'] = $searchField;
         }
-        return ['ctype' => 'productscore_search', 'fields' => $fields];
+        return ['ctype' => 'productssearch_search', 'fields' => $fields];
     }
 
     /**

@@ -189,15 +189,6 @@
 			<trans-unit id="my_most_viewed_empty" resname="my_most_viewed_empty">
 				<source>Log in to see the products you view most often.</source>
 			</trans-unit>
-			<trans-unit id="search" resname="search">
-				<source>Search</source>
-			</trans-unit>
-			<trans-unit id="search_placeholder" resname="search_placeholder">
-				<source>Search products&#8230;</source>
-			</trans-unit>
-			<trans-unit id="search_no_results" resname="search_no_results">
-				<source>No products found for "%s".</source>
-			</trans-unit>
 			<trans-unit id="previous_page" resname="previous_page">
 				<source>Previous</source>
 			</trans-unit>

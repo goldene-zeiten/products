@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_search/Resources/Private/Language/locallang_settings.xlf" date="2026-07-14T18:00:00Z" product-name="products_search">
+		<header/>
+		<body>
+			<trans-unit id="category.search" resname="category.search">
+				<source>Search</source>
+			</trans-unit>
+			<trans-unit id="setting.products.search.resultsPerPage" resname="setting.products.search.resultsPerPage">
+				<source>Search results per page</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

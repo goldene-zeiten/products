@@ -29,6 +29,9 @@ jobs:
           - package: products-core
             directory: packages/goldene-zeiten/products-core
             repository: products-core
+          - package: products-search
+            directory: packages/goldene-zeiten/products-search
+            repository: products-search
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4

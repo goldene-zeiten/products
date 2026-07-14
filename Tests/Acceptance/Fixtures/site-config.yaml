@@ -14,6 +14,7 @@ websiteTitle: 'Products Acceptance'
 # false) and hung waiting for a shippingMethod radio that was never rendered.
 dependencies:
   - goldene-zeiten/products-core
+  - goldene-zeiten/products-search
 settings:
   products:
     creditPoints:

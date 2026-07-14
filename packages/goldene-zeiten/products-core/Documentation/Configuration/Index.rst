@@ -377,12 +377,6 @@ from. Set it before creating any content.
         (the :rst:dir:`RecentlyViewed` plugin's ``mostViewed``/``myMostViewed`` actions). See
         :ref:`Most viewed <users-manual-most-viewed>`.
 
-    ..  confval:: products.search.resultsPerPage
-        :type: int
-        :Default: 20
-
-        Results shown per page by the :rst:dir:`Search` plugin.
-
     ..  confval:: products.checkout.withdrawalPeriodDays
         :type: int
         :Default: 14

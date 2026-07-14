@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
+namespace GoldeneZeiten\Products\Search\Tests\Functional\Controller;
 
 use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -29,6 +29,7 @@ final class SearchControllerTest extends AbstractFunctionalTestCase
 
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products-core',
+        'goldene-zeiten/products-search',
     ];
 
     protected function setUp(): void
@@ -53,7 +54,8 @@ final class SearchControllerTest extends AbstractFunctionalTestCase
             'setup' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
                 'EXT:products_core/Configuration/TypoScript/setup.typoscript',
-                'EXT:products_core/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
+                'EXT:products_search/Configuration/TypoScript/setup.typoscript',
+                'EXT:products_search/Tests/Functional/Fixtures/TypoScript/plugin_content_rendering.typoscript',
             ],
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
@@ -211,8 +213,8 @@ final class SearchControllerTest extends AbstractFunctionalTestCase
         ');
 
         $queryParameters = [
-            'tx_productscore_search[keywords][0]' => 'KF-A',
-            'tx_productscore_search[keywords][1]' => 'KF-C',
+            'tx_productssearch_search[keywords][0]' => 'KF-A',
+            'tx_productssearch_search[keywords][1]' => 'KF-C',
         ];
         // RFC3986 encoding required; RFC1738 "+" breaks cHash for values with spaces.
         $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(

@@ -9,7 +9,6 @@ use GoldeneZeiten\Products\Core\Controller\InvoiceController;
 use GoldeneZeiten\Products\Core\Controller\OrderController;
 use GoldeneZeiten\Products\Core\Controller\ProductController;
 use GoldeneZeiten\Products\Core\Controller\RecentlyViewedController;
-use GoldeneZeiten\Products\Core\Controller\SearchController;
 use GoldeneZeiten\Products\Core\Controller\WishlistController;
 use GoldeneZeiten\Products\Core\Controller\WithdrawalController;
 use GoldeneZeiten\Products\Core\Hooks\CategoryMountAccessHook;
@@ -118,17 +117,6 @@ ExtensionUtility::configurePlugin(
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );
 
-ExtensionUtility::configurePlugin(
-    'ProductsCore',
-    'Search',
-    [
-        SearchController::class => 'search',
-    ],
-    [
-        SearchController::class => 'search',
-    ],
-    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
-);
 
 ExtensionUtility::configurePlugin(
     'ProductsCore',

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core\Controller;
+namespace GoldeneZeiten\Products\Search\Controller;
 
-use GoldeneZeiten\Products\Core\Service\Search\FacetedBrowseService;
-use GoldeneZeiten\Products\Core\Service\Search\SearchService;
+use GoldeneZeiten\Products\Search\Service\FacetedBrowseService;
+use GoldeneZeiten\Products\Search\Service\SearchService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 

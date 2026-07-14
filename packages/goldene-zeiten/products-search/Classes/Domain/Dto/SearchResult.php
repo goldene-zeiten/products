@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core\Domain\Dto\Search;
+namespace GoldeneZeiten\Products\Search\Domain\Dto;
 
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;

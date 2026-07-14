@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Search;
+namespace GoldeneZeiten\Products\Search\Tests\Functional\Service;
 
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Core\Service\Search\SearchService;
 use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\FixtureConfigurationManager;
+use GoldeneZeiten\Products\Search\Service\SearchService;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
@@ -18,12 +18,13 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products-core',
+        'goldene-zeiten/products-search',
     ];
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/search.csv');
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/search.csv');
     }
 
     #[Test]

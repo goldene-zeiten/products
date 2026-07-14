@@ -575,17 +575,6 @@ account (no anonymous browsing behaviour is tracked beyond the session-only rece
 `products.mostViewed.limit` (default 10) caps both listings independently of
 `products.recentlyViewed.limit`.
 
-..  _users-manual-search:
-
-Catalog search
-================
-
-The :rst:dir:`Search` plugin offers a simple search box; results match the term against a
-product's title, subtitle, item number, description or EAN (case-insensitive, partial matches
-count — e.g. searching "shoe" finds "Running Shoes"). It is not a full-text search engine: there is
-no relevance ranking or fuzzy matching, which is adequate for a catalog of moderate size. Results
-are paginated at :guilabel:`Search results per page` (default 20) per page.
-
 ..  _users-manual-invoice:
 
 Invoice PDF

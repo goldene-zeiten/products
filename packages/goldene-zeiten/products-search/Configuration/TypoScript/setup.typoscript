@@ -1,0 +1,22 @@
+plugin.tx_productssearch {
+    view {
+        templateRootPaths {
+            0 = EXT:products_search/Resources/Private/Templates/
+        }
+        # The search results reuse the core catalog's partials (a product list item is rendered the
+        # same way wherever it appears), so core's paths are searched first and this extension's own
+        # paths can override them.
+        partialRootPaths {
+            0 = EXT:products_core/Resources/Private/Partials/
+            10 = EXT:products_search/Resources/Private/Partials/
+        }
+        layoutRootPaths {
+            0 = EXT:products_core/Resources/Private/Layouts/
+            10 = EXT:products_search/Resources/Private/Layouts/
+        }
+    }
+    # Those core partials read the catalog settings (page uids, pricing, ...) from the plugin they are
+    # rendered in, which is this one - not core's.
+    settings < plugin.tx_productscore.settings
+    persistence < plugin.tx_productscore.persistence
+}

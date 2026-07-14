@@ -28,7 +28,7 @@ final class LegacyPluginModeMap
         'LISTVIEWEDMOST' => ['ctype' => 'productscore_recentlyviewed', 'fields' => ['tx_products_recentlyviewed_mode' => 'mostviewed']],
         'LISTVIEWEDMOSTOTHERS' => ['ctype' => 'productscore_recentlyviewed', 'fields' => ['tx_products_recentlyviewed_mode' => 'mostviewedglobal']],
         'SINGLE' => ['ctype' => 'productscore_productdetail', 'fields' => []],
-        'SEARCH' => ['ctype' => 'productscore_search', 'fields' => ['tx_products_search_browse_mode' => 'text']],
+        'SEARCH' => ['ctype' => 'productssearch_search', 'fields' => ['tx_products_search_browse_mode' => 'text']],
         'MEMO' => ['ctype' => 'productscore_wishlist', 'fields' => []],
         'BASKET' => ['ctype' => 'productscore_basket', 'fields' => []],
         'ORDERS' => ['ctype' => 'productscore_orderhistory', 'fields' => []],

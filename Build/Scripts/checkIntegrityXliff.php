@@ -32,7 +32,6 @@ if (PHP_SAPI !== 'cli') {
 
 final readonly class CheckIntegrityXliff
 {
-    private const extensionKey = 'products';
     private const xliffModuleRegularExpression = '@Language/(module\.xlf|Modules/.+\.xlf)$@i';
     private const xliffModuleRequiredKeys = [
         'title',
@@ -114,17 +113,43 @@ final readonly class CheckIntegrityXliff
 
     private function findXliff(): Finder
     {
+        $languageDirectories = array_filter(
+            array_merge(
+                glob(__DIR__ . '/../../packages/*/*/Resources/Private/Language') ?: [],
+                glob(__DIR__ . '/../../packages-dev/*/Resources/Private/Language') ?: [],
+            ),
+            'is_dir'
+        );
+
         $finder = new Finder();
         return $finder
             ->files()
-            ->in(__DIR__ . '/../../Resources/Private/Language/')
+            ->in($languageDirectories)
             ->name('*.xlf');
+    }
+
+    /**
+     * Every package declares its own extension key, so it is resolved from the composer manifest of
+     * the package the label file belongs to rather than from a single hardcoded key.
+     */
+    private function extensionKeyOf(string $labelFile): string
+    {
+        $packageRoot = dirname($labelFile, 4);
+        $manifest = $packageRoot . '/composer.json';
+        if (is_file($manifest)) {
+            $composer = json_decode((string)file_get_contents($manifest), true);
+            $extensionKey = $composer['extra']['typo3/cms']['extension-key'] ?? null;
+            if (is_string($extensionKey) && $extensionKey !== '') {
+                return $extensionKey;
+            }
+        }
+        return basename($packageRoot);
     }
 
     private function checkValidLabels(string $labelFile): array
     {
-        $extensionKey = self::extensionKey;
-        $languageRoot = realpath(__DIR__ . '/../../Resources/Private/Language/') . '/';
+        $extensionKey = $this->extensionKeyOf($labelFile);
+        $languageRoot = dirname($labelFile) . '/';
         $shortLabelFile = str_starts_with($labelFile, $languageRoot) ? substr($labelFile, strlen($languageRoot)) : basename($labelFile);
 
         $result = [

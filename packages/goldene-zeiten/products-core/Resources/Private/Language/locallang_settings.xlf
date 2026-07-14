@@ -33,9 +33,6 @@
 			<trans-unit id="category.discovery" resname="category.discovery">
 				<source>Wishlist &amp; Discovery</source>
 			</trans-unit>
-			<trans-unit id="category.search" resname="category.search">
-				<source>Search</source>
-			</trans-unit>
 			<trans-unit id="category.email" resname="category.email">
 				<source>Email &amp; Notifications</source>
 			</trans-unit>
@@ -176,9 +173,6 @@
 			</trans-unit>
 			<trans-unit id="setting.products.list.newItemDays" resname="setting.products.list.newItemDays">
 				<source>Number of days a product counts as "new" in the new-items listing</source>
-			</trans-unit>
-			<trans-unit id="setting.products.search.resultsPerPage" resname="setting.products.search.resultsPerPage">
-				<source>Search results per page</source>
 			</trans-unit>
 			<trans-unit id="setting.products.email.senderEmail" resname="setting.products.email.senderEmail">
 				<source>Sender email</source>

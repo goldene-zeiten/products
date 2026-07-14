@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GoldeneZeiten\Products\Core\Service\Search;
+namespace GoldeneZeiten\Products\Search\Service;
 
 use GoldeneZeiten\Products\Core\Domain\Repository\ArticleRepository;
 use GoldeneZeiten\Products\Core\Domain\Repository\CategoryRepository;

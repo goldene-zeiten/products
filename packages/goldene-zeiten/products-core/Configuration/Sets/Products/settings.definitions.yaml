@@ -28,9 +28,6 @@ categories:
   discovery:
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.discovery'
     parent: products
-  search:
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.search'
-    parent: products
   email:
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.email'
     parent: products
@@ -258,11 +255,6 @@ settings:
     default: 7
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.list.newItemDays'
     category: discovery
-  products.search.resultsPerPage:
-    type: int
-    default: 20
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.search.resultsPerPage'
-    category: search
   products.email.senderEmail:
     type: string
     default: ''
