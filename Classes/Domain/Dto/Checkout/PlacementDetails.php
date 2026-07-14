@@ -16,12 +16,8 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 #[Exclude]
 final readonly class PlacementDetails
 {
-    /**
-     * @param string[] $voucherCodes
-     */
     public function __construct(
         private AdjustmentCollection $adjustments,
-        private array $voucherCodes = [],
         private ?ShippingSelection $shippingSelection = null,
         private ?Address $deliveryAddress = null,
         private string $giftMessage = ''
@@ -30,14 +26,6 @@ final readonly class PlacementDetails
     public function getAdjustments(): AdjustmentCollection
     {
         return $this->adjustments;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getVoucherCodes(): array
-    {
-        return $this->voucherCodes;
     }
 
     public function getShippingSelection(): ShippingSelection

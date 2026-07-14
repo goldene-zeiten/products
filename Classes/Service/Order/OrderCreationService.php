@@ -7,8 +7,9 @@ namespace GoldeneZeiten\Products\Service\Order;
 use GoldeneZeiten\Products\Configuration\CreditPointsConfiguration;
 use GoldeneZeiten\Products\Configuration\CreditPointsConfigurationFactory;
 use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
+use GoldeneZeiten\Products\Discount\DiscountContextFactory;
+use GoldeneZeiten\Products\Discount\DiscountRegistry;
 use GoldeneZeiten\Products\Domain\Dto\Address;
-use GoldeneZeiten\Products\Domain\Dto\BasketDiscountSummary;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
@@ -20,27 +21,21 @@ use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
 use GoldeneZeiten\Products\Domain\Enum\CreditPointsTransactionType;
 use GoldeneZeiten\Products\Domain\Model\CreditPointsTransaction;
 use GoldeneZeiten\Products\Domain\Model\Order;
-use GoldeneZeiten\Products\Domain\Model\Voucher;
-use GoldeneZeiten\Products\Domain\Model\VoucherRedemption;
 use GoldeneZeiten\Products\Domain\Repository\CreditPointsTransactionRepository;
 use GoldeneZeiten\Products\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Domain\Repository\VoucherRedemptionRepository;
 use GoldeneZeiten\Products\Domain\ValueObject\AdjustmentCollection;
 use GoldeneZeiten\Products\Domain\ValueObject\CheckoutAdjustment;
+use GoldeneZeiten\Products\Domain\ValueObject\CoreAdjustmentProvider;
 use GoldeneZeiten\Products\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Event\AfterOrderPlacedEvent;
 use GoldeneZeiten\Products\Event\LowStockThresholdReachedEvent;
-use GoldeneZeiten\Products\Event\VoucherRedeemedEvent;
 use GoldeneZeiten\Products\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsBalanceService;
 use GoldeneZeiten\Products\Service\CreditPoints\CreditPointsService;
 use GoldeneZeiten\Products\Service\CreditPoints\Exception\InsufficientCreditPointsException;
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
-use GoldeneZeiten\Products\Service\Order\Exception\VoucherRedemptionFailedException;
 use GoldeneZeiten\Products\Service\Shipping\HandlingFeeService;
-use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherExceptionInterface;
-use GoldeneZeiten\Products\Service\Voucher\VoucherService;
 use GoldeneZeiten\Products\Shipping\ShippingContextFactory;
 use GoldeneZeiten\Products\Shipping\ShippingQuoteService;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -51,17 +46,6 @@ final class OrderCreationService
 {
     private const DEFAULT_LOW_STOCK_THRESHOLD = 5;
 
-    /**
-     * What the carrier charges. A free-shipping voucher waives this.
-     */
-    public const PROVIDER_SHIPPING = 'core.shipping';
-
-    /**
-     * What the shop charges on top of the carrier - the bulky-goods surcharge. Not waived by a
-     * free-shipping voucher: handling an oversized item costs the same whoever pays for the transport.
-     */
-    public const PROVIDER_SHIPPING_SURCHARGE = 'core.shipping.surcharge';
-
     public function __construct(
         private readonly PaymentContextFactory $paymentContextFactory,
         private readonly StockService $stockService,
@@ -69,8 +53,8 @@ final class OrderCreationService
         private readonly OrderFactory $orderFactory,
         private readonly PersistenceManagerInterface $persistenceManager,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly VoucherService $voucherService,
-        private readonly VoucherRedemptionRepository $voucherRedemptionRepository,
+        private readonly DiscountRegistry $discountRegistry,
+        private readonly DiscountContextFactory $discountContextFactory,
         private readonly CreditPointsService $creditPointsService,
         private readonly CreditPointsBalanceService $creditPointsBalanceService,
         private readonly CreditPointsTransactionRepository $creditPointsTransactionRepository,
@@ -106,7 +90,7 @@ final class OrderCreationService
         $this->termsSnapshotService->snapshot($order);
         $this->persistenceManager->persistAll();
 
-        $this->redeemVouchers($context->getVoucherSummary(), $order, $context->getFrontendUser(), $basketViewModel->getTotalGross());
+        $this->discountRegistry->apply($order, $context->getDiscountContext());
         $this->recordCreditPoints($basketViewModel, $context->getPointsRedemption(), $order, $context->getFrontendUser(), $context->getCreditPointsConfiguration());
         $this->eventDispatcher->dispatch(new AfterOrderPlacedEvent($order, $request));
 
@@ -123,22 +107,43 @@ final class OrderCreationService
         $configuration = $this->configurationFactory->create($request);
         $creditPointsConfiguration = $this->creditPointsConfigurationFactory->create($request);
         $frontendUser = $this->frontendUserResolver->getUid($request);
-        $voucherSummary = $this->resolveVoucherDiscount($checkoutSelections->getVoucherCodes(), $basketViewModel, $frontendUser);
-        $pointsRedemption = $this->resolvePointsRedemption($checkoutSelections->getSpendPoints(), $basketViewModel, $voucherSummary, $frontendUser, $creditPointsConfiguration);
         $shippingContext = $this->shippingContextFactory->createFromBasket($basketViewModel, $address, $frontendUser);
         $shippingSelection = $this->shippingQuoteService->resolveSelection($configuration, $shippingContext, $checkoutSelections->getShippingOptionKey(), $request);
         $handlingFeeCost = $this->handlingFeeService->resolveCost($configuration, $basketViewModel, $address->getCountry(), $request);
 
-        $adjustments = $this->buildAdjustments($basketViewModel, $voucherSummary, $pointsRedemption, $shippingSelection, $handlingFeeCost);
+        // Charges first, then discounts that may offset them, then loyalty against what remains, then the
+        // payment fee on the final total.
+        $adjustments = $this->baseAdjustments($basketViewModel, $shippingSelection, $handlingFeeCost);
+        $discountContext = $this->discountContextFactory->createFromBasket($basketViewModel, $frontendUser, $checkoutSelections->getVoucherCodes(), $adjustments);
+        foreach ($this->discountRegistry->collect($discountContext) as $discountAdjustment) {
+            $adjustments = $adjustments->with($discountAdjustment);
+        }
+        $pointsRedemption = $this->resolvePointsRedemption($checkoutSelections->getSpendPoints(), $basketViewModel, $adjustments->getDiscountTotal(), $frontendUser, $creditPointsConfiguration);
+        $adjustments = $this->withLoyalty($adjustments, $pointsRedemption);
+        $adjustments = $this->withPaymentFee($adjustments, $paymentMethod, $basketViewModel, $address, $frontendUser);
+
         $details = new PlacementDetails(
-            $this->withPaymentFee($adjustments, $paymentMethod, $basketViewModel, $address, $frontendUser),
-            $this->voucherCodes($voucherSummary),
+            $adjustments,
             $shippingSelection,
             $checkoutSelections->getDeliveryAddress(),
             $checkoutSelections->getGiftMessage()
         );
 
-        return new PlacementContext($details, $voucherSummary, $pointsRedemption, $creditPointsConfiguration, $frontendUser);
+        return new PlacementContext($details, $discountContext, $pointsRedemption, $creditPointsConfiguration, $frontendUser);
+    }
+
+    private function withLoyalty(AdjustmentCollection $adjustments, CreditPointsRedemption $pointsRedemption): AdjustmentCollection
+    {
+        if ($pointsRedemption->getDiscountAmount()->getCents() === 0) {
+            return $adjustments;
+        }
+
+        return $adjustments->with(new CheckoutAdjustment(
+            AdjustmentType::LOYALTY,
+            CoreAdjustmentProvider::CREDIT_POINTS,
+            '',
+            $this->negate($pointsRedemption->getDiscountAmount())
+        ));
     }
 
     /**
@@ -167,20 +172,18 @@ final class OrderCreationService
     }
 
     /**
-     * The order's money effects, in the order they apply. Each is a signed amount, so a later feature can
-     * offset an earlier one instead of having to reach into it.
+     * The charges the discounts then run against: what the carrier bills, what the shop adds on top, the
+     * handling fee and the deposit. Discounts and the payment fee are layered on afterwards.
      */
-    private function buildAdjustments(
+    private function baseAdjustments(
         BasketViewModel $basketViewModel,
-        BasketDiscountSummary $voucherSummary,
-        CreditPointsRedemption $pointsRedemption,
         ShippingSelection $shippingSelection,
         Money $handlingFeeCost
     ): AdjustmentCollection {
         $candidates = [
             new CheckoutAdjustment(
                 AdjustmentType::SHIPPING,
-                self::PROVIDER_SHIPPING,
+                CoreAdjustmentProvider::SHIPPING,
                 $shippingSelection->getLabel(),
                 $shippingSelection->getCarrierCost(),
                 $shippingSelection->getTaxRate()
@@ -189,26 +192,13 @@ final class OrderCreationService
             // charges, not what an oversized item costs this shop to handle.
             new CheckoutAdjustment(
                 AdjustmentType::SHIPPING,
-                self::PROVIDER_SHIPPING_SURCHARGE,
+                CoreAdjustmentProvider::SHIPPING_SURCHARGE,
                 '',
                 $shippingSelection->getSurcharge(),
                 $shippingSelection->getTaxRate()
             ),
-            // A free-shipping voucher offsets the carrier's rate rather than suppressing it: the order
-            // records what shipping cost and what the voucher paid for, instead of hiding both. This is
-            // also what lets the voucher stay ignorant of shipping - it negates an adjustment it can see.
-            new CheckoutAdjustment(
-                AdjustmentType::DISCOUNT,
-                'core.voucher.free_shipping',
-                '',
-                $this->anyVoucherWaivesShipping($voucherSummary->getAppliedVouchers())
-                    ? $this->negate($shippingSelection->getCarrierCost())
-                    : Money::fromCents(0)
-            ),
-            new CheckoutAdjustment(AdjustmentType::HANDLING, 'core.handling', '', $handlingFeeCost),
-            new CheckoutAdjustment(AdjustmentType::DISCOUNT, 'core.voucher', '', $this->negate($voucherSummary->getDiscountTotal())),
-            new CheckoutAdjustment(AdjustmentType::LOYALTY, 'core.credit_points', '', $this->negate($pointsRedemption->getDiscountAmount())),
-            new CheckoutAdjustment(AdjustmentType::DEPOSIT, 'core.deposit', '', $basketViewModel->getDepositTotal()),
+            new CheckoutAdjustment(AdjustmentType::HANDLING, CoreAdjustmentProvider::HANDLING, '', $handlingFeeCost),
+            new CheckoutAdjustment(AdjustmentType::DEPOSIT, CoreAdjustmentProvider::DEPOSIT, '', $basketViewModel->getDepositTotal()),
         ];
 
         return new AdjustmentCollection(...array_filter(
@@ -220,17 +210,6 @@ final class OrderCreationService
     private function negate(Money $amount): Money
     {
         return Money::fromCents(-$amount->getCents());
-    }
-
-    /**
-     * @return string[]
-     */
-    private function voucherCodes(BasketDiscountSummary $voucherSummary): array
-    {
-        return array_map(
-            static fn(Voucher $voucher): string => $voucher->getCode(),
-            $voucherSummary->getAppliedVouchers()
-        );
     }
 
     private function decrementStock(BasketViewModel $basketViewModel, ServerRequestInterface $request): void
@@ -276,80 +255,15 @@ final class OrderCreationService
         return (int)($threshold ?? self::DEFAULT_LOW_STOCK_THRESHOLD);
     }
 
-    /**
-     * @param string[] $voucherCodes
-     */
-    private function resolveVoucherDiscount(array $voucherCodes, BasketViewModel $basketViewModel, int $frontendUser): BasketDiscountSummary
-    {
-        try {
-            return $this->voucherService->resolveAllOrFail($voucherCodes, $basketViewModel->getTotalGross(), $frontendUser);
-        } catch (VoucherExceptionInterface $exception) {
-            throw new VoucherRedemptionFailedException($exception->getMessage(), 1783426407, $exception);
-        }
-    }
-
-    /**
-     * @param Voucher[] $vouchers
-     */
-    private function anyVoucherWaivesShipping(array $vouchers): bool
-    {
-        foreach ($vouchers as $voucher) {
-            if ($voucher->isWaivingShippingCost()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private function resolvePointsRedemption(
         int $spendPoints,
         BasketViewModel $basketViewModel,
-        BasketDiscountSummary $voucherSummary,
+        Money $discountTotal,
         int $frontendUser,
         CreditPointsConfiguration $creditPointsConfiguration
     ): CreditPointsRedemption {
-        $remainingGoodsTotal = $basketViewModel->getTotalGross()->subtract($voucherSummary->getDiscountTotal());
+        $remainingGoodsTotal = $basketViewModel->getTotalGross()->subtract($discountTotal);
         return $this->creditPointsService->redeem($frontendUser, $spendPoints, $remainingGoodsTotal, $creditPointsConfiguration);
-    }
-
-    private function redeemVouchers(BasketDiscountSummary $discountSummary, Order $order, int $frontendUser, Money $basketGoodsTotal): void
-    {
-        $vouchers = $discountSummary->getAppliedVouchers();
-        if ($vouchers === []) {
-            return;
-        }
-        foreach ($vouchers as $voucher) {
-            $this->redeemVoucherAtomically($voucher);
-            $this->voucherRedemptionRepository->add($this->buildRedemption($voucher, $order, $frontendUser, $basketGoodsTotal));
-        }
-        $this->persistenceManager->persistAll();
-        foreach ($vouchers as $voucher) {
-            $this->eventDispatcher->dispatch(new VoucherRedeemedEvent($voucher, $order, $voucher->calculateDiscount($basketGoodsTotal)));
-        }
-    }
-
-    /**
-     * Atomic guard prevents concurrent redemption bypass. {@see StockService::decrementForItem()}
-     */
-    private function redeemVoucherAtomically(Voucher $voucher): void
-    {
-        try {
-            $this->voucherService->redeemAtomically($voucher);
-        } catch (VoucherExceptionInterface $exception) {
-            throw new VoucherRedemptionFailedException($exception->getMessage(), 1783426501, $exception);
-        }
-    }
-
-    private function buildRedemption(Voucher $voucher, Order $order, int $frontendUser, Money $basketGoodsTotal): VoucherRedemption
-    {
-        $redemption = new VoucherRedemption();
-        $redemption->setVoucherUid($voucher->getUid() ?? 0);
-        $redemption->setVoucherCode($voucher->getCode());
-        $redemption->setOrderUid($order->getUid() ?? 0);
-        $redemption->setFrontendUser($frontendUser);
-        $redemption->setDiscountTotal($voucher->calculateDiscount($basketGoodsTotal)->getCents());
-        $redemption->setRedeemedAt(new \DateTime());
-        return $redemption;
     }
 
     private function recordCreditPoints(BasketViewModel $basketViewModel, CreditPointsRedemption $pointsRedemption, Order $order, int $frontendUser, CreditPointsConfiguration $creditPointsConfiguration): void
