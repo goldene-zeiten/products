@@ -32,6 +32,11 @@ final class InvoiceNumberMutatingPaymentMethod implements PaymentMethodInterface
         return true;
     }
 
+    public function getPriority(): int
+    {
+        return 0;
+    }
+
     public function calculateFee(PaymentContext $context): int
     {
         return 0;
