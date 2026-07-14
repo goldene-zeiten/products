@@ -14,9 +14,8 @@ use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutSelections;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementContext;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\PlacementDetails;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelection;
-use GoldeneZeiten\Products\Domain\Dto\Checkout\ShippingSelectionCriteria;
 use GoldeneZeiten\Products\Domain\Dto\CreditPointsRedemption;
+use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingSelection;
 use GoldeneZeiten\Products\Domain\Enum\AdjustmentType;
 use GoldeneZeiten\Products\Domain\Enum\CreditPointsTransactionType;
 use GoldeneZeiten\Products\Domain\Model\CreditPointsTransaction;
@@ -40,9 +39,10 @@ use GoldeneZeiten\Products\Service\CreditPoints\Exception\InsufficientCreditPoin
 use GoldeneZeiten\Products\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Service\Order\Exception\VoucherRedemptionFailedException;
 use GoldeneZeiten\Products\Service\Shipping\HandlingFeeService;
-use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
 use GoldeneZeiten\Products\Service\Voucher\Exception\VoucherExceptionInterface;
 use GoldeneZeiten\Products\Service\Voucher\VoucherService;
+use GoldeneZeiten\Products\Shipping\ShippingContextFactory;
+use GoldeneZeiten\Products\Shipping\ShippingQuoteService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
@@ -50,6 +50,17 @@ use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 final class OrderCreationService
 {
     private const DEFAULT_LOW_STOCK_THRESHOLD = 5;
+
+    /**
+     * What the carrier charges. A free-shipping voucher waives this.
+     */
+    public const PROVIDER_SHIPPING = 'core.shipping';
+
+    /**
+     * What the shop charges on top of the carrier - the bulky-goods surcharge. Not waived by a
+     * free-shipping voucher: handling an oversized item costs the same whoever pays for the transport.
+     */
+    public const PROVIDER_SHIPPING_SURCHARGE = 'core.shipping.surcharge';
 
     public function __construct(
         private readonly PaymentContextFactory $paymentContextFactory,
@@ -64,7 +75,8 @@ final class OrderCreationService
         private readonly CreditPointsBalanceService $creditPointsBalanceService,
         private readonly CreditPointsTransactionRepository $creditPointsTransactionRepository,
         private readonly FrontendUserResolver $frontendUserResolver,
-        private readonly ShippingCostService $shippingCostService,
+        private readonly ShippingQuoteService $shippingQuoteService,
+        private readonly ShippingContextFactory $shippingContextFactory,
         private readonly HandlingFeeService $handlingFeeService,
         private readonly ProductsConfigurationFactory $configurationFactory,
         private readonly CreditPointsConfigurationFactory $creditPointsConfigurationFactory,
@@ -113,20 +125,15 @@ final class OrderCreationService
         $frontendUser = $this->frontendUserResolver->getUid($request);
         $voucherSummary = $this->resolveVoucherDiscount($checkoutSelections->getVoucherCodes(), $basketViewModel, $frontendUser);
         $pointsRedemption = $this->resolvePointsRedemption($checkoutSelections->getSpendPoints(), $basketViewModel, $voucherSummary, $frontendUser, $creditPointsConfiguration);
-        $shippingCriteria = new ShippingSelectionCriteria(
-            $checkoutSelections->getShippingMethodUid(),
-            $basketViewModel,
-            $address->getCountry(),
-            $this->anyVoucherWaivesShipping($voucherSummary->getAppliedVouchers())
-        );
-        $shippingSelection = $this->shippingCostService->resolveSelection($configuration, $shippingCriteria, $request);
+        $shippingContext = $this->shippingContextFactory->createFromBasket($basketViewModel, $address, $frontendUser);
+        $shippingSelection = $this->shippingQuoteService->resolveSelection($configuration, $shippingContext, $checkoutSelections->getShippingOptionKey(), $request);
         $handlingFeeCost = $this->handlingFeeService->resolveCost($configuration, $basketViewModel, $address->getCountry(), $request);
 
         $adjustments = $this->buildAdjustments($basketViewModel, $voucherSummary, $pointsRedemption, $shippingSelection, $handlingFeeCost);
         $details = new PlacementDetails(
             $this->withPaymentFee($adjustments, $paymentMethod, $basketViewModel, $address, $frontendUser),
             $this->voucherCodes($voucherSummary),
-            $shippingSelection->getShippingMethodUid(),
+            $shippingSelection,
             $checkoutSelections->getDeliveryAddress(),
             $checkoutSelections->getGiftMessage()
         );
@@ -173,10 +180,30 @@ final class OrderCreationService
         $candidates = [
             new CheckoutAdjustment(
                 AdjustmentType::SHIPPING,
-                'core.shipping',
-                $shippingSelection->getShippingMethod()?->getTitle() ?? '',
-                $shippingSelection->getCost(),
+                self::PROVIDER_SHIPPING,
+                $shippingSelection->getLabel(),
+                $shippingSelection->getCarrierCost(),
                 $shippingSelection->getTaxRate()
+            ),
+            // Kept apart from the carrier's own rate: a free-shipping voucher waives what the carrier
+            // charges, not what an oversized item costs this shop to handle.
+            new CheckoutAdjustment(
+                AdjustmentType::SHIPPING,
+                self::PROVIDER_SHIPPING_SURCHARGE,
+                '',
+                $shippingSelection->getSurcharge(),
+                $shippingSelection->getTaxRate()
+            ),
+            // A free-shipping voucher offsets the carrier's rate rather than suppressing it: the order
+            // records what shipping cost and what the voucher paid for, instead of hiding both. This is
+            // also what lets the voucher stay ignorant of shipping - it negates an adjustment it can see.
+            new CheckoutAdjustment(
+                AdjustmentType::DISCOUNT,
+                'core.voucher.free_shipping',
+                '',
+                $this->anyVoucherWaivesShipping($voucherSummary->getAppliedVouchers())
+                    ? $this->negate($shippingSelection->getCarrierCost())
+                    : Money::fromCents(0)
             ),
             new CheckoutAdjustment(AdjustmentType::HANDLING, 'core.handling', '', $handlingFeeCost),
             new CheckoutAdjustment(AdjustmentType::DISCOUNT, 'core.voucher', '', $this->negate($voucherSummary->getDiscountTotal())),

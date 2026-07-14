@@ -16,7 +16,7 @@ final readonly class CheckoutSelections
     public function __construct(
         private array $voucherCodes,
         private int $spendPoints,
-        private int $shippingMethodUid = 0,
+        private string $shippingOptionKey = '',
         private ?Address $deliveryAddress = null,
         private string $giftMessage = ''
     ) {}
@@ -34,9 +34,9 @@ final readonly class CheckoutSelections
         return $this->spendPoints;
     }
 
-    public function getShippingMethodUid(): int
+    public function getShippingOptionKey(): string
     {
-        return $this->shippingMethodUid;
+        return $this->shippingOptionKey;
     }
 
     public function getDeliveryAddress(): ?Address

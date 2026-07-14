@@ -31,7 +31,7 @@
         <td style="text-align: right; padding: 2px;"><f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_invoice.xlf:tax" /></td>
         <td style="text-align: right; padding: 2px;">{order.totalTax.decimalString} {order.currency}</td>
     </tr>
-    <f:if condition="{order.shippingMethod}">
+    <f:if condition="{order.shippingLabel}">
         <f:then>
             <tr>
                 <td></td>

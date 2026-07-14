@@ -60,7 +60,7 @@ final class OrderPlacementService
         $checkoutSelections = new CheckoutSelections(
             $this->basketService->getAppliedVoucherCodes($request),
             $choices->getSpendPoints(),
-            $choices->getShippingMethodUid(),
+            $choices->getShippingOptionKey(),
             $choices->getDeliveryAddress(),
             $choices->getGiftMessage()
         );

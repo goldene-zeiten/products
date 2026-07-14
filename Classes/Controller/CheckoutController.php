@@ -9,6 +9,8 @@ use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentContext;
+use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingContext;
+use GoldeneZeiten\Products\Domain\Dto\Shipping\ShippingOption;
 use GoldeneZeiten\Products\Payment\Exception\PaymentCallbackException;
 use GoldeneZeiten\Products\Payment\Exception\PaymentMethodNotFoundException;
 use GoldeneZeiten\Products\Payment\PaymentCallbackService;
@@ -23,12 +25,14 @@ use GoldeneZeiten\Products\Service\Invoice\InvoiceTokenService;
 use GoldeneZeiten\Products\Service\Order\Exception\OrderPlacementExceptionInterface;
 use GoldeneZeiten\Products\Service\Order\OrderPlacementService;
 use GoldeneZeiten\Products\Service\Order\OrderTokenService;
-use GoldeneZeiten\Products\Service\Shipping\ShippingCostService;
 use GoldeneZeiten\Products\Service\Withdrawal\WithdrawalTokenService;
+use GoldeneZeiten\Products\Shipping\ShippingContextFactory;
+use GoldeneZeiten\Products\Shipping\ShippingQuoteService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 final class CheckoutController extends ActionController
 {
@@ -40,7 +44,8 @@ final class CheckoutController extends ActionController
         private readonly OrderPlacementService $orderPlacementService,
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly CreditPointsService $creditPointsService,
-        private readonly ShippingCostService $shippingCostService,
+        private readonly ShippingQuoteService $shippingQuoteService,
+        private readonly ShippingContextFactory $shippingContextFactory,
         private readonly InvoiceTokenService $invoiceTokenService,
         private readonly WithdrawalTokenService $withdrawalTokenService,
         private readonly OrderTokenService $orderTokenService,
@@ -76,18 +81,69 @@ final class CheckoutController extends ActionController
         if (!$configuration->isShippingEnabled()) {
             return $this->redirect('payment');
         }
-        $address = $this->checkoutService->getAddress($this->request);
+        $options = $this->shippingQuoteService->getAvailableOptions($configuration, $this->shippingContext());
+        if ($options === []) {
+            $this->addFlashMessage($this->translate('checkout_no_shipping_available'), '', ContextualFeedbackSeverity::ERROR);
+            return $this->redirect('address');
+        }
         $this->view->assignMultiple([
-            'shippingMethods' => $this->shippingCostService->resolveAvailable($configuration, $this->checkoutService->getBasketViewModel($this->request), $address->getCountry()),
-            'selectedShippingMethod' => $this->checkoutService->getShippingMethod($this->request),
+            'shippingOptions' => $options,
+            'selectedShippingOption' => $this->selectedShippingOption($options),
         ]);
         return $this->htmlResponse();
     }
 
-    public function submitShippingMethodAction(int $shippingMethod): ResponseInterface
+    public function submitShippingMethodAction(string $shippingOption): ResponseInterface
     {
-        $this->checkoutService->setShippingMethod($this->request, $shippingMethod);
+        $this->checkoutService->setShippingOption($this->request, $shippingOption);
         return $this->redirect('payment');
+    }
+
+    private function shippingContext(): ShippingContext
+    {
+        return $this->shippingContextFactory->createFromBasket(
+            $this->checkoutService->getBasketViewModel($this->request),
+            $this->checkoutService->getAddress($this->request),
+            $this->frontendUserResolver->getUid($this->request)
+        );
+    }
+
+    /**
+     * Which option starts out selected is the shop's policy, not a carrier's: the cheapest, a named
+     * default, or none at all.
+     *
+     * @param ShippingOption[] $options
+     */
+    private function selectedShippingOption(array $options): string
+    {
+        $chosen = $this->checkoutService->getShippingOption($this->request);
+        if ($chosen !== '') {
+            return $chosen;
+        }
+        $preselect = (string)($this->request->getAttribute('site')?->getSettings()->get('products.shipping.preselect', 'none') ?? 'none');
+        if ($preselect === 'cheapest') {
+            return $this->cheapestOption($options);
+        }
+        return $preselect === 'none' ? '' : $preselect;
+    }
+
+    /**
+     * @param ShippingOption[] $options
+     */
+    private function cheapestOption(array $options): string
+    {
+        $cheapest = null;
+        foreach ($options as $option) {
+            if ($cheapest === null || $option->getCost()->getCents() < $cheapest->getCost()->getCents()) {
+                $cheapest = $option;
+            }
+        }
+        return $cheapest?->getKey() ?? '';
+    }
+
+    private function translate(string $key): string
+    {
+        return (string)LocalizationUtility::translate($key, 'Products');
     }
 
     public function paymentAction(): ResponseInterface
@@ -110,14 +166,14 @@ final class CheckoutController extends ActionController
         $this->priceQuoteService->freeze($this->request, $basket);
         $address = $this->checkoutService->getAddress($this->request);
         $paymentMethodIdentifier = $this->checkoutService->getPaymentMethod($this->request);
-        $shippingMethodUid = $this->checkoutService->getShippingMethod($this->request);
+        $shippingOptionKey = $this->checkoutService->getShippingOption($this->request);
 
         $this->view->assignMultiple([
             'basket' => $basket,
             'address' => $address,
             'paymentMethod' => $this->findPaymentMethod($paymentMethodIdentifier),
             'creditPointsBalance' => $this->creditPointsBalance(),
-            'shippingMethod' => $this->shippingCostService->findMethod($shippingMethodUid),
+            'shippingSelection' => $this->shippingQuoteService->resolveSelection($this->configurationFactory->create($this->request), $this->shippingContext(), $shippingOptionKey, $this->request),
             'deliveryAddress' => $this->checkoutService->getDeliveryAddress($this->request),
             'giftMessage' => $this->checkoutService->getGiftMessage($this->request),
         ]);
@@ -155,7 +211,7 @@ final class CheckoutController extends ActionController
         $paymentMethodIdentifier = $this->checkoutService->getPaymentMethod($this->request);
         $choices = new CheckoutChoices(
             $spendPoints,
-            $this->checkoutService->getShippingMethod($this->request),
+            $this->checkoutService->getShippingOption($this->request),
             $this->checkoutService->getDeliveryAddress($this->request),
             $this->checkoutService->getGiftMessage($this->request),
             $termsAccepted

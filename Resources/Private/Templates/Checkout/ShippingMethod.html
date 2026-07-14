@@ -1,11 +1,14 @@
 <div class="checkout-shipping-method">
     <h2><f:translate key="checkout_shipping_method" /></h2>
     <f:form action="submitShippingMethod">
-        <f:for each="{shippingMethods}" as="method">
+        <f:for each="{shippingOptions}" as="option">
             <div class="form-check">
-                <f:form.radio name="shippingMethod" value="{method.uid}" checked="{f:if(condition: '{selectedShippingMethod} == {method.uid}', then: '1')}" class="form-check-input" id="shipping-method-{method.uid}" />
-                <label class="form-check-label" for="shipping-method-{method.uid}">
-                    {method.title} - {method.rate.decimalString}
+                <f:form.radio name="shippingOption" value="{option.key}" checked="{f:if(condition: '\'{selectedShippingOption}\' == \'{option.key}\'', then: '1')}" class="form-check-input" id="shipping-option-{option.key}" />
+                <label class="form-check-label" for="shipping-option-{option.key}">
+                    {option.label} - {option.cost.decimalString}
+                    <f:if condition="{option.deliveryEstimate}">
+                        <f:then><span class="text-muted">({option.deliveryEstimate})</span></f:then>
+                    </f:if>
                 </label>
             </div>
         </f:for>

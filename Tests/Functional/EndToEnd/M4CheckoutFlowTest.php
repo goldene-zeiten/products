@@ -45,12 +45,14 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
         $basketService->addVoucherCode($request, 'FREESHIP');
 
         $delivery = new Address(firstName: 'Jane', lastName: 'Doe', street: 'Gift Lane 1', zip: '54321', city: 'Giftville', country: 'DE');
-        $choices = new CheckoutChoices(spendPoints: 0, shippingMethodUid: 1, deliveryAddress: $delivery, giftMessage: 'Happy birthday!', termsAccepted: true);
+        $choices = new CheckoutChoices(spendPoints: 0, shippingOptionKey: 'tablerate:1', deliveryAddress: $delivery, giftMessage: 'Happy birthday!', termsAccepted: true);
 
         $order = $orderPlacementService->place($request, $this->address(), 'invoice', $choices)->getOrder();
 
-        $this->assertSame(1, $order->getShippingMethod());
-        $this->assertSame(0, $order->getShippingTotal()->getCents(), 'The free-shipping voucher must waive the shipping cost.');
+        $this->assertSame('tablerate', $order->getShippingProvider());
+        $this->assertSame('1', $order->getShippingOption());
+        $this->assertSame(500, $order->getShippingTotal()->getCents(), 'The free-shipping voucher offset now records the real cost.');
+        $this->assertSame(500, $order->getDiscountTotal()->getCents(), 'The voucher creates an equal discount.');
         $this->assertSame(['FREESHIP'], $order->getVoucherCodes());
 
         $deliveryAddress = $order->getDeliveryAddress();

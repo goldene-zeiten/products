@@ -96,6 +96,9 @@
 			<trans-unit id="continue_to_payment" resname="continue_to_payment">
 				<source>Continue to Payment</source>
 			</trans-unit>
+			<trans-unit id="checkout_no_shipping_available" resname="checkout_no_shipping_available">
+				<source>We cannot ship this order to your address. Please change your address or the items in your basket.</source>
+			</trans-unit>
 			<trans-unit id="checkout_shipping_method" resname="checkout_shipping_method">
 				<source>Checkout: Shipping Method</source>
 			</trans-unit>

@@ -39,7 +39,7 @@ return [
             'showitem' => 'basket_min_quantity, basket_max_quantity',
         ],
         'shipping' => [
-            'showitem' => 'weight, bulky',
+            'showitem' => 'weight, bulky, shipping_class',
         ],
         'flags' => [
             'showitem' => 'is_offer, is_highlight',
@@ -283,6 +283,21 @@ return [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
                 'default' => 0,
+            ],
+        ],
+        'shipping_class' => [
+            'label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.shipping_class',
+            'description' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.shipping_class.description',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'items' => [
+                    ['label' => '', 'value' => ''],
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.shipping_class.hazmat', 'value' => 'hazmat'],
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.shipping_class.freight', 'value' => 'freight'],
+                    ['label' => 'LLL:EXT:products/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.shipping_class.refrigerated', 'value' => 'refrigerated'],
+                ],
+                'default' => '',
             ],
         ],
         'content_amount' => [
