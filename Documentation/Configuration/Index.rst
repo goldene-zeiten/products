@@ -282,6 +282,18 @@ from. Set it before creating any content.
         Whether the checkout asks for a shipping method and adds its cost to the order total. See
         :ref:`Shipping costs <users-manual-shipping>`.
 
+    ..  confval:: products.shipping.preselect
+        :type: string
+        :Default: none
+
+        Which shipping option is preselected for the customer at the shipping step. Accepted values:
+        ``none`` (nothing preselected; customer must choose), ``cheapest`` (the cheapest available
+        option is preselected), or a specific option key like ``tablerate:1``. A shipping option is
+        identified as ``provider:option`` — the carrier's identifier, then that carrier's own
+        identifier for the option (for the built-in table-rate carrier, the uid of the shipping-method
+        record). Preselection is the shop's policy, not the carrier's; the customer can always override
+        it.
+
     ..  confval:: products.shipping.bulkySurcharge
         :type: string
         :Default: 0.00
