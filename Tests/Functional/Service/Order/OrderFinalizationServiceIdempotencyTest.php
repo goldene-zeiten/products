@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\Service\Order;
 
+use GoldeneZeiten\Products\Discount\Voucher\VoucherCheckoutState;
 use GoldeneZeiten\Products\Domain\Dto\Payment\PaymentResult;
 use GoldeneZeiten\Products\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Domain\Enum\PaymentStatus;
@@ -60,6 +61,19 @@ final class OrderFinalizationServiceIdempotencyTest extends AbstractFunctionalTe
 
         $this->assertSame(OrderStatus::CONFIRMED, $order->getStatus());
         $this->assertCount(2, TestMailer::getSentEmails());
+    }
+
+    #[Test]
+    public function finalizeClearsAppliedVoucherCodesSoTheyDoNotLeakIntoTheNextOrder(): void
+    {
+        $subject = $this->get(OrderFinalizationService::class);
+        $voucherState = $this->get(VoucherCheckoutState::class);
+        $request = $this->request();
+        $voucherState->addCode($request, 'SAVE10');
+
+        $subject->finalize($this->fetchOrder(), PaymentResult::completed(PaymentStatus::PAID), $request);
+
+        $this->assertSame([], $voucherState->getCodes($request));
     }
 
     private function fetchOrder(): Order

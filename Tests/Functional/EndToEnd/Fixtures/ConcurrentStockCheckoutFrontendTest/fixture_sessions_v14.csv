@@ -2,12 +2,12 @@
 ,"ses_id","ses_userid","ses_iplock","ses_tstamp","ses_data"
 # Customer A's pre-finalize state: basket has 1x product uid=1 (matches fixture.csv's
 # in_stock=1), payment method chosen is "invoice". ses_data is
-# serialize(['tx_products_basket' => '{"items":[{"productUid":1,"articleUid":null,"quantity":1}],"voucherCodes":[]}', 'tx_products_checkout_payment' => 'invoice']),
+# serialize(['tx_products_basket' => '{"items":[{"productUid":1,"articleUid":null,"quantity":1}]}', 'tx_products_checkout_payment' => 'invoice']),
 # ses_id is TYPO3 14+'s DatabaseSessionBackend::hash():
 # HashService::hmac('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'core-session-backend', HashAlgo::SHA3_256)
 # with this instance's fixed test encryptionKey - see ConcurrentStockCheckoutFrontendTest::SESSION_ID_A.
-,"d5bc9bdbf8efdf4e428b64111ab1f44d20e3e3f2d828ea2981fedbd5ac511443",0,"[DISABLED]",2000000000,"a:2:{s:18:""tx_products_basket"";s:77:""{""items"":[{""productUid"":1,""articleUid"":null,""quantity"":1}],""voucherCodes"":[]}"";s:28:""tx_products_checkout_payment"";s:7:""invoice"";}"
+,"d5bc9bdbf8efdf4e428b64111ab1f44d20e3e3f2d828ea2981fedbd5ac511443",0,"[DISABLED]",2000000000,"a:2:{s:18:""tx_products_basket"";s:59:""{""items"":[{""productUid"":1,""articleUid"":null,""quantity"":1}]}"";s:28:""tx_products_checkout_payment"";s:7:""invoice"";}"
 # Customer B's pre-finalize state: identical to A's - same product, same payment method -
 # both racing the same single unit of stock. ses_id derived the same way from
 # 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' - see ConcurrentStockCheckoutFrontendTest::SESSION_ID_B.
-,"0c947c423565c09c2d1a3e62ec95e9a2cf33a7feb6fee3e489c5122a69fb0549",0,"[DISABLED]",2000000000,"a:2:{s:18:""tx_products_basket"";s:77:""{""items"":[{""productUid"":1,""articleUid"":null,""quantity"":1}],""voucherCodes"":[]}"";s:28:""tx_products_checkout_payment"";s:7:""invoice"";}"
+,"0c947c423565c09c2d1a3e62ec95e9a2cf33a7feb6fee3e489c5122a69fb0549",0,"[DISABLED]",2000000000,"a:2:{s:18:""tx_products_basket"";s:59:""{""items"":[{""productUid"":1,""articleUid"":null,""quantity"":1}]}"";s:28:""tx_products_checkout_payment"";s:7:""invoice"";}"

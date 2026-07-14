@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Service\Order;
 
 use GoldeneZeiten\Products\Configuration\ProductsConfigurationFactory;
+use GoldeneZeiten\Products\Discount\Voucher\VoucherCheckoutState;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
@@ -38,7 +39,8 @@ final class OrderPlacementService
         private readonly CreditPointsService $creditPointsService,
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly PriceQuoteService $priceQuoteService,
-        private readonly ProductsConfigurationFactory $configurationFactory
+        private readonly ProductsConfigurationFactory $configurationFactory,
+        private readonly VoucherCheckoutState $voucherCheckoutState
     ) {}
 
     public function place(
@@ -58,7 +60,7 @@ final class OrderPlacementService
             $this->creditPointsService->assertSpendable($this->frontendUserResolver->getUid($request), $choices->getSpendPoints());
         }
         $checkoutSelections = new CheckoutSelections(
-            $this->basketService->getAppliedVoucherCodes($request),
+            $this->voucherCheckoutState->getCodes($request),
             $choices->getSpendPoints(),
             $choices->getShippingOptionKey(),
             $choices->getDeliveryAddress(),

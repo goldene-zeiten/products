@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Tests\Functional\EndToEnd;
 
+use GoldeneZeiten\Products\Discount\Voucher\VoucherCheckoutState;
 use GoldeneZeiten\Products\Domain\Dto\Address;
 use GoldeneZeiten\Products\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Domain\Model\Order;
@@ -42,7 +43,7 @@ final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
         $mainProduct = $this->mainProduct();
         $request = $this->requestFor(9);
         $basketService->add($request, $mainProduct->getUid() ?? 0, null, 1);
-        $basketService->addVoucherCode($request, 'FREESHIP');
+        $this->get(VoucherCheckoutState::class)->addCode($request, 'FREESHIP');
 
         $delivery = new Address(firstName: 'Jane', lastName: 'Doe', street: 'Gift Lane 1', zip: '54321', city: 'Giftville', country: 'DE');
         $choices = new CheckoutChoices(spendPoints: 0, shippingOptionKey: 'tablerate:1', deliveryAddress: $delivery, giftMessage: 'Happy birthday!', termsAccepted: true);

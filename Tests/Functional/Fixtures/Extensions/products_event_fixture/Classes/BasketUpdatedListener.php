@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\EventFixture;
 
+use GoldeneZeiten\Products\Domain\Dto\BasketItem;
 use GoldeneZeiten\Products\Event\BasketUpdatedEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
@@ -16,7 +17,8 @@ final class BasketUpdatedListener
     {
         self::$invocationCount++;
         $basket = $event->getBasket();
-        $basket->addVoucherCode('EVENT-TOUCHED');
+        // Mutate the basket to prove the dispatched basket is mutable
+        $basket->addItem(new BasketItem(9999, null, 1));
         $event->setBasket($basket);
     }
 }

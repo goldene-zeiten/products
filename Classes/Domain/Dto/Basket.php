@@ -13,22 +13,14 @@ final class Basket
      * @var array<string, BasketItem>
      */
     private array $items = [];
-    /**
-     * @var string[]
-     */
-    private array $voucherCodes = [];
 
     /**
      * @param array<BasketItem> $items
-     * @param string[] $voucherCodes
      */
-    public function __construct(array $items = [], array $voucherCodes = [])
+    public function __construct(array $items = [])
     {
         foreach ($items as $item) {
             $this->addItem($item);
-        }
-        foreach ($voucherCodes as $voucherCode) {
-            $this->addVoucherCode($voucherCode);
         }
     }
 
@@ -85,31 +77,4 @@ final class Basket
         return $productUid . ':' . ($articleUid ?? 0);
     }
 
-    public function addVoucherCode(string $voucherCode): void
-    {
-        if (!in_array($voucherCode, $this->voucherCodes, true)) {
-            $this->voucherCodes[] = $voucherCode;
-        }
-    }
-
-    public function removeVoucherCode(string $voucherCode): void
-    {
-        $this->voucherCodes = array_values(array_filter(
-            $this->voucherCodes,
-            static fn(string $existing): bool => $existing !== $voucherCode
-        ));
-    }
-
-    public function clearVoucherCodes(): void
-    {
-        $this->voucherCodes = [];
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getVoucherCodes(): array
-    {
-        return $this->voucherCodes;
-    }
 }
