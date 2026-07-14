@@ -8,13 +8,12 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Export\Exception\OrderExporterNotFoundException;
 use GoldeneZeiten\Products\Core\Export\OrderExportRegistry;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class OrderExportRegistryTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-export-fixture',
     ];
 

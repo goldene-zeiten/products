@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Hooks;
 
 use GoldeneZeiten\Products\Core\Hooks\CategoryMountAccessHook;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -18,10 +18,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 final class CategoryMountAccessHookDeleteTest extends AbstractFunctionalTestCase
 {
     private const TABLE = 'tx_products_domain_model_category';
-
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
 
     protected function setUp(): void
     {

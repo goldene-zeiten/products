@@ -14,7 +14,7 @@ use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Core\Service\Order\OrderCreationService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -22,10 +22,6 @@ use TYPO3\CMS\Core\Http\ServerRequest;
 
 final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     protected function setUp(): void
     {
         parent::setUp();

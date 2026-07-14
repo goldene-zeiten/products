@@ -11,17 +11,13 @@ use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Domain\Repository\VoucherRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Service\Voucher\GainedVoucherService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     #[Test]
     #[DataProvider('nothingIssuedProvider')]
     public function nothingIsIssuedInVariousScenarios(bool $enabled, string $totalGross, string $minimumOrderValue): void

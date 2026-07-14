@@ -11,7 +11,7 @@ use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
 use GoldeneZeiten\Products\Core\Service\Checkout\PriceQuoteService;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\PriceQuoteExpiredException;
 use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -30,10 +30,6 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
  */
 final class OrderPlacementServiceQuoteTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     protected function setUp(): void
     {
         parent::setUp();

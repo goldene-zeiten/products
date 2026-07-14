@@ -10,15 +10,11 @@ use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\InvalidOrderStatusTransitionException;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\InvalidPaymentStatusTransitionException;
 use GoldeneZeiten\Products\Core\Service\Order\OrderStatusManager;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class OrderStatusManagerTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     #[Test]
     public function transitionChangesStatusAndAppendsLog(): void
     {

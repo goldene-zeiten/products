@@ -10,7 +10,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Loyalty\LoyaltyContext;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Loyalty\LoyaltyRegistry;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -22,10 +22,6 @@ use TYPO3\CMS\Core\Http\ServerRequest;
  */
 final class LoyaltyRegistryWithoutProviderTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     protected function setUp(): void
     {
         parent::setUp();

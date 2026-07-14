@@ -10,16 +10,12 @@ use GoldeneZeiten\Products\Core\Domain\Repository\TaxClassRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Service\Exception\MissingTaxRateException;
 use GoldeneZeiten\Products\Core\Service\TaxService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class TaxServiceTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     protected function setUp(): void
     {
         parent::setUp();

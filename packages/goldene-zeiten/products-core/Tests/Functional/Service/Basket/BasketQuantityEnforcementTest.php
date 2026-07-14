@@ -6,7 +6,7 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Basket;
 
 use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
 use GoldeneZeiten\Products\Core\Service\Basket\BasketStorage;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;

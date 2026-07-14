@@ -14,7 +14,7 @@ use GoldeneZeiten\Products\Core\Event\AfterOrderPlacedEvent;
 use GoldeneZeiten\Products\Core\EventListener\IssueGainedVoucherListener;
 use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
 use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -25,10 +25,6 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     protected function setUp(): void
     {
         parent::setUp();

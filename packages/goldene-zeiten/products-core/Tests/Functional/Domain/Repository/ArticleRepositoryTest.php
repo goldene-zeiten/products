@@ -6,21 +6,17 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Domain\Repository;
 
 use GoldeneZeiten\Products\Core\Domain\Model\Article;
 use GoldeneZeiten\Products\Core\Domain\Repository\ArticleRepository;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class ArticleRepositoryTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     #[Test]
     public function findAllFlatReturnsAllArticles(): void
     {
         $articleRepository = $this->get(ArticleRepository::class);
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
 
         $articles = $articleRepository->findAllFlat();
         $this->assertCount(3, $articles);
@@ -35,7 +31,7 @@ final class ArticleRepositoryTest extends AbstractFunctionalTestCase
     public function findAllFlatReturnsEmptyWhenNoArticles(): void
     {
         $articleRepository = $this->get(ArticleRepository::class);
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
 
         $articles = $articleRepository->findAllFlat();
         $this->assertCount(0, $articles);

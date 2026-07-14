@@ -6,16 +6,12 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Domain\Repository;
 
 use GoldeneZeiten\Products\Core\Domain\Model\PaymentTransaction;
 use GoldeneZeiten\Products\Core\Domain\Repository\PaymentTransactionRepository;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class PaymentTransactionRepositoryTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     protected function setUp(): void
     {
         parent::setUp();

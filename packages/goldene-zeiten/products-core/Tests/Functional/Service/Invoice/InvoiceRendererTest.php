@@ -7,7 +7,7 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Invoice;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceRenderer;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 

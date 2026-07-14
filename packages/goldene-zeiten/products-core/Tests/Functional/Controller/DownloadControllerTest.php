@@ -6,7 +6,7 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Service\Order\OrderTokenService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\Session\SessionManager;
@@ -27,18 +27,13 @@ final class DownloadControllerTest extends AbstractFunctionalTestCase
     ];
 
     protected array $coreExtensionsToLoad = [
-        'install',
         'fluid_styled_content',
-    ];
-
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DownloadControllerTest/products_with_downloads.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DownloadControllerTest/orders_with_downloads.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/DownloadControllerTest/download_content.csv');

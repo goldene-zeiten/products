@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
 use GoldeneZeiten\Products\Core\Service\RecentlyViewed\ProductViewTrackingService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
@@ -29,19 +29,14 @@ final class RecentlyViewedControllerTest extends AbstractFunctionalTestCase
     ];
 
     protected array $coreExtensionsToLoad = [
-        'install',
         'fluid_styled_content',
-    ];
-
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
         $this->importCSVDataSet(__DIR__ . '/Fixtures/recently_viewed_modes.csv');
 
         // record() bumps the site-wide counter regardless of login state (a logged-in

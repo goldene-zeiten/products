@@ -14,7 +14,7 @@ use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementTransaction;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\TransactionFixture\AbortPlacementListener;
 use GoldeneZeiten\Products\TransactionFixture\PlacementAbortedException;
 use PHPUnit\Framework\Attributes\Test;
@@ -38,7 +38,6 @@ use TYPO3\CMS\Core\Http\ServerRequest;
 final class OrderPlacementTransactionRollbackTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-transaction-fixture',
     ];
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Updates;
 
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Core\Updates\TtProductsMediaUpgradeWizard;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -13,14 +13,13 @@ use Symfony\Component\Console\Output\BufferedOutput;
 final class TtProductsMediaUpgradeWizardTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-legacy-fixture',
     ];
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
         $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsMediaUpgradeWizardTest/tt_products_media.csv');
     }
 

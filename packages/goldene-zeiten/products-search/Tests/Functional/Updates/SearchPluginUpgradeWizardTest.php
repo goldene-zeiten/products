@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Search\Tests\Functional\Updates;
 
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Core\Updates\TtProductsPluginUpgradeWizard;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -17,7 +17,6 @@ use Symfony\Component\Console\Output\BufferedOutput;
 final class SearchPluginUpgradeWizardTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-search',
         'goldene-zeiten/products-legacy-fixture',
     ];
@@ -25,7 +24,7 @@ final class SearchPluginUpgradeWizardTest extends AbstractFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
     }
 
     private function subject(BufferedOutput $output): TtProductsPluginUpgradeWizard

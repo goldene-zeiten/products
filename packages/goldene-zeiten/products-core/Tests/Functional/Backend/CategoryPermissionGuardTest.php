@@ -5,20 +5,16 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Backend;
 
 use GoldeneZeiten\Products\Core\Backend\CategoryPermissionGuard;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class CategoryPermissionGuardTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
         $this->importCSVDataSet(__DIR__ . '/Fixtures/CategoryPermissionGuardTest/category_permissions.csv');
     }
 

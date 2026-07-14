@@ -8,13 +8,12 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContextItem;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Shipping\ShippingProviderRegistry;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class ShippingProviderRegistryTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-shipping-fixture',
     ];
 

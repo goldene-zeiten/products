@@ -13,8 +13,8 @@ use GoldeneZeiten\Products\Core\Pricing\CategoryDiscountResolver;
 use GoldeneZeiten\Products\Core\Pricing\GraduatedPriceProvider;
 use GoldeneZeiten\Products\Core\Pricing\PriceProviderInterface;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
-use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\FixtureConfigurationManager;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\FixtureConfigurationManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
@@ -27,10 +27,6 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     protected function setUp(): void
     {
         parent::setUp();

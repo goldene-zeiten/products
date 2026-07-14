@@ -7,7 +7,7 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Voucher;
 use GoldeneZeiten\Products\Core\Domain\Repository\VoucherRepository;
 use GoldeneZeiten\Products\Core\Service\Voucher\Exception\VoucherNotApplicableException;
 use GoldeneZeiten\Products\Core\Service\Voucher\VoucherService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -17,10 +17,6 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
  */
 final class ConcurrentVoucherRedemptionRaceTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     protected function setUp(): void
     {
         parent::setUp();

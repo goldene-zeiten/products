@@ -14,8 +14,8 @@ use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Core\Service\Order\OrderCreationService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\TestMailer;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
@@ -40,7 +40,6 @@ final class OrderCreationServiceLowStockThresholdTest extends AbstractFunctional
     ];
 
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/frontend-test',
     ];
 

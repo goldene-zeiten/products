@@ -12,9 +12,9 @@ use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Loyalty\LoyaltyRegistry;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\LoyaltyFixture\FixtureLoyaltyException;
 use GoldeneZeiten\Products\LoyaltyFixture\FixtureLoyaltyProvider;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -26,7 +26,6 @@ use TYPO3\CMS\Core\Http\ServerRequest;
 final class LoyaltyRegistryTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-loyalty-fixture',
     ];
 

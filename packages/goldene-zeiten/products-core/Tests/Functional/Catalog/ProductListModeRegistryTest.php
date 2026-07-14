@@ -6,21 +6,20 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Catalog;
 
 use GoldeneZeiten\Products\Core\Catalog\ProductListModeRegistry;
 use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListContext;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Http\ServerRequest;
 
 final class ProductListModeRegistryTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-listmode-fixture',
     ];
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
         $this->importCSVDataSet(__DIR__ . '/Fixtures/ProductListModeRegistryTest/products.csv');
     }
 

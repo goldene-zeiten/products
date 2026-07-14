@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Tests\Functional;
 
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Information\Typo3Version;
 
 final class SmokeTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     #[Test]
     public function extensionCanBeLoaded(): void
     {

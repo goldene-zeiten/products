@@ -13,8 +13,8 @@ use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalEmailMism
 use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalPeriodExpiredException;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalService;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalTokenService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
 use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\TestMailer;
+use GoldeneZeiten\Products\Testing\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Visibility;
 
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
 use GoldeneZeiten\Products\EventFixture\DenyingVisibilityChecker;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -22,7 +22,6 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class ProductVisibilityResolverTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/frontend-test',
         'goldene-zeiten/products-event-fixture',
     ];

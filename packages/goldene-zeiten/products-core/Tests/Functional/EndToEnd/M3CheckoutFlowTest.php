@@ -16,7 +16,7 @@ use GoldeneZeiten\Products\Core\Service\CreditPoints\Exception\InsufficientCredi
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementService;
 use GoldeneZeiten\Products\Core\Service\Voucher\VoucherService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -27,10 +27,6 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     protected function setUp(): void
     {
         parent::setUp();

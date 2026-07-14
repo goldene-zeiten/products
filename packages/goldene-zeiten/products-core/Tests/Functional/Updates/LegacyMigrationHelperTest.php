@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Updates;
 
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Core\Updates\LegacyMigrationHelper;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class LegacyMigrationHelperTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-legacy-fixture',
     ];
 
@@ -22,7 +21,7 @@ final class LegacyMigrationHelperTest extends AbstractFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
         $this->importCSVDataSet(__DIR__ . '/Fixtures/LegacyMigrationHelperTest/legacy_migration_helper.csv');
     }
 

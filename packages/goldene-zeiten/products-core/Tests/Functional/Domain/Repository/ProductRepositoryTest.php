@@ -9,22 +9,18 @@ use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\Repository\CategoryRepository;
 use GoldeneZeiten\Products\Core\Domain\Repository\Exception\RepositoryIsReadOnlyException;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class ProductRepositoryTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     #[Test]
     public function productCanBeRetrieved(): void
     {
         $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
 
         $product = $productRepository->findByUid(1);
         $this->assertInstanceOf(Product::class, $product);
@@ -35,8 +31,8 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
     public function relatedAndAccessoryProductsAreResolved(): void
     {
         $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
 
         $product = $productRepository->findByUid(1);
         $this->assertInstanceOf(Product::class, $product);
@@ -52,8 +48,8 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
     public function productWithoutRelationsHasEmptyCrossSellSets(): void
     {
         $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
 
         $product = $productRepository->findByUid(2);
         $this->assertInstanceOf(Product::class, $product);
@@ -66,8 +62,8 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
     public function countByCategoryCountsOnlyDirectMembers(): void
     {
         $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
 
         $category = $this->get(CategoryRepository::class)->findByUid(1);
         $this->assertInstanceOf(Category::class, $category);
@@ -124,8 +120,8 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
     public function findOffersReturnsBothOffers(): void
     {
         $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
 
         $offers = $productRepository->findOffers();
         $this->assertCount(2, $offers);
@@ -139,8 +135,8 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
     public function findHighlightsReturnsBothHighlights(): void
     {
         $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
 
         $highlights = $productRepository->findHighlights();
         $this->assertCount(2, $highlights);
@@ -154,8 +150,8 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
     public function findNewReturnsProductsOrderedByCreationDateDescending(): void
     {
         $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
 
         $new = $productRepository->findNew(36500);
         $this->assertCount(6, $new);
@@ -171,8 +167,8 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
     public function findNewReturnsAllProductsWhenDaysIsLarge(): void
     {
         $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
 
         $new = $productRepository->findNew(36500);
         $this->assertCount(6, $new);
@@ -182,8 +178,8 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
     public function findAffordableReturnsProductsWithinBalance(): void
     {
         $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
 
         // With balance 50, affordable products are: 2 (50), 4 (25), 6 (10)
         $affordable = $productRepository->findAffordable(50);
@@ -199,8 +195,8 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
     public function findAffordableReturnsEmptyListForNonPositiveBalance(): void
     {
         $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
 
         $this->assertSame([], $productRepository->findAffordable(0));
         $this->assertSame([], $productRepository->findAffordable(-10));
@@ -210,8 +206,8 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
     public function findAffordableReturnsProductsOrderedByCreditPointsAscending(): void
     {
         $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
 
         // With balance 150, affordable products are: 2 (50), 3 (100), 4 (25), 5 (150), 6 (10)
         // Product 1 (200) is not affordable

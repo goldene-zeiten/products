@@ -6,7 +6,7 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\RecentlyViewed;
 
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Service\RecentlyViewed\ProductViewTrackingService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -15,10 +15,6 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class ProductViewTrackingServiceTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     protected function setUp(): void
     {
         parent::setUp();

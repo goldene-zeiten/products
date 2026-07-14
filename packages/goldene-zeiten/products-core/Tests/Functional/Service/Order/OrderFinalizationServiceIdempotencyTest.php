@@ -11,8 +11,8 @@ use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Service\Order\OrderFinalizationService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\TestMailer;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -26,7 +26,6 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class OrderFinalizationServiceIdempotencyTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/frontend-test',
     ];
 

@@ -7,7 +7,7 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\EventListener;
 use GoldeneZeiten\Products\Core\EventListener\MergeWishlistOnLoginListener;
 use GoldeneZeiten\Products\Core\Service\Wishlist\WishlistService;
 use GoldeneZeiten\Products\Core\Service\Wishlist\WishlistStorage;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Authentication\Event\AfterUserLoggedInEvent;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -21,10 +21,6 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
  */
 final class MergeWishlistOnLoginListenerTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     #[Test]
     public function invokingTheListenerDuringTheLoginMiddlewareDoesNotThrow(): void
     {

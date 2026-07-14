@@ -10,7 +10,7 @@ use GoldeneZeiten\Products\Core\Domain\Repository\ArticleRepository;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Pricing\GraduatedPriceProvider;
 use GoldeneZeiten\Products\Core\Pricing\PricePeriodPriceProvider;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -28,10 +28,6 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
  */
 final class PricePeriodPriceProviderTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     protected function setUp(): void
     {
         parent::setUp();

@@ -5,20 +5,19 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Catalog;
 
 use GoldeneZeiten\Products\Core\Backend\Form\ProductListModeItemsProvider;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class ProductListModeItemsProviderTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-listmode-fixture',
     ];
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
     }
 
     #[Test]

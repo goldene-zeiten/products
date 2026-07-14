@@ -6,15 +6,14 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Event;
 
 use GoldeneZeiten\Products\Core\Domain\Repository\CategoryRepository;
 use GoldeneZeiten\Products\Core\Service\Category\CategoryTreeService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\EventFixture\ModifyCategoryQueryListener;
 use GoldeneZeiten\Products\EventFixture\ModifyCategoryTreeListener;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class CategoryEventDispatchTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-event-fixture',
     ];
 

@@ -10,7 +10,7 @@ use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentCallbackException;
 use GoldeneZeiten\Products\Core\Payment\PaymentCallbackService;
 use GoldeneZeiten\Products\Core\Payment\PaymentTokenService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -19,7 +19,6 @@ use TYPO3\CMS\Core\Http\ServerRequest;
 final class PaymentCallbackServiceTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-payment-fixture',
     ];
 

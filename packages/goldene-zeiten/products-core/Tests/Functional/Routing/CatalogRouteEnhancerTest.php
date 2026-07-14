@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Routing;
 
 use GoldeneZeiten\Products\Core\Controller\Exception\ProductPathMismatchException;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
@@ -29,10 +29,6 @@ final class CatalogRouteEnhancerTest extends AbstractFunctionalTestCase
             'title' => 'English',
             'locale' => 'en_US.UTF-8',
         ],
-    ];
-
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
     ];
 
     protected function setUp(): void

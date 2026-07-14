@@ -14,13 +14,12 @@ use GoldeneZeiten\Products\Core\Domain\ValueObject\AdjustmentCollection;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\CheckoutAdjustment;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\CoreAdjustmentProvider;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class DiscountRegistryTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-discount-fixture',
     ];
 

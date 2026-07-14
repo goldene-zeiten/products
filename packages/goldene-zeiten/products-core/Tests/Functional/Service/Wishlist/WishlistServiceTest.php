@@ -9,7 +9,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\OrderItem;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Service\Wishlist\WishlistService;
 use GoldeneZeiten\Products\Core\Service\Wishlist\WishlistStorage;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,10 +21,6 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class WishlistServiceTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     protected function setUp(): void
     {
         parent::setUp();

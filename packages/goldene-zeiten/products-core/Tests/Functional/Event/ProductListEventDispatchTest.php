@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Event;
 
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\EventFixture\ModifyProductListListener;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
@@ -23,12 +23,10 @@ final class ProductListEventDispatchTest extends AbstractFunctionalTestCase
     ];
 
     protected array $coreExtensionsToLoad = [
-        'install',
         'fluid_styled_content',
     ];
 
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-event-fixture',
     ];
 
@@ -42,8 +40,8 @@ final class ProductListEventDispatchTest extends AbstractFunctionalTestCase
     #[Test]
     public function productListEventIsDispatchedAndMutationTakesEffect(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1),

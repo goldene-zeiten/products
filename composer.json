@@ -22,7 +22,8 @@
   "autoload-dev": {
     "psr-4": {
       "GoldeneZeiten\\Products\\Core\\Tests\\": "packages/goldene-zeiten/products-core/Tests/",
-      "GoldeneZeiten\\Products\\Search\\Tests\\": "packages/goldene-zeiten/products-search/Tests/"
+      "GoldeneZeiten\\Products\\Search\\Tests\\": "packages/goldene-zeiten/products-search/Tests/",
+      "GoldeneZeiten\\Products\\Testing\\": "packages-dev/products_testing/Classes/"
     }
   },
   "require-dev": {

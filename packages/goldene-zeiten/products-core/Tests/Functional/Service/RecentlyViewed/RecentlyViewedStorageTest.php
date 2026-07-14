@@ -6,8 +6,8 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\RecentlyViewed;
 
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Core\Service\RecentlyViewed\RecentlyViewedStorage;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
-use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\FixtureConfigurationManager;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\FixtureConfigurationManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
@@ -18,10 +18,6 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     /**
      * @param int[] $recordedUids
      * @param int[] $expectedOrder

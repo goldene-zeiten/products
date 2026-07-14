@@ -6,7 +6,7 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Service\Order\OrderTokenService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Session\SessionManager;

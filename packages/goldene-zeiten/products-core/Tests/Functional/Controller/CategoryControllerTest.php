@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
 use GoldeneZeiten\Products\Core\Controller\Exception\CategoryPathMismatchException;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
@@ -23,12 +23,7 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
     ];
 
     protected array $coreExtensionsToLoad = [
-        'install',
         'fluid_styled_content',
-    ];
-
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
     ];
 
     #[Test]

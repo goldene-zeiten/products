@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
@@ -22,19 +22,14 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
     ];
 
     protected array $coreExtensionsToLoad = [
-        'install',
         'fluid_styled_content',
-    ];
-
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
     ];
 
     #[Test]
     public function listActionWorks(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1),
@@ -73,8 +68,8 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
     #[Test]
     public function showActionWorksWithSlug(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1, '/', 'Home', [
@@ -137,8 +132,8 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
     #[Test]
     public function showActionRendersRelatedAndAccessoryProducts(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1, '/', 'Home', [
@@ -203,8 +198,8 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
     #[Test]
     public function listActionShowsAllProductsByDefault(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
         $this->importCSVDataSet(__DIR__ . '/Fixtures/product_list_modes.csv');
         $this->writeSiteConfiguration(
             'products',
@@ -247,8 +242,8 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
     #[Test]
     public function listActionShowsOnlyOffersWhenModeIsOffers(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
         $this->importCSVDataSet(__DIR__ . '/Fixtures/product_list_modes.csv');
         $this->writeSiteConfiguration(
             'products',
@@ -298,8 +293,8 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
     #[Test]
     public function listActionRespectsRecordsFieldRestriction(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
         $this->importCSVDataSet(__DIR__ . '/Fixtures/product_list_modes.csv');
         $this->writeSiteConfiguration(
             'products',
@@ -351,8 +346,8 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
     #[Test]
     public function listActionRestrictsToTheSelectedCategoryAndItsDescendants(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
         $this->importCSVDataSet(__DIR__ . '/Fixtures/product_list_category_restriction.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/product_list_modes.csv');
         $this->writeSiteConfiguration(
@@ -404,8 +399,8 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
     #[Test]
     public function listActionAppliesTheCategoryRestrictionOnTopOfTheSelectedMode(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/shop.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
         $this->importCSVDataSet(__DIR__ . '/Fixtures/product_list_category_restriction.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/product_list_modes.csv');
         $this->writeSiteConfiguration(

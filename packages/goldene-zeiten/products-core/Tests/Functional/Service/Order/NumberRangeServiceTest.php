@@ -5,15 +5,11 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Order;
 
 use GoldeneZeiten\Products\Core\Service\Order\NumberRangeService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 final class NumberRangeServiceTest extends AbstractFunctionalTestCase
 {
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     #[Test]
     public function nextStartsAtOneForNewScope(): void
     {

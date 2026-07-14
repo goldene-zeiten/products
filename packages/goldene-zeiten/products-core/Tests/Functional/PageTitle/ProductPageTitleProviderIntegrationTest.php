@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Tests\Functional\PageTitle;
 
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
@@ -21,10 +21,6 @@ final class ProductPageTitleProviderIntegrationTest extends AbstractFunctionalTe
         ],
     ];
 
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
-    ];
-
     #[Test]
     public function productDetailPageUsesTheProductTitleInThePageTitleTag(): void
     {
@@ -39,7 +35,7 @@ final class ProductPageTitleProviderIntegrationTest extends AbstractFunctionalTe
     #[Test]
     public function aPageWithoutACurrentProductFallsBackToTheDefaultRecordTitle(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1),
@@ -59,7 +55,7 @@ final class ProductPageTitleProviderIntegrationTest extends AbstractFunctionalTe
 
     private function bootstrapProductDetailFrontend(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
         $this->importCSVDataSet(__DIR__ . '/Fixtures/ProductPageTitleProviderIntegrationTest/product_page_title.csv');
         $this->writeSiteConfiguration(
             'products',

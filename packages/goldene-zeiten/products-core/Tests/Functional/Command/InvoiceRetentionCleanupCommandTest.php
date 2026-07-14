@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Command;
 
 use GoldeneZeiten\Products\Core\Command\InvoiceRetentionCleanupCommand;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -21,10 +21,6 @@ final class InvoiceRetentionCleanupCommandTest extends AbstractFunctionalTestCas
             'title' => 'English',
             'locale' => 'en_US.UTF-8',
         ],
-    ];
-
-    protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
     ];
 
     #[Test]
@@ -118,7 +114,7 @@ final class InvoiceRetentionCleanupCommandTest extends AbstractFunctionalTestCas
      */
     private function setUpProductsSite(): void
     {
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1),

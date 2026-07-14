@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Updates;
 
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFunctionalTestCase;
 use GoldeneZeiten\Products\Core\Updates\LegacyMigrationHelper;
 use GoldeneZeiten\Products\Core\Updates\TtProductsProductUpgradeWizard;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/products-legacy-fixture',
     ];
 
@@ -23,7 +22,7 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
         $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsProductUpgradeWizardTest/tt_products.csv');
     }
 

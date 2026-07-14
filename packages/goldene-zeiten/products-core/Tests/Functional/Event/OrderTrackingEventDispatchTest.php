@@ -6,8 +6,8 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Event;
 
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Service\Order\OrderTokenService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
 use GoldeneZeiten\Products\EventFixture\OrderTrackingListener;
+use GoldeneZeiten\Products\Testing\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
@@ -15,7 +15,6 @@ use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 final class OrderTrackingEventDispatchTest extends AbstractFrontendTestCase
 {
     protected array $testExtensionsToLoad = [
-        'goldene-zeiten/products-core',
         'goldene-zeiten/frontend-test',
         'goldene-zeiten/products-event-fixture',
     ];

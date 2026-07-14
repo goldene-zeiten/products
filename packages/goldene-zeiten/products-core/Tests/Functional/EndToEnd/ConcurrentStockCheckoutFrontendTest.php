@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Tests\Functional\EndToEnd;
 
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamFactoryInterface;
 use TYPO3\CMS\Core\Information\Typo3Version;

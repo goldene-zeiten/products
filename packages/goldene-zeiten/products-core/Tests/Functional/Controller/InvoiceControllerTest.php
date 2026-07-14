@@ -8,7 +8,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Service\Invoice\Exception\InvalidInvoiceTokenException;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceTokenService;
-use GoldeneZeiten\Products\Core\Tests\Functional\AbstractFrontendTestCase;
+use GoldeneZeiten\Products\Testing\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
