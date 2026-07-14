@@ -79,7 +79,7 @@ final class OrderManagementModuleController
             return null;
         }
         try {
-            $result = $this->orderExportService->export($identifier, $this->buildExportContext($order, $request));
+            $result = $this->orderExportService->export($identifier, $this->buildExportContext($order));
         } catch (OrderExporterNotFoundException|OrderExporterNotAvailableException $exception) {
             $moduleTemplate->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
             return null;
@@ -91,13 +91,18 @@ final class OrderManagementModuleController
         return $response;
     }
 
-    private function buildExportContext(Order $order, ServerRequestInterface $request): ExportContext
+    /**
+     * The backend user comes from the global, not from a request attribute: TYPO3 never puts one on the
+     * request, so asking the request for it would hand every exporter a user of 0.
+     */
+    private function buildExportContext(Order $order): ExportContext
     {
-        $backendUser = $request->getAttribute('backend.user');
-        return new ExportContext(
-            $order,
-            $backendUser instanceof BackendUserAuthentication ? (int)$backendUser->getUserId() : 0
-        );
+        return new ExportContext($order, (int)$this->getBackendUser()->getUserId());
+    }
+
+    private function getBackendUser(): BackendUserAuthentication
+    {
+        return $GLOBALS['BE_USER'];
     }
 
     /**
@@ -131,7 +136,7 @@ final class OrderManagementModuleController
             'voucherRedemptions' => $order !== null ? $this->orderRepository->fetchVoucherRedemptions($orderUid) : [],
             'gainedVoucher' => $order !== null ? $this->orderRepository->fetchGainedVoucher($orderUid) : null,
             'creditPointsLedger' => $order !== null ? $this->orderRepository->fetchCreditPointsLedger($orderUid) : [],
-            'exporters' => $this->availableExporters($orderUid, $request),
+            'exporters' => $this->availableExporters($orderUid),
         ];
     }
 
@@ -140,13 +145,13 @@ final class OrderManagementModuleController
      *
      * @return array<OrderExportInterface>
      */
-    private function availableExporters(int $orderUid, ServerRequestInterface $request): array
+    private function availableExporters(int $orderUid): array
     {
         $order = $this->orderRepository->findForEditing($orderUid);
         if ($order === null) {
             return [];
         }
-        return $this->orderExportService->availableFor($this->buildExportContext($order, $request));
+        return $this->orderExportService->availableFor($this->buildExportContext($order));
     }
 
     private function canRefund(string $paymentMethodIdentifier, string $paymentStatusValue): bool

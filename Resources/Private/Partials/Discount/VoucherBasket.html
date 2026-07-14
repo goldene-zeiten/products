@@ -13,16 +13,25 @@
                 <f:for each="{discountSummary.appliedVouchers}" as="voucher">
                     <li>
                         <f:translate key="voucher_applied" arguments="{0: voucher.code}" />
-                        <f:link.action action="remove" controller="Voucher" pluginName="Voucher" arguments="{voucherCode: voucher.code}" class="btn btn-link btn-sm"><f:translate key="remove" /></f:link.action>
+                        <f:link.action action="remove" controller="Voucher" arguments="{voucherCode: voucher.code}" class="btn btn-link btn-sm"><f:translate key="remove" /></f:link.action>
                     </li>
                 </f:for>
             </ul>
-            <p class="basket-voucher-discount">
-                <f:translate key="voucher_discount" />: &minus;{discountSummary.discountTotal.decimalString} {basket.currency}
-            </p>
+            <table class="table basket-voucher-totals">
+                <tbody>
+                    <tr>
+                        <th><f:translate key="voucher_discount" /></th>
+                        <td>&minus;{discountSummary.discountTotal.decimalString} {basket.currency}</td>
+                    </tr>
+                    <tr>
+                        <th><f:translate key="final_total" /></th>
+                        <td><strong>{discountSummary.finalTotal.decimalString} {basket.currency}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
         </f:then>
     </f:if>
-    <f:form action="apply" controller="Voucher" pluginName="Voucher" class="d-flex gap-2">
+    <f:form action="apply" controller="Voucher" class="d-flex gap-2">
         <f:form.textfield name="voucherCode" class="form-control" placeholder="{f:translate(key: 'voucher_code')}" />
         <f:form.submit value="{f:translate(key: 'apply_voucher')}" class="btn btn-default" />
     </f:form>
