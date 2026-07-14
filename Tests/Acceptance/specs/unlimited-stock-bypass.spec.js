@@ -20,7 +20,7 @@ test('a product flagged as unlimited stock can be ordered past its nominal stock
   await page.locator('input[name="tx_products_checkout[address][city]"]').fill('Berlin');
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 
-  await page.locator('input[name="tx_products_checkout[shippingMethod]"]').first().check();
+  await page.locator('input[name="tx_products_checkout[shippingOption]"]').first().check();
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 
   await page.locator('input[name="tx_products_checkout[paymentMethod]"]').first().check();

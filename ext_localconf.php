@@ -58,25 +58,18 @@ ExtensionUtility::configurePlugin(
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );
 
+// The voucher's own controller rides in the basket plugin rather than a plugin of its own: its form
+// posts back to the basket page, and only a plugin actually placed on that page is dispatched. An addon
+// registers its controller the same way, via ExtensionUtility::registerControllerActions().
 ExtensionUtility::configurePlugin(
     'Products',
     'Basket',
     [
         BasketController::class => 'show, add, update, remove',
-    ],
-    [
-        BasketController::class => 'show, add, update, remove',
-    ],
-    ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
-);
-
-ExtensionUtility::configurePlugin(
-    'Products',
-    'Voucher',
-    [
         VoucherController::class => 'apply, remove',
     ],
     [
+        BasketController::class => 'show, add, update, remove',
         VoucherController::class => 'apply, remove',
     ],
     ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
