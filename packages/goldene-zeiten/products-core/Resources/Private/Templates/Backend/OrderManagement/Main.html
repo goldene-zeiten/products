@@ -32,12 +32,8 @@
                             <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.total" /></th>
                             <td><p:format.money value="{order.totalGrossCents}" currency="{order.currency}" /></td>
                         </tr>
-                        <f:if condition="{order.voucherCodes}">
+                        <f:if condition="{order.discountTotalCents}">
                             <f:then>
-                                <tr>
-                                    <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.vouchers" /></th>
-                                    <td><f:for each="{order.voucherCodes}" as="voucherCode" iteration="iterator">{voucherCode}<f:if condition="{iterator.isLast} == 0"><f:then>, </f:then></f:if></f:for></td>
-                                </tr>
                                 <tr>
                                     <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.discount" /></th>
                                     <td><p:format.money value="{order.discountTotalCents}" currency="{order.currency}" /></td>
@@ -62,42 +58,9 @@
                         </f:if>
                     </table>
 
-                    <f:if condition="{voucherRedemptions} || {gainedVoucher} || {orderDetailPanels}">
+                    <f:if condition="{orderDetailPanels}">
                         <f:then>
                             <h3><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.section.discounts_and_rewards" /></h3>
-                            <f:if condition="{voucherRedemptions}">
-                                <f:then>
-                                    <table class="table table-striped w-auto">
-                                        <thead>
-                                            <tr>
-                                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.vouchers" /></th>
-                                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.discount" /></th>
-                                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.redeemed_at" /></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <f:for each="{voucherRedemptions}" as="redemption">
-                                                <tr>
-                                                    <td>{redemption.voucherCode}</td>
-                                                    <td><p:format.money value="{redemption.discountTotalCents}" currency="{order.currency}" /></td>
-                                                    <td>{redemption.redeemedAt}</td>
-                                                </tr>
-                                            </f:for>
-                                        </tbody>
-                                    </table>
-                                </f:then>
-                            </f:if>
-                            <f:if condition="{gainedVoucher}">
-                                <f:then>
-                                    <p>
-                                        <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.gained_voucher" arguments="{0: gainedVoucher.code}" />
-                                        <f:if condition="{gainedVoucher.used}">
-                                            <f:then> (<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.gained_voucher.used" />)</f:then>
-                                            <f:else> (<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.gained_voucher.unused" />)</f:else>
-                                        </f:if>
-                                    </p>
-                                </f:then>
-                            </f:if>
                             <f:for each="{orderDetailPanels}" as="panelHtml">
                                 <f:format.raw>{panelHtml}</f:format.raw>
                             </f:for>

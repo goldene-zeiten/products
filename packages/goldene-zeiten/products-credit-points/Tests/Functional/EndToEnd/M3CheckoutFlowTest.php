@@ -4,22 +4,24 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\CreditPoints\Tests\Functional\EndToEnd;
 
-use GoldeneZeiten\Products\Core\Discount\Voucher\VoucherCheckoutState;
 use GoldeneZeiten\Products\Core\Domain\Dto\Address;
 use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
-use GoldeneZeiten\Products\Core\Domain\Repository\VoucherRedemptionRepository;
-use GoldeneZeiten\Products\Core\Domain\Repository\VoucherRepository;
 use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementService;
-use GoldeneZeiten\Products\Core\Service\Voucher\VoucherService;
 use GoldeneZeiten\Products\CreditPoints\Service\Exception\InsufficientCreditPointsException;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Voucher\Discount\VoucherCheckoutState;
+use GoldeneZeiten\Products\Voucher\Domain\Repository\VoucherRedemptionRepository;
+use GoldeneZeiten\Products\Voucher\Domain\Repository\VoucherRepository;
+use GoldeneZeiten\Products\Voucher\Service\VoucherService;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -28,6 +30,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
+        'goldene-zeiten/products-voucher',
         'goldene-zeiten/products-credit-points',
     ];
 
@@ -63,7 +66,7 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
 
         $this->assertSame(9200, $order->getTotalGross()->getCents());
         $this->assertSame(800, $order->getDiscountTotal()->getCents());
-        $this->assertSame(['SOLO'], $order->getVoucherCodes());
+        $this->assertSame(['SOLO'], $this->redeemedCodesFor($order->getUid() ?? 0));
 
         $voucher = $this->get(VoucherRepository::class)->findOneByCode('SOLO');
         $this->assertNotNull($voucher);
@@ -94,7 +97,7 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
 
         $this->assertSame(9000, $order->getTotalGross()->getCents());
         $this->assertSame(1000, $order->getDiscountTotal()->getCents());
-        $this->assertSame(['COMBO1'], $order->getVoucherCodes());
+        $this->assertSame(['COMBO1'], $this->redeemedCodesFor($order->getUid() ?? 0));
         $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/m3_ledger_untouched_by_guest.csv');
     }
 
@@ -140,5 +143,19 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
     private function address(): Address
     {
         return new Address(email: 'buyer@example.com', country: 'DE');
+    }
+
+    /**
+     * @return string[]
+     */
+    private function redeemedCodesFor(int $orderUid): array
+    {
+        $queryBuilder = $this->get(ConnectionPool::class)->getQueryBuilderForTable('tx_products_domain_model_voucherredemption');
+        $queryBuilder->getRestrictions()->removeAll();
+        $codes = $queryBuilder->select('voucher_code')->from('tx_products_domain_model_voucherredemption')
+            ->where($queryBuilder->expr()->eq('order_uid', $queryBuilder->createNamedParameter($orderUid, Connection::PARAM_INT)))
+            ->executeQuery()->fetchFirstColumn();
+
+        return array_map('strval', $codes);
     }
 }

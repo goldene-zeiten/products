@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-voucher
+label: Products Voucher
+dependencies:
+  - goldene-zeiten/products-core

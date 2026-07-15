@@ -47,7 +47,7 @@ final class DiscountRegistry
             $contextForProvider = new DiscountContext(
                 $context->getGoodsTotal(),
                 $context->getFrontendUserUid(),
-                $context->getAppliedCodes(),
+                $context->getRequest(),
                 $accumulated
             );
             foreach ($provider->quote($contextForProvider) as $adjustment) {

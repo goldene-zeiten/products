@@ -104,7 +104,7 @@ final class OrderCreationService
         // Charges first, then discounts that may offset them, then loyalty against what remains, then the
         // payment fee on the final total.
         $adjustments = $this->baseAdjustments($basketViewModel, $shippingSelection, $handlingFeeCost);
-        $discountContext = $this->discountContextFactory->createFromBasket($basketViewModel, $frontendUser, $checkoutSelections->getVoucherCodes(), $adjustments);
+        $discountContext = $this->discountContextFactory->createFromBasket($basketViewModel, $frontendUser, $request, $adjustments);
         foreach ($this->discountRegistry->collect($discountContext) as $discountAdjustment) {
             $adjustments = $adjustments->with($discountAdjustment);
         }

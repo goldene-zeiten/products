@@ -1,7 +1,6 @@
 <?php
 
 use GoldeneZeiten\Products\Core\Controller\BasketController;
-use GoldeneZeiten\Products\Core\Controller\VoucherController;
 use GoldeneZeiten\Products\Core\Controller\CategoryController;
 use GoldeneZeiten\Products\Core\Controller\CheckoutController;
 use GoldeneZeiten\Products\Core\Controller\DownloadController;
@@ -51,19 +50,17 @@ defined('TYPO3') or die();
         ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
     );
 
-    // The voucher's own controller rides in the basket plugin rather than a plugin of its own: its form
-    // posts back to the basket page, and only a plugin actually placed on that page is dispatched. An addon
-    // registers its controller the same way, via ExtensionUtility::registerControllerActions().
+    // Add-ons whose UI belongs on the basket page (the voucher form, for one) register their controller
+    // onto this plugin from their own ext_localconf via ExtensionUtility::registerControllerActions(),
+    // because only a plugin actually placed on the page is dispatched - so the core stays unaware of them.
     ExtensionUtility::configurePlugin(
         'ProductsCore',
         'Basket',
         [
             BasketController::class => 'show, add, update, remove',
-            VoucherController::class => 'apply, remove',
         ],
         [
             BasketController::class => 'show, add, update, remove',
-            VoucherController::class => 'apply, remove',
         ],
         ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
     );

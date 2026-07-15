@@ -13,6 +13,7 @@ use GoldeneZeiten\Products\Core\Domain\ValueObject\AdjustmentCollection;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Http\ServerRequest;
 
 final class DiscountRegistryWithoutProviderTest extends AbstractFunctionalTestCase
 {
@@ -23,13 +24,13 @@ final class DiscountRegistryWithoutProviderTest extends AbstractFunctionalTestCa
         $factory = $this->get(DiscountContextFactory::class);
 
         $basket = $this->basketViewModel('100.00');
-        // No codes applied, so the shipped voucher provider (the only one without the fixture)
-        // should contribute nothing
-        $context = $factory->createFromBasket($basket, 1, [], new AdjustmentCollection());
+        // With no discount provider registered (voucher lives in an add-on that is not loaded here),
+        // the registry has nothing to collect.
+        $context = $factory->createFromBasket($basket, 1, new ServerRequest('http://localhost/'), new AdjustmentCollection());
 
         $adjustments = $registry->collect($context);
 
-        // The shipped voucher provider contributes nothing when no codes are entered
+        // No providers, so no adjustments
         $this->assertSame([], $adjustments);
     }
 

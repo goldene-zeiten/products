@@ -3,12 +3,3 @@
 ,1,2,0,"ORD-1","alice@example.com","EUR",1999,0,"new","open",1700000000,"invoice","tablerate","1","Standard","500",500
 ,2,2,0,"ORD-2","bob@example.com","EUR",2999,0,"confirmed","paid",1700100000,"invoice","","","",0,0
 ,3,2,1,"ORD-3","deleted@example.com","EUR",500,0,"new","open",1700200000,"invoice","","","",0,0
-
-"tx_products_domain_model_voucherredemption",,,,,
-,"uid","pid","voucher_uid","voucher_code","order_uid","discount_total"
-,1,2,10,"SAVE10",1,199
-
-"tx_products_domain_model_voucher",,,
-,"uid","pid","code","generated_from_order"
-,10,2,"SAVE10",0
-,11,2,"GAINED-ABC123",1

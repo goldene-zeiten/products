@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\TransactionFixture;
 
-use GoldeneZeiten\Products\Core\Event\VoucherRedeemedEvent;
+use GoldeneZeiten\Products\Voucher\Event\VoucherRedeemedEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
 /**

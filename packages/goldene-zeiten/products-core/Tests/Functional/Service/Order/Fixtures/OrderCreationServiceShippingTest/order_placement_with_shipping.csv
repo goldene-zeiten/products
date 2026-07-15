@@ -18,8 +18,3 @@
 "tx_products_domain_model_shippingmethod",,,,,,,,
 ,"uid","pid","title","country","min_order_value","max_order_value","min_weight","max_weight","rate"
 ,1,1,"Standard DE","DE","0.00","0.00",0,1000,"5.00"
-
-"tx_products_domain_model_voucher",,,,,,,
-,"uid","pid","code","discount_type","discount_value","combinable","waives_shipping_cost"
-,1,1,"FREESHIP","percentage","0.00",1,1
-,2,1,"REGULAR","percentage","0.00",1,0

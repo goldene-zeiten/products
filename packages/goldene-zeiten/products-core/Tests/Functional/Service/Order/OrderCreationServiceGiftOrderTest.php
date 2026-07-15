@@ -25,7 +25,7 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/Fixtures/order_placement_with_voucher.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/order_placement.csv');
     }
 
     #[Test]
@@ -36,7 +36,7 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->request(),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], ''),
+            new CheckoutSelections(''),
             $this->address(),
             $this->paymentMethod()
         );
@@ -54,7 +54,7 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->request(),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], '', $delivery),
+            new CheckoutSelections('', $delivery),
             $this->address(),
             $this->paymentMethod()
         );
@@ -79,7 +79,7 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->request(),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], '', $delivery),
+            new CheckoutSelections('', $delivery),
             $this->address(),
             $this->paymentMethod()
         );
@@ -98,7 +98,7 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->request(),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], '', null, 'Happy birthday!'),
+            new CheckoutSelections('', null, 'Happy birthday!'),
             $this->address(),
             $this->paymentMethod()
         );

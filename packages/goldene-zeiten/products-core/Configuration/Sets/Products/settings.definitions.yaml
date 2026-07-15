@@ -19,9 +19,6 @@ categories:
   shipping:
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.shipping'
     parent: products
-  vouchers:
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.vouchers'
-    parent: products
   discovery:
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.discovery'
     parent: products
@@ -187,26 +184,6 @@ settings:
     default: false
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.handling.enabled'
     category: shipping
-  products.vouchers.gained.enabled:
-    type: bool
-    default: false
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.vouchers.gained.enabled'
-    category: vouchers
-  products.vouchers.gained.minimumOrderValue:
-    type: number
-    default: 0.00
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.vouchers.gained.minimumOrderValue'
-    category: vouchers
-  products.vouchers.gained.rewardType:
-    type: string
-    default: 'fixed'
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.vouchers.gained.rewardType'
-    category: vouchers
-  products.vouchers.gained.rewardValue:
-    type: number
-    default: 5.00
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.vouchers.gained.rewardValue'
-    category: vouchers
   products.list.newItemDays:
     type: int
     default: 7

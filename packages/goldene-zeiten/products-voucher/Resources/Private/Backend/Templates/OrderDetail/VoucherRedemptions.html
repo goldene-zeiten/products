@@ -1,0 +1,33 @@
+<f:if condition="{redemptions}">
+    <f:then>
+        <table class="table table-striped w-auto">
+            <thead>
+                <tr>
+                    <th><f:translate key="LLL:EXT:products_voucher/Resources/Private/Language/locallang_be.xlf:order.column.vouchers" /></th>
+                    <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.discount" /></th>
+                    <th><f:translate key="LLL:EXT:products_voucher/Resources/Private/Language/locallang_be.xlf:order.column.redeemed_at" /></th>
+                </tr>
+            </thead>
+            <tbody>
+                <f:for each="{redemptions}" as="redemption">
+                    <tr>
+                        <td>{redemption.voucherCode}</td>
+                        <td>{redemption.discountTotalCents}</td>
+                        <td>{redemption.redeemedAt}</td>
+                    </tr>
+                </f:for>
+            </tbody>
+        </table>
+    </f:then>
+</f:if>
+<f:if condition="{gainedVoucher}">
+    <f:then>
+        <p>
+            <f:translate key="LLL:EXT:products_voucher/Resources/Private/Language/locallang_be.xlf:order.gained_voucher" arguments="{0: gainedVoucher.code}" />
+            <f:if condition="{gainedVoucher.used}">
+                <f:then> (<f:translate key="LLL:EXT:products_voucher/Resources/Private/Language/locallang_be.xlf:order.gained_voucher.used" />)</f:then>
+                <f:else> (<f:translate key="LLL:EXT:products_voucher/Resources/Private/Language/locallang_be.xlf:order.gained_voucher.unused" />)</f:else>
+            </f:if>
+        </p>
+    </f:then>
+</f:if>

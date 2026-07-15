@@ -39,8 +39,6 @@ class Order extends AbstractEntity
     protected string $statusLog = '[]';
     /** @var int */
     protected int $discountTotal = 0;
-    /** @var string */
-    protected string $voucherCodes = '[]';
     protected string $shippingProvider = '';
     protected string $shippingOption = '';
     protected string $shippingLabel = '';
@@ -267,22 +265,6 @@ class Order extends AbstractEntity
     public function setDiscountTotal(Money $discountTotal): void
     {
         $this->discountTotal = $discountTotal->getCents();
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getVoucherCodes(): array
-    {
-        return json_decode($this->voucherCodes, true) ?: [];
-    }
-
-    /**
-     * @param string[] $voucherCodes
-     */
-    public function setVoucherCodes(array $voucherCodes): void
-    {
-        $this->voucherCodes = (string)json_encode($voucherCodes);
     }
 
     /**

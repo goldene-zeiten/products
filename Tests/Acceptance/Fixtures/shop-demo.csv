@@ -16,7 +16,7 @@
 
 "sys_template",,,,,,,
 ,"uid","pid","title","root","clear","include_static_file","config"
-,1,1,"Products Acceptance","1",3,"EXT:fluid_styled_content/Configuration/TypoScript,EXT:products_core/Configuration/TypoScript,EXT:products_search/Configuration/TypoScript,EXT:products_recently_viewed/Configuration/TypoScript,EXT:products_wishlist/Configuration/TypoScript,EXT:products_credit_points/Configuration/TypoScript","page = PAGE
+,1,1,"Products Acceptance","1",3,"EXT:fluid_styled_content/Configuration/TypoScript,EXT:products_core/Configuration/TypoScript,EXT:products_search/Configuration/TypoScript,EXT:products_recently_viewed/Configuration/TypoScript,EXT:products_wishlist/Configuration/TypoScript,EXT:products_credit_points/Configuration/TypoScript,EXT:products_voucher/Configuration/TypoScript","page = PAGE
 page.10 < styles.content.get
 plugin.tx_productscore.persistence.storagePid = 2
 plugin.tx_productscore.settings.pids.storageFolder = 2

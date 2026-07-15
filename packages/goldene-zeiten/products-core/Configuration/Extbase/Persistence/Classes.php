@@ -19,8 +19,6 @@ use GoldeneZeiten\Products\Core\Domain\Model\ShippingMethod;
 use GoldeneZeiten\Products\Core\Domain\Model\ShippingPoint;
 use GoldeneZeiten\Products\Core\Domain\Model\TaxClass;
 use GoldeneZeiten\Products\Core\Domain\Model\TaxRate;
-use GoldeneZeiten\Products\Core\Domain\Model\Voucher;
-use GoldeneZeiten\Products\Core\Domain\Model\VoucherRedemption;
 
 // The core extension key is `products_core`, so Extbase's default table-name
 // convention would resolve to `tx_products_core_domain_model_*`. The tables keep
@@ -45,6 +43,4 @@ return [
     ShippingPoint::class => ['tableName' => 'tx_products_domain_model_shippingpoint'],
     TaxClass::class => ['tableName' => 'tx_products_domain_model_taxclass'],
     TaxRate::class => ['tableName' => 'tx_products_domain_model_taxrate'],
-    Voucher::class => ['tableName' => 'tx_products_domain_model_voucher'],
-    VoucherRedemption::class => ['tableName' => 'tx_products_domain_model_voucherredemption'],
 ];

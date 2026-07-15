@@ -69,7 +69,7 @@ final class LowStockWarningIntegrationTest extends AbstractFunctionalTestCase
         $this->get(OrderCreationService::class)->create(
             (new ServerRequest('http://localhost/'))->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE),
             $basketViewModel,
-            new CheckoutSelections([], ''),
+            new CheckoutSelections(''),
             new Address(email: 'buyer@example.com', country: 'DE'),
             $this->get(PaymentMethodRegistry::class)->get('invoice')
         );

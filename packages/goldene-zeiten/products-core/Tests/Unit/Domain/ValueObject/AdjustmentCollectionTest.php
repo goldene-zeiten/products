@@ -36,7 +36,7 @@ final class AdjustmentCollectionTest extends UnitTestCase
         );
         $discount = new CheckoutAdjustment(
             AdjustmentType::DISCOUNT,
-            'core.voucher',
+            'example.discount',
             'Discount',
             Money::fromCents(-200)
         );
@@ -58,7 +58,7 @@ final class AdjustmentCollectionTest extends UnitTestCase
         );
         $discount = new CheckoutAdjustment(
             AdjustmentType::DISCOUNT,
-            'core.voucher',
+            'example.discount',
             'Discount',
             Money::fromCents(-200)
         );
@@ -86,7 +86,7 @@ final class AdjustmentCollectionTest extends UnitTestCase
     {
         $voucher = new CheckoutAdjustment(
             AdjustmentType::DISCOUNT,
-            'core.voucher',
+            'example.discount',
             'Voucher',
             Money::fromCents(-300)
         );
@@ -122,7 +122,7 @@ final class AdjustmentCollectionTest extends UnitTestCase
         // Discount: -200, no tax
         $discount = new CheckoutAdjustment(
             AdjustmentType::DISCOUNT,
-            'core.voucher',
+            'example.discount',
             'Discount',
             Money::fromCents(-200)
         );
@@ -170,7 +170,7 @@ final class AdjustmentCollectionTest extends UnitTestCase
 
         $newAdjustment = new CheckoutAdjustment(
             AdjustmentType::DISCOUNT,
-            'core.voucher',
+            'example.discount',
             'Discount',
             Money::fromCents(-100)
         );
@@ -199,13 +199,13 @@ final class AdjustmentCollectionTest extends UnitTestCase
         );
         $discount1 = new CheckoutAdjustment(
             AdjustmentType::DISCOUNT,
-            'core.voucher',
+            'example.discount',
             'Voucher 1',
             Money::fromCents(-100)
         );
         $discount2 = new CheckoutAdjustment(
             AdjustmentType::DISCOUNT,
-            'core.voucher',
+            'example.discount',
             'Voucher 2',
             Money::fromCents(-50)
         );
@@ -229,7 +229,7 @@ final class AdjustmentCollectionTest extends UnitTestCase
         );
         $discount = new CheckoutAdjustment(
             AdjustmentType::DISCOUNT,
-            'core.voucher',
+            'example.discount',
             'Discount',
             Money::fromCents(-200)
         );
@@ -277,7 +277,7 @@ final class AdjustmentCollectionTest extends UnitTestCase
         // Discount that reduces the gross, but no tax
         $discount = new CheckoutAdjustment(
             AdjustmentType::DISCOUNT,
-            'core.voucher',
+            'example.discount',
             'Discount',
             Money::fromCents(-500),
             0.0  // Explicitly no tax

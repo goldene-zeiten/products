@@ -24,9 +24,6 @@
 			<trans-unit id="category.shipping" resname="category.shipping">
 				<source>Shipping &amp; Handling</source>
 			</trans-unit>
-			<trans-unit id="category.vouchers" resname="category.vouchers">
-				<source>Vouchers</source>
-			</trans-unit>
 			<trans-unit id="category.discovery" resname="category.discovery">
 				<source>Wishlist &amp; Discovery</source>
 			</trans-unit>
@@ -131,18 +128,6 @@
 			</trans-unit>
 			<trans-unit id="setting.products.handling.enabled" resname="setting.products.handling.enabled">
 				<source>Handling fee calculation enabled</source>
-			</trans-unit>
-			<trans-unit id="setting.products.vouchers.gained.enabled" resname="setting.products.vouchers.gained.enabled">
-				<source>Auto-issue a reward voucher for qualifying orders</source>
-			</trans-unit>
-			<trans-unit id="setting.products.vouchers.gained.minimumOrderValue" resname="setting.products.vouchers.gained.minimumOrderValue">
-				<source>Minimum order total (gross) to trigger a gained voucher</source>
-			</trans-unit>
-			<trans-unit id="setting.products.vouchers.gained.rewardType" resname="setting.products.vouchers.gained.rewardType">
-				<source>Gained voucher discount type (percentage|fixed)</source>
-			</trans-unit>
-			<trans-unit id="setting.products.vouchers.gained.rewardValue" resname="setting.products.vouchers.gained.rewardValue">
-				<source>Gained voucher discount value</source>
 			</trans-unit>
 			<trans-unit id="setting.products.list.newItemDays" resname="setting.products.list.newItemDays">
 				<source>Number of days a product counts as "new" in the new-items listing</source>

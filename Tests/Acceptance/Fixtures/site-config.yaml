@@ -18,6 +18,7 @@ dependencies:
   - goldene-zeiten/products-recently-viewed
   - goldene-zeiten/products-wishlist
   - goldene-zeiten/products-credit-points
+  - goldene-zeiten/products-voucher
 settings:
   products:
     creditPoints:

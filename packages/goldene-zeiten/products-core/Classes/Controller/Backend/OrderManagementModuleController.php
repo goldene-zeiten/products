@@ -135,8 +135,6 @@ final class OrderManagementModuleController
             'canMarkPaid' => $order !== null && $this->canMarkPaid($order['paymentStatus']),
             'canRefund' => $order !== null && $this->canRefund($order['paymentMethod'], $order['paymentStatus']),
             'listUrl' => (string)$this->uriBuilder->buildUriFromRequest($request, ['order']),
-            'voucherRedemptions' => $order !== null ? $this->orderRepository->fetchVoucherRedemptions($orderUid) : [],
-            'gainedVoucher' => $order !== null ? $this->orderRepository->fetchGainedVoucher($orderUid) : null,
             'orderDetailPanels' => $order !== null ? $this->orderDetailPanelRegistry->renderPanels($orderUid) : [],
             'exporters' => $this->availableExporters($orderUid),
         ];

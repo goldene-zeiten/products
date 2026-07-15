@@ -81,29 +81,14 @@
 			<trans-unit id="order.column.note" resname="order.column.note">
 				<source>Customer note</source>
 			</trans-unit>
-			<trans-unit id="order.column.vouchers" resname="order.column.vouchers">
-				<source>Vouchers applied</source>
-			</trans-unit>
 			<trans-unit id="order.column.discount" resname="order.column.discount">
 				<source>Discount</source>
 			</trans-unit>
 			<trans-unit id="order.column.shipping" resname="order.column.shipping">
 				<source>Shipping</source>
 			</trans-unit>
-			<trans-unit id="order.column.redeemed_at" resname="order.column.redeemed_at">
-				<source>Redeemed at</source>
-			</trans-unit>
 			<trans-unit id="order.section.discounts_and_rewards" resname="order.section.discounts_and_rewards">
 				<source>Discounts &amp; rewards</source>
-			</trans-unit>
-			<trans-unit id="order.gained_voucher" resname="order.gained_voucher">
-				<source>This order generated the reward voucher %s</source>
-			</trans-unit>
-			<trans-unit id="order.gained_voucher.used" resname="order.gained_voucher.used">
-				<source>used</source>
-			</trans-unit>
-			<trans-unit id="order.gained_voucher.unused" resname="order.gained_voucher.unused">
-				<source>not yet used</source>
 			</trans-unit>
 			<trans-unit id="order.action.filter" resname="order.action.filter">
 				<source>Filter</source>

@@ -41,6 +41,9 @@ jobs:
           - package: products-credit-points
             directory: packages/goldene-zeiten/products-credit-points
             repository: products-credit-points
+          - package: products-voucher
+            directory: packages/goldene-zeiten/products-voucher
+            repository: products-voucher
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4

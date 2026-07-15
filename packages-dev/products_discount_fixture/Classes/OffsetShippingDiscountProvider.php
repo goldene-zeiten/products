@@ -32,7 +32,9 @@ final class OffsetShippingDiscountProvider implements DiscountProviderInterface
 
     public function quote(DiscountContext $context): array
     {
-        if (!in_array('FREESHIP', $context->getAppliedCodes(), true)) {
+        $body = $context->getRequest()->getParsedBody();
+        $codes = is_array($body) && is_array($body['discountCodes'] ?? null) ? $body['discountCodes'] : [];
+        if (!in_array('FREESHIP', $codes, true)) {
             return [];
         }
 

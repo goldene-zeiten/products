@@ -25,8 +25,4 @@ final class CoreAdjustmentProvider
     public const HANDLING = 'core.handling';
 
     public const DEPOSIT = 'core.deposit';
-
-    public const VOUCHER = 'core.voucher';
-
-    public const VOUCHER_FREE_SHIPPING = 'core.voucher.free_shipping';
 }

@@ -14,7 +14,6 @@ use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Model\OrderAddress;
 use GoldeneZeiten\Products\Core\Domain\Model\OrderItem;
-use GoldeneZeiten\Products\Core\Domain\ValueObject\AdjustmentCollection;
 use GoldeneZeiten\Products\Core\Event\MapBillingToDeliveryAddressEvent;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Core\Service\PriceRoundingService;
@@ -81,7 +80,6 @@ final class OrderFactory
         $order->setTotalNet($order->getTotalNet()->add($adjustments->getNetTotal()));
         $order->setTotalTax($order->getTotalTax()->add($adjustments->getTaxTotal()));
         $order->setDiscountTotal($adjustments->getDiscountTotal());
-        $order->setVoucherCodes($this->voucherCodes($adjustments));
         $shippingSelection = $details->getShippingSelection();
         $order->setShippingProvider($shippingSelection->getOption()?->getProviderIdentifier() ?? '');
         $order->setShippingOption($shippingSelection->getOption()?->getOptionIdentifier() ?? '');
@@ -89,25 +87,6 @@ final class OrderFactory
         $order->setShippingTotal($adjustments->getTotalByType(AdjustmentType::SHIPPING));
         $order->setHandlingFeeTotal($adjustments->getTotalByType(AdjustmentType::HANDLING));
         $order->setDepositTotal($adjustments->getTotalByType(AdjustmentType::DEPOSIT));
-    }
-
-    /**
-     * The order records the codes a discount reported in its adjustment metadata, so the factory does not
-     * need to know a voucher from any other kind of coded discount.
-     *
-     * @return string[]
-     */
-    private function voucherCodes(AdjustmentCollection $adjustments): array
-    {
-        $codes = [];
-        foreach ($adjustments->byType(AdjustmentType::DISCOUNT) as $adjustment) {
-            $reported = $adjustment->getMetadata()['codes'] ?? '';
-            if ($reported !== '') {
-                $codes = [...$codes, ...explode(',', $reported)];
-            }
-        }
-
-        return $codes;
     }
 
     private function applyGiftOrderDetails(Order $order, PlacementDetails $details): void

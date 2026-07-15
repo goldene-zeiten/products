@@ -54,7 +54,7 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
         $order = $subject->create(
             $this->requestFor(enabled: true, frontendUserUid: 5, spendPoints: 20),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([]),
+            new CheckoutSelections(),
             $this->address(),
             $this->paymentMethod()
         );
@@ -72,7 +72,7 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
         $order = $subject->create(
             $this->requestFor(enabled: true, frontendUserUid: 0),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([]),
+            new CheckoutSelections(),
             $this->address(),
             $this->paymentMethod()
         );
@@ -88,7 +88,7 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
         $order = $subject->create(
             $this->requestFor(enabled: false, frontendUserUid: 5, spendPoints: 20),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([]),
+            new CheckoutSelections(),
             $this->address(),
             $this->paymentMethod()
         );

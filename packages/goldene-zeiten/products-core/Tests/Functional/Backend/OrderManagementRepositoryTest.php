@@ -106,68 +106,6 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
-    #[DataProvider('fetchVoucherRedemptionsProvider')]
-    public function fetchVoucherRedemptions(int $orderUid, ?string $expectedVoucherCode, ?int $expectedDiscountTotalCents): void
-    {
-        $subject = $this->get(OrderManagementRepository::class);
-
-        $redemptions = $subject->fetchVoucherRedemptions($orderUid);
-
-        if ($expectedVoucherCode === null) {
-            $this->assertSame([], $redemptions);
-            return;
-        }
-        $this->assertCount(1, $redemptions);
-        $this->assertSame($expectedVoucherCode, $redemptions[0]['voucherCode']);
-        $this->assertSame($expectedDiscountTotalCents, $redemptions[0]['discountTotalCents']);
-    }
-
-    public static function fetchVoucherRedemptionsProvider(): \Generator
-    {
-        yield 'returns rows for that order' => [
-            'orderUid' => 1,
-            'expectedVoucherCode' => 'SAVE10',
-            'expectedDiscountTotalCents' => 199,
-        ];
-
-        yield 'is empty for an order with none' => [
-            'orderUid' => 2,
-            'expectedVoucherCode' => null,
-            'expectedDiscountTotalCents' => null,
-        ];
-    }
-
-    #[Test]
-    #[DataProvider('fetchGainedVoucherProvider')]
-    public function fetchGainedVoucher(int $orderUid, ?string $expectedCode): void
-    {
-        $subject = $this->get(OrderManagementRepository::class);
-
-        $gainedVoucher = $subject->fetchGainedVoucher($orderUid);
-
-        if ($expectedCode === null) {
-            $this->assertNull($gainedVoucher);
-            return;
-        }
-        $this->assertNotNull($gainedVoucher);
-        $this->assertSame($expectedCode, $gainedVoucher['code']);
-        $this->assertFalse($gainedVoucher['used']);
-    }
-
-    public static function fetchGainedVoucherProvider(): \Generator
-    {
-        yield 'returns the generated code' => [
-            'orderUid' => 1,
-            'expectedCode' => 'GAINED-ABC123',
-        ];
-
-        yield 'is null when the order generated none' => [
-            'orderUid' => 2,
-            'expectedCode' => null,
-        ];
-    }
-
-    #[Test]
     public function findForEditingAndPersistWritesTheTransitionToTheDatabase(): void
     {
         $subject = $this->get(OrderManagementRepository::class);

@@ -1,0 +1,4 @@
+# The voucher code form is rendered on the core basket page, which the core basket plugin renders from a
+# no-op "Discount/VoucherBasket" partial stub. This extension overrides that stub by adding its own
+# partial path at a higher priority, so the basket shows the voucher control only when installed.
+plugin.tx_productscore.view.partialRootPaths.120 = EXT:products_voucher/Resources/Private/Partials/

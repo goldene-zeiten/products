@@ -16,7 +16,6 @@ use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Core\Service\Order\OrderCreationService;
 use GoldeneZeiten\Products\Core\Shipping\Exception\NoShippingOptionAvailableException;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
@@ -31,39 +30,6 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/Fixtures/OrderCreationServiceShippingTest/order_placement_with_shipping.csv');
     }
 
-    /**
-     * @param string[] $voucherCodes
-     */
-    #[Test]
-    #[DataProvider('shippingMethodVoucherScenarioProvider')]
-    public function shippingMethodAndVoucherHandling(array $voucherCodes, int $expectedShippingCents, int $expectedTotalGross = 10500): void
-    {
-        $subject = $this->subject();
-
-        $order = $subject->create(
-            $this->requestWithShipping(enabled: true),
-            $this->basketViewModel($this->product()),
-            new CheckoutSelections($voucherCodes, 'tablerate:1'),
-            $this->address(),
-            $this->paymentMethod()
-        );
-
-        $this->assertSame('tablerate', $order->getShippingProvider());
-        $this->assertSame('1', $order->getShippingOption());
-        $this->assertSame($expectedShippingCents, $order->getShippingTotal()->getCents());
-        $this->assertSame($expectedTotalGross, $order->getTotalGross()->getCents());
-    }
-
-    /**
-     * @return \Generator<string, array<string, mixed>>
-     */
-    public static function shippingMethodVoucherScenarioProvider(): \Generator
-    {
-        yield 'chosenMethodAddsItsRate' => ['voucherCodes' => [], 'expectedShippingCents' => 500, 'expectedTotalGross' => 10500];
-        yield 'freeShippingVoucherOffsetsTheCostInsteadOfHidingIt' => ['voucherCodes' => ['FREESHIP'], 'expectedShippingCents' => 500, 'expectedTotalGross' => 10000];
-        yield 'regularVoucherDoesNotWaiveTheShipping' => ['voucherCodes' => ['REGULAR'], 'expectedShippingCents' => 500, 'expectedTotalGross' => 10500];
-    }
-
     #[Test]
     public function shippingIsANoOpWhileTheFeatureIsDisabledEvenWithAMethodChosen(): void
     {
@@ -72,7 +38,7 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->requestWithShipping(enabled: false),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 'tablerate:1'),
+            new CheckoutSelections('tablerate:1'),
             $this->address(),
             $this->paymentMethod()
         );
@@ -90,7 +56,7 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->requestWithShipping(enabled: true),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], ''),
+            new CheckoutSelections(''),
             $this->address(),
             $this->paymentMethod()
         );
@@ -108,7 +74,7 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
             $subject->create(
                 $this->requestWithShipping(enabled: true),
                 $this->basketViewModel($this->product()),
-                new CheckoutSelections([], 'tablerate:999'),
+                new CheckoutSelections('tablerate:999'),
                 $this->address(),
                 $this->paymentMethod()
             );
