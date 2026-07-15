@@ -1,0 +1,19 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/payment/klarna/hpp/v1/sessions"
+  },
+  "response": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "session_id": "hpp_session_1",
+      "redirect_url": "https://pay.playground.klarna.com/eu/hpp/payments/hpp_session_1",
+      "session_url": "https://api.playground.klarna.com/hpp/v1/sessions/hpp_session_1",
+      "expires_at": "2099-01-01T00:00:00Z"
+    }
+  }
+}

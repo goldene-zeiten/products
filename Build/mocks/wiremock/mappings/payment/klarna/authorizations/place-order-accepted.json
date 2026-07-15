@@ -1,0 +1,18 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/payment/klarna/payments/v1/authorizations/auth_token_1/order"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "order_id": "klarna_order_1",
+      "fraud_status": "ACCEPTED",
+      "redirect_url": "https://pay.playground.klarna.com/eu/status/klarna_order_1"
+    }
+  }
+}

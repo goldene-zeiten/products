@@ -1,0 +1,19 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "GET",
+    "urlPath": "/payment/klarna/hpp/v1/sessions/hpp_session_1"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "session_id": "hpp_session_1",
+      "status": "COMPLETED",
+      "authorization_token": "auth_token_1",
+      "updated_at": "2026-07-16T12:00:00Z"
+    }
+  }
+}
