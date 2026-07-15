@@ -1,8 +1,10 @@
+.. include:: /Includes.rst.txt
+
 ..  _start:
 
-================
+=================
 Products Wishlist
-================
+=================
 
 :Extension key:
     products_wishlist
@@ -16,42 +18,55 @@ Products Wishlist
 :Language:
     en
 
+:Author:
+    Markus Hofmann
+
 :License:
     This document is published under the
     `Creative Commons BY 4.0 <https://creativecommons.org/licenses/by/4.0/>`__
     license.
 
-----
-
-A wishlist for the Products shop system: an add-to-wishlist toggle on product listings and detail pages,
-and a wishlist page that lists, reorders and removes saved products.
+:Rendered:
+    |today|
 
 ----
 
-What it does
-============
+A wishlist add-on for the `Products <https://github.com/goldene-zeiten/products-core>`__ shop system:
+an add-to-wishlist toggle on the catalog's product list and detail views, and a dedicated
+:guilabel:`Wishlist` page where shoppers reorder and remove their saved products.
 
-Once installed and enabled, a wishlist toggle appears on the core product list and detail views (through
-the catalog plugins), and the :guilabel:`Wishlist` plugin renders the saved products with reorder and
-remove actions. A guest's wishlist lives in the session and is merged into their account wishlist on login;
-placing an order clears the wishlist. Without this extension the core catalog shows no wishlist affordance.
+----
 
-Installation
-============
+..  card-grid::
+    :columns: 1
+    :columns-md: 2
+    :gap: 4
+    :class: pb-4
+    :card-height: 100
 
-..  code-block:: bash
+    ..  card:: :ref:`Introduction <introduction>`
 
-    composer require goldene-zeiten/products-wishlist
+        What this extension adds to the shop, and how guest and logged-in wishlists are stored.
 
-Add the :guilabel:`Products Wishlist` site set to your site, place the :guilabel:`Wishlist` plugin on the
-wishlist page, and point ``products.pids.wishlistPage`` at it. Enable it with
-:confval:`products.wishlist.enabled`.
+    ..  card:: :ref:`Installation <installation>`
 
-Settings
-========
+        How to install and activate the extension.
 
-..  confval:: products.wishlist.enabled
-    :type: bool
-    :Default: false
+    ..  card:: :ref:`Configuration <configuration>`
 
-    Show the add-to-wishlist affordance on product listings.
+        The site set, its settings, and the :guilabel:`Wishlist` content element.
+
+    ..  card:: :ref:`Users Manual <users-manual>`
+
+        What the shopper sees: the wishlist toggle, the wishlist page, login and checkout behaviour.
+
+**Table of Contents:**
+
+..  toctree::
+    :maxdepth: 2
+    :titlesonly:
+
+    Introduction/Index
+    Installation/Index
+    Configuration/Index
+    UsersManual/Index
