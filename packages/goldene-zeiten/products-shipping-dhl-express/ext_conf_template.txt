@@ -1,0 +1,29 @@
+# cat=access/enable/10; type=options[Sandbox=sandbox,Production=production]; label=Environment: Which DHL Express (MyDHL API) environment to call. Sandbox is DHL's test environment.
+environment = sandbox
+
+# cat=access/enable/20; type=string; label=Account number: Your DHL Express account number. Normally required for rates.
+accountNumber =
+
+# cat=access/enable/30; type=string; label=API username: MyDHL API key (username). System-wide default; a site may override it.
+username =
+
+# cat=access/enable/40; type=string; label=API password: MyDHL API secret (password). Kept out of version control; stored in the Install Tool.
+password =
+
+# cat=origin/dims/10; type=string; label=Origin country code: ISO 3166-1 alpha-2 country the shipment is sent from.
+originCountryCode = DE
+
+# cat=origin/dims/20; type=string; label=Origin postal code: Postal code the shipment is sent from.
+originPostCode =
+
+# cat=origin/dims/30; type=string; label=Origin city: City the shipment is sent from (DHL requires it for a rate).
+originCityName =
+
+# cat=services/enable/10; type=string; label=Used product codes: Comma-separated DHL product codes to offer (empty = every product DHL returns).
+usedProducts =
+
+# cat=services/enable/20; type=options[Metric (kg/cm)=metric,Imperial (lb/in)=imperial]; label=Unit of measurement: Unit the basket weight and dimensions are sent to DHL in.
+weightUnit = metric
+
+# cat=advanced/enable/10; type=string; label=API base URL override: Advanced. Overrides the environment's DHL API base URL, e.g. a proxy or a local mock server. Leave empty to use the environment's default.
+apiBaseUrl =

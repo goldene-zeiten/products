@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf" date="2026-07-16T12:00:00Z" product-name="products_shipping_dhl_express">
+		<header/>
+		<body>
+			<trans-unit id="category.shippingDhlExpress" resname="category.shippingDhlExpress">
+				<source>DHL Express</source>
+			</trans-unit>
+			<trans-unit id="setting.inherit.description" resname="setting.inherit.description">
+				<source>Leave empty to inherit the value from the extension configuration. Set it to override that default for this site.</source>
+			</trans-unit>
+			<trans-unit id="setting.environment" resname="setting.environment">
+				<source>Environment (sandbox / production)</source>
+			</trans-unit>
+			<trans-unit id="setting.environment.description" resname="setting.environment.description">
+				<source>Either "sandbox" (DHL's test environment) or "production". Leave empty to inherit the extension configuration.</source>
+			</trans-unit>
+			<trans-unit id="setting.accountNumber" resname="setting.accountNumber">
+				<source>Account number</source>
+			</trans-unit>
+			<trans-unit id="setting.username" resname="setting.username">
+				<source>API username</source>
+			</trans-unit>
+			<trans-unit id="setting.password" resname="setting.password">
+				<source>API password</source>
+			</trans-unit>
+			<trans-unit id="setting.password.description" resname="setting.password.description">
+				<source>The MyDHL API secret. Prefer referencing an environment variable so the secret stays out of version control. Leave empty to inherit the extension configuration.</source>
+			</trans-unit>
+			<trans-unit id="setting.originCountryCode" resname="setting.originCountryCode">
+				<source>Origin country code</source>
+			</trans-unit>
+			<trans-unit id="setting.originPostCode" resname="setting.originPostCode">
+				<source>Origin postal code</source>
+			</trans-unit>
+			<trans-unit id="setting.originCityName" resname="setting.originCityName">
+				<source>Origin city</source>
+			</trans-unit>
+			<trans-unit id="setting.usedProducts" resname="setting.usedProducts">
+				<source>Used product codes</source>
+			</trans-unit>
+			<trans-unit id="setting.usedProducts.description" resname="setting.usedProducts.description">
+				<source>Comma-separated DHL product codes to offer, e.g. "P,U,K". Leave empty to offer every product DHL returns.</source>
+			</trans-unit>
+			<trans-unit id="setting.weightUnit" resname="setting.weightUnit">
+				<source>Unit of measurement (metric / imperial)</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl" resname="setting.apiBaseUrl">
+				<source>API base URL override</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl.description" resname="setting.apiBaseUrl.description">
+				<source>Send the DHL calls to this host instead of the real DHL host, e.g. a proxy or a local mock server. Leave empty to use the environment's real host.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

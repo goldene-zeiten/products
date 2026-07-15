@@ -1,0 +1,22 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "GET",
+    "urlPath": "/shipping/dhl-express/rates",
+    "queryParameters": {
+      "destinationCountryCode": {
+        "equalTo": "YY"
+      }
+    }
+  },
+  "response": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "title": "Internal Server Error",
+      "status": "500"
+    }
+  }
+}
