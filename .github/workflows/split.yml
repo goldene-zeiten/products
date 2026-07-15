@@ -50,6 +50,9 @@ jobs:
           - package: products-shipping-ups
             directory: packages/goldene-zeiten/products-shipping-ups
             repository: products-shipping-ups
+          - package: products-shipping-dhl-express
+            directory: packages/goldene-zeiten/products-shipping-dhl-express
+            repository: products-shipping-dhl-express
           - package: products-api-client
             directory: packages/goldene-zeiten/products-api-client
             repository: products-api-client

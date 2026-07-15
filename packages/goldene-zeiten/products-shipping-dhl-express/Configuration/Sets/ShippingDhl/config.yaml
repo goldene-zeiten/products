@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-shipping-dhl-express
+label: Products DHL Express Shipping
+dependencies:
+  - goldene-zeiten/products-core
