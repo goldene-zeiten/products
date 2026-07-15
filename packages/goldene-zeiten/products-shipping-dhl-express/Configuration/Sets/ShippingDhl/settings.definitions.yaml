@@ -1,0 +1,66 @@
+categories:
+  shippingDhlExpress:
+    label: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:category.shippingDhlExpress'
+    parent: shipping
+
+settings:
+  products.shipping.dhlexpress.environment:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.environment'
+    description: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.environment.description'
+    category: shippingDhlExpress
+  products.shipping.dhlexpress.accountNumber:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.accountNumber'
+    description: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.inherit.description'
+    category: shippingDhlExpress
+  products.shipping.dhlexpress.username:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.username'
+    description: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.inherit.description'
+    category: shippingDhlExpress
+  products.shipping.dhlexpress.password:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.password'
+    description: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.password.description'
+    category: shippingDhlExpress
+  products.shipping.dhlexpress.originCountryCode:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.originCountryCode'
+    description: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.inherit.description'
+    category: shippingDhlExpress
+  products.shipping.dhlexpress.originPostCode:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.originPostCode'
+    description: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.inherit.description'
+    category: shippingDhlExpress
+  products.shipping.dhlexpress.originCityName:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.originCityName'
+    description: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.inherit.description'
+    category: shippingDhlExpress
+  products.shipping.dhlexpress.usedProducts:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.usedProducts'
+    description: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.usedProducts.description'
+    category: shippingDhlExpress
+  products.shipping.dhlexpress.weightUnit:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.weightUnit'
+    description: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.inherit.description'
+    category: shippingDhlExpress
+  products.shipping.dhlexpress.apiBaseUrl:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl'
+    description: 'LLL:EXT:products_shipping_dhl_express/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl.description'
+    category: shippingDhlExpress
