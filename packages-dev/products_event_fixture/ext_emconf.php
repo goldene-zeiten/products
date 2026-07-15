@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Products Event Fixture',
     'description' => 'Records and mutates dispatched PSR-14 events to prove EXT:products dispatches them.',

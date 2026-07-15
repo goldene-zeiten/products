@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Products Placement Transaction Fixture',
     'description' => 'Aborts an order placement from inside the placement transaction, so tests can prove the whole placement rolls back instead of leaving a half-written order behind.',

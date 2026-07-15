@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Products Order Export Fixture',
     'description' => 'A dummy OrderExportInterface implementation proving the tagged_iterator wiring functionally, without shipping a real exporter in EXT:products itself.',

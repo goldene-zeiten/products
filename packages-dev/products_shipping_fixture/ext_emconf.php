@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Products Shipping Provider Fixture',
     'description' => 'Dummy ShippingProviderInterface implementations proving the tagged_iterator wiring functionally, without shipping real carriers in EXT:products itself.',

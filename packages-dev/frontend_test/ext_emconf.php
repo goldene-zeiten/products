@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Products Frontend Test Fixture',
     'description' => 'Provides a minimal Site Set for functional frontend tests of EXT:products.',

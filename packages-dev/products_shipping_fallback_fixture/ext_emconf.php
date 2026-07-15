@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Products Shipping Fallback Fixture',
     'description' => 'A single conditional ShippingProviderInterface implementation for testing that the built-in fallback carrier yields to a real carrier and fills back in when it cannot serve a basket.',

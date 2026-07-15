@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Products Loyalty Fixture',
     'description' => 'Dummy LoyaltyProviderInterface implementation proving the tagged_iterator wiring functionally, without shipping real loyalty providers in EXT:products itself.',

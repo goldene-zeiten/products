@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Products Legacy Schema Fixture',
     'description' => 'Trimmed legacy tt_products schema for functional tests of the upgrade wizards.',
