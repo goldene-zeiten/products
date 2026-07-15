@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-payment-paypal
+label: Products PayPal Payment
+dependencies:
+  - goldene-zeiten/products-core

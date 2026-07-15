@@ -1,0 +1,20 @@
+{
+  "priority": 1,
+  "scenarioName": "paypal-capture-retry",
+  "requiredScenarioState": "Started",
+  "newScenarioState": "retried",
+  "request": {
+    "method": "POST",
+    "urlPath": "/payment/paypal/v2/checkout/orders/PAYPAL-ORDER-RETRY/capture"
+  },
+  "response": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "error": "invalid_token",
+      "error_description": "The token passed in was not found in the system"
+    }
+  }
+}

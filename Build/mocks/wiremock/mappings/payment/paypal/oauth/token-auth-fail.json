@@ -1,0 +1,22 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "POST",
+    "urlPath": "/payment/paypal/v1/oauth2/token",
+    "headers": {
+      "Authorization": {
+        "equalTo": "Basic YXV0aGZhaWw6c2VjcmV0"
+      }
+    }
+  },
+  "response": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "error": "invalid_client",
+      "error_description": "Client Authentication failed"
+    }
+  }
+}
