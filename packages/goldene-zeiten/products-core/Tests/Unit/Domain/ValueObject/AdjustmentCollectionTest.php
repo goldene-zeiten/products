@@ -92,7 +92,7 @@ final class AdjustmentCollectionTest extends UnitTestCase
         );
         $loyalty = new CheckoutAdjustment(
             AdjustmentType::LOYALTY,
-            'core.credit_points',
+            'example.loyalty',
             'Loyalty',
             Money::fromCents(-150)
         );

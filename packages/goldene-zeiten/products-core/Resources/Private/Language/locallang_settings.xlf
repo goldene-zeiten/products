@@ -27,9 +27,6 @@
 			<trans-unit id="category.vouchers" resname="category.vouchers">
 				<source>Vouchers</source>
 			</trans-unit>
-			<trans-unit id="category.creditPoints" resname="category.creditPoints">
-				<source>Credit Points</source>
-			</trans-unit>
 			<trans-unit id="category.discovery" resname="category.discovery">
 				<source>Wishlist &amp; Discovery</source>
 			</trans-unit>
@@ -146,21 +143,6 @@
 			</trans-unit>
 			<trans-unit id="setting.products.vouchers.gained.rewardValue" resname="setting.products.vouchers.gained.rewardValue">
 				<source>Gained voucher discount value</source>
-			</trans-unit>
-			<trans-unit id="setting.products.creditPoints.enabled" resname="setting.products.creditPoints.enabled">
-				<source>Credit points enabled</source>
-			</trans-unit>
-			<trans-unit id="setting.products.creditPoints.moneyPerPoint" resname="setting.products.creditPoints.moneyPerPoint">
-				<source>Money value of one credit point when redeemed</source>
-			</trans-unit>
-			<trans-unit id="setting.products.creditPoints.earningMode" resname="setting.products.creditPoints.earningMode">
-				<source>Credit-point earning mode (perProduct|basketTiered|autoPriceFactor)</source>
-			</trans-unit>
-			<trans-unit id="setting.products.creditPoints.earningTiers" resname="setting.products.creditPoints.earningTiers">
-				<source>basketTiered mode thresholds as "amount:points" pairs, e.g. "50.00:10" (highest qualifying threshold wins, not summed)</source>
-			</trans-unit>
-			<trans-unit id="setting.products.creditPoints.priceFactor" resname="setting.products.creditPoints.priceFactor">
-				<source>autoPriceFactor mode: points earned per whole currency unit for lines without their own explicit credit-points value</source>
 			</trans-unit>
 			<trans-unit id="setting.products.list.newItemDays" resname="setting.products.list.newItemDays">
 				<source>Number of days a product counts as "new" in the new-items listing</source>

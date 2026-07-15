@@ -6,8 +6,8 @@
 ,"uid","tax_class","country","rate"
 ,1,1,"",19.00
 
-"tx_products_domain_model_product",,,,,,,,,,,
-,"uid","pid","title","slug","price","tax_class","is_offer","is_highlight","credit_points","crdate"
-,1,2,"Product 1","product-1","100.00",1,0,0,200,100000
-,2,2,"Product 2","product-2","50.00",1,1,0,50,1735689600
-,3,2,"Product 3","product-3","10.00",1,0,1,100,1748227200
+"tx_products_domain_model_product",,,,,,,,,,
+,"uid","pid","title","slug","price","tax_class","is_offer","is_highlight","crdate"
+,1,2,"Product 1","product-1","100.00",1,0,0,100000
+,2,2,"Product 2","product-2","50.00",1,1,0,1735689600
+,3,2,"Product 3","product-3","10.00",1,0,1,1748227200

@@ -152,22 +152,4 @@ final class ProductRepository extends AbstractReadOnlyRepository
         return $query->execute()->toArray();
     }
 
-    /**
-     * Products whose credit-point price is within the given balance, cheapest first.
-     * A balance of 0 or less returns an empty array (matches the legacy "must be logged in
-     * with a positive balance" behavior for guests).
-     *
-     * @return Product[]
-     */
-    public function findAffordable(int $creditPointsBalance): array
-    {
-        if ($creditPointsBalance <= 0) {
-            return [];
-        }
-        $query = $this->createQuery();
-        $query->getQuerySettings()->setRespectStoragePage(false);
-        $query->matching($query->lessThanOrEqual('creditPoints', $creditPointsBalance));
-        $query->setOrderings(['creditPoints' => QueryInterface::ORDER_ASCENDING]);
-        return $query->execute()->toArray();
-    }
 }

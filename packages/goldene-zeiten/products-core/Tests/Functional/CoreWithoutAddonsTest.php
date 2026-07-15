@@ -43,6 +43,19 @@ final class CoreWithoutAddonsTest extends AbstractFunctionalTestCase
         ];
     }
 
+    /**
+     * Columns an add-on adds onto one of core's own tables. Core must not declare them itself - the add-on
+     * owns both the column and every read of it.
+     *
+     * @return array<string, array{0: string, 1: string}>
+     */
+    public static function addonColumnsOnCoreTables(): array
+    {
+        return [
+            'credit points on product' => ['tx_products_domain_model_product', 'credit_points'],
+        ];
+    }
+
     #[Test]
     #[DataProvider('addonContentElements')]
     public function anAddonsContentElementIsNotRegisteredByCore(string $contentElement): void
@@ -55,6 +68,13 @@ final class CoreWithoutAddonsTest extends AbstractFunctionalTestCase
     public function anAddonsContentElementFieldIsNotRegisteredByCore(string $field): void
     {
         $this->assertArrayNotHasKey($field, $GLOBALS['TCA']['tt_content']['columns'] ?? []);
+    }
+
+    #[Test]
+    #[DataProvider('addonColumnsOnCoreTables')]
+    public function anAddonsColumnOnACoreTableIsNotRegisteredByCore(string $table, string $column): void
+    {
+        $this->assertArrayNotHasKey($column, $GLOBALS['TCA'][$table]['columns'] ?? []);
     }
 
     /**

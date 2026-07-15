@@ -7,11 +7,10 @@ namespace GoldeneZeiten\Products\Core\Controller;
 use GoldeneZeiten\Products\Core\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Core\Domain\Dto\Address;
 use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutChoices;
-use GoldeneZeiten\Products\Core\Domain\Dto\Loyalty\LoyaltyContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
-use GoldeneZeiten\Products\Core\Loyalty\LoyaltyRegistry;
+use GoldeneZeiten\Products\Core\Event\EnrichCheckoutReviewEvent;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentCallbackException;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException;
 use GoldeneZeiten\Products\Core\Payment\PaymentCallbackService;
@@ -40,7 +39,6 @@ final class CheckoutController extends ActionController
         private readonly CheckoutService $checkoutService,
         private readonly PaymentMethodRegistry $paymentMethodRegistry,
         private readonly PaymentCallbackService $paymentCallbackService,
-        private readonly LoyaltyRegistry $loyaltyRegistry,
         private readonly PaymentContextFactory $paymentContextFactory,
         private readonly OrderPlacementService $orderPlacementService,
         private readonly FrontendUserResolver $frontendUserResolver,
@@ -167,36 +165,18 @@ final class CheckoutController extends ActionController
         $paymentMethodIdentifier = $this->checkoutService->getPaymentMethod($this->request);
         $shippingOptionKey = $this->checkoutService->getShippingOption($this->request);
 
+        $enrichEvent = new EnrichCheckoutReviewEvent($this->request);
+        $this->eventDispatcher->dispatch($enrichEvent);
+
         $this->view->assignMultiple([
             'basket' => $basket,
             'address' => $address,
             'paymentMethod' => $this->findPaymentMethod($paymentMethodIdentifier),
-            'creditPointsBalance' => $this->creditPointsBalance(),
             'shippingSelection' => $this->shippingQuoteService->resolveSelection($this->configurationFactory->create($this->request), $this->shippingContext(), $shippingOptionKey, $this->request),
             'deliveryAddress' => $this->checkoutService->getDeliveryAddress($this->request),
             'giftMessage' => $this->checkoutService->getGiftMessage($this->request),
-        ]);
+        ] + $enrichEvent->getVariables());
         return $this->htmlResponse();
-    }
-
-    /**
-     * 0 hides the spend-points input and indicates nothing to spend.
-     */
-    private function creditPointsBalance(): int
-    {
-        return $this->loyaltyRegistry->getBalance($this->loyaltyContext());
-    }
-
-    private function loyaltyContext(): LoyaltyContext
-    {
-        $basket = $this->checkoutService->getBasketViewModel($this->request);
-
-        return new LoyaltyContext(
-            $this->request,
-            $basket,
-            $basket->getTotalGross(),
-            $this->frontendUserResolver->getUid($this->request)
-        );
     }
 
     private function findPaymentMethod(string $identifier): ?PaymentMethodInterface

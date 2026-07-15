@@ -6,7 +6,6 @@ use GoldeneZeiten\Products\Core\Domain\Model\Article;
 use GoldeneZeiten\Products\Core\Domain\Model\Attribute;
 use GoldeneZeiten\Products\Core\Domain\Model\AttributeValue;
 use GoldeneZeiten\Products\Core\Domain\Model\Category;
-use GoldeneZeiten\Products\Core\Domain\Model\CreditPointsTransaction;
 use GoldeneZeiten\Products\Core\Domain\Model\HandlingFee;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Model\OrderAddress;
@@ -33,7 +32,6 @@ return [
     Attribute::class => ['tableName' => 'tx_products_domain_model_attribute'],
     AttributeValue::class => ['tableName' => 'tx_products_domain_model_attributevalue'],
     Category::class => ['tableName' => 'tx_products_domain_model_category'],
-    CreditPointsTransaction::class => ['tableName' => 'tx_products_domain_model_creditpointstransaction'],
     HandlingFee::class => ['tableName' => 'tx_products_domain_model_handlingfee'],
     Order::class => ['tableName' => 'tx_products_domain_model_order'],
     OrderAddress::class => ['tableName' => 'tx_products_domain_model_orderaddress'],

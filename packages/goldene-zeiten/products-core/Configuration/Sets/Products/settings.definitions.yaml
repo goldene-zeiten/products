@@ -22,9 +22,6 @@ categories:
   vouchers:
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.vouchers'
     parent: products
-  creditPoints:
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.creditPoints'
-    parent: products
   discovery:
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.discovery'
     parent: products
@@ -210,31 +207,6 @@ settings:
     default: 5.00
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.vouchers.gained.rewardValue'
     category: vouchers
-  products.creditPoints.enabled:
-    type: bool
-    default: false
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.creditPoints.enabled'
-    category: creditPoints
-  products.creditPoints.moneyPerPoint:
-    type: number
-    default: 0.10
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.creditPoints.moneyPerPoint'
-    category: creditPoints
-  products.creditPoints.earningMode:
-    type: string
-    default: 'perProduct'
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.creditPoints.earningMode'
-    category: creditPoints
-  products.creditPoints.earningTiers:
-    type: stringlist
-    default: []
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.creditPoints.earningTiers'
-    category: creditPoints
-  products.creditPoints.priceFactor:
-    type: number
-    default: 0.0
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.creditPoints.priceFactor'
-    category: creditPoints
   products.list.newItemDays:
     type: int
     default: 7

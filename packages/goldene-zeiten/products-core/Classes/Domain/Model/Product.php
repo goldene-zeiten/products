@@ -40,7 +40,6 @@ class Product extends AbstractEntity
     protected string $shippingClass = '';
     protected float $contentAmount = 0.0;
     protected string $contentUnit = '';
-    protected int $creditPoints = 0;
     protected float $discountPercent = 0.0;
     protected bool $discountDisabled = false;
     protected bool $isOffer = false;
@@ -291,16 +290,6 @@ class Product extends AbstractEntity
     public function setBulky(bool $bulky): void
     {
         $this->bulky = $bulky;
-    }
-
-    public function getCreditPoints(): int
-    {
-        return $this->creditPoints;
-    }
-
-    public function setCreditPoints(int $creditPoints): void
-    {
-        $this->creditPoints = $creditPoints;
     }
 
     public function getDiscountPercent(): float

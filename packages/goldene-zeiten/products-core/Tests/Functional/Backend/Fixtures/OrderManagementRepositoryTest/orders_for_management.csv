@@ -12,7 +12,3 @@
 ,"uid","pid","code","generated_from_order"
 ,10,2,"SAVE10",0
 ,11,2,"GAINED-ABC123",1
-
-"tx_products_domain_model_creditpointstransaction",,,,,
-,"uid","pid","frontend_user","points","type","order_uid"
-,1,2,5,20,"earn",1

@@ -173,49 +173,4 @@ final class ProductRepositoryTest extends AbstractFunctionalTestCase
         $new = $productRepository->findNew(36500);
         $this->assertCount(6, $new);
     }
-
-    #[Test]
-    public function findAffordableReturnsProductsWithinBalance(): void
-    {
-        $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
-        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
-
-        // With balance 50, affordable products are: 2 (50), 4 (25), 6 (10)
-        $affordable = $productRepository->findAffordable(50);
-        $this->assertCount(3, $affordable);
-
-        $titles = array_map(static fn(Product $p): string => $p->getTitle(), $affordable);
-        $this->assertContains('Product 6', $titles);
-        $this->assertContains('Product 4', $titles);
-        $this->assertContains('Product 2', $titles);
-    }
-
-    #[Test]
-    public function findAffordableReturnsEmptyListForNonPositiveBalance(): void
-    {
-        $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
-        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
-
-        $this->assertSame([], $productRepository->findAffordable(0));
-        $this->assertSame([], $productRepository->findAffordable(-10));
-    }
-
-    #[Test]
-    public function findAffordableReturnsProductsOrderedByCreditPointsAscending(): void
-    {
-        $productRepository = $this->get(ProductRepository::class);
-        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
-        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
-
-        // With balance 150, affordable products are: 2 (50), 3 (100), 4 (25), 5 (150), 6 (10)
-        // Product 1 (200) is not affordable
-        $affordable = $productRepository->findAffordable(150);
-        $this->assertCount(5, $affordable);
-
-        $titles = array_map(static fn(Product $p): string => $p->getTitle(), $affordable);
-        // Cheapest first by credit_points: 10, 25, 50, 100, 150
-        $this->assertSame(['Product 6', 'Product 4', 'Product 2', 'Product 3', 'Product 5'], $titles);
-    }
 }

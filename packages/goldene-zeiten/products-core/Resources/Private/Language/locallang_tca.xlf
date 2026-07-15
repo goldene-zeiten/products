@@ -138,42 +138,6 @@
 			<trans-unit id="tx_products_domain_model_voucherredemption.redeemed_at" resname="tx_products_domain_model_voucherredemption.redeemed_at">
 				<source>Redeemed At</source>
 			</trans-unit>
-			<trans-unit id="tx_products_domain_model_creditpointsbalance" resname="tx_products_domain_model_creditpointsbalance">
-				<source>Credit Points Balance</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_creditpointsbalance.frontend_user" resname="tx_products_domain_model_creditpointsbalance.frontend_user">
-				<source>Frontend User</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_creditpointsbalance.balance" resname="tx_products_domain_model_creditpointsbalance.balance">
-				<source>Balance</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_creditpointstransaction" resname="tx_products_domain_model_creditpointstransaction">
-				<source>Credit Points Transaction</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_creditpointstransaction.frontend_user" resname="tx_products_domain_model_creditpointstransaction.frontend_user">
-				<source>Frontend User</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_creditpointstransaction.order_uid" resname="tx_products_domain_model_creditpointstransaction.order_uid">
-				<source>Order UID</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_creditpointstransaction.points" resname="tx_products_domain_model_creditpointstransaction.points">
-				<source>Points</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_creditpointstransaction.type" resname="tx_products_domain_model_creditpointstransaction.type">
-				<source>Type</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_creditpointstransaction.type.earn" resname="tx_products_domain_model_creditpointstransaction.type.earn">
-				<source>Earned</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_creditpointstransaction.type.redeem" resname="tx_products_domain_model_creditpointstransaction.type.redeem">
-				<source>Redeemed</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_creditpointstransaction.type.adjustment" resname="tx_products_domain_model_creditpointstransaction.type.adjustment">
-				<source>Manual adjustment</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_creditpointstransaction.created" resname="tx_products_domain_model_creditpointstransaction.created">
-				<source>Created</source>
-			</trans-unit>
 			<trans-unit id="tx_products_domain_model_taxrate" resname="tx_products_domain_model_taxrate">
 				<source>Tax Rate</source>
 			</trans-unit>
@@ -431,9 +395,6 @@
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_product.shipping_class.refrigerated" resname="tx_products_domain_model_product.shipping_class.refrigerated">
 				<source>Refrigerated</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_product.credit_points" resname="tx_products_domain_model_product.credit_points">
-				<source>Credit points earned per unit</source>
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_product.is_offer" resname="tx_products_domain_model_product.is_offer">
 				<source>Is Offer</source>

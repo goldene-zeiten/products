@@ -31,8 +31,7 @@ final class ProductListModeItemsProviderTest extends AbstractFunctionalTestCase
         $values = array_column($parameters['items'], 'value');
         // Pre-existing item should still be there
         $this->assertContains('all', $values);
-        // Registered modes should be appended
+        // A registered mode should be appended - here the one the fixture add-on provides.
         $this->assertContains('fixture-featured', $values);
-        $this->assertContains('affordable', $values);
     }
 }

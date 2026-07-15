@@ -29,6 +29,4 @@ final class CoreAdjustmentProvider
     public const VOUCHER = 'core.voucher';
 
     public const VOUCHER_FREE_SHIPPING = 'core.voucher.free_shipping';
-
-    public const CREDIT_POINTS = 'core.credit_points';
 }

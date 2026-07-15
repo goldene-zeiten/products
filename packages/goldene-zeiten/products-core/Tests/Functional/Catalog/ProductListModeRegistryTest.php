@@ -48,7 +48,7 @@ final class ProductListModeRegistryTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
-    public function getSelectItemsContainsFixtureFeaturedAndAffordable(): void
+    public function getSelectItemsContainsFixtureFeatured(): void
     {
         $registry = $this->get(ProductListModeRegistry::class);
 
@@ -56,7 +56,6 @@ final class ProductListModeRegistryTest extends AbstractFunctionalTestCase
 
         $modes = array_column($items, 'value');
         $this->assertContains('fixture-featured', $modes);
-        $this->assertContains('affordable', $modes);
 
         // Check that 'fixture-featured' has the correct label
         $fixtureItems = array_filter($items, static fn($item) => $item['value'] === 'fixture-featured');

@@ -49,15 +49,7 @@
 
     <div class="mt-4">
         <f:form action="finalize">
-            <f:if condition="{creditPointsBalance} > 0">
-                <f:then>
-                    <div class="mb-3">
-                        <label for="spendPoints"><f:translate key="credit_points_balance" arguments="{0: creditPointsBalance}" /></label>
-                        <input type="number" name="spendPoints" min="0" max="{creditPointsBalance}" value="0" class="form-control" id="spendPoints" />
-                        <span class="form-text"><f:translate key="credit_points_spend_label" /></span>
-                    </div>
-                </f:then>
-            </f:if>
+            <f:render partial="Checkout/LoyaltySlot" arguments="{_all}" />
             <div class="form-check mb-3">
                 <f:form.checkbox name="termsAccepted" value="1" class="form-check-input" id="termsAccepted" required="required" />
                 <label class="form-check-label" for="termsAccepted"><f:translate key="terms_accepted_label" /></label>

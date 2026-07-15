@@ -2,6 +2,6 @@
 ,"uid","pid","title","code"
 ,1,2,"Standard Tax","standard"
 
-"tx_products_domain_model_product",,,,,,,,,,,
-,"uid","pid","title","slug","price","tax_class","is_offer","is_highlight","credit_points","crdate"
-,1,2,"Product 1","product-1","100.00",1,0,0,200,100000
+"tx_products_domain_model_product",,,,,,,,,,
+,"uid","pid","title","slug","price","tax_class","is_offer","is_highlight","crdate"
+,1,2,"Product 1","product-1","100.00",1,0,0,100000
