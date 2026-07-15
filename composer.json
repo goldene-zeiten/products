@@ -25,7 +25,8 @@
     "goldene-zeiten/products-voucher": "^1.0",
     "goldene-zeiten/products-watermark": "^1.0",
     "goldene-zeiten/products-shipping-ups": "^1.0",
-    "goldene-zeiten/products-payment-paypal": "^1.0"
+    "goldene-zeiten/products-payment-paypal": "^1.0",
+    "goldene-zeiten/products-payment-stripe": "^1.0"
   },
   "autoload-dev": {
     "psr-4": {
@@ -39,7 +40,8 @@
       "GoldeneZeiten\\Products\\Voucher\\Tests\\": "packages/goldene-zeiten/products-voucher/Tests/",
       "GoldeneZeiten\\Products\\Watermark\\Tests\\": "packages/goldene-zeiten/products-watermark/Tests/",
       "GoldeneZeiten\\Products\\Shipping\\Ups\\Tests\\": "packages/goldene-zeiten/products-shipping-ups/Tests/",
-      "GoldeneZeiten\\Products\\Payment\\Paypal\\Tests\\": "packages/goldene-zeiten/products-payment-paypal/Tests/"
+      "GoldeneZeiten\\Products\\Payment\\Paypal\\Tests\\": "packages/goldene-zeiten/products-payment-paypal/Tests/",
+      "GoldeneZeiten\\Products\\Payment\\Stripe\\Tests\\": "packages/goldene-zeiten/products-payment-stripe/Tests/"
     }
   },
   "require-dev": {
@@ -71,7 +73,8 @@
           "goldene-zeiten/products-voucher": "1.0.0",
           "goldene-zeiten/products-watermark": "1.0.0",
           "goldene-zeiten/products-shipping-ups": "1.0.0",
-          "goldene-zeiten/products-payment-paypal": "1.0.0"
+          "goldene-zeiten/products-payment-paypal": "1.0.0",
+          "goldene-zeiten/products-payment-stripe": "1.0.0"
         }
       }
     }

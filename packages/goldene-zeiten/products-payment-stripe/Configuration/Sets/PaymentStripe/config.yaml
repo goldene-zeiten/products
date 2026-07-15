@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-payment-stripe
+label: Products Stripe Payment
+dependencies:
+  - goldene-zeiten/products-core
