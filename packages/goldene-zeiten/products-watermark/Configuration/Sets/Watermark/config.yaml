@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-watermark
+label: Products Watermark
+dependencies:
+  - goldene-zeiten/products-core

@@ -1,0 +1,8 @@
+"sys_file_reference",,,,,,,
+,"uid","pid","uid_local","uid_foreign","tablenames","fieldname","deleted"
+,1,1,100,10,"tx_products_domain_model_product","images",0
+,2,1,101,11,"tx_products_domain_model_article","images",0
+,3,1,102,12,"tx_products_domain_model_category","image",0
+,4,1,103,10,"tx_products_domain_model_product","downloads",0
+,5,1,104,20,"tt_content","image",0
+,6,1,105,10,"tx_products_domain_model_product","images",1
