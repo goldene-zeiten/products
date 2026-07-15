@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_payment_stripe/Resources/Private/Language/locallang_settings.xlf" date="2026-07-16T12:00:00Z" product-name="products_payment_stripe">
+		<header/>
+		<body>
+			<trans-unit id="category.paymentStripe" resname="category.paymentStripe">
+				<source>Stripe</source>
+			</trans-unit>
+			<trans-unit id="setting.inherit.description" resname="setting.inherit.description">
+				<source>Leave empty to inherit the value from the extension configuration. Set it to override that default for this site.</source>
+			</trans-unit>
+			<trans-unit id="setting.secretKey" resname="setting.secretKey">
+				<source>Secret key</source>
+			</trans-unit>
+			<trans-unit id="setting.secretKey.description" resname="setting.secretKey.description">
+				<source>Stripe secret API key (sk_test_... in test mode, sk_live_... in live mode). Prefer referencing an environment variable so the key stays out of version control. Leave empty to inherit the extension configuration.</source>
+			</trans-unit>
+			<trans-unit id="setting.webhookSecret" resname="setting.webhookSecret">
+				<source>Webhook signing secret</source>
+			</trans-unit>
+			<trans-unit id="setting.webhookSecret.description" resname="setting.webhookSecret.description">
+				<source>The signing secret (whsec_...) of the Stripe webhook endpoint, used to verify incoming events. Required for webhook confirmation; leave empty to rely on the browser return only.</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl" resname="setting.apiBaseUrl">
+				<source>API base URL override</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl.description" resname="setting.apiBaseUrl.description">
+				<source>Send the Stripe calls to this host instead of the real Stripe host, e.g. a proxy or a local mock server. Leave empty to use Stripe's default (https://api.stripe.com).</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
