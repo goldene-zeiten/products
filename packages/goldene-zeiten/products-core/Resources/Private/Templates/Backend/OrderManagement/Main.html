@@ -62,7 +62,7 @@
                         </f:if>
                     </table>
 
-                    <f:if condition="{voucherRedemptions} || {gainedVoucher} || {creditPointsLedger}">
+                    <f:if condition="{voucherRedemptions} || {gainedVoucher} || {orderDetailPanels}">
                         <f:then>
                             <h3><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.section.discounts_and_rewards" /></h3>
                             <f:if condition="{voucherRedemptions}">
@@ -98,28 +98,9 @@
                                     </p>
                                 </f:then>
                             </f:if>
-                            <f:if condition="{creditPointsLedger}">
-                                <f:then>
-                                    <table class="table table-striped w-auto">
-                                        <thead>
-                                            <tr>
-                                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.credit_points_type" /></th>
-                                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.credit_points_points" /></th>
-                                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.date" /></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <f:for each="{creditPointsLedger}" as="ledgerRow">
-                                                <tr>
-                                                    <td>{ledgerRow.type}</td>
-                                                    <td>{ledgerRow.points}</td>
-                                                    <td>{ledgerRow.created}</td>
-                                                </tr>
-                                            </f:for>
-                                        </tbody>
-                                    </table>
-                                </f:then>
-                            </f:if>
+                            <f:for each="{orderDetailPanels}" as="panelHtml">
+                                <f:format.raw>{panelHtml}</f:format.raw>
+                            </f:for>
                         </f:then>
                     </f:if>
 

@@ -86,20 +86,6 @@ final class OrderManagementRepository
         return ['code' => (string)$row['code'], 'used' => $this->countRedemptionsFor((int)$row['uid']) > 0];
     }
 
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    public function fetchCreditPointsLedger(int $orderUid): array
-    {
-        $queryBuilder = $this->queryBuilderFor('tx_products_domain_model_creditpointstransaction');
-        $rows = $queryBuilder->select('*')
-            ->from('tx_products_domain_model_creditpointstransaction')
-            ->where($queryBuilder->expr()->eq('order_uid', $queryBuilder->createNamedParameter($orderUid, ParameterType::INTEGER)))
-            ->executeQuery()
-            ->fetchAllAssociative();
-        return array_map($this->mapCreditPointsRow(...), $rows);
-    }
-
     private function countRedemptionsFor(int $voucherUid): int
     {
         $queryBuilder = $this->queryBuilderFor('tx_products_domain_model_voucherredemption');
@@ -120,20 +106,6 @@ final class OrderManagementRepository
             'voucherCode' => (string)$row['voucher_code'],
             'discountTotalCents' => (int)$row['discount_total'],
             'redeemedAt' => $this->formatTimestamp((int)($row['redeemed_at'] ?? 0)),
-        ];
-    }
-
-    /**
-     * @param array<string, mixed> $row
-     * @return array<string, mixed>
-     */
-    private function mapCreditPointsRow(array $row): array
-    {
-        return [
-            'frontendUser' => (int)$row['frontend_user'],
-            'points' => (int)$row['points'],
-            'type' => (string)$row['type'],
-            'created' => $this->formatTimestamp((int)($row['created'] ?? 0)),
         ];
     }
 

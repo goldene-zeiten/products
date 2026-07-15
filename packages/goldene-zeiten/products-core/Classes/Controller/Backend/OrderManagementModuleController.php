@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Controller\Backend;
 
+use GoldeneZeiten\Products\Core\Backend\OrderDetail\OrderDetailPanelRegistry;
 use GoldeneZeiten\Products\Core\Backend\OrderListFilter;
 use GoldeneZeiten\Products\Core\Backend\OrderManagementRepository;
 use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
@@ -44,6 +45,7 @@ final class OrderManagementModuleController
         private readonly OrderStatusManager $orderStatusManager,
         private readonly PaymentMethodRegistry $paymentMethodRegistry,
         private readonly OrderExportService $orderExportService,
+        private readonly OrderDetailPanelRegistry $orderDetailPanelRegistry,
     ) {}
 
     public function mainAction(ServerRequestInterface $request): ResponseInterface
@@ -135,7 +137,7 @@ final class OrderManagementModuleController
             'listUrl' => (string)$this->uriBuilder->buildUriFromRequest($request, ['order']),
             'voucherRedemptions' => $order !== null ? $this->orderRepository->fetchVoucherRedemptions($orderUid) : [],
             'gainedVoucher' => $order !== null ? $this->orderRepository->fetchGainedVoucher($orderUid) : null,
-            'creditPointsLedger' => $order !== null ? $this->orderRepository->fetchCreditPointsLedger($orderUid) : [],
+            'orderDetailPanels' => $order !== null ? $this->orderDetailPanelRegistry->renderPanels($orderUid) : [],
             'exporters' => $this->availableExporters($orderUid),
         ];
     }

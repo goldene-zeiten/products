@@ -168,41 +168,6 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
-    #[DataProvider('fetchCreditPointsLedgerProvider')]
-    public function fetchCreditPointsLedger(int $orderUid, ?int $expectedFrontendUser, ?int $expectedPoints, ?string $expectedType): void
-    {
-        $subject = $this->get(OrderManagementRepository::class);
-
-        $ledger = $subject->fetchCreditPointsLedger($orderUid);
-
-        if ($expectedFrontendUser === null) {
-            $this->assertSame([], $ledger);
-            return;
-        }
-        $this->assertCount(1, $ledger);
-        $this->assertSame($expectedFrontendUser, $ledger[0]['frontendUser']);
-        $this->assertSame($expectedPoints, $ledger[0]['points']);
-        $this->assertSame($expectedType, $ledger[0]['type']);
-    }
-
-    public static function fetchCreditPointsLedgerProvider(): \Generator
-    {
-        yield 'returns rows for that order' => [
-            'orderUid' => 1,
-            'expectedFrontendUser' => 5,
-            'expectedPoints' => 20,
-            'expectedType' => 'earn',
-        ];
-
-        yield 'is empty for an order with none' => [
-            'orderUid' => 2,
-            'expectedFrontendUser' => null,
-            'expectedPoints' => null,
-            'expectedType' => null,
-        ];
-    }
-
-    #[Test]
     public function findForEditingAndPersistWritesTheTransitionToTheDatabase(): void
     {
         $subject = $this->get(OrderManagementRepository::class);
