@@ -174,18 +174,6 @@
 			<trans-unit id="tx_products_domain_model_creditpointstransaction.created" resname="tx_products_domain_model_creditpointstransaction.created">
 				<source>Created</source>
 			</trans-unit>
-			<trans-unit id="tx_products_domain_model_wishlistitem" resname="tx_products_domain_model_wishlistitem">
-				<source>Wishlist Item</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_wishlistitem.frontend_user" resname="tx_products_domain_model_wishlistitem.frontend_user">
-				<source>Frontend User</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_wishlistitem.product" resname="tx_products_domain_model_wishlistitem.product">
-				<source>Product</source>
-			</trans-unit>
-			<trans-unit id="tx_products_domain_model_wishlistitem.created" resname="tx_products_domain_model_wishlistitem.created">
-				<source>Created</source>
-			</trans-unit>
 			<trans-unit id="tx_products_domain_model_taxrate" resname="tx_products_domain_model_taxrate">
 				<source>Tax Rate</source>
 			</trans-unit>

@@ -39,12 +39,6 @@
 			<trans-unit id="remove" resname="remove">
 				<source>Remove</source>
 			</trans-unit>
-			<trans-unit id="move_up" resname="move_up">
-				<source>Move up</source>
-			</trans-unit>
-			<trans-unit id="move_down" resname="move_down">
-				<source>Move down</source>
-			</trans-unit>
 			<trans-unit id="total_net" resname="total_net">
 				<source>Total Net</source>
 			</trans-unit>
@@ -158,18 +152,6 @@
 			</trans-unit>
 			<trans-unit id="details" resname="details">
 				<source>Details</source>
-			</trans-unit>
-			<trans-unit id="wishlist" resname="wishlist">
-				<source>Wishlist</source>
-			</trans-unit>
-			<trans-unit id="wishlist_empty" resname="wishlist_empty">
-				<source>Your wishlist is empty.</source>
-			</trans-unit>
-			<trans-unit id="add_to_wishlist" resname="add_to_wishlist">
-				<source>Add to wishlist</source>
-			</trans-unit>
-			<trans-unit id="remove_from_wishlist" resname="remove_from_wishlist">
-				<source>Remove from wishlist</source>
 			</trans-unit>
 			<trans-unit id="previous_page" resname="previous_page">
 				<source>Previous</source>

@@ -8,7 +8,6 @@ use GoldeneZeiten\Products\Core\Controller\DownloadController;
 use GoldeneZeiten\Products\Core\Controller\InvoiceController;
 use GoldeneZeiten\Products\Core\Controller\OrderController;
 use GoldeneZeiten\Products\Core\Controller\ProductController;
-use GoldeneZeiten\Products\Core\Controller\WishlistController;
 use GoldeneZeiten\Products\Core\Controller\WithdrawalController;
 use GoldeneZeiten\Products\Core\Hooks\CategoryMountAccessHook;
 use GoldeneZeiten\Products\Core\Hooks\PriceAuditHook;
@@ -93,17 +92,6 @@ defined('TYPO3') or die();
         ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
     );
 
-    ExtensionUtility::configurePlugin(
-        'ProductsCore',
-        'Wishlist',
-        [
-            WishlistController::class => 'show, add, remove, moveUp, moveDown',
-        ],
-        [
-            WishlistController::class => 'show, add, remove, moveUp, moveDown',
-        ],
-        ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
-    );
 
 
 

@@ -22,7 +22,6 @@ use GoldeneZeiten\Products\Core\Domain\Model\TaxClass;
 use GoldeneZeiten\Products\Core\Domain\Model\TaxRate;
 use GoldeneZeiten\Products\Core\Domain\Model\Voucher;
 use GoldeneZeiten\Products\Core\Domain\Model\VoucherRedemption;
-use GoldeneZeiten\Products\Core\Domain\Model\WishlistItem;
 
 // The core extension key is `products_core`, so Extbase's default table-name
 // convention would resolve to `tx_products_core_domain_model_*`. The tables keep
@@ -50,5 +49,4 @@ return [
     TaxRate::class => ['tableName' => 'tx_products_domain_model_taxrate'],
     Voucher::class => ['tableName' => 'tx_products_domain_model_voucher'],
     VoucherRedemption::class => ['tableName' => 'tx_products_domain_model_voucherredemption'],
-    WishlistItem::class => ['tableName' => 'tx_products_domain_model_wishlistitem'],
 ];

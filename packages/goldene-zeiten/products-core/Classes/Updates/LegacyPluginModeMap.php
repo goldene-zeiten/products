@@ -29,7 +29,7 @@ final class LegacyPluginModeMap
         'LISTVIEWEDMOSTOTHERS' => ['ctype' => 'productsrecentlyviewed_recentlyviewed', 'fields' => ['tx_products_recentlyviewed_mode' => 'mostviewedglobal']],
         'SINGLE' => ['ctype' => 'productscore_productdetail', 'fields' => []],
         'SEARCH' => ['ctype' => 'productssearch_search', 'fields' => ['tx_products_search_browse_mode' => 'text']],
-        'MEMO' => ['ctype' => 'productscore_wishlist', 'fields' => []],
+        'MEMO' => ['ctype' => 'productswishlist_wishlist', 'fields' => []],
         'BASKET' => ['ctype' => 'productscore_basket', 'fields' => []],
         'ORDERS' => ['ctype' => 'productscore_orderhistory', 'fields' => []],
         'BILL' => ['ctype' => 'products_invoice', 'fields' => []],

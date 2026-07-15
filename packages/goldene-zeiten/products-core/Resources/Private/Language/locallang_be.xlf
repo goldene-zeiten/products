@@ -24,9 +24,6 @@
 			<trans-unit id="plugin.order_history" resname="plugin.order_history">
 				<source>Order History</source>
 			</trans-unit>
-			<trans-unit id="plugin.wishlist" resname="plugin.wishlist">
-				<source>Wishlist</source>
-			</trans-unit>
 			<trans-unit id="plugin.category_navigation" resname="plugin.category_navigation">
 				<source>Category Navigation</source>
 			</trans-unit>

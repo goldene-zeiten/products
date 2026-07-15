@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-wishlist
+label: Products Wishlist
+dependencies:
+  - goldene-zeiten/products-core

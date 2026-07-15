@@ -26,6 +26,7 @@ final class CoreWithoutAddonsTest extends AbstractFunctionalTestCase
         return [
             'search' => ['productssearch_search'],
             'recently viewed' => ['productsrecentlyviewed_recentlyviewed'],
+            'wishlist' => ['productswishlist_wishlist'],
         ];
     }
 

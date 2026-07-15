@@ -1,18 +1,5 @@
-<f:if condition="{wishlistEnabled}">
-    <f:then>
-        <f:contains value="{product.uid}" subject="{wishlistProductUids}">
-            <f:then>
-                <f:form action="remove" controller="Wishlist" extensionName="ProductsCore" pluginName="Wishlist" pageUid="{settings.pids.wishlistPage}" class="d-inline">
-                    <f:form.hidden name="product" value="{product.uid}" />
-                    <f:form.submit value="{f:translate(key: 'remove_from_wishlist')}" class="btn btn-outline-secondary btn-sm" />
-                </f:form>
-            </f:then>
-            <f:else>
-                <f:form action="add" controller="Wishlist" extensionName="ProductsCore" pluginName="Wishlist" pageUid="{settings.pids.wishlistPage}" class="d-inline">
-                    <f:form.hidden name="product" value="{product.uid}" />
-                    <f:form.submit value="{f:translate(key: 'add_to_wishlist')}" class="btn btn-outline-secondary btn-sm" />
-                </f:form>
-            </f:else>
-        </f:contains>
-    </f:then>
-</f:if>
+<f:comment>
+    The wishlist toggle is provided by the optional "goldene-zeiten/products-wishlist" extension, which
+    overrides this partial through the catalog plugins' partialRootPaths when installed. Without it there
+    is no wishlist, so this core stub renders nothing.
+</f:comment>

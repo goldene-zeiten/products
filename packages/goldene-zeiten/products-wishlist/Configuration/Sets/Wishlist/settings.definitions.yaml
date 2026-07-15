@@ -1,0 +1,6 @@
+settings:
+  products.wishlist.enabled:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products_wishlist/Resources/Private/Language/locallang_settings.xlf:setting.products.wishlist.enabled'
+    category: discovery

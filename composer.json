@@ -18,14 +18,16 @@
   "require": {
     "goldene-zeiten/products-core": "^1.0",
     "goldene-zeiten/products-search": "^1.0",
-    "goldene-zeiten/products-recently-viewed": "^1.0"
+    "goldene-zeiten/products-recently-viewed": "^1.0",
+    "goldene-zeiten/products-wishlist": "^1.0"
   },
   "autoload-dev": {
     "psr-4": {
       "GoldeneZeiten\\Products\\Core\\Tests\\": "packages/goldene-zeiten/products-core/Tests/",
       "GoldeneZeiten\\Products\\Search\\Tests\\": "packages/goldene-zeiten/products-search/Tests/",
       "GoldeneZeiten\\Products\\Testing\\": "packages-dev/products_testing/Classes/",
-      "GoldeneZeiten\\Products\\RecentlyViewed\\Tests\\": "packages/goldene-zeiten/products-recently-viewed/Tests/"
+      "GoldeneZeiten\\Products\\RecentlyViewed\\Tests\\": "packages/goldene-zeiten/products-recently-viewed/Tests/",
+      "GoldeneZeiten\\Products\\Wishlist\\Tests\\": "packages/goldene-zeiten/products-wishlist/Tests/"
     }
   },
   "require-dev": {
@@ -50,7 +52,8 @@
         "versions": {
           "goldene-zeiten/products-core": "1.0.0",
           "goldene-zeiten/products-search": "1.0.0",
-          "goldene-zeiten/products-recently-viewed": "1.0.0"
+          "goldene-zeiten/products-recently-viewed": "1.0.0",
+          "goldene-zeiten/products-wishlist": "1.0.0"
         }
       }
     }

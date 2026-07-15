@@ -235,11 +235,6 @@ settings:
     default: 0.0
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.creditPoints.priceFactor'
     category: creditPoints
-  products.wishlist.enabled:
-    type: bool
-    default: false
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.wishlist.enabled'
-    category: discovery
   products.list.newItemDays:
     type: int
     default: 7

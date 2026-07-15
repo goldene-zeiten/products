@@ -46,13 +46,6 @@ defined('TYPO3') or die();
 
     ExtensionUtility::registerPlugin(
         'ProductsCore',
-        'Wishlist',
-        'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.wishlist',
-        'EXT:products_core/Resources/Public/Icons/Extension.svg'
-    );
-
-    ExtensionUtility::registerPlugin(
-        'ProductsCore',
         'CategoryNavigation',
         'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.category_navigation',
         'EXT:products_core/Resources/Public/Icons/Extension.svg'

@@ -13,6 +13,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\Category;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\Repository\ArticleRepository;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Event\EnrichProductViewEvent;
 use GoldeneZeiten\Products\Core\Event\ModifyProductListEvent;
 use GoldeneZeiten\Products\Core\Event\ProductViewedEvent;
 use GoldeneZeiten\Products\Core\PageTitle\CurrentProductHolder;
@@ -20,7 +21,6 @@ use GoldeneZeiten\Products\Core\Service\Category\CategoryTreeService;
 use GoldeneZeiten\Products\Core\Service\ContentElement\RecordsFieldResolver;
 use GoldeneZeiten\Products\Core\Service\ContentElement\SelectedCategoriesResolver;
 use GoldeneZeiten\Products\Core\Service\Variant\ArticleVariantResolver;
-use GoldeneZeiten\Products\Core\Service\Wishlist\WishlistService;
 use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -32,7 +32,6 @@ final class ProductController extends ActionController
     public function __construct(
         private readonly ProductRepository $productRepository,
         private readonly ArticleRepository $articleRepository,
-        private readonly WishlistService $wishlistService,
         private readonly ArticleVariantResolver $articleVariantResolver,
         private readonly CurrentProductHolder $currentProductHolder,
         private readonly CategoryTreeService $categoryTreeService,
@@ -45,14 +44,14 @@ final class ProductController extends ActionController
     public function listAction(): ResponseInterface
     {
         $products = $this->resolveProductsForList();
-        $this->view->assignMultiple(['products' => $products] + $this->wishlistViewVariables());
+        $this->view->assignMultiple(['products' => $products] + $this->enrichViewVariables());
         return $this->htmlResponse();
     }
 
     public function listByAjaxAction(): ResponseInterface
     {
         $products = $this->resolveProductsForList();
-        $this->view->assignMultiple(['products' => $products] + $this->wishlistViewVariables());
+        $this->view->assignMultiple(['products' => $products] + $this->enrichViewVariables());
         return $this->htmlResponse();
     }
 
@@ -91,7 +90,7 @@ final class ProductController extends ActionController
             'product' => $product,
             'variantAttributes' => $product->getVariantAttributes(),
             'selectedArticle' => $selectedArticle ?? $this->articleVariantResolver->resolve($product, array_map('intval', $attributeValues)),
-        ] + $this->wishlistViewVariables());
+        ] + $this->enrichViewVariables());
         return $this->htmlResponse();
     }
 
@@ -207,14 +206,15 @@ final class ProductController extends ActionController
     }
 
     /**
-     * @return array{wishlistEnabled: bool, wishlistProductUids: int[], wishlistCount: int}
+     * Variables add-ons contribute to the list and detail views (e.g. wishlist state), collected through an
+     * event so the core catalog controller does not depend on any of those features.
+     *
+     * @return array<string, mixed>
      */
-    private function wishlistViewVariables(): array
+    private function enrichViewVariables(): array
     {
-        $enabled = $this->wishlistService->isEnabled($this->request);
-        $productUids = $enabled
-            ? array_map(static fn(Product $product): int => $product->getUid() ?? 0, $this->wishlistService->getItems($this->request))
-            : [];
-        return ['wishlistEnabled' => $enabled, 'wishlistProductUids' => $productUids, 'wishlistCount' => count($productUids)];
+        $event = new EnrichProductViewEvent($this->request);
+        $this->eventDispatcher->dispatch($event);
+        return $event->getVariables();
     }
 }

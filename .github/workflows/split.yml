@@ -35,6 +35,9 @@ jobs:
           - package: products-recently-viewed
             directory: packages/goldene-zeiten/products-recently-viewed
             repository: products-recently-viewed
+          - package: products-wishlist
+            directory: packages/goldene-zeiten/products-wishlist
+            repository: products-wishlist
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
