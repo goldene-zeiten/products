@@ -10,10 +10,18 @@ the reference it is derived from) and is published to GHCR by the `build-mock-im
 
 ## Running
 
+This repository drives containers with `podman`/`docker` directly (no compose):
+
 ```shell
-docker compose -f Tests/Mock/docker-compose.yml up      # or: podman compose ...
-# or directly:
-docker run --rm -p 4010:4010 ghcr.io/goldene-zeiten/products-ups-rating-mock:latest
+Tests/Mock/start-mock.sh
+# which is just:  podman run --rm -p 4010:4010 ghcr.io/goldene-zeiten/products-ups-rating-mock:latest
+```
+
+The image is published to GHCR on the first push to `main`. Before then — or to run an uncommitted change
+to the spec — build it from the monorepo first:
+
+```shell
+podman build -t ghcr.io/goldene-zeiten/products-ups-rating-mock:latest Build/mocks/ups-rating
 ```
 
 Prism then serves the mock on <http://localhost:4010> — the OAuth endpoint at
