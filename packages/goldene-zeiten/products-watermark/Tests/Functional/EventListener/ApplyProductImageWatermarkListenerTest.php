@@ -176,7 +176,6 @@ final class ApplyProductImageWatermarkListenerTest extends AbstractFunctionalTes
         $color = imagecolorallocate($image, max(0, min(255, $rgb[0])), max(0, min(255, $rgb[1])), max(0, min(255, $rgb[2])));
         imagefilledrectangle($image, 0, 0, $width, $height, (int)$color);
         imagepng($image, $path);
-        imagedestroy($image);
     }
 
     /**
@@ -187,7 +186,6 @@ final class ApplyProductImageWatermarkListenerTest extends AbstractFunctionalTes
         $image = imagecreatefrompng($path);
         \assert($image instanceof \GdImage);
         $rgba = imagecolorat($image, $x, $y);
-        imagedestroy($image);
 
         return [($rgba >> 16) & 0xFF, ($rgba >> 8) & 0xFF, $rgba & 0xFF];
     }
