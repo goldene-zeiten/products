@@ -49,3 +49,17 @@ and the OAuth stub returns 401 for the designated bad client id `authfail`. Stat
 [Scenarios](https://wiremock.org/docs/stateful-behaviour/); reset them between tests with
 `POST {MOCK_BASE_URL}/__admin/scenarios/reset`. The request journal (`GET {MOCK_BASE_URL}/__admin/requests`)
 lets a test assert the exact outgoing request.
+
+For PayPal (`mappings/payment/paypal/`, base URL `MOCK_BASE_URL/payment/paypal`) the order stubs key on
+the PayPal order id in the capture URL:
+
+| Capture order id       | Behaviour                                          |
+|------------------------|----------------------------------------------------|
+| `PAYPAL-ORDER-1`       | 201 `COMPLETED` (capture `CAPTURE-1`)              |
+| `PAYPAL-ORDER-DECLINE` | 422 `INSTRUMENT_DECLINED`                          |
+| `PAYPAL-ORDER-CAPTURED`| 422 `ORDER_ALREADY_CAPTURED` → treated as success |
+| `PAYPAL-ORDER-RETRY`   | 401 then 201 (WireMock Scenario — token retry)    |
+
+Create-order returns 422 when the amount is `0.00`; the webhook verify endpoint returns `SUCCESS` for the
+designated webhook id `WEBHOOK-OK` and `FAILURE` otherwise. The generic OAuth flow of the shared
+`products_api_client` package is covered by `mappings/api-client/oauth/` at `MOCK_BASE_URL/api-client`.

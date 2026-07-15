@@ -1,0 +1,29 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/payment/paypal/v2/checkout/orders"
+  },
+  "response": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "PAYPAL-ORDER-1",
+      "status": "CREATED",
+      "links": [
+        {
+          "href": "https://api-m.sandbox.paypal.com/v2/checkout/orders/PAYPAL-ORDER-1",
+          "rel": "self",
+          "method": "GET"
+        },
+        {
+          "href": "https://www.sandbox.paypal.com/checkoutnow?token=PAYPAL-ORDER-1",
+          "rel": "payer-action",
+          "method": "GET"
+        }
+      ]
+    }
+  }
+}
