@@ -1,0 +1,17 @@
+# cat=access/enable/10; type=options[Sandbox=sandbox,Production=production]; label=Environment: Which PayPal environment to call. Sandbox uses PayPal's developer test environment (api-m.sandbox.paypal.com).
+environment = sandbox
+
+# cat=access/enable/20; type=string; label=Client ID: PayPal REST app client id. System-wide default; a site may override it.
+clientId =
+
+# cat=access/enable/30; type=string; label=Client secret: PayPal REST app client secret. Kept out of version control; stored in the Install Tool.
+clientSecret =
+
+# cat=access/enable/40; type=string; label=Webhook ID: The id of the PayPal webhook whose signature incoming notifications are verified against. Required for webhook confirmation; leave empty to rely on the browser return only.
+webhookId =
+
+# cat=access/enable/50; type=string; label=Brand name: Shown to the customer on the PayPal approval page. Leave empty to use the PayPal account default.
+brandName =
+
+# cat=advanced/enable/10; type=string; label=API base URL override: Advanced. Overrides the environment's PayPal API base URL, e.g. a proxy or a local mock server. Leave empty to use the environment's default.
+apiBaseUrl =

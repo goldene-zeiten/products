@@ -1,0 +1,42 @@
+categories:
+  paymentPaypal:
+    label: 'LLL:EXT:products_payment_paypal/Resources/Private/Language/locallang_settings.xlf:category.paymentPaypal'
+    parent: payment
+
+settings:
+  products.payment.paypal.environment:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_paypal/Resources/Private/Language/locallang_settings.xlf:setting.environment'
+    description: 'LLL:EXT:products_payment_paypal/Resources/Private/Language/locallang_settings.xlf:setting.environment.description'
+    category: paymentPaypal
+  products.payment.paypal.clientId:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_paypal/Resources/Private/Language/locallang_settings.xlf:setting.clientId'
+    description: 'LLL:EXT:products_payment_paypal/Resources/Private/Language/locallang_settings.xlf:setting.inherit.description'
+    category: paymentPaypal
+  products.payment.paypal.clientSecret:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_paypal/Resources/Private/Language/locallang_settings.xlf:setting.clientSecret'
+    description: 'LLL:EXT:products_payment_paypal/Resources/Private/Language/locallang_settings.xlf:setting.clientSecret.description'
+    category: paymentPaypal
+  products.payment.paypal.webhookId:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_paypal/Resources/Private/Language/locallang_settings.xlf:setting.webhookId'
+    description: 'LLL:EXT:products_payment_paypal/Resources/Private/Language/locallang_settings.xlf:setting.webhookId.description'
+    category: paymentPaypal
+  products.payment.paypal.brandName:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_paypal/Resources/Private/Language/locallang_settings.xlf:setting.brandName'
+    description: 'LLL:EXT:products_payment_paypal/Resources/Private/Language/locallang_settings.xlf:setting.brandName.description'
+    category: paymentPaypal
+  products.payment.paypal.apiBaseUrl:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_paypal/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl'
+    description: 'LLL:EXT:products_payment_paypal/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl.description'
+    category: paymentPaypal

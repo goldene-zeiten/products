@@ -1,0 +1,34 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/payment/paypal/v2/checkout/orders/PAYPAL-ORDER-1/capture"
+  },
+  "response": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "PAYPAL-ORDER-1",
+      "status": "COMPLETED",
+      "purchase_units": [
+        {
+          "reference_id": "default",
+          "payments": {
+            "captures": [
+              {
+                "id": "CAPTURE-1",
+                "status": "COMPLETED",
+                "amount": {
+                  "currency_code": "EUR",
+                  "value": "12.34"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

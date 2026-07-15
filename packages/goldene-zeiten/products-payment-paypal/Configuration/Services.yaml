@@ -1,0 +1,33 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  GoldeneZeiten\Products\Payment\Paypal\:
+    resource: '../Classes/*'
+
+  # TYPO3 only exposes cache.* DI services for its own built-in caches, so the extension's token cache
+  # is defined here via a lazy CacheManager::getCache() factory (resolved at runtime, not at compile).
+  cache.products_payment_paypal_token:
+    class: TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
+    factory:
+      - '@TYPO3\CMS\Core\Cache\CacheManager'
+      - 'getCache'
+    arguments:
+      - 'products_payment_paypal_token'
+
+  # The shared OAuth token provider is instantiated with this extension's own token cache, so PayPal tokens
+  # never share storage with another integration's.
+  products_payment_paypal.oauth_token_provider:
+    class: GoldeneZeiten\Products\ApiClient\Authentication\OAuth2ClientCredentialsProvider
+    arguments:
+      $tokenCache: '@cache.products_payment_paypal_token'
+
+  GoldeneZeiten\Products\Payment\Paypal\Order\HttpPaypalOrderClient:
+    arguments:
+      $tokenProvider: '@products_payment_paypal.oauth_token_provider'
+
+  GoldeneZeiten\Products\Payment\Paypal\Webhook\PaypalWebhookVerifier:
+    arguments:
+      $tokenProvider: '@products_payment_paypal.oauth_token_provider'
