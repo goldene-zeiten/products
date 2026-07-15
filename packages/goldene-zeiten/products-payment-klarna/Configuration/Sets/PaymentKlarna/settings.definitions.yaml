@@ -1,0 +1,30 @@
+categories:
+  paymentKlarna:
+    label: 'LLL:EXT:products_payment_klarna/Resources/Private/Language/locallang_settings.xlf:category.paymentKlarna'
+    parent: payment
+
+settings:
+  products.payment.klarna.environment:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_klarna/Resources/Private/Language/locallang_settings.xlf:setting.environment'
+    description: 'LLL:EXT:products_payment_klarna/Resources/Private/Language/locallang_settings.xlf:setting.environment.description'
+    category: paymentKlarna
+  products.payment.klarna.username:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_klarna/Resources/Private/Language/locallang_settings.xlf:setting.username'
+    description: 'LLL:EXT:products_payment_klarna/Resources/Private/Language/locallang_settings.xlf:setting.inherit.description'
+    category: paymentKlarna
+  products.payment.klarna.password:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_klarna/Resources/Private/Language/locallang_settings.xlf:setting.password'
+    description: 'LLL:EXT:products_payment_klarna/Resources/Private/Language/locallang_settings.xlf:setting.password.description'
+    category: paymentKlarna
+  products.payment.klarna.apiBaseUrl:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_klarna/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl'
+    description: 'LLL:EXT:products_payment_klarna/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl.description'
+    category: paymentKlarna

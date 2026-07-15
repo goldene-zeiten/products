@@ -1,0 +1,22 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/payment/klarna/payments/v1/sessions"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "session_id": "kp_session_1",
+      "client_token": "eyJhbGciOiJ...mock",
+      "payment_method_categories": [
+        {
+          "identifier": "pay_now"
+        }
+      ]
+    }
+  }
+}

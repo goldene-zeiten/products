@@ -1,0 +1,20 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/payment/klarna/payments/v1/authorizations/auth_token_bad/order"
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "correlation_id": "mock-correlation",
+      "error_code": "NOT_FOUND",
+      "error_messages": [
+        "Invalid authorization token"
+      ]
+    }
+  }
+}
