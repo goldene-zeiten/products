@@ -1,0 +1,34 @@
+{
+  "priority": 1,
+  "scenarioName": "ups-rating-retry",
+  "requiredScenarioState": "Started",
+  "newScenarioState": "retried",
+  "request": {
+    "method": "POST",
+    "urlPath": "/shipping/ups/api/rating/v2409/Shop",
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": {
+          "expression": "$.RateRequest.Shipment.ShipTo.Address.CountryCode",
+          "equalTo": "RT"
+        }
+      }
+    ]
+  },
+  "response": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "response": {
+        "errors": [
+          {
+            "code": "401",
+            "message": "The token is expired."
+          }
+        ]
+      }
+    }
+  }
+}

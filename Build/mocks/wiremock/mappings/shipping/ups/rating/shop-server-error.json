@@ -1,0 +1,31 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "POST",
+    "urlPath": "/shipping/ups/api/rating/v2409/Shop",
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": {
+          "expression": "$.RateRequest.Shipment.ShipTo.Address.CountryCode",
+          "equalTo": "YY"
+        }
+      }
+    ]
+  },
+  "response": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "response": {
+        "errors": [
+          {
+            "code": "250002",
+            "message": "Internal server error"
+          }
+        ]
+      }
+    }
+  }
+}

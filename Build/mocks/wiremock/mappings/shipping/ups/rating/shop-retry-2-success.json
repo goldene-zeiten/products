@@ -1,0 +1,45 @@
+{
+  "priority": 1,
+  "scenarioName": "ups-rating-retry",
+  "requiredScenarioState": "retried",
+  "request": {
+    "method": "POST",
+    "urlPath": "/shipping/ups/api/rating/v2409/Shop",
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": {
+          "expression": "$.RateRequest.Shipment.ShipTo.Address.CountryCode",
+          "equalTo": "RT"
+        }
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "RateResponse": {
+        "Response": {
+          "ResponseStatus": {
+            "Code": "1",
+            "Description": "Success"
+          }
+        },
+        "RatedShipment": [
+          {
+            "Service": {
+              "Code": "11",
+              "Description": "UPS Standard"
+            },
+            "TotalCharges": {
+              "CurrencyCode": "EUR",
+              "MonetaryValue": "9.99"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

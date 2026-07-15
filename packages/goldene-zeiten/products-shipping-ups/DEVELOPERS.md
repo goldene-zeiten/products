@@ -60,43 +60,43 @@ then dispatches `ModifyUpsShippingOptionsEvent`.
 `Event/ModifyUpsRateRequestEvent`, `Event/ModifyUpsShippingOptionsEvent`, and the overridable
 `Rating/UpsServiceCatalog` DI alias — documented for integrators in `Documentation/`.
 
-## Local UPS mock
+## The API mock
 
-There is no official UPS mock server to wrap, so the repo ships one built from UPS's own OpenAPI specs.
-Its **source lives in the monorepo** at `Build/mocks/ups-rating/` — a `Dockerfile` (Stoplight Prism with a
-combined `spec/ups-mock.yaml` baked in) plus UPS's pinned `Rating.yaml` / `OAuthClientCredentials.yaml` as
-the reference the combined spec is derived from. The `build-mock-images` GitHub workflow publishes it to
-`ghcr.io/goldene-zeiten/products-ups-rating-mock`.
+The HTTP tests run against the repo's **shared WireMock mock**, not a client double — one WireMock server
+mocks every third-party API, so there is no per-API mock to build or publish. The UPS stubs live under
+`Build/mocks/wiremock/mappings/shipping/ups/` (mirroring the namespace and the URL), with UPS's real
+OpenAPI specs pinned under `Build/mocks/specs/shipping/ups/` as the reference. See `Build/mocks/README.md`.
 
-`Tests/Mock/start-mock.sh` runs the published image with `podman`/`docker` directly (no compose, matching
-`runTests.sh`); point the extension at it with the `apiBaseUrl` override (`http://localhost:4010`). Before
-the image is published, build it locally with `podman build … Build/mocks/ups-rating`. See
-`Tests/Mock/README.md`.
+`runTests.sh -s functional` starts one `wiremock/wiremock` container with those mappings mounted,
+`waitFor`s port 8080 (so tests never race it), and passes `MOCK_BASE_URL` to the test container, which
+reaches it by name on the shared network. The extension is pointed at it purely through the `apiBaseUrl`
+override — `MOCK_BASE_URL/shipping/ups` — so no client change is needed. To run it by hand:
+
+```shell
+podman run --rm -p 8080:8080 -v "$PWD/Build/mocks/wiremock:/home/wiremock:ro" docker.io/wiremock/wiremock:3.10.0
+```
+
+Behaviour is **request-driven and stateful**: the rating stubs key on the destination country (`XX` → 400
+no-rate, `YY` → 500, `ZZ` → transport fault, `SG` → single-object response, `RT` → 401-then-200 via a
+WireMock Scenario) and the OAuth stub on the client id (`authfail` → 401). A test selects a case just by
+varying the inputs it already controls.
 
 ## Testing
 
-Two layers. The **happy path runs against the real mock over HTTP**: `runTests.sh -s functional` builds the
-mock from `Build/mocks/ups-rating`, starts it, `waitFor`s port 4010 (so the tests never race the
-container), and passes `UPS_MOCK_BASE_URL=http://ups-mock-<run>:4010` to the test container, which reaches
-it by name on the shared network. This mirrors how `web-vision/deepltranslate-core` wires the DeepL mock.
-
-The **error and edge paths use a `FakeHttpClient`** (PSR-18, canned JSON) — a static Prism mock cannot
-produce a 401-then-200 retry, an HTTP 400, a transport error, or a single-object-vs-list response on
-demand, so those are driven by the fake. The fake also lets a test assert the outgoing request shape,
-which the mock does not echo back.
+Every HTTP path is exercised against the real mock over HTTP — no client double.
+`AbstractUpsMockTestCase` skips when `MOCK_BASE_URL` is unset (a plain phpunit run), and otherwise resets
+the mock's scenario state and request journal per test.
 
 - `Tests/Unit/Configuration/UpsConfigurationFactoryTest` — the config layering and parsing. Uses a PHPUnit
   mock of `ExtensionConfiguration` (**not** an anonymous subclass — `ExtensionConfiguration` is `readonly`
   in TYPO3 v14, so subclassing it is a fatal there).
-- `Tests/Functional/Authentication/UpsOAuthTokenProviderTest` — token fetch, caching, force-refresh, error.
-- `Tests/Functional/Rating/HttpUpsRatingClientTest` — request shape, response mapping (single & list),
-  400-no-rate, 401-retry, transport errors.
+- `Tests/Functional/Authentication/UpsOAuthTokenProviderTest` — token fetch, caching and force-refresh
+  (asserted through WireMock's request journal), Basic-auth/grant request shape, and the auth failure.
+- `Tests/Functional/Rating/HttpUpsRatingClientTest` — response mapping (list & single object), no-rate,
+  401-retry, server error, transport fault, and the outgoing Shop request shape.
 - `Tests/Functional/Shipping/UpsShippingProviderTest` — mapping, allow-list, currency guard, and the
-  empty-result cases that yield to the fallback.
-- `Tests/Functional/Integration/UpsMockIntegrationTest` — drives the real Guzzle client against the mock
-  over HTTP. It **runs automatically** under `runTests.sh -s functional` (which starts and gates the mock).
-  Run directly with plain phpunit and it **skips** unless `UPS_MOCK_BASE_URL` is set, so it never fails for
-  lack of a mock.
+  empty-result cases that yield to the fallback. Fakes the `UpsRatingClient` *interface* (not a client),
+  which is legitimate isolation from HTTP.
 
 ## Planned: labels & tracking (phase 2)
 
