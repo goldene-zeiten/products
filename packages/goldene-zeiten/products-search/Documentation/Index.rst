@@ -1,3 +1,5 @@
+..  include:: /Includes.rst.txt
+
 ..  _start:
 
 ===============
@@ -5,87 +7,62 @@ Products Search
 ===============
 
 :Extension key:
-    products_search
+   products_search
 
 :Package name:
-    goldene-zeiten/products-search
+   goldene-zeiten/products-search
 
 :Version:
-    |release|
+   |release|
 
 :Language:
-    en
+   en
 
 :Author:
-    Markus Hofmann
+   Markus Hofmann
 
 :License:
-    This document is published under the
-    `Creative Commons BY 4.0 <https://creativecommons.org/licenses/by/4.0/>`__
-    license.
+   This document is published under the
+   `Creative Commons BY 4.0 <https://creativecommons.org/licenses/by/4.0/>`__
+   license.
+
+:Rendered:
+   |today|
 
 ----
 
-Catalog search and faceted browsing for the Products shop system.
+Catalog search and faceted browsing for the Products shop system: a single content element that
+either free-text searches the catalog or browses it without a search term at all (A-Z index, by
+year, by an arbitrary field, or a keyword multi-select), on top of EXT:products_core.
 
 ----
 
-Catalog search
-==============
+..  card-grid::
+    :columns: 1
+    :columns-md: 2
+    :gap: 4
+    :class: pb-4
+    :card-height: 100
 
-The :guilabel:`Search` plugin offers a simple search box; results match the term against a
-product's title, subtitle, item number, description or EAN (case-insensitive, partial matches
-count — e.g. searching "shoe" finds "Running Shoes"). It is not a full-text search engine: there is
-no relevance ranking or fuzzy matching, which is adequate for a catalog of moderate size. Results
-are paginated at :guilabel:`Search results per page` (default 20) per page.
+    ..  card:: :ref:`Introduction <introduction>`
 
-Browse modes
-============
+        What this extension provides: the :guilabel:`Search` plugin, free-text search and the five
+        browse modes.
 
-Beyond free-text search, the plugin can browse the catalog without a search term at all. The
-:guilabel:`Search Browse Mode` field of the content element selects one of:
+    ..  card:: :ref:`Installation <installation>`
 
-..  confval:: text
+        How to install and activate the extension.
 
-    Free-text search (the default).
+    ..  card:: :ref:`Configuration <configuration>`
 
-..  confval:: firstletter
+        The one site setting, and every field on the :guilabel:`Search` content element.
 
-    Groups the catalog by the first letter of the title, for an A–Z index.
+**Table of Contents:**
 
-..  confval:: year
+..  toctree::
+    :maxdepth: 2
+    :titlesonly:
 
-    Groups by creation year.
-
-..  confval:: field
-
-    Groups by the exact value of the field named in :guilabel:`Search Field`.
-
-..  confval:: keyfield
-
-    Offers a multi-select of the distinct values of :guilabel:`Search Field`.
-
-..  confval:: lastentries
-
-    Lists the most recently created records first.
-
-:guilabel:`Search Target` decides whether products, articles or categories are searched.
-
-Installation
-============
-
-..  code-block:: bash
-
-    composer require goldene-zeiten/products-search
-
-Add the :guilabel:`Products Search` site set to your site, then place the :guilabel:`Search`
-plugin on a page.
-
-Settings
-========
-
-..  confval:: products.search.resultsPerPage
-    :type: int
-    :Default: 20
-
-    Results shown per page by the :guilabel:`Search` plugin.
+    Introduction/Index
+    Installation/Index
+    Configuration/Index

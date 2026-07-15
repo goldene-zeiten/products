@@ -1,8 +1,10 @@
+.. include:: /Includes.rst.txt
+
 ..  _start:
 
-==================
+===================
 Products Watermark
-==================
+===================
 
 :Extension key:
     products_watermark
@@ -24,82 +26,44 @@ Products Watermark
     `Creative Commons BY 4.0 <https://creativecommons.org/licenses/by/4.0/>`__
     license.
 
+:Rendered:
+    |today|
+
 ----
 
-Automatic watermarking of product, article and category images for the Products shop system.
+Automatic watermarking of product, article and category images for the
+`Products <https://github.com/goldene-zeiten/products-core>`__ shop system: a PSR-14 listener
+composites a configured watermark onto every freshly generated frontend image variant, with no
+change to the catalog templates or the FAL originals.
 
 ----
 
-How it works
-============
+..  card-grid::
+    :columns: 1
+    :columns-md: 2
+    :gap: 4
+    :class: pb-4
+    :card-height: 100
 
-A PSR-14 listener on TYPO3's ``AfterFileProcessingEvent`` composites the configured watermark onto
-every freshly generated, scaled or cropped frontend variant of an image that is referenced by a
-product, article or category record. The compositing is done through TYPO3's own image processing
-(``GifBuilder``), so the image processor configured for the installation (ImageMagick,
-GraphicsMagick or GD) is respected.
+    ..  card:: :ref:`Introduction <introduction>`
 
-The FAL originals are never modified — only the processed variants are watermarked, and each
-variant is watermarked exactly once and then served from TYPO3's normal file-processing cache.
-Images that do not belong to a product, article or category (regular content-element images, RTE
-images, backend previews) are left untouched, and watermarking only happens in the frontend.
+        What this extension does, and which images it watermarks.
 
-Watermarking is disabled until a watermark image is configured, so installing the extension has no
-visible effect on its own.
+    ..  card:: :ref:`Installation <installation>`
 
-Installation
-============
+        How to install and activate the extension.
 
-..  code-block:: bash
+    ..  card:: :ref:`Configuration <configuration>`
 
-    composer require goldene-zeiten/products-watermark
+        The watermark image, position, opacity and sizing settings, and how the automatic
+        processing works.
 
-Add the :guilabel:`Products Watermark` site set to your site, then configure at least the watermark
-image in the site settings (:guilabel:`Settings` module → :guilabel:`Products` →
-:guilabel:`Watermark`).
+**Table of Contents:**
 
-Settings
-========
+..  toctree::
+    :maxdepth: 2
+    :titlesonly:
 
-..  confval:: products.watermark.file
-    :type: string
-    :Default: (empty)
-
-    Path to the watermark image, e.g. ``EXT:my_sitepackage/Resources/Public/Images/watermark.png``
-    or a fileadmin path. A PNG with transparency is recommended. Leave empty to disable
-    watermarking.
-
-..  confval:: products.watermark.position
-    :type: string
-    :Default: bottom-right
-
-    Where the watermark is placed: ``top-left``, ``top-right``, ``bottom-left``, ``bottom-right``,
-    ``center`` or ``tile`` (repeated across the whole image).
-
-..  confval:: products.watermark.opacity
-    :type: int
-    :Default: 50
-
-    Opacity of the watermark in percent. Multiplied with any transparency already present in the
-    watermark image.
-
-..  confval:: products.watermark.scale
-    :type: int
-    :Default: 25
-
-    Width of the watermark relative to the image width, in percent. Set to ``0`` to keep the
-    watermark's native pixel size. For the ``tile`` position this is the size of a single tile.
-
-..  confval:: products.watermark.minWidth
-    :type: int
-    :Default: 200
-
-    Images narrower than this many pixels are left untouched, so small thumbnails do not get
-    watermarked.
-
-..  confval:: products.watermark.margin
-    :type: int
-    :Default: 5
-
-    Distance of the watermark from the image edge for the corner positions, in percent of the image
-    width. Ignored for the ``center`` and ``tile`` positions.
+    Introduction/Index
+    Installation/Index
+    Configuration/Index
