@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  GoldeneZeiten\Products\ApiClient\:
+    resource: '../Classes/*'
+    exclude:
+      # Needs a token cache the consuming package owns, so each integration wires its own instance
+      # (with its own cache) rather than sharing one - see the package README.
+      - '../Classes/Authentication/OAuth2ClientCredentialsProvider.php'
+      - '../Classes/Exception/*'
