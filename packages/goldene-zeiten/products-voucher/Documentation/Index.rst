@@ -1,3 +1,5 @@
+..  include:: /Includes.rst.txt
+
 ..  _start:
 
 ================
@@ -16,67 +18,62 @@ Products Voucher
 :Language:
     en
 
+:Author:
+    Markus Hofmann
+
 :License:
     This document is published under the
     `Creative Commons BY 4.0 <https://creativecommons.org/licenses/by/4.0/>`__
     license.
 
-----
-
-Vouchers and gift codes for the Products shop system: a voucher-code form on the basket,
-percentage/fixed/free-shipping discounts applied at checkout, and an optional "gained voucher" that
-rewards a customer with a fresh code once an order passes a threshold.
+:Rendered:
+    |today|
 
 ----
 
-What it does
-============
+Vouchers and gift codes for the EXT:products shop system: a voucher-code form on the basket, a
+percentage, fixed-amount or free-shipping discount applied at checkout, and an optional "gained
+voucher" that rewards a customer with a fresh code once an order passes a threshold. The feature is
+reached only through the core's discount contract, so EXT:products (core) itself stays unaware that
+vouchers exist.
 
-Once installed, a voucher-code control appears on the basket page (through the core basket plugin), and
-applied codes are discounted at checkout. A voucher may take a fixed amount off, a percentage, or waive
-the shipping cost. Every redemption is recorded against its order, and the backend order view gains a
-panel listing the codes redeemed and any voucher the order earned. With the gained-voucher feature
-enabled, placing a qualifying order issues the customer a new voucher. Without this extension the core
-checkout has no voucher concept at all.
+----
 
-The feature is reached only through the core's discount contract, so the core stays unaware that vouchers
-exist: the applied codes travel in the voucher's own slice of the checkout state, which the discount
-provider reads from the request itself.
+..  card-grid::
+    :columns: 1
+    :columns-md: 2
+    :gap: 4
+    :class: pb-4
+    :card-height: 100
 
-Installation
-============
+    ..  card:: :ref:`Introduction <introduction>`
 
-..  code-block:: bash
+        What this extension provides: voucher codes, free shipping and gained bonus vouchers.
 
-    composer require goldene-zeiten/products-voucher
+    ..  card:: :ref:`Installation <installation>`
 
-Add the :guilabel:`Products Voucher` site set to your site. The voucher form appears on the basket
-automatically. To reward customers with a voucher when an order qualifies, enable
-:confval:`products.vouchers.gained.enabled`.
+        How to install and activate the extension.
 
-Settings
-========
+    ..  card:: :ref:`Configuration <configuration>`
 
-..  confval:: products.vouchers.gained.enabled
-    :type: bool
-    :Default: false
+        Site settings for the gained-voucher reward.
 
-    Issue a fresh voucher to the customer when an order qualifies.
+    ..  card:: :ref:`Editor <editor>`
 
-..  confval:: products.vouchers.gained.minimumOrderValue
-    :type: number
-    :Default: 0.00
+        Creating voucher records, applying a code in the basket, and the backend redemption panel.
 
-    The order value from which a gained voucher is issued.
+    ..  card:: :ref:`Developer <developer>`
 
-..  confval:: products.vouchers.gained.rewardType
-    :type: string
-    :Default: fixed
+        How the voucher feature plugs into the core's discount seam.
 
-    Whether the gained voucher is a ``fixed`` amount or a ``percentage``.
+**Table of Contents:**
 
-..  confval:: products.vouchers.gained.rewardValue
-    :type: number
-    :Default: 5.00
+..  toctree::
+    :maxdepth: 2
+    :titlesonly:
 
-    The value of the gained voucher, read according to the reward type.
+    Introduction/Index
+    Installation/Index
+    Configuration/Index
+    Editor/Index
+    Developer/Index
