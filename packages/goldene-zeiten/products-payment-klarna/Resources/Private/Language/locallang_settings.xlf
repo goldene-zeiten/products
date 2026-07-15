@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_payment_klarna/Resources/Private/Language/locallang_settings.xlf" date="2026-07-16T12:00:00Z" product-name="products_payment_klarna">
+		<header/>
+		<body>
+			<trans-unit id="category.paymentKlarna" resname="category.paymentKlarna">
+				<source>Klarna</source>
+			</trans-unit>
+			<trans-unit id="setting.inherit.description" resname="setting.inherit.description">
+				<source>Leave empty to inherit the value from the extension configuration. Set it to override that default for this site.</source>
+			</trans-unit>
+			<trans-unit id="setting.environment" resname="setting.environment">
+				<source>Environment (playground / production)</source>
+			</trans-unit>
+			<trans-unit id="setting.environment.description" resname="setting.environment.description">
+				<source>Either "playground" (Klarna's test environment) or "production". Leave empty to inherit the extension configuration.</source>
+			</trans-unit>
+			<trans-unit id="setting.username" resname="setting.username">
+				<source>API username</source>
+			</trans-unit>
+			<trans-unit id="setting.password" resname="setting.password">
+				<source>API password</source>
+			</trans-unit>
+			<trans-unit id="setting.password.description" resname="setting.password.description">
+				<source>The Klarna API key (klarna_test_api_... / klarna_live_api_...). Prefer referencing an environment variable so the key stays out of version control. Leave empty to inherit the extension configuration.</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl" resname="setting.apiBaseUrl">
+				<source>API base URL override</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl.description" resname="setting.apiBaseUrl.description">
+				<source>Send the Klarna calls to this host instead of the real Klarna host, e.g. a proxy or a local mock server. Leave empty to use the environment's real host.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

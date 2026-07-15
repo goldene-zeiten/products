@@ -1,0 +1,17 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/payment/klarna/payments/v1/authorizations/auth_token_reject/order"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "order_id": "klarna_order_2",
+      "fraud_status": "REJECTED"
+    }
+  }
+}

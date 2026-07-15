@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-payment-klarna
+label: Products Klarna Payment
+dependencies:
+  - goldene-zeiten/products-core

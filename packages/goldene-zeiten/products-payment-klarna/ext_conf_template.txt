@@ -1,0 +1,11 @@
+# cat=access/enable/10; type=options[Playground=playground,Production=production]; label=Environment: Which Klarna environment to call. Playground is Klarna's test environment (api.playground.klarna.com).
+environment = playground
+
+# cat=access/enable/20; type=string; label=API username: Klarna API credential username (the UUID shown next to your API key in the Merchant Portal). System-wide default; a site may override it.
+username =
+
+# cat=access/enable/30; type=string; label=API password: Klarna API key (klarna_test_api_... / klarna_live_api_...). Kept out of version control; stored in the Install Tool.
+password =
+
+# cat=advanced/enable/10; type=string; label=API base URL override: Advanced. Overrides the environment's Klarna API base URL, e.g. a proxy or a local mock server. Leave empty to use the environment's default.
+apiBaseUrl =
