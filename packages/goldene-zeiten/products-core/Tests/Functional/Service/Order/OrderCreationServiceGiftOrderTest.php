@@ -36,7 +36,7 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->request(),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 0, ''),
+            new CheckoutSelections([], ''),
             $this->address(),
             $this->paymentMethod()
         );
@@ -54,7 +54,7 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->request(),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 0, '', $delivery),
+            new CheckoutSelections([], '', $delivery),
             $this->address(),
             $this->paymentMethod()
         );
@@ -79,7 +79,7 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->request(),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 0, '', $delivery),
+            new CheckoutSelections([], '', $delivery),
             $this->address(),
             $this->paymentMethod()
         );
@@ -98,7 +98,7 @@ final class OrderCreationServiceGiftOrderTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->request(),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 0, '', null, 'Happy birthday!'),
+            new CheckoutSelections([], '', null, 'Happy birthday!'),
             $this->address(),
             $this->paymentMethod()
         );

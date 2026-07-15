@@ -62,12 +62,10 @@ final class OrderPlacementService
             $request,
             $liveBasket,
             $liveBasket->getTotalGross(),
-            $this->frontendUserResolver->getUid($request),
-            $choices->getSpendPoints()
+            $this->frontendUserResolver->getUid($request)
         ));
         $checkoutSelections = new CheckoutSelections(
             $this->voucherCheckoutState->getCodes($request),
-            $choices->getSpendPoints(),
             $choices->getShippingOptionKey(),
             $choices->getDeliveryAddress(),
             $choices->getGiftMessage()

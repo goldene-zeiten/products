@@ -51,9 +51,9 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
         $subject = $this->get(OrderCreationService::class);
 
         $order = $subject->create(
-            $this->requestFor(enabled: true, frontendUserUid: 5),
+            $this->requestFor(enabled: true, frontendUserUid: 5, spendPoints: 20),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 20),
+            new CheckoutSelections([]),
             $this->address(),
             $this->paymentMethod()
         );
@@ -71,7 +71,7 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
         $order = $subject->create(
             $this->requestFor(enabled: true, frontendUserUid: 0),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 0),
+            new CheckoutSelections([]),
             $this->address(),
             $this->paymentMethod()
         );
@@ -85,9 +85,9 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
         $subject = $this->get(OrderCreationService::class);
 
         $order = $subject->create(
-            $this->requestFor(enabled: false, frontendUserUid: 5),
+            $this->requestFor(enabled: false, frontendUserUid: 5, spendPoints: 20),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 20),
+            new CheckoutSelections([]),
             $this->address(),
             $this->paymentMethod()
         );
@@ -96,7 +96,7 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
         $this->assertSame(0, $order->getDiscountTotal()->getCents());
     }
 
-    private function requestFor(bool $enabled, int $frontendUserUid): ServerRequestInterface
+    private function requestFor(bool $enabled, int $frontendUserUid, int $spendPoints = 0): ServerRequestInterface
     {
         $this->writeSiteConfiguration(
             'products',
@@ -114,7 +114,8 @@ final class OrderCreationServiceCreditPointsTest extends AbstractFunctionalTestC
 
         $request = (new ServerRequest('http://localhost/'))
             ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
-            ->withAttribute('site', $site);
+            ->withAttribute('site', $site)
+            ->withParsedBody(['spendPoints' => $spendPoints]);
         if ($frontendUserUid === 0) {
             return $request;
         }

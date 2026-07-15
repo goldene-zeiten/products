@@ -43,7 +43,7 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->requestWithShipping(enabled: true),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections($voucherCodes, 0, 'tablerate:1'),
+            new CheckoutSelections($voucherCodes, 'tablerate:1'),
             $this->address(),
             $this->paymentMethod()
         );
@@ -72,7 +72,7 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->requestWithShipping(enabled: false),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 0, 'tablerate:1'),
+            new CheckoutSelections([], 'tablerate:1'),
             $this->address(),
             $this->paymentMethod()
         );
@@ -90,7 +90,7 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
         $order = $subject->create(
             $this->requestWithShipping(enabled: true),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 0, ''),
+            new CheckoutSelections([], ''),
             $this->address(),
             $this->paymentMethod()
         );
@@ -108,7 +108,7 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
             $subject->create(
                 $this->requestWithShipping(enabled: true),
                 $this->basketViewModel($this->product()),
-                new CheckoutSelections([], 0, 'tablerate:999'),
+                new CheckoutSelections([], 'tablerate:999'),
                 $this->address(),
                 $this->paymentMethod()
             );

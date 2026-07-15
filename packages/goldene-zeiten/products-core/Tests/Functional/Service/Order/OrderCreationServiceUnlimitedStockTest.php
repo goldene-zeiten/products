@@ -107,7 +107,7 @@ final class OrderCreationServiceUnlimitedStockTest extends AbstractFunctionalTes
 
     private function noSelections(): CheckoutSelections
     {
-        return new CheckoutSelections([], 0);
+        return new CheckoutSelections([]);
     }
 
     private function address(): Address

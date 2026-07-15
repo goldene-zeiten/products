@@ -38,7 +38,7 @@ final class FixtureLoyaltyProvider implements LoyaltyProviderInterface
 
     public function assertRedeemable(LoyaltyContext $context): void
     {
-        $requestedPoints = $context->getRequestedSpendPoints();
+        $requestedPoints = $this->requestedPoints($context);
         if ($requestedPoints <= 0) {
             return;
         }
@@ -54,7 +54,7 @@ final class FixtureLoyaltyProvider implements LoyaltyProviderInterface
 
     public function quoteRedemption(LoyaltyContext $context): ?CheckoutAdjustment
     {
-        $requestedPoints = $context->getRequestedSpendPoints();
+        $requestedPoints = $this->requestedPoints($context);
         if ($requestedPoints <= 0) {
             return null;
         }
@@ -71,7 +71,7 @@ final class FixtureLoyaltyProvider implements LoyaltyProviderInterface
 
     public function applyRedemption(Order $order, LoyaltyContext $context): void
     {
-        $requestedPoints = $context->getRequestedSpendPoints();
+        $requestedPoints = $this->requestedPoints($context);
         if ($requestedPoints <= 0) {
             return;
         }
@@ -94,5 +94,12 @@ final class FixtureLoyaltyProvider implements LoyaltyProviderInterface
     public static function reset(): void
     {
         self::$balances = [];
+    }
+
+    private function requestedPoints(LoyaltyContext $context): int
+    {
+        $body = $context->getRequest()->getParsedBody();
+
+        return is_array($body) ? (int)($body['spendPoints'] ?? 0) : 0;
     }
 }

@@ -58,7 +58,7 @@ final class OrderCreationServiceLowStockThresholdTest extends AbstractFunctional
         $subject->create(
             (new ServerRequest('http://localhost/'))->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 0, ''),
+            new CheckoutSelections([], ''),
             $this->address(),
             $this->paymentMethod()
         );
@@ -74,7 +74,7 @@ final class OrderCreationServiceLowStockThresholdTest extends AbstractFunctional
         $subject->create(
             $this->requestWithLowStockThreshold(10),
             $this->basketViewModel($this->product()),
-            new CheckoutSelections([], 0, ''),
+            new CheckoutSelections([], ''),
             $this->address(),
             $this->paymentMethod()
         );

@@ -112,8 +112,7 @@ final class OrderCreationService
             $request,
             $basketViewModel,
             $basketViewModel->getTotalGross()->subtract($adjustments->getDiscountTotal()),
-            $frontendUser,
-            $checkoutSelections->getSpendPoints()
+            $frontendUser
         );
         foreach ($this->loyaltyRegistry->collectRedemption($loyaltyContext) as $loyaltyAdjustment) {
             $adjustments = $adjustments->with($loyaltyAdjustment);

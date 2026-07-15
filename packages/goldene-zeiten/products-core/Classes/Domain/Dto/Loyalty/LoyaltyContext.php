@@ -25,8 +25,7 @@ final readonly class LoyaltyContext
         private ServerRequestInterface $request,
         private BasketViewModel $basketViewModel,
         private Money $remainingGoodsTotal,
-        private int $frontendUserUid,
-        private int $requestedSpendPoints = 0
+        private int $frontendUserUid
     ) {}
 
     public function getRequest(): ServerRequestInterface
@@ -49,8 +48,4 @@ final readonly class LoyaltyContext
         return $this->frontendUserUid;
     }
 
-    public function getRequestedSpendPoints(): int
-    {
-        return $this->requestedSpendPoints;
-    }
 }

@@ -55,7 +55,7 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
         $this->applyVoucher($basketService, $request, 'SOLO');
         $this->assertSame(['SOLO'], $voucherState->getCodes($request), 'A non-combinable voucher must replace, not join, an existing code.');
 
-        $order = $orderPlacementService->place($request, $this->address(), 'invoice', new CheckoutChoices(30, termsAccepted: true))->getOrder();
+        $order = $orderPlacementService->place($request->withParsedBody(['spendPoints' => 30]), $this->address(), 'invoice', new CheckoutChoices(termsAccepted: true))->getOrder();
 
         $this->assertSame(9200, $order->getTotalGross()->getCents());
         $this->assertSame(800, $order->getDiscountTotal()->getCents());
@@ -79,7 +79,7 @@ final class M3CheckoutFlowTest extends AbstractFunctionalTestCase
         $this->applyVoucher($basketService, $request, 'COMBO1');
 
         try {
-            $orderPlacementService->place($request, $this->address(), 'invoice', new CheckoutChoices(10, termsAccepted: true));
+            $orderPlacementService->place($request->withParsedBody(['spendPoints' => 10]), $this->address(), 'invoice', new CheckoutChoices(termsAccepted: true));
             $this->fail('Expected InsufficientCreditPointsException was not thrown for a guest requesting points.');
         } catch (InsufficientCreditPointsException) {
             // expected: guests always have a zero balance

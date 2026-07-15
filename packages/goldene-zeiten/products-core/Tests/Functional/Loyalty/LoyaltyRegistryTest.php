@@ -117,7 +117,8 @@ final class LoyaltyRegistryTest extends AbstractFunctionalTestCase
     private function loyaltyContext(int $frontendUserUid, int $requestedSpendPoints): LoyaltyContext
     {
         $request = (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
+            ->withParsedBody(['spendPoints' => $requestedSpendPoints]);
 
         $product = $this->get(ProductRepository::class)->findByUid(1);
         $this->assertNotNull($product);
@@ -149,8 +150,7 @@ final class LoyaltyRegistryTest extends AbstractFunctionalTestCase
             $request,
             $basket,
             $remainingGoodsTotal,
-            $frontendUserUid,
-            $requestedSpendPoints
+            $frontendUserUid
         );
     }
 }

@@ -142,7 +142,7 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
 
     private function discountRequest(string $voucherCode): CheckoutSelections
     {
-        return new CheckoutSelections([$voucherCode], 0);
+        return new CheckoutSelections([$voucherCode]);
     }
 
     private function address(): Address

@@ -11,17 +11,11 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 final readonly class CheckoutChoices
 {
     public function __construct(
-        private int $spendPoints = 0,
         private string $shippingOptionKey = '',
         private ?Address $deliveryAddress = null,
         private string $giftMessage = '',
         private bool $termsAccepted = false
     ) {}
-
-    public function getSpendPoints(): int
-    {
-        return $this->spendPoints;
-    }
 
     public function getShippingOptionKey(): string
     {

@@ -95,7 +95,7 @@ final class OrderPlacementTransactionRollbackTest extends AbstractFunctionalTest
             $subject->run(
                 $this->request(),
                 $this->basketViewModel($this->product()),
-                new CheckoutSelections(['SAVE10'], 0),
+                new CheckoutSelections(['SAVE10']),
                 $this->address(),
                 $this->paymentMethod()
             );

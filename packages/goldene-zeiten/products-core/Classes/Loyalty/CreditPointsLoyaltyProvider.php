@@ -55,10 +55,10 @@ final class CreditPointsLoyaltyProvider implements LoyaltyProviderInterface
 
     public function assertRedeemable(LoyaltyContext $context): void
     {
-        if (!$this->configuration($context)->isEnabled() || $context->getRequestedSpendPoints() <= 0) {
+        if (!$this->configuration($context)->isEnabled() || $this->requestedSpendPoints($context) <= 0) {
             return;
         }
-        $this->creditPointsService->assertSpendable($context->getFrontendUserUid(), $context->getRequestedSpendPoints());
+        $this->creditPointsService->assertSpendable($context->getFrontendUserUid(), $this->requestedSpendPoints($context));
     }
 
     public function quoteRedemption(LoyaltyContext $context): ?CheckoutAdjustment
@@ -119,10 +119,21 @@ final class CreditPointsLoyaltyProvider implements LoyaltyProviderInterface
     {
         return $this->creditPointsService->redeem(
             $context->getFrontendUserUid(),
-            $context->getRequestedSpendPoints(),
+            $this->requestedSpendPoints($context),
             $context->getRemainingGoodsTotal(),
             $this->configuration($context)
         );
+    }
+
+    /**
+     * The redeem amount is submitted with the checkout as a plain "spendPoints" field. The provider reads
+     * it from the request itself, so the core checkout stays unaware of any loyalty programme.
+     */
+    private function requestedSpendPoints(LoyaltyContext $context): int
+    {
+        $body = $context->getRequest()->getParsedBody();
+
+        return is_array($body) ? max(0, (int)($body['spendPoints'] ?? 0)) : 0;
     }
 
     private function configuration(LoyaltyContext $context): CreditPointsConfiguration
