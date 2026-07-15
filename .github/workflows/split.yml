@@ -47,6 +47,9 @@ jobs:
           - package: products-watermark
             directory: packages/goldene-zeiten/products-watermark
             repository: products-watermark
+          - package: products-shipping-ups
+            directory: packages/goldene-zeiten/products-shipping-ups
+            repository: products-shipping-ups
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4

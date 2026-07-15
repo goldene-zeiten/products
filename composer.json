@@ -22,7 +22,8 @@
     "goldene-zeiten/products-wishlist": "^1.0",
     "goldene-zeiten/products-credit-points": "^1.0",
     "goldene-zeiten/products-voucher": "^1.0",
-    "goldene-zeiten/products-watermark": "^1.0"
+    "goldene-zeiten/products-watermark": "^1.0",
+    "goldene-zeiten/products-shipping-ups": "^1.0"
   },
   "autoload-dev": {
     "psr-4": {
@@ -33,7 +34,8 @@
       "GoldeneZeiten\\Products\\Wishlist\\Tests\\": "packages/goldene-zeiten/products-wishlist/Tests/",
       "GoldeneZeiten\\Products\\CreditPoints\\Tests\\": "packages/goldene-zeiten/products-credit-points/Tests/",
       "GoldeneZeiten\\Products\\Voucher\\Tests\\": "packages/goldene-zeiten/products-voucher/Tests/",
-      "GoldeneZeiten\\Products\\Watermark\\Tests\\": "packages/goldene-zeiten/products-watermark/Tests/"
+      "GoldeneZeiten\\Products\\Watermark\\Tests\\": "packages/goldene-zeiten/products-watermark/Tests/",
+      "GoldeneZeiten\\Products\\Shipping\\Ups\\Tests\\": "packages/goldene-zeiten/products-shipping-ups/Tests/"
     }
   },
   "require-dev": {
@@ -62,7 +64,8 @@
           "goldene-zeiten/products-wishlist": "1.0.0",
           "goldene-zeiten/products-credit-points": "1.0.0",
           "goldene-zeiten/products-voucher": "1.0.0",
-          "goldene-zeiten/products-watermark": "1.0.0"
+          "goldene-zeiten/products-watermark": "1.0.0",
+          "goldene-zeiten/products-shipping-ups": "1.0.0"
         }
       }
     }
