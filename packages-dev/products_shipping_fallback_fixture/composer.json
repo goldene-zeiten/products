@@ -1,0 +1,23 @@
+{
+  "name": "goldene-zeiten/products-shipping-fallback-fixture",
+  "type": "typo3-cms-extension",
+  "description": "A single conditional ShippingProviderInterface implementation for testing the built-in fallback carrier's yield-and-fill-in behaviour.",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "typo3/cms-core": "^13.4 || ^14.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\ShippingFallbackFixture\\": "Classes/"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "products_shipping_fallback_fixture",
+      "version": "1.0.0",
+      "Package": {
+        "providesPackages": {}
+      }
+    }
+  }
+}

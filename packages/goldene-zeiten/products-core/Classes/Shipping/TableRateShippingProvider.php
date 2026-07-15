@@ -15,9 +15,10 @@ use GoldeneZeiten\Products\Core\Domain\Repository\ShippingMethodRepository;
  *
  * Its option identifiers happen to be the uids of those records, which is its own business - the
  * extension only ever sees "tablerate:12". It ships as the default the same way invoice payment does, so
- * a shop works out of the box, and sorts below any carrier an integrator registers.
+ * a shop works out of the box. Being the fallback carrier, it steps aside entirely for any real carrier an
+ * integrator registers, and takes over again for a basket that carrier cannot serve.
  */
-final class TableRateShippingProvider implements ShippingProviderInterface
+final class TableRateShippingProvider implements FallbackShippingProviderInterface
 {
     public const IDENTIFIER = 'tablerate';
 
