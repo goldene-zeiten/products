@@ -1,0 +1,24 @@
+categories:
+  paymentStripe:
+    label: 'LLL:EXT:products_payment_stripe/Resources/Private/Language/locallang_settings.xlf:category.paymentStripe'
+    parent: payment
+
+settings:
+  products.payment.stripe.secretKey:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_stripe/Resources/Private/Language/locallang_settings.xlf:setting.secretKey'
+    description: 'LLL:EXT:products_payment_stripe/Resources/Private/Language/locallang_settings.xlf:setting.secretKey.description'
+    category: paymentStripe
+  products.payment.stripe.webhookSecret:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_stripe/Resources/Private/Language/locallang_settings.xlf:setting.webhookSecret'
+    description: 'LLL:EXT:products_payment_stripe/Resources/Private/Language/locallang_settings.xlf:setting.webhookSecret.description'
+    category: paymentStripe
+  products.payment.stripe.apiBaseUrl:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_stripe/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl'
+    description: 'LLL:EXT:products_payment_stripe/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl.description'
+    category: paymentStripe

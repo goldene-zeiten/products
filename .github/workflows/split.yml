@@ -56,6 +56,9 @@ jobs:
           - package: products-payment-paypal
             directory: packages/goldene-zeiten/products-payment-paypal
             repository: products-payment-paypal
+          - package: products-payment-stripe
+            directory: packages/goldene-zeiten/products-payment-stripe
+            repository: products-payment-stripe
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4

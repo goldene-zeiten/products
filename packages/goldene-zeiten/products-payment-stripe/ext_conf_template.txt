@@ -1,0 +1,8 @@
+# cat=access/enable/10; type=string; label=Secret key: Stripe secret API key (sk_test_... in test mode, sk_live_... in live mode). System-wide default; a site may override it.
+secretKey =
+
+# cat=access/enable/20; type=string; label=Webhook signing secret: The signing secret (whsec_...) of the Stripe webhook endpoint, used to verify incoming events. Required for webhook confirmation; leave empty to rely on the browser return only.
+webhookSecret =
+
+# cat=advanced/enable/10; type=string; label=API base URL override: Advanced. Overrides the Stripe API base URL, e.g. a proxy or a local mock server. Leave empty to use Stripe's default (https://api.stripe.com).
+apiBaseUrl =
