@@ -16,6 +16,7 @@
     }
   },
   "require": {
+    "goldene-zeiten/products-api-client": "^1.0",
     "goldene-zeiten/products-core": "^1.0",
     "goldene-zeiten/products-search": "^1.0",
     "goldene-zeiten/products-recently-viewed": "^1.0",
@@ -23,11 +24,13 @@
     "goldene-zeiten/products-credit-points": "^1.0",
     "goldene-zeiten/products-voucher": "^1.0",
     "goldene-zeiten/products-watermark": "^1.0",
-    "goldene-zeiten/products-shipping-ups": "^1.0"
+    "goldene-zeiten/products-shipping-ups": "^1.0",
+    "goldene-zeiten/products-payment-paypal": "^1.0"
   },
   "autoload-dev": {
     "psr-4": {
       "GoldeneZeiten\\Products\\Core\\Tests\\": "packages/goldene-zeiten/products-core/Tests/",
+      "GoldeneZeiten\\Products\\ApiClient\\Tests\\": "packages/goldene-zeiten/products-api-client/Tests/",
       "GoldeneZeiten\\Products\\Search\\Tests\\": "packages/goldene-zeiten/products-search/Tests/",
       "GoldeneZeiten\\Products\\Testing\\": "packages-dev/products_testing/Classes/",
       "GoldeneZeiten\\Products\\RecentlyViewed\\Tests\\": "packages/goldene-zeiten/products-recently-viewed/Tests/",
@@ -35,7 +38,8 @@
       "GoldeneZeiten\\Products\\CreditPoints\\Tests\\": "packages/goldene-zeiten/products-credit-points/Tests/",
       "GoldeneZeiten\\Products\\Voucher\\Tests\\": "packages/goldene-zeiten/products-voucher/Tests/",
       "GoldeneZeiten\\Products\\Watermark\\Tests\\": "packages/goldene-zeiten/products-watermark/Tests/",
-      "GoldeneZeiten\\Products\\Shipping\\Ups\\Tests\\": "packages/goldene-zeiten/products-shipping-ups/Tests/"
+      "GoldeneZeiten\\Products\\Shipping\\Ups\\Tests\\": "packages/goldene-zeiten/products-shipping-ups/Tests/",
+      "GoldeneZeiten\\Products\\Payment\\Paypal\\Tests\\": "packages/goldene-zeiten/products-payment-paypal/Tests/"
     }
   },
   "require-dev": {
@@ -58,6 +62,7 @@
       "url": "packages/*/*",
       "options": {
         "versions": {
+          "goldene-zeiten/products-api-client": "1.0.0",
           "goldene-zeiten/products-core": "1.0.0",
           "goldene-zeiten/products-search": "1.0.0",
           "goldene-zeiten/products-recently-viewed": "1.0.0",
@@ -65,7 +70,8 @@
           "goldene-zeiten/products-credit-points": "1.0.0",
           "goldene-zeiten/products-voucher": "1.0.0",
           "goldene-zeiten/products-watermark": "1.0.0",
-          "goldene-zeiten/products-shipping-ups": "1.0.0"
+          "goldene-zeiten/products-shipping-ups": "1.0.0",
+          "goldene-zeiten/products-payment-paypal": "1.0.0"
         }
       }
     }
