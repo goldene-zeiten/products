@@ -75,7 +75,15 @@ the image is published, build it locally with `podman build … Build/mocks/ups-
 
 ## Testing
 
-The hermetic suite needs no network and no container: a `FakeHttpClient` (PSR-18) returns canned JSON.
+Two layers. The **happy path runs against the real mock over HTTP**: `runTests.sh -s functional` builds the
+mock from `Build/mocks/ups-rating`, starts it, `waitFor`s port 4010 (so the tests never race the
+container), and passes `UPS_MOCK_BASE_URL=http://ups-mock-<run>:4010` to the test container, which reaches
+it by name on the shared network. This mirrors how `web-vision/deepltranslate-core` wires the DeepL mock.
+
+The **error and edge paths use a `FakeHttpClient`** (PSR-18, canned JSON) — a static Prism mock cannot
+produce a 401-then-200 retry, an HTTP 400, a transport error, or a single-object-vs-list response on
+demand, so those are driven by the fake. The fake also lets a test assert the outgoing request shape,
+which the mock does not echo back.
 
 - `Tests/Unit/Configuration/UpsConfigurationFactoryTest` — the config layering and parsing. Uses a PHPUnit
   mock of `ExtensionConfiguration` (**not** an anonymous subclass — `ExtensionConfiguration` is `readonly`
@@ -86,8 +94,9 @@ The hermetic suite needs no network and no container: a `FakeHttpClient` (PSR-18
 - `Tests/Functional/Shipping/UpsShippingProviderTest` — mapping, allow-list, currency guard, and the
   empty-result cases that yield to the fallback.
 - `Tests/Functional/Integration/UpsMockIntegrationTest` — drives the real Guzzle client against the mock
-  over HTTP. **Skipped** unless `UPS_MOCK_BASE_URL` is set, so it never runs in the normal suite: no
-  container dependency, no startup race. Start the mock and export that variable to run it.
+  over HTTP. It **runs automatically** under `runTests.sh -s functional` (which starts and gates the mock).
+  Run directly with plain phpunit and it **skips** unless `UPS_MOCK_BASE_URL` is set, so it never fails for
+  lack of a mock.
 
 ## Planned: labels & tracking (phase 2)
 
