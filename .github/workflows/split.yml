@@ -50,6 +50,12 @@ jobs:
           - package: products-shipping-ups
             directory: packages/goldene-zeiten/products-shipping-ups
             repository: products-shipping-ups
+          - package: products-api-client
+            directory: packages/goldene-zeiten/products-api-client
+            repository: products-api-client
+          - package: products-payment-paypal
+            directory: packages/goldene-zeiten/products-payment-paypal
+            repository: products-payment-paypal
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
