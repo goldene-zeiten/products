@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf" date="2026-07-15T09:00:00Z" product-name="products_watermark">
+		<header/>
+		<body>
+			<trans-unit id="category.watermark" resname="category.watermark">
+				<source>Watermark</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.file" resname="setting.products.watermark.file">
+				<source>Watermark image</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.file.description" resname="setting.products.watermark.file.description">
+				<source>Path to the watermark image (a PNG with transparency is recommended), e.g. EXT:my_sitepackage/Resources/Public/Images/watermark.png or a fileadmin path. Leave empty to disable watermarking.</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position" resname="setting.products.watermark.position">
+				<source>Position</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position.top-left" resname="setting.products.watermark.position.top-left">
+				<source>Top left</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position.top-right" resname="setting.products.watermark.position.top-right">
+				<source>Top right</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position.bottom-left" resname="setting.products.watermark.position.bottom-left">
+				<source>Bottom left</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position.bottom-right" resname="setting.products.watermark.position.bottom-right">
+				<source>Bottom right</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position.center" resname="setting.products.watermark.position.center">
+				<source>Center</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position.tile" resname="setting.products.watermark.position.tile">
+				<source>Tiled across the whole image</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.opacity" resname="setting.products.watermark.opacity">
+				<source>Opacity (%)</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.opacity.description" resname="setting.products.watermark.opacity.description">
+				<source>Opacity of the watermark in percent (0 = fully transparent, 100 = fully opaque). Multiplied with any transparency already present in the watermark image.</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.scale" resname="setting.products.watermark.scale">
+				<source>Scale (% of image width)</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.scale.description" resname="setting.products.watermark.scale.description">
+				<source>Width of the watermark relative to the image width, in percent. Set to 0 to keep the watermark's native pixel size. For the tiled position this is the size of a single tile.</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.minWidth" resname="setting.products.watermark.minWidth">
+				<source>Minimum image width (px)</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.minWidth.description" resname="setting.products.watermark.minWidth.description">
+				<source>Images narrower than this many pixels are left untouched, so small thumbnails do not get watermarked.</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.margin" resname="setting.products.watermark.margin">
+				<source>Margin (% of image width)</source>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.margin.description" resname="setting.products.watermark.margin.description">
+				<source>Distance of the watermark from the image edge for the corner positions, in percent of the image width. Ignored for the centered and tiled positions.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

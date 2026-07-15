@@ -19,6 +19,7 @@ dependencies:
   - goldene-zeiten/products-wishlist
   - goldene-zeiten/products-credit-points
   - goldene-zeiten/products-voucher
+  - goldene-zeiten/products-watermark
 settings:
   products:
     creditPoints:

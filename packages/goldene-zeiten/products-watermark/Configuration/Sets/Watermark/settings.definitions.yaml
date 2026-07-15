@@ -1,0 +1,48 @@
+categories:
+  watermark:
+    label: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:category.watermark'
+    parent: products
+
+settings:
+  products.watermark.file:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.file'
+    description: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.file.description'
+    category: watermark
+  products.watermark.position:
+    type: string
+    default: 'bottom-right'
+    enum:
+      top-left: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.position.top-left'
+      top-right: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.position.top-right'
+      bottom-left: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.position.bottom-left'
+      bottom-right: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.position.bottom-right'
+      center: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.position.center'
+      tile: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.position.tile'
+    label: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.position'
+    category: watermark
+  products.watermark.opacity:
+    type: int
+    default: 50
+    label: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.opacity'
+    description: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.opacity.description'
+    category: watermark
+  products.watermark.scale:
+    type: int
+    default: 25
+    label: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.scale'
+    description: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.scale.description'
+    category: watermark
+  products.watermark.minWidth:
+    type: int
+    default: 200
+    label: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.minWidth'
+    description: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.minWidth.description'
+    category: watermark
+  products.watermark.margin:
+    type: int
+    default: 5
+    label: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.margin'
+    description: 'LLL:EXT:products_watermark/Resources/Private/Language/locallang_settings.xlf:setting.products.watermark.margin.description'
+    category: watermark
