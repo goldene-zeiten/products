@@ -1,0 +1,21 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/shipping/ups/security/v1/oauth/token"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "token_type": "Bearer",
+      "issued_at": "1752580000000",
+      "client_id": "mock-client",
+      "access_token": "MOCK-ACCESS-TOKEN",
+      "expires_in": "3599",
+      "status": "approved"
+    }
+  }
+}

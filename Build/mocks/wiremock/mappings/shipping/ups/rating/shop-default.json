@@ -1,0 +1,51 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/shipping/ups/api/rating/v2409/Shop"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "RateResponse": {
+        "Response": {
+          "ResponseStatus": {
+            "Code": "1",
+            "Description": "Success"
+          }
+        },
+        "RatedShipment": [
+          {
+            "Service": {
+              "Code": "11",
+              "Description": "UPS Standard"
+            },
+            "TotalCharges": {
+              "CurrencyCode": "EUR",
+              "MonetaryValue": "9.99"
+            },
+            "GuaranteedDelivery": {
+              "BusinessDaysInTransit": "2"
+            }
+          },
+          {
+            "Service": {
+              "Code": "65",
+              "Description": "UPS Saver"
+            },
+            "TotalCharges": {
+              "CurrencyCode": "EUR",
+              "MonetaryValue": "19.99"
+            },
+            "GuaranteedDelivery": {
+              "BusinessDaysInTransit": "1"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
