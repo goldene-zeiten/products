@@ -20,6 +20,7 @@ dependencies:
   - goldene-zeiten/products-credit-points
   - goldene-zeiten/products-voucher
   - goldene-zeiten/products-watermark
+  - goldene-zeiten/products-shipping-ups
 settings:
   products:
     creditPoints:

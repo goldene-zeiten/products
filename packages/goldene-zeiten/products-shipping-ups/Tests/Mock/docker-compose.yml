@@ -1,0 +1,14 @@
+# Local UPS mock: a Stoplight Prism instance serving the combined OAuth + Rating mock, so the extension's
+# HTTP path can be exercised without UPS credentials or hitting real UPS infrastructure. The image bakes
+# the spec in (built from Build/mocks/ups-rating in the monorepo, published to GHCR).
+#
+#   docker compose -f Tests/Mock/docker-compose.yml up        # (or: podman compose ...)
+#
+# Then point the extension at it by setting the API base URL override to http://localhost:4010
+# (Extension Configuration -> apiBaseUrl, or Site Setting products.shipping.ups.apiBaseUrl), and use any
+# non-empty client id / secret - the mock does not check them.
+services:
+  ups-mock:
+    image: ghcr.io/goldene-zeiten/products-ups-rating-mock:latest
+    ports:
+      - "4010:4010"
