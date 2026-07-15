@@ -95,8 +95,6 @@ final class WatermarkApplier
             }
         }
         imagepng($target, $targetPath);
-        imagedestroy($source);
-        imagedestroy($target);
     }
 
     private function loadGdImage(string $path): \GdImage
