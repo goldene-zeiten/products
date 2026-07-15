@@ -512,7 +512,7 @@ case ${TEST_SUITE} in
         fi
         ;;
     buildJs)
-        COMMAND=(npm run build)
+        COMMAND=(/bin/sh -c "npm ci && npm run build")
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name buildJs-${SUFFIX} -e npm_config_cache=.Build/.cache/npm ${IMAGE_NODEJS} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
         ;;
@@ -666,8 +666,14 @@ case ${TEST_SUITE} in
         SUITE_EXIT_CODE=$?
         ;;
     renderDocumentation)
-        ${CONTAINER_BIN} run ${CONTAINER_INTERACTIVE} --pull always -v ${ROOT_DIR}:/project -it ghcr.io/typo3-documentation/render-guides:latest --config=Documentation
-        SUITE_EXIT_CODE=$?
+        SUITE_EXIT_CODE=0
+        for DOCUMENTATION_DIR in ${ROOT_DIR}/packages/*/*/Documentation; do
+            [ -d "${DOCUMENTATION_DIR}" ] || continue
+            PACKAGE_DIR="$(dirname "${DOCUMENTATION_DIR}")"
+            echo "Rendering ${PACKAGE_DIR#"${ROOT_DIR}/"}"
+            ${CONTAINER_BIN} run ${CONTAINER_INTERACTIVE} --pull always -v ${PACKAGE_DIR}:/project -it ghcr.io/typo3-documentation/render-guides:latest --config=Documentation
+            [ $? -eq 0 ] || SUITE_EXIT_CODE=$?
+        done
         ;;
     phpstan)
         PHPSTAN_CONFIG_FILE="Build/phpstan/Core${CORE_VERSION}/phpstan.neon"
@@ -677,7 +683,7 @@ case ${TEST_SUITE} in
         ;;
     phpstanGenerateBaseline)
         PHPSTAN_CONFIG_FILE="Build/phpstan/Core${CORE_VERSION}/phpstan.neon"
-        COMMAND=(php -dxdebug.mode=off .Build/bin/phpstan analyse -c ${PHPSTAN_CONFIG_FILE} --no-progress --no-interaction --memory-limit 4G --allow-empty-baseline --generate-baseline=Build/phpstan/phpstan-baseline.neon)
+        COMMAND=(php -dxdebug.mode=off .Build/bin/phpstan analyse -c ${PHPSTAN_CONFIG_FILE} --no-progress --no-interaction --memory-limit 4G --allow-empty-baseline --generate-baseline=Build/phpstan/Core${CORE_VERSION}/phpstan-baseline.neon)
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name phpstan-baseline-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
         ;;

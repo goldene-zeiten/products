@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_voucher/Resources/Private/Language/locallang.xlf" date="2026-07-15T09:00:00Z" product-name="products_voucher">
+		<header/>
+		<body>
+			<trans-unit id="voucher_code" resname="voucher_code">
+				<source>Voucher code</source>
+			</trans-unit>
+			<trans-unit id="apply_voucher" resname="apply_voucher">
+				<source>Apply</source>
+			</trans-unit>
+			<trans-unit id="voucher_applied" resname="voucher_applied">
+				<source>Voucher applied: %s</source>
+			</trans-unit>
+			<trans-unit id="voucher_discount" resname="voucher_discount">
+				<source>Voucher discount</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

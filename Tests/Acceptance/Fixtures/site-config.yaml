@@ -1,19 +1,24 @@
 rootPageId: 1
 base: /
 websiteTitle: 'Products Acceptance'
-# Activates the goldene-zeiten/products Site Set so `settings:` below (Site Settings, not the
+# Activates the goldene-zeiten/products-core Site Set so `settings:` below (Site Settings, not the
 # classic TypoScript constants already included via the sys_template row in shop-demo.csv) can
 # actually resolve - see CreditPointsConfigurationFactoryEarningTiersTest for the same pattern.
 #
 # products.shipping.enabled is required here, not just as the legacy
-# `plugin.tx_products.settings.shipping.enabled = 1` TypoScript constant already set in
+# `plugin.tx_productscore.settings.shipping.enabled = 1` TypoScript constant already set in
 # shop-demo.csv's sys_template row: since 56d53db, ProductsConfigurationFactory reads
 # shipping/handling/rounding straight from Site Settings (ConfigurationManagerInterface can never
-# see them - no TypoScript bridges them into plugin.tx_products.settings). Without this, every
+# see them - no TypoScript bridges them into plugin.tx_productscore.settings). Without this, every
 # checkout spec silently skipped the shipping-method step (isShippingEnabled() fell back to
 # false) and hung waiting for a shippingMethod radio that was never rendered.
 dependencies:
-  - goldene-zeiten/products
+  - goldene-zeiten/products-core
+  - goldene-zeiten/products-search
+  - goldene-zeiten/products-recently-viewed
+  - goldene-zeiten/products-wishlist
+  - goldene-zeiten/products-credit-points
+  - goldene-zeiten/products-voucher
 settings:
   products:
     creditPoints:
@@ -38,7 +43,7 @@ languages:
 routeEnhancers:
   ProductsDetail:
     type: Extbase
-    extension: Products
+    extension: ProductsCore
     plugin: ProductDetail
     routes:
       -
@@ -53,7 +58,7 @@ routeEnhancers:
         routeFieldName: slug
   ProductsCategoryList:
     type: Extbase
-    extension: Products
+    extension: ProductsCore
     plugin: CategoryList
     routes:
       -

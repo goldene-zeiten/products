@@ -1,0 +1,23 @@
+{
+  "name": "goldene-zeiten/products-extension-point-fixture",
+  "type": "typo3-cms-extension",
+  "description": "Dummy implementations of the smaller tagged extension points (order-detail panel, legacy cleanup guard) proving their tagged_iterator wiring functionally.",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "typo3/cms-core": "^13.4 || ^14.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\ExtensionPointFixture\\": "Classes/"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "products_extension_point_fixture",
+      "version": "1.0.0",
+      "Package": {
+        "providesPackages": {}
+      }
+    }
+  }
+}

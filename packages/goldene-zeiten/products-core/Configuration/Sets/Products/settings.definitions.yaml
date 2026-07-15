@@ -1,0 +1,282 @@
+categories:
+  products:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.products'
+  storage:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.storage'
+    parent: products
+  pricing:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.pricing'
+    parent: products
+  order:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.order'
+    parent: products
+  catalog:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.catalog'
+    parent: products
+  payment:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.payment'
+    parent: products
+  shipping:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.shipping'
+    parent: products
+  discovery:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.discovery'
+    parent: products
+  email:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.email'
+    parent: products
+  invoice:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.invoice'
+    parent: products
+  seo:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.seo'
+    parent: products
+  privacy:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.privacy'
+    parent: products
+  technical:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.technical'
+    parent: products
+
+settings:
+  products.pids.storageFolder:
+    type: int
+    default: 0
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.storageFolder'
+    category: storage
+  products.pids.detailPage:
+    type: int
+    default: 0
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.detailPage'
+    category: storage
+  products.pids.basketPage:
+    type: int
+    default: 0
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.basketPage'
+    category: storage
+  products.pids.checkoutPage:
+    type: int
+    default: 0
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.checkoutPage'
+    category: storage
+  products.pids.orderHistoryPage:
+    type: int
+    default: 0
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.orderHistoryPage'
+    category: storage
+  products.pids.categoryPage:
+    type: int
+    default: 0
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.categoryPage'
+    category: storage
+  products.pids.withdrawalPage:
+    type: int
+    default: 0
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.withdrawalPage'
+    category: storage
+  products.pricing.mode:
+    type: string
+    default: 'gross'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pricing.mode'
+    category: pricing
+  products.pricing.currency:
+    type: string
+    default: 'EUR'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pricing.currency'
+    category: pricing
+  products.pricing.discountFieldMode:
+    type: string
+    default: 'maxAcrossTree'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pricing.discountFieldMode'
+    category: pricing
+  products.pricing.roundingMode:
+    type: string
+    default: 'none'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pricing.roundingMode'
+    category: pricing
+  products.pricing.resellerPeriodPrecedence:
+    type: string
+    default: 'lowestWins'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pricing.resellerPeriodPrecedence'
+    category: pricing
+  products.pricing.priceReductionLookbackDays:
+    type: int
+    default: 30
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pricing.priceReductionLookbackDays'
+    category: pricing
+  products.tax.defaultCountry:
+    type: string
+    default: 'DE'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.tax.defaultCountry'
+    category: pricing
+  products.tax.rounding:
+    type: string
+    default: 'perLine'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.tax.rounding'
+    category: pricing
+  products.order.numberPrefix:
+    type: string
+    default: 'ORD-'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.order.numberPrefix'
+    category: order
+  products.order.storeClientIp:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.order.storeClientIp'
+    category: order
+  products.checkout.withdrawalPeriodDays:
+    type: int
+    default: 14
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.checkout.withdrawalPeriodDays'
+    category: order
+  products.checkout.priceQuoteValiditySeconds:
+    type: int
+    default: 900
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.checkout.priceQuoteValiditySeconds'
+    category: order
+  products.stock.lowStockThreshold:
+    type: int
+    default: 5
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.stock.lowStockThreshold'
+    category: catalog
+  products.catalog.articleSwitchMode:
+    type: string
+    default: reload
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.catalog.articleSwitchMode'
+    category: catalog
+  products.payment.invoice.enabled:
+    type: bool
+    default: true
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.invoice.enabled'
+    category: payment
+  products.shipping.enabled:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.shipping.enabled'
+    category: shipping
+  products.shipping.preselect:
+    type: string
+    default: 'none'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.shipping.preselect'
+    category: shipping
+  products.shipping.bulkySurcharge:
+    type: string
+    default: '0.00'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.shipping.bulkySurcharge'
+    category: shipping
+  products.shipping.bulkyNoticeText:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.shipping.bulkyNoticeText'
+    category: shipping
+  products.shipping.weightNoticeThreshold:
+    type: int
+    default: 0
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.shipping.weightNoticeThreshold'
+    category: shipping
+  products.shipping.weightNoticeText:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.shipping.weightNoticeText'
+    category: shipping
+  products.handling.enabled:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.handling.enabled'
+    category: shipping
+  products.list.newItemDays:
+    type: int
+    default: 7
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.list.newItemDays'
+    category: discovery
+  products.email.senderEmail:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.email.senderEmail'
+    category: email
+  products.email.senderName:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.email.senderName'
+    category: email
+  products.email.templateRootPaths:
+    type: stringlist
+    default:
+      - 'EXT:products_core/Resources/Private/Templates/Email/'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.email.templateRootPaths'
+    category: email
+  products.email.partialRootPaths:
+    type: stringlist
+    default:
+      - 'EXT:products_core/Resources/Private/Partials/'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.email.partialRootPaths'
+    category: email
+  products.email.layoutRootPaths:
+    type: stringlist
+    default:
+      - 'EXT:products_core/Resources/Private/Layouts/'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.email.layoutRootPaths'
+    category: email
+  products.email.merchantRecipient:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.email.merchantRecipient'
+    category: email
+  products.email.agbAttachment:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.email.agbAttachment'
+    category: email
+  products.email.orderBccRecipient:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.email.orderBccRecipient'
+    category: email
+  products.email.orderStatusChanged.enabled:
+    type: bool
+    default: true
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.email.orderStatusChanged.enabled'
+    category: email
+  products.invoice.templateRootPaths:
+    type: stringlist
+    default:
+      - 'EXT:products_core/Resources/Private/Templates/Invoice/'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.invoice.templateRootPaths'
+    category: invoice
+  products.invoice.partialRootPaths:
+    type: stringlist
+    default:
+      - 'EXT:products_core/Resources/Private/Partials/'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.invoice.partialRootPaths'
+    category: invoice
+  products.invoice.layoutRootPaths:
+    type: stringlist
+    default:
+      - 'EXT:products_core/Resources/Private/Layouts/'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.invoice.layoutRootPaths'
+    category: invoice
+  products.invoice.pageType:
+    type: int
+    default: 1729512001
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.invoice.pageType'
+    category: invoice
+  products.seo.pageTitleMode:
+    type: string
+    default: 'title'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.seo.pageTitleMode'
+    category: seo
+  products.session.requireCookieConsent:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.session.requireCookieConsent'
+    category: privacy
+  products.gdpr.invoiceRetentionDays:
+    type: int
+    default: 3650
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.gdpr.invoiceRetentionDays'
+    category: privacy
+  products.ajax.pageType:
+    type: int
+    default: 1729512000
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.ajax.pageType'
+    category: technical

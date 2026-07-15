@@ -1,0 +1,18 @@
+"tt_content",,,,,,,,,,,
+,"uid","pid","sorting","deleted","colPos","CType","list_type","pi_flexform","tx_products_list_mode","records","tx_products_category"
+,100,2,256,0,0,"productscore_productlist","","","all","10,20","5,6"
+,101,2,257,0,0,"productscore_basket","","","all","",""
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,10,2,0,"Product A"
+,20,2,0,"Product B"
+"tx_products_domain_model_category",,,,
+,"uid","pid","hidden","title"
+,5,2,0,"Category A"
+,6,2,0,"Category B"
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",1,"tx_products_domain_model_product",10
+,"tt_products",2,"tx_products_domain_model_product",20
+,"tt_products_cat",1,"tx_products_domain_model_category",5
+,"tt_products_cat",2,"tx_products_domain_model_category",6

@@ -1,0 +1,124 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GoldeneZeiten\Products\Voucher\Tests\Functional\EndToEnd;
+
+use GoldeneZeiten\Products\Core\Domain\Dto\Address;
+use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutChoices;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Event\AfterOrderPlacedEvent;
+use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementService;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
+use GoldeneZeiten\Products\Voucher\Discount\VoucherCheckoutState;
+use GoldeneZeiten\Products\Voucher\EventListener\IssueGainedVoucherListener;
+use PHPUnit\Framework\Attributes\Test;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
+
+final class M4CheckoutFlowTest extends AbstractFunctionalTestCase
+{
+    protected array $testExtensionsToLoad = [
+        'goldene-zeiten/products-voucher',
+    ];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/M4CheckoutFlowTest/m4_end_to_end.csv');
+    }
+
+    #[Test]
+    public function shippingIsWaivedByAFreeShippingVoucherAndTheGiftAddressIsSnapshotted(): void
+    {
+        $basketService = $this->get(BasketService::class);
+        $orderPlacementService = $this->get(OrderPlacementService::class);
+        $mainProduct = $this->mainProduct();
+        $request = $this->requestFor(9);
+        $basketService->add($request, $mainProduct->getUid() ?? 0, null, 1);
+        $this->get(VoucherCheckoutState::class)->addCode($request, 'FREESHIP');
+
+        $delivery = new Address(firstName: 'Jane', lastName: 'Doe', street: 'Gift Lane 1', zip: '54321', city: 'Giftville', country: 'DE');
+        $choices = new CheckoutChoices(shippingOptionKey: 'tablerate:1', deliveryAddress: $delivery, giftMessage: 'Happy birthday!', termsAccepted: true);
+
+        $order = $orderPlacementService->place($request, $this->address(), 'invoice', $choices)->getOrder();
+
+        $this->assertSame('tablerate', $order->getShippingProvider());
+        $this->assertSame('1', $order->getShippingOption());
+        $this->assertSame(500, $order->getShippingTotal()->getCents(), 'The free-shipping voucher offset now records the real cost.');
+        $this->assertSame(500, $order->getDiscountTotal()->getCents(), 'The voucher creates an equal discount.');
+        $this->assertSame(['FREESHIP'], $this->redeemedCodesFor($order->getUid() ?? 0));
+
+        $deliveryAddress = $order->getDeliveryAddress();
+        $this->assertNotNull($deliveryAddress);
+        $this->assertSame('Jane', $deliveryAddress->getFirstName());
+        $this->assertSame('Happy birthday!', $order->getGiftMessage());
+
+        $this->issueGainedVoucherFor($order, $request);
+
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/m4_gained_voucher_issued.csv');
+    }
+
+    private function mainProduct(): Product
+    {
+        $product = $this->get(ProductRepository::class)->findByUid(1);
+        $this->assertInstanceOf(Product::class, $product);
+        return $product;
+    }
+
+    private function issueGainedVoucherFor(Order $order, ServerRequestInterface $request): void
+    {
+        $listener = $this->get(IssueGainedVoucherListener::class);
+        $listener(new AfterOrderPlacedEvent($order, $request));
+    }
+
+    private function requestFor(int $frontendUserUid): ServerRequestInterface
+    {
+        $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
+        $frontendUser->initializeUserSessionManager();
+        if ($frontendUserUid > 0) {
+            $frontendUser->user = ['uid' => $frontendUserUid];
+        }
+        $site = new Site('products', 1, ['settings' => ['products' => [
+            'shipping' => ['enabled' => true],
+            'vouchers' => ['gained' => [
+                'enabled' => true,
+                'minimumOrderValue' => '1.00',
+                'rewardType' => 'fixed',
+                'rewardValue' => '5.00',
+            ]],
+        ]]]);
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
+            ->withAttribute('frontend.user', $frontendUser)
+            ->withAttribute('site', $site);
+    }
+
+    private function address(): Address
+    {
+        return new Address(email: 'buyer@example.com', country: 'DE');
+    }
+
+    /**
+     * @return string[]
+     */
+    private function redeemedCodesFor(int $orderUid): array
+    {
+        $queryBuilder = $this->get(ConnectionPool::class)->getQueryBuilderForTable('tx_products_domain_model_voucherredemption');
+        $queryBuilder->getRestrictions()->removeAll();
+        $codes = $queryBuilder->select('voucher_code')->from('tx_products_domain_model_voucherredemption')
+            ->where($queryBuilder->expr()->eq('order_uid', $queryBuilder->createNamedParameter($orderUid, Connection::PARAM_INT)))
+            ->executeQuery()->fetchFirstColumn();
+
+        return array_map('strval', $codes);
+    }
+}

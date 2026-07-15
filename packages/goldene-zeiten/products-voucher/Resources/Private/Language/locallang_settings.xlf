@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_voucher/Resources/Private/Language/locallang_settings.xlf" date="2026-07-15T09:00:00Z" product-name="products_voucher">
+		<header/>
+		<body>
+			<trans-unit id="category.vouchers" resname="category.vouchers">
+				<source>Vouchers</source>
+			</trans-unit>
+			<trans-unit id="setting.products.vouchers.gained.enabled" resname="setting.products.vouchers.gained.enabled">
+				<source>Auto-issue a reward voucher for qualifying orders</source>
+			</trans-unit>
+			<trans-unit id="setting.products.vouchers.gained.minimumOrderValue" resname="setting.products.vouchers.gained.minimumOrderValue">
+				<source>Minimum order total (gross) to trigger a gained voucher</source>
+			</trans-unit>
+			<trans-unit id="setting.products.vouchers.gained.rewardType" resname="setting.products.vouchers.gained.rewardType">
+				<source>Gained voucher discount type (percentage|fixed)</source>
+			</trans-unit>
+			<trans-unit id="setting.products.vouchers.gained.rewardValue" resname="setting.products.vouchers.gained.rewardValue">
+				<source>Gained voucher discount value</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

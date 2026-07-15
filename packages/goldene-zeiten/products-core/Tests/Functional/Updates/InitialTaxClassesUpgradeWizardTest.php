@@ -1,0 +1,54 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Updates;
+
+use GoldeneZeiten\Products\Core\Updates\InitialTaxClassesUpgradeWizard;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Test;
+
+final class InitialTaxClassesUpgradeWizardTest extends AbstractFunctionalTestCase
+{
+    private const TABLE = 'tx_products_domain_model_taxclass';
+
+    #[Test]
+    public function updateIsNecessaryWhenNoTaxClassesExistYet(): void
+    {
+        $subject = $this->get(InitialTaxClassesUpgradeWizard::class);
+
+        $this->assertTrue($subject->updateNecessary());
+    }
+
+    #[Test]
+    public function executeUpdateSeedsAllThreeTaxClasses(): void
+    {
+        $subject = $this->get(InitialTaxClassesUpgradeWizard::class);
+
+        $this->assertTrue($subject->executeUpdate());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/tax_classes_seeded.csv');
+        $this->assertFalse($subject->updateNecessary());
+    }
+
+    #[Test]
+    public function executeUpdateIsIdempotent(): void
+    {
+        $subject = $this->get(InitialTaxClassesUpgradeWizard::class);
+
+        $this->assertTrue($subject->executeUpdate());
+        $this->assertTrue($subject->executeUpdate());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/tax_classes_seeded.csv');
+    }
+
+    #[Test]
+    public function updateIsNotNecessaryWhenACodeAlreadyExists(): void
+    {
+        $subject = $this->get(InitialTaxClassesUpgradeWizard::class);
+        $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable(self::TABLE);
+        $queryBuilder->insert(self::TABLE)->values(['code' => 'standard', 'title' => 'Custom standard'])->executeStatement();
+
+        $this->assertTrue($subject->updateNecessary());
+        $this->assertTrue($subject->executeUpdate());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/tax_classes_seeded_existing_standard.csv');
+    }
+}

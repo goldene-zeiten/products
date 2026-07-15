@@ -1,9 +1,0 @@
-<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:order_confirmation" />
-
-<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:hello" />
-
-<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:thank_you_for_order" arguments="{0: order.orderNumber}" />
-
-<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:order_total" />: {order.totalGross.decimalString} {order.currency}
-
-<f:render partial="Email/Signature" arguments="{_all}" />

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_voucher/Resources/Private/Language/locallang_be.xlf" date="2026-07-15T09:00:00Z" product-name="products_voucher">
+		<header/>
+		<body>
+			<trans-unit id="order.column.vouchers" resname="order.column.vouchers">
+				<source>Vouchers applied</source>
+			</trans-unit>
+			<trans-unit id="order.column.redeemed_at" resname="order.column.redeemed_at">
+				<source>Redeemed at</source>
+			</trans-unit>
+			<trans-unit id="order.gained_voucher" resname="order.gained_voucher">
+				<source>This order generated the reward voucher %s</source>
+			</trans-unit>
+			<trans-unit id="order.gained_voucher.used" resname="order.gained_voucher.used">
+				<source>used</source>
+			</trans-unit>
+			<trans-unit id="order.gained_voucher.unused" resname="order.gained_voucher.unused">
+				<source>not yet used</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

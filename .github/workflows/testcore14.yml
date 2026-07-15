@@ -73,10 +73,38 @@ jobs:
       - name: "Unit"
         run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s unit"
 
+  functional-setup:
+    name: "prepare functional dependencies with core v14"
+    runs-on: ubuntu-22.04
+    needs: code-quality
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '8.2', '8.5' ]
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Prepare dependencies for TYPO3 v14"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s composerUpdate"
+
+      # The whole functional matrix runs against this identical build, so install once per PHP version and
+      # hand the result to every DB variant. tar keeps the path-repository symlinks under .Build intact.
+      - name: "Pack the built dependencies"
+        run: "tar -c -f functional-build.tar .Build"
+
+      - name: "Upload the built dependencies"
+        uses: actions/upload-artifact@v4
+        with:
+          name: "functional-build-v14-php${{ matrix.php-version }}"
+          path: "functional-build.tar"
+          retention-days: 1
+          if-no-files-found: error
+
   functional:
     name: functional tests with core v14
     runs-on: ubuntu-22.04
-    needs: unit
+    needs: [ unit, functional-setup ]
     strategy:
       fail-fast: false
       matrix:
@@ -92,8 +120,13 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v4
 
-      - name: "Prepare dependencies for TYPO3 v14"
-        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s composerUpdate"
+      - name: "Download the prepared dependencies"
+        uses: actions/download-artifact@v4
+        with:
+          name: "functional-build-v14-php${{ matrix.php-version }}"
+
+      - name: "Unpack the prepared dependencies"
+        run: "tar -x -f functional-build.tar && rm functional-build.tar"
 
       - name: "Functional ${{ matrix.db.name }}"
         run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s functional ${{ matrix.db.options }}"

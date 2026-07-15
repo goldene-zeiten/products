@@ -1,6 +1,0 @@
-"tt_content",,,,,,,,,,,,
-,"uid","pid","sorting","deleted","colPos","CType","list_type","pi_flexform","tx_products_search_browse_mode","tx_products_search_field"
-,100,2,256,0,0,"products_search","","","firstletter","title"
-"tx_products_domain_model_product",,,,
-,"uid","pid","hidden","title"
-,1,2,0,"Product A"

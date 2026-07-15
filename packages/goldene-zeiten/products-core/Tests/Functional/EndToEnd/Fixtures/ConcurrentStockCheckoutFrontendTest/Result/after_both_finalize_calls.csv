@@ -1,0 +1,7 @@
+"tx_products_domain_model_product",,
+,"uid","in_stock"
+,1,0
+
+"tx_products_domain_model_order",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,"uid","pid","deleted","total_net","total_tax","total_gross","tax_breakdown","status_log","items","legacy_order_data","order_number","frontend_user","email","billing_address","delivery_address","payment_method","payment_status","status","invoice_number","currency","discount_total","shipping_provider","shipping_option","shipping_label","shipping_total","handling_fee_total","deposit_total","tax_country","customer_note","gift_message","site_identifier","legacy_country_name"
+,1,0,0,840,160,1000,"[]","[]",1,"[]","ORD-1",0,"",1,0,"invoice","open","pending","1","EUR",0,"","","",0,0,0,"","","","products",""

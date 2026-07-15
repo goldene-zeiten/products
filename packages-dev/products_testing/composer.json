@@ -1,0 +1,27 @@
+{
+  "name": "goldene-zeiten/products-testing",
+  "description": "Shared test infrastructure (base test cases, test doubles, fixtures) for the Products monorepo. Development only, never shipped.",
+  "type": "typo3-cms-extension",
+  "license": [
+    "GPL-2.0-or-later"
+  ],
+  "require": {
+    "php": "^8.2 || ^8.3 || ^8.4 || ^8.5",
+    "typo3/cms-core": "^13.4 || ^14.3",
+    "typo3/testing-framework": "^9.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\Testing\\": "Classes/"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "products_testing",
+      "version": "1.0.0",
+      "Package": {
+        "providesPackages": {}
+      }
+    }
+  }
+}

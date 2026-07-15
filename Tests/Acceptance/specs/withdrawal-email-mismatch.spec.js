@@ -5,18 +5,18 @@ test('a guest cannot cancel an order by entering a different email address', asy
   await page.getByRole('button', { name: 'Add to Basket' }).click();
 
   await page.goto('/checkout');
-  await page.locator('input[name="tx_products_checkout[address][email]"]').fill('mismatch-guest@example.com');
-  await page.locator('input[name="tx_products_checkout[address][firstName]"]').fill('Mia');
-  await page.locator('input[name="tx_products_checkout[address][lastName]"]').fill('Match');
-  await page.locator('input[name="tx_products_checkout[address][street]"]').fill('Wrong Street 2');
-  await page.locator('input[name="tx_products_checkout[address][zip]"]').fill('20099');
-  await page.locator('input[name="tx_products_checkout[address][city]"]').fill('Hamburg');
+  await page.locator('input[name="tx_productscore_checkout[address][email]"]').fill('mismatch-guest@example.com');
+  await page.locator('input[name="tx_productscore_checkout[address][firstName]"]').fill('Mia');
+  await page.locator('input[name="tx_productscore_checkout[address][lastName]"]').fill('Match');
+  await page.locator('input[name="tx_productscore_checkout[address][street]"]').fill('Wrong Street 2');
+  await page.locator('input[name="tx_productscore_checkout[address][zip]"]').fill('20099');
+  await page.locator('input[name="tx_productscore_checkout[address][city]"]').fill('Hamburg');
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 
-  await page.locator('input[name="tx_products_checkout[shippingOption]"]').first().check();
+  await page.locator('input[name="tx_productscore_checkout[shippingOption]"]').first().check();
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 
-  await page.locator('input[name="tx_products_checkout[paymentMethod]"]').first().check();
+  await page.locator('input[name="tx_productscore_checkout[paymentMethod]"]').first().check();
   await page.getByRole('button', { name: 'Continue to review' }).click();
 
   await page.locator('#termsAccepted').check();

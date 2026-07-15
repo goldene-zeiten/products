@@ -1,0 +1,98 @@
+plugin.tx_productscore {
+    settings {
+        pids {
+            storageFolder = {$plugin.tx_productscore.settings.pids.storageFolder}
+            detailPage = {$plugin.tx_productscore.settings.pids.detailPage}
+            basketPage = {$plugin.tx_productscore.settings.pids.basketPage}
+            checkoutPage = {$plugin.tx_productscore.settings.pids.checkoutPage}
+            orderHistoryPage = {$plugin.tx_productscore.settings.pids.orderHistoryPage}
+            categoryPage = {$plugin.tx_productscore.settings.pids.categoryPage}
+            withdrawalPage = {$plugin.tx_productscore.settings.pids.withdrawalPage}
+            wishlistPage = {$plugin.tx_productscore.settings.pids.wishlistPage}
+        }
+        pricing {
+            mode = {$plugin.tx_productscore.settings.pricing.mode}
+            currency = {$plugin.tx_productscore.settings.pricing.currency}
+        }
+        tax {
+            defaultCountry = {$plugin.tx_productscore.settings.tax.defaultCountry}
+            rounding = {$plugin.tx_productscore.settings.tax.rounding}
+        }
+        order {
+            numberPrefix = {$plugin.tx_productscore.settings.order.numberPrefix}
+            storeClientIp = {$plugin.tx_productscore.settings.order.storeClientIp}
+        }
+        email {
+            senderEmail = {$plugin.tx_productscore.settings.email.senderEmail}
+            senderName = {$plugin.tx_productscore.settings.email.senderName}
+            merchantRecipient = {$plugin.tx_productscore.settings.email.merchantRecipient}
+        }
+        ajax {
+            pageType = {$plugin.tx_productscore.settings.ajax.pageType}
+        }
+        invoice {
+            pageType = {$plugin.tx_productscore.settings.invoice.pageType}
+        }
+        catalog {
+            articleSwitchMode = {$plugin.tx_productscore.settings.catalog.articleSwitchMode}
+        }
+        stock {
+            lowStockThreshold = {$plugin.tx_productscore.settings.stock.lowStockThreshold}
+        }
+    }
+}
+
+products_ajax = PAGE
+products_ajax {
+    typeNum = {$plugin.tx_productscore.settings.ajax.pageType}
+    config {
+        disableAllHeaderCode = 1
+        xhtml_cleaning = 0
+        admPanel = 0
+        debug = 0
+        no_cache = 1
+    }
+    10 = USER
+    10 {
+        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+        extensionName = ProductsCore
+        pluginName = ProductList
+        vendorName = GoldeneZeiten
+        controller = ProductController
+        action = listByAjax
+        switchableControllerActions {
+            ProductController {
+                1 = listByAjax
+            }
+        }
+    }
+}
+
+products_invoice = PAGE
+products_invoice {
+    typeNum = {$plugin.tx_productscore.settings.invoice.pageType}
+    config {
+        disableAllHeaderCode = 1
+        xhtml_cleaning = 0
+        admPanel = 0
+        debug = 0
+        no_cache = 1
+    }
+    10 = USER
+    10 {
+        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+        extensionName = ProductsCore
+        pluginName = Invoice
+        vendorName = GoldeneZeiten
+        controller = InvoiceController
+        action = download
+        switchableControllerActions {
+            InvoiceController {
+                1 = download
+            }
+        }
+    }
+}
+
+# Cache lifetime configuration for price periods
+config.cache.all = tx_products_domain_model_priceperiod:{$plugin.tx_productscore.settings.pids.storageFolder}

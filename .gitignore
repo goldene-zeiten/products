@@ -7,12 +7,13 @@
 # PackageStates.php,autoload-tests}" next to composer.json whenever project path != public
 # path (true here, since web-dir is .Build/Web) - not redirectable via TYPO3_PATH_ROOT/
 # TYPO3_PATH_WEB or any composer.json setting, see Build/Scripts/runTests.sh's "unit" suite.
-/packages
+/packages/autoload-tests
 /.claude
-/Documentation-GENERATED-temp
+# Rendered documentation and build caches are generated per package, not only at the root.
+Documentation-GENERATED-temp/
+.Build/
 composer.lock
 node_modules/
-Resources/Public/JavaScript/backend/*.js.map
 /.playwright-mcp/
 /.idea
 /.vscode

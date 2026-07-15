@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_core/Resources/Private/Language/locallang.xlf" date="2026-07-05T20:08:00Z" product-name="products">
+		<header/>
+		<body>
+			<trans-unit id="no_products_found" resname="no_products_found">
+				<source>No products found.</source>
+			</trans-unit>
+			<trans-unit id="item_no" resname="item_no">
+				<source>Item No:</source>
+			</trans-unit>
+			<trans-unit id="in_stock" resname="in_stock">
+				<source>In Stock (%d)</source>
+			</trans-unit>
+			<trans-unit id="out_of_stock" resname="out_of_stock">
+				<source>Out of Stock</source>
+			</trans-unit>
+			<trans-unit id="shopping_basket" resname="shopping_basket">
+				<source>Shopping Basket</source>
+			</trans-unit>
+			<trans-unit id="basket_empty" resname="basket_empty">
+				<source>Your basket is empty.</source>
+			</trans-unit>
+			<trans-unit id="product" resname="product">
+				<source>Product</source>
+			</trans-unit>
+			<trans-unit id="quantity" resname="quantity">
+				<source>Quantity</source>
+			</trans-unit>
+			<trans-unit id="price" resname="price">
+				<source>Price</source>
+			</trans-unit>
+			<trans-unit id="total" resname="total">
+				<source>Total</source>
+			</trans-unit>
+			<trans-unit id="update" resname="update">
+				<source>Update</source>
+			</trans-unit>
+			<trans-unit id="remove" resname="remove">
+				<source>Remove</source>
+			</trans-unit>
+			<trans-unit id="total_net" resname="total_net">
+				<source>Total Net</source>
+			</trans-unit>
+			<trans-unit id="tax" resname="tax">
+				<source>Tax</source>
+			</trans-unit>
+			<trans-unit id="total_gross" resname="total_gross">
+				<source>Total Gross</source>
+			</trans-unit>
+			<trans-unit id="deposit_total" resname="deposit_total">
+				<source>Deposit</source>
+			</trans-unit>
+			<trans-unit id="proceed_to_checkout" resname="proceed_to_checkout">
+				<source>Proceed to Checkout</source>
+			</trans-unit>
+			<trans-unit id="checkout_address" resname="checkout_address">
+				<source>Checkout: Address</source>
+			</trans-unit>
+			<trans-unit id="email" resname="email">
+				<source>Email</source>
+			</trans-unit>
+			<trans-unit id="first_name" resname="first_name">
+				<source>First Name</source>
+			</trans-unit>
+			<trans-unit id="last_name" resname="last_name">
+				<source>Last Name</source>
+			</trans-unit>
+			<trans-unit id="street" resname="street">
+				<source>Street</source>
+			</trans-unit>
+			<trans-unit id="zip" resname="zip">
+				<source>ZIP</source>
+			</trans-unit>
+			<trans-unit id="city" resname="city">
+				<source>City</source>
+			</trans-unit>
+			<trans-unit id="country" resname="country">
+				<source>Country</source>
+			</trans-unit>
+			<trans-unit id="germany" resname="germany">
+				<source>Germany</source>
+			</trans-unit>
+			<trans-unit id="austria" resname="austria">
+				<source>Austria</source>
+			</trans-unit>
+			<trans-unit id="switzerland" resname="switzerland">
+				<source>Switzerland</source>
+			</trans-unit>
+			<trans-unit id="continue_to_payment" resname="continue_to_payment">
+				<source>Continue to Payment</source>
+			</trans-unit>
+			<trans-unit id="checkout_no_shipping_available" resname="checkout_no_shipping_available">
+				<source>We cannot ship this order to your address. Please change your address or the items in your basket.</source>
+			</trans-unit>
+			<trans-unit id="checkout_shipping_method" resname="checkout_shipping_method">
+				<source>Checkout: Shipping Method</source>
+			</trans-unit>
+			<trans-unit id="checkout_payment" resname="checkout_payment">
+				<source>Checkout: Payment Method</source>
+			</trans-unit>
+			<trans-unit id="continue_to_review" resname="continue_to_review">
+				<source>Continue to Review</source>
+			</trans-unit>
+			<trans-unit id="checkout_review" resname="checkout_review">
+				<source>Checkout: Review</source>
+			</trans-unit>
+			<trans-unit id="billing_address" resname="billing_address">
+				<source>Billing Address</source>
+			</trans-unit>
+			<trans-unit id="ship_to_different_address" resname="ship_to_different_address">
+				<source>Ship to a different address</source>
+			</trans-unit>
+			<trans-unit id="delivery_address" resname="delivery_address">
+				<source>Delivery Address</source>
+			</trans-unit>
+			<trans-unit id="gift_message" resname="gift_message">
+				<source>Gift Message</source>
+			</trans-unit>
+			<trans-unit id="payment_method" resname="payment_method">
+				<source>Payment Method</source>
+			</trans-unit>
+			<trans-unit id="place_order" resname="place_order">
+				<source>Order with obligation to pay</source>
+			</trans-unit>
+			<trans-unit id="thank_you_order" resname="thank_you_order">
+				<source>Thank you for your order!</source>
+			</trans-unit>
+			<trans-unit id="order_uid_is" resname="order_uid_is">
+				<source>Your order UID is %d.</source>
+			</trans-unit>
+			<trans-unit id="order_number_is" resname="order_number_is">
+				<source>Your order number is %s.</source>
+			</trans-unit>
+			<trans-unit id="confirmation_email_sent" resname="confirmation_email_sent">
+				<source>We will send you a confirmation email shortly.</source>
+			</trans-unit>
+			<trans-unit id="back_to_shop" resname="back_to_shop">
+				<source>Back to Shop</source>
+			</trans-unit>
+			<trans-unit id="download_invoice" resname="download_invoice">
+				<source>Download Invoice</source>
+			</trans-unit>
+			<trans-unit id="view_order" resname="view_order">
+				<source>View Order</source>
+			</trans-unit>
+			<trans-unit id="details" resname="details">
+				<source>Details</source>
+			</trans-unit>
+			<trans-unit id="previous_page" resname="previous_page">
+				<source>Previous</source>
+			</trans-unit>
+			<trans-unit id="next_page" resname="next_page">
+				<source>Next</source>
+			</trans-unit>
+			<trans-unit id="page_of_pages" resname="page_of_pages">
+				<source>Page %1$d of %2$d</source>
+			</trans-unit>
+			<trans-unit id="choose_variant" resname="choose_variant">
+				<source>Choose a variant:</source>
+			</trans-unit>
+			<trans-unit id="update_price" resname="update_price">
+				<source>Update</source>
+			</trans-unit>
+			<trans-unit id="choose_variant_prompt" resname="choose_variant_prompt">
+				<source>Please choose a variant to see its price and availability.</source>
+			</trans-unit>
+			<trans-unit id="add_to_basket" resname="add_to_basket">
+				<source>Add to Basket</source>
+			</trans-unit>
+			<trans-unit id="payment_method_invoice" resname="payment_method_invoice">
+				<source>Invoice</source>
+			</trans-unit>
+			<trans-unit id="order_summary" resname="order_summary">
+				<source>Order Summary</source>
+			</trans-unit>
+			<trans-unit id="my_orders" resname="my_orders">
+				<source>My Orders</source>
+			</trans-unit>
+			<trans-unit id="order_number" resname="order_number">
+				<source>Order Number</source>
+			</trans-unit>
+			<trans-unit id="date" resname="date">
+				<source>Date</source>
+			</trans-unit>
+			<trans-unit id="status" resname="status">
+				<source>Status</source>
+			</trans-unit>
+			<trans-unit id="no_orders_found" resname="no_orders_found">
+				<source>No orders found.</source>
+			</trans-unit>
+			<trans-unit id="order_details" resname="order_details">
+				<source>Order Details</source>
+			</trans-unit>
+			<trans-unit id="payment_status" resname="payment_status">
+				<source>Payment Status</source>
+			</trans-unit>
+			<trans-unit id="back_to_list" resname="back_to_list">
+				<source>Back to List</source>
+			</trans-unit>
+			<trans-unit id="downloads" resname="downloads">
+				<source>Downloads</source>
+			</trans-unit>
+			<trans-unit id="price_from" resname="price_from">
+				<source>From</source>
+			</trans-unit>
+			<trans-unit id="price_from_quantity" resname="price_from_quantity">
+				<source>From %d</source>
+			</trans-unit>
+			<trans-unit id="related_products" resname="related_products">
+				<source>You might also like</source>
+			</trans-unit>
+			<trans-unit id="accessory_products" resname="accessory_products">
+				<source>Frequently bought with</source>
+			</trans-unit>
+			<trans-unit id="final_total" resname="final_total">
+				<source>Total to pay</source>
+			</trans-unit>
+			<trans-unit id="cancel_order" resname="cancel_order">
+				<source>Cancel order</source>
+			</trans-unit>
+			<trans-unit id="confirm_email" resname="confirm_email">
+				<source>Confirm your email address</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_reason_label" resname="withdrawal_reason_label">
+				<source>Reason (optional)</source>
+			</trans-unit>
+			<trans-unit id="submit_withdrawal" resname="submit_withdrawal">
+				<source>Cancel this order</source>
+			</trans-unit>
+			<trans-unit id="order_no_longer_withdrawable" resname="order_no_longer_withdrawable">
+				<source>This order can no longer be cancelled online. Please contact us directly.</source>
+			</trans-unit>
+			<trans-unit id="invalid_or_expired_link" resname="invalid_or_expired_link">
+				<source>This cancellation link is invalid or has expired.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_confirmed" resname="withdrawal_confirmed">
+				<source>Order cancelled</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_confirmed_text" resname="withdrawal_confirmed_text">
+				<source>Your order %s has been cancelled. We will be in touch about next steps.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_email_mismatch" resname="withdrawal_email_mismatch">
+				<source>The email address does not match this order.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_period_expired" resname="withdrawal_period_expired">
+				<source>The cancellation period for this order has expired.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_not_allowed" resname="withdrawal_not_allowed">
+				<source>This order can no longer be cancelled.</source>
+			</trans-unit>
+			<trans-unit id="terms_accepted_label" resname="terms_accepted_label">
+				<source>I have read and accept the terms and conditions.</source>
+			</trans-unit>
+			<trans-unit id="terms_not_accepted" resname="terms_not_accepted">
+				<source>Please accept the terms and conditions before placing your order.</source>
+			</trans-unit>
+			<trans-unit id="download.no_files" resname="download.no_files">
+				<source>No downloadable files available for this order.</source>
+			</trans-unit>
+			<trans-unit id="tracking" resname="tracking">
+				<source>Tracking</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

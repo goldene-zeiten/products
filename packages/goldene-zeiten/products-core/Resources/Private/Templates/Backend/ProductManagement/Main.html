@@ -1,0 +1,96 @@
+<f:layout name="Module" />
+<f:section name="Content">
+    <f:asset.module identifier="@goldene-zeiten/products-core/backend/product-visibility-toggle.js" />
+    <f:if condition="{columnSelector}">
+        <f:asset.module identifier="@typo3/backend/column-selector-button.js" />
+    </f:if>
+
+    <f:if condition="{selectedCategory}">
+        <f:then>
+            <h2><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:labels.category" />: {selectedCategory.title}</h2>
+        </f:then>
+    </f:if>
+    <f:if condition="{selectedProduct}">
+        <f:then>
+            <h2><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:labels.product" />: {selectedProduct.title}</h2>
+        </f:then>
+    </f:if>
+    <f:if condition="{selectedArticle}">
+        <f:then>
+            <h2><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:labels.article" />: {selectedArticle.title}</h2>
+        </f:then>
+    </f:if>
+
+    <f:if condition="{mode} == 'overview'">
+        <f:then>
+            <f:format.raw>{overviewHtml}</f:format.raw>
+        </f:then>
+        <f:else if="{mode} == 'article'">
+            <div class="table-fit table-fit-wrap">
+                <table class="table table-striped table-hover">
+                    <tbody>
+                        <f:for each="{fields}" as="field">
+                            <tr>
+                                <th class="col-fieldname">{field.label}</th>
+                                <td class="col-word-break">{field.value}</td>
+                            </tr>
+                        </f:for>
+                    </tbody>
+                </table>
+            </div>
+        </f:else>
+        <f:else>
+            <f:if condition="{items}">
+                <f:then>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>{itemsLabel}</th>
+                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:column.item_number" /></th>
+                                <f:for each="{extraColumns}" as="columnLabel">
+                                    <th>{columnLabel}</th>
+                                </f:for>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <f:for each="{items}" as="item">
+                                <tr>
+                                    <td class="{f:if(condition: item.hidden, then: 'text-body-secondary fst-italic')}">{item.title}</td>
+                                    <td>{item.itemNumber}</td>
+                                    <f:for each="{item.extraValues}" as="value">
+                                        <td>{value}</td>
+                                    </f:for>
+                                    <td>
+                                        <button
+                                            type="button"
+                                            class="btn btn-default btn-sm"
+                                            title="{item.visibilityToggle.title}"
+                                            data-products-visibility-toggle
+                                            data-table="{item.visibilityToggle.table}"
+                                            data-uid="{item.visibilityToggle.uid}"
+                                            data-field="{item.visibilityToggle.field}"
+                                            data-hidden="{item.visibilityToggle.hidden}"
+                                            data-error-message="{item.visibilityToggle.errorMessage}"
+                                        >
+                                            <core:icon identifier="{item.visibilityToggle.icon}" size="small" />
+                                        </button>
+                                    </td>
+                                    <td class="text-end">
+                                        <a class="btn btn-default btn-sm" href="{item.editUrl}">
+                                            <core:icon identifier="actions-open" size="small" />
+                                        </a>
+                                    </td>
+                                </tr>
+                            </f:for>
+                        </tbody>
+                    </table>
+                </f:then>
+                <f:else>
+                    <p><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:message.no_records" /></p>
+                </f:else>
+            </f:if>
+        </f:else>
+    </f:if>
+</f:section>

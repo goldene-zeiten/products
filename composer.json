@@ -1,41 +1,38 @@
 {
-  "name": "goldene-zeiten/products",
-  "description": "TYPO3 Shop system",
-  "type": "typo3-cms-extension",
+  "name": "goldene-zeiten/products-monorepo",
+  "description": "Monorepo for the products TYPO3 shop system (core extension plus add-ons)",
+  "type": "project",
   "license": [
     "GPL-2.0-or-later"
   ],
   "config": {
     "vendor-dir": ".Build/vendor",
-    "sort-packages": true,
     "bin-dir": ".Build/bin",
+    "sort-packages": true,
     "allow-plugins": {
       "typo3/cms-composer-installers": true,
       "typo3/class-alias-loader": true,
       "sbuerk/fixture-packages": true
     }
   },
-  "autoload": {
-    "psr-4": {
-      "GoldeneZeiten\\Products\\": "Classes/",
-      "GoldeneZeiten\\Products\\Core13\\": "Core13/",
-      "GoldeneZeiten\\Products\\Core14\\": "Core14/"
-    }
+  "require": {
+    "goldene-zeiten/products-core": "^1.0",
+    "goldene-zeiten/products-search": "^1.0",
+    "goldene-zeiten/products-recently-viewed": "^1.0",
+    "goldene-zeiten/products-wishlist": "^1.0",
+    "goldene-zeiten/products-credit-points": "^1.0",
+    "goldene-zeiten/products-voucher": "^1.0"
   },
   "autoload-dev": {
     "psr-4": {
-      "GoldeneZeiten\\Products\\Tests\\": "Tests/"
+      "GoldeneZeiten\\Products\\Core\\Tests\\": "packages/goldene-zeiten/products-core/Tests/",
+      "GoldeneZeiten\\Products\\Search\\Tests\\": "packages/goldene-zeiten/products-search/Tests/",
+      "GoldeneZeiten\\Products\\Testing\\": "packages-dev/products_testing/Classes/",
+      "GoldeneZeiten\\Products\\RecentlyViewed\\Tests\\": "packages/goldene-zeiten/products-recently-viewed/Tests/",
+      "GoldeneZeiten\\Products\\Wishlist\\Tests\\": "packages/goldene-zeiten/products-wishlist/Tests/",
+      "GoldeneZeiten\\Products\\CreditPoints\\Tests\\": "packages/goldene-zeiten/products-credit-points/Tests/",
+      "GoldeneZeiten\\Products\\Voucher\\Tests\\": "packages/goldene-zeiten/products-voucher/Tests/"
     }
-  },
-  "require": {
-    "php": "^8.2 || ^8.3 || ^8.4 || ^8.5",
-    "ext-intl": "*",
-    "dompdf/dompdf": "^3.1",
-    "typo3/cms-backend": "^13.4 || ^14.3",
-    "typo3/cms-core": "^13.4 || ^14.3",
-    "typo3/cms-fluid": "^13.4 || ^14.3",
-    "typo3/cms-frontend": "^13.4 || ^14.3",
-    "typo3/cms-install": "^13.4 || ^14.3"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.64",
@@ -51,18 +48,31 @@
     "typo3/cms-tstemplate": "^13.4 || ^14.3",
     "typo3/testing-framework": "^9.0"
   },
+  "repositories": {
+    "packages": {
+      "type": "path",
+      "url": "packages/*/*",
+      "options": {
+        "versions": {
+          "goldene-zeiten/products-core": "1.0.0",
+          "goldene-zeiten/products-search": "1.0.0",
+          "goldene-zeiten/products-recently-viewed": "1.0.0",
+          "goldene-zeiten/products-wishlist": "1.0.0",
+          "goldene-zeiten/products-credit-points": "1.0.0",
+          "goldene-zeiten/products-voucher": "1.0.0"
+        }
+      }
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "extra": {
     "typo3/cms": {
-      "extension-key": "products",
-      "web-dir": ".Build/Web",
-      "version": "1.0.0",
-      "Package": {
-        "providesPackages": {}
-      }
+      "web-dir": ".Build/Web"
     },
     "sbuerk/fixture-packages": {
       "paths": [
-        "Tests/Functional/Fixtures/Extensions/*"
+        "packages-dev/*"
       ]
     }
   }

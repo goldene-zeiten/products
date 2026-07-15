@@ -1,22 +1,39 @@
-# TYPO3 extension `products`
+# Products — a TYPO3 shop system
 
 A modern shop system for TYPO3, rewriting the legacy `tt_products` extension on top of
 Extbase/Fluid: a category/product/article catalog, basket, guest-checkout-first payment flow,
 PDF invoices, and order history, plus upgrade wizards that migrate an existing `tt_products`
-installation in place. See [`Documentation/`](Documentation/Index.rst) for the full feature list
-(graduated, FE-usergroup and category-cascading pricing, vouchers, credit points,
+installation in place. See
+[`Documentation/`](packages/goldene-zeiten/products-core/Documentation/Index.rst) for the full
+feature list (graduated, FE-usergroup and category-cascading pricing, vouchers, credit points,
 shipping/handling/deposits, self-service order withdrawal, wishlists and more).
+
+## This is a monorepo
+
+This repository holds every Products extension and is the **single source of truth** for all of them:
+
+| Package | Extension key | Split repository |
+| --- | --- | --- |
+| [`packages/goldene-zeiten/products-core`](packages/goldene-zeiten/products-core) | `products_core` | [goldene-zeiten/products-core](https://github.com/goldene-zeiten/products-core) |
+
+Each package is mirrored into its own **read-only** repository, so Composer/Packagist and TER can
+identify it as a package of its own. Those repositories are generated — never commit into them, open
+your pull request here.
+
+Shop features that not every installation needs (vouchers, credit points, price tiers, wishlist,
+shipping, individual payment methods) are being moved into separate add-on packages that build on the
+extension points the core provides. They are developed and tested here against the real core.
 
 ## Requirements
 
-- TYPO3 13.4 LTS or 14.3
+- TYPO3 13.4 LTS or 14.3 LTS
 - PHP 8.2, 8.3, 8.4 or 8.5
 - The `intl` PHP extension
 
 ## Installation
 
 ```bash
-composer require goldene-zeiten/products
+composer require goldene-zeiten/products-core
 ```
 
 Activate the `Products` site set on the site(s) that should show the shop and configure its

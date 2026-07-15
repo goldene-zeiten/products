@@ -1,0 +1,22 @@
+plugin.tx_productswishlist {
+    view {
+        templateRootPaths {
+            0 = EXT:products_wishlist/Resources/Private/Templates/
+        }
+        partialRootPaths {
+            0 = EXT:products_core/Resources/Private/Partials/
+            10 = EXT:products_wishlist/Resources/Private/Partials/
+        }
+        layoutRootPaths {
+            0 = EXT:products_core/Resources/Private/Layouts/
+            10 = EXT:products_wishlist/Resources/Private/Layouts/
+        }
+    }
+    settings < plugin.tx_productscore.settings
+    persistence < plugin.tx_productscore.persistence
+}
+
+# The wishlist toggle is rendered by the core catalog plugins (product list and detail), so this
+# extension's partial overrides the core no-op stub there by adding its own partial path at a higher
+# priority.
+plugin.tx_productscore.view.partialRootPaths.100 = EXT:products_wishlist/Resources/Private/Partials/

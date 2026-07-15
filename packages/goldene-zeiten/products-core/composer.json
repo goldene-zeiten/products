@@ -1,0 +1,49 @@
+{
+  "name": "goldene-zeiten/products-core",
+  "description": "TYPO3 Shop system",
+  "type": "typo3-cms-extension",
+  "license": [
+    "GPL-2.0-or-later"
+  ],
+  "require": {
+    "php": "^8.2 || ^8.3 || ^8.4 || ^8.5",
+    "ext-intl": "*",
+    "dompdf/dompdf": "^3.1",
+    "typo3/cms-backend": "^13.4 || ^14.3",
+    "typo3/cms-core": "^13.4 || ^14.3",
+    "typo3/cms-fluid": "^13.4 || ^14.3",
+    "typo3/cms-frontend": "^13.4 || ^14.3",
+    "typo3/cms-install": "^13.4 || ^14.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\Core\\": "Classes/",
+      "GoldeneZeiten\\Products\\Core\\Core13\\": "Core13/",
+      "GoldeneZeiten\\Products\\Core\\Core14\\": "Core14/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\Core\\Tests\\": "Tests/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "typo3/cms-composer-installers": true,
+      "typo3/class-alias-loader": true
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "products_core",
+      "version": "1.0.0",
+      "Package": {
+        "providesPackages": {}
+      }
+    },
+    "branch-alias": {
+      "dev-main": "1.0.x-dev"
+    }
+  }
+}

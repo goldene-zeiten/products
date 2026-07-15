@@ -1,0 +1,11 @@
+// Renders this extension's plugin as a content element in functional tests.
+// Production sites get this automatically through the plugin's own registration.
+tt_content.productssearch_search =< lib.contentElement
+tt_content.productssearch_search {
+    templateName = Generic
+    20 = EXTBASEPLUGIN
+    20 {
+        extensionName = ProductsSearch
+        pluginName = Search
+    }
+}

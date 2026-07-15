@@ -10,7 +10,7 @@ test('applying a voucher discounts the basket, removing it reverts to the full p
   await expect(page.getByText('29.99 EUR').first()).toBeVisible();
 
   // SAVE5: combinable, unlimited, fixed 5.00 EUR, no minimum basket value
-  await page.locator('input[name="tx_products_basket[voucherCode]"]').fill('SAVE5');
+  await page.locator('input[name="tx_productscore_basket[voucherCode]"]').fill('SAVE5');
   await page.getByRole('button', { name: 'Apply' }).click();
 
   await expect(page.getByText('Voucher applied: SAVE5')).toBeVisible();

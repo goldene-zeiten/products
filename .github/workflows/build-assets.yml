@@ -1,0 +1,32 @@
+name: build assets
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-assets:
+    name: "compiled assets are up to date"
+    runs-on: ubuntu-22.04
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Compile TypeScript of every package (-> Resources/Public/JavaScript)"
+        run: "Build/Scripts/runTests.sh -b podman -s buildJs"
+
+      - name: "Verify the compiled assets match the committed sources"
+        run: |
+          # Only the generated module directories are verified. Everything else
+          # under Resources/Public (icons, hand-written frontend JS) is a source.
+          ASSET_PATHS="packages/*/*/Resources/Public/JavaScript/backend"
+          if [ -n "$(git status --porcelain -- ${ASSET_PATHS})" ]; then
+            echo "::error::Compiled assets are out of date. The build produced changes that are not committed."
+            echo "Re-run the build locally and commit the result:"
+            echo "  Build/Scripts/runTests.sh -s buildJs"
+            echo "Changed files:"
+            git status --porcelain -- ${ASSET_PATHS}
+            git diff -- ${ASSET_PATHS}
+            exit 1
+          fi
+          echo "Compiled assets are up to date with the sources."

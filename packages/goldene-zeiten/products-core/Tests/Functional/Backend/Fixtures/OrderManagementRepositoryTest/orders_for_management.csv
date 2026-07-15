@@ -1,0 +1,5 @@
+"tx_products_domain_model_order",,,,,,,,,,,,,,,,,,,
+,"uid","pid","deleted","order_number","email","currency","total_gross","items","status","payment_status","order_date","payment_method","shipping_provider","shipping_option","shipping_label","shipping_total","discount_total"
+,1,2,0,"ORD-1","alice@example.com","EUR",1999,0,"new","open",1700000000,"invoice","tablerate","1","Standard","500",500
+,2,2,0,"ORD-2","bob@example.com","EUR",2999,0,"confirmed","paid",1700100000,"invoice","","","",0,0
+,3,2,1,"ORD-3","deleted@example.com","EUR",500,0,"new","open",1700200000,"invoice","","","",0,0

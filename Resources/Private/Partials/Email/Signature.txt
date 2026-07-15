@@ -1,2 +1,0 @@
-<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:best_regards" />
-<f:translate key="LLL:EXT:products/Resources/Private/Language/locallang_email.xlf:shop_team" />

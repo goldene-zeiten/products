@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_search/Resources/Private/Language/locallang.xlf" date="2026-07-14T18:00:00Z" product-name="products_search">
+		<header/>
+		<body>
+			<trans-unit id="search" resname="search">
+				<source>Search</source>
+			</trans-unit>
+			<trans-unit id="search_placeholder" resname="search_placeholder">
+				<source>Search products&#8230;</source>
+			</trans-unit>
+			<trans-unit id="search_no_results" resname="search_no_results">
+				<source>No products found for "%s".</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

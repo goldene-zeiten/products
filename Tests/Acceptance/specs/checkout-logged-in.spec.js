@@ -5,18 +5,18 @@ test('logged-in shopper checks out and finds the order in their order history', 
   await page.getByRole('button', { name: 'Add to Basket' }).click();
 
   await page.goto('/checkout');
-  await page.locator('input[name="tx_products_checkout[address][email]"]').fill('shopper1@example.com');
-  await page.locator('input[name="tx_products_checkout[address][firstName]"]').fill('Sam');
-  await page.locator('input[name="tx_products_checkout[address][lastName]"]').fill('Shopper');
-  await page.locator('input[name="tx_products_checkout[address][street]"]').fill('Shop Street 5');
-  await page.locator('input[name="tx_products_checkout[address][zip]"]').fill('54321');
-  await page.locator('input[name="tx_products_checkout[address][city]"]').fill('Hamburg');
+  await page.locator('input[name="tx_productscore_checkout[address][email]"]').fill('shopper1@example.com');
+  await page.locator('input[name="tx_productscore_checkout[address][firstName]"]').fill('Sam');
+  await page.locator('input[name="tx_productscore_checkout[address][lastName]"]').fill('Shopper');
+  await page.locator('input[name="tx_productscore_checkout[address][street]"]').fill('Shop Street 5');
+  await page.locator('input[name="tx_productscore_checkout[address][zip]"]').fill('54321');
+  await page.locator('input[name="tx_productscore_checkout[address][city]"]').fill('Hamburg');
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 
-  await page.locator('input[name="tx_products_checkout[shippingOption]"]').first().check();
+  await page.locator('input[name="tx_productscore_checkout[shippingOption]"]').first().check();
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 
-  await page.locator('input[name="tx_products_checkout[paymentMethod]"]').first().check();
+  await page.locator('input[name="tx_productscore_checkout[paymentMethod]"]').first().check();
   await page.getByRole('button', { name: 'Continue to review' }).click();
 
   await page.locator('#termsAccepted').check();

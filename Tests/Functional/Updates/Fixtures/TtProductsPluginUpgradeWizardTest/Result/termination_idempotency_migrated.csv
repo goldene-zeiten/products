@@ -1,7 +1,0 @@
-"tt_content",,,,,,,,,
-,"uid","pid","sorting","deleted","colPos","CType","list_type","pi_flexform"
-,100,2,256,0,0,"products_productlist","",""
-,101,2,512,0,0,"list","5","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""display_mode""><value index=""vDEF"">LISTGIFTS</value></field></language></sheet></data></T3FlexForms>"
-"tx_products_domain_model_product",,,,
-,"uid","pid","hidden","title"
-,1,2,0,"Product A"

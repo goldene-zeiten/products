@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_wishlist/Resources/Private/Language/locallang_settings.xlf" date="2026-07-15T03:00:00Z" product-name="products_wishlist">
+		<header/>
+		<body>
+			<trans-unit id="setting.products.wishlist.enabled" resname="setting.products.wishlist.enabled">
+				<source>Show the add-to-wishlist affordance on product listings</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

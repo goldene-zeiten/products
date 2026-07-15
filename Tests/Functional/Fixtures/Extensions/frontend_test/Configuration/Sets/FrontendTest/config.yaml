@@ -1,4 +1,0 @@
-name: goldene-zeiten/frontend-test
-label: Products Frontend Test
-dependencies:
-  - goldene-zeiten/products

@@ -1,0 +1,43 @@
+<div class="wishlist">
+    <h2><f:translate key="wishlist" /> <span class="badge">({wishlistCount})</span></h2>
+    <f:if condition="{products}">
+        <f:then>
+            <div class="row">
+                <f:for each="{products}" as="product" iteration="iterator">
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <f:if condition="{product.primaryImage}">
+                                <f:then>
+                                    <f:image image="{product.primaryImage}" width="300c" height="200c" alt="{product.title}" class="card-img-top" />
+                                </f:then>
+                            </f:if>
+                            <div class="card-body">
+                                <h5 class="card-title">{product.title}</h5>
+                                <p class="card-text">
+                                    <f:render partial="Product/Price" arguments="{price: product.price}" />
+                                </p>
+                                <div class="d-flex gap-2">
+                                    <f:link.action action="show" controller="Product" extensionName="ProductsCore" pluginName="ProductDetail" pageUid="{settings.pids.detailPage}" arguments="{product: product}" class="btn btn-primary btn-sm"><f:translate key="details" extensionName="products_core" /></f:link.action>
+                                    <f:link.action action="remove" arguments="{product: product.uid}" class="btn btn-outline-danger btn-sm"><f:translate key="remove" extensionName="products_core" /></f:link.action>
+                                    <f:if condition="{iterator.isFirst} == 0">
+                                        <f:then>
+                                            <f:link.action action="moveUp" arguments="{product: product.uid}" class="btn btn-outline-secondary btn-sm"><f:translate key="move_up" /></f:link.action>
+                                        </f:then>
+                                    </f:if>
+                                    <f:if condition="{iterator.isLast} == 0">
+                                        <f:then>
+                                            <f:link.action action="moveDown" arguments="{product: product.uid}" class="btn btn-outline-secondary btn-sm"><f:translate key="move_down" /></f:link.action>
+                                        </f:then>
+                                    </f:if>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </f:for>
+            </div>
+        </f:then>
+        <f:else>
+            <p><f:translate key="wishlist_empty" /></p>
+        </f:else>
+    </f:if>
+</div>

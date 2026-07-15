@@ -1,0 +1,46 @@
+// Test-only content-element rendering definitions.
+//
+// Production sites get this TypoScript automatically merged via each CType's
+// ExtensionUtility::configurePlugin(..., PLUGIN_TYPE_CONTENT_ELEMENT) call in
+// ext_localconf.php ("defaultContentRendering" static template category). That
+// auto-merge relies on a site's static template chain, which isolated functional
+// tests using setUpFrontendRootPage() with an explicit constants/setup file list
+// don't have - so tests that need a *real* tt_content row dispatched through its
+// actual CType (not a hardcoded "page.10 = USER" plugin call, which never
+// populates currentContentObject) include this file instead.
+//
+// lib.contentElement itself comes from typo3/cms-fluid-styled-content's own
+// constants/setup (see the "goldene-zeiten/products-core" testExtensionsToLoad + the
+// constants/setup file list of any test using this fixture) - not redefined here.
+
+tt_content.productscore_productlist =< lib.contentElement
+tt_content.productscore_productlist {
+    templateName = Generic
+    20 = EXTBASEPLUGIN
+    20 {
+        extensionName = ProductsCore
+        pluginName = ProductList
+    }
+}
+
+tt_content.productscore_categorylist =< lib.contentElement
+tt_content.productscore_categorylist {
+    templateName = Generic
+    20 = EXTBASEPLUGIN
+    20 {
+        extensionName = ProductsCore
+        pluginName = CategoryList
+    }
+}
+
+
+
+tt_content.productscore_download =< lib.contentElement
+tt_content.productscore_download {
+    templateName = Generic
+    20 = EXTBASEPLUGIN
+    20 {
+        extensionName = ProductsCore
+        pluginName = Download
+    }
+}

@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GoldeneZeiten\Products\Core\Event;
+
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Service\Invoice\InvoicePdfService;
+
+/**
+ * Lets integrators customize the invoice PDF before rendering — add company letterhead,
+ * custom stamps, or replace it entirely with a custom implementation. Mutable via
+ * {@see BeforeInvoiceRenderedEvent::setReplacementPdf()}, which fully replaces the rendered document.
+ *
+ * @see InvoicePdfService::renderToPdf()
+ */
+final class BeforeInvoiceRenderedEvent
+{
+    private ?string $replacementPdf = null;
+
+    public function __construct(
+        private readonly Order $order,
+        private readonly string $html
+    ) {}
+
+    public function getOrder(): Order
+    {
+        return $this->order;
+    }
+
+    public function getHtml(): string
+    {
+        return $this->html;
+    }
+
+    public function setReplacementPdf(string $pdf): void
+    {
+        $this->replacementPdf = $pdf;
+    }
+
+    public function getReplacementPdf(): ?string
+    {
+        return $this->replacementPdf;
+    }
+}
