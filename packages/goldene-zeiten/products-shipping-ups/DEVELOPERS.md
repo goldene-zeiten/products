@@ -68,8 +68,10 @@ combined `spec/ups-mock.yaml` baked in) plus UPS's pinned `Rating.yaml` / `OAuth
 the reference the combined spec is derived from. The `build-mock-images` GitHub workflow publishes it to
 `ghcr.io/goldene-zeiten/products-ups-rating-mock`.
 
-`Tests/Mock/docker-compose.yml` runs the published image; point the extension at it with the `apiBaseUrl`
-override (`http://localhost:4010`). See `Tests/Mock/README.md`.
+`Tests/Mock/start-mock.sh` runs the published image with `podman`/`docker` directly (no compose, matching
+`runTests.sh`); point the extension at it with the `apiBaseUrl` override (`http://localhost:4010`). Before
+the image is published, build it locally with `podman build … Build/mocks/ups-rating`. See
+`Tests/Mock/README.md`.
 
 ## Testing
 
