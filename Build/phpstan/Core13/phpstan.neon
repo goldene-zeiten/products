@@ -1,6 +1,6 @@
 includes:
   - ../../../.Build/vendor/saschaegerer/phpstan-typo3/extension.neon
-  - ../phpstan-baseline.neon
+  - phpstan-baseline.neon
 
 parameters:
   # Use local .cache dir instead of /tmp
@@ -10,9 +10,10 @@ parameters:
   level: 8
 
   paths:
-    - ../../../packages/goldene-zeiten/products-core/Classes
-    - ../../../packages/goldene-zeiten/products-core/Configuration
-    - ../../../packages/goldene-zeiten/products-core/Core13
-    - ../../../packages/goldene-zeiten/products-core/Tests
-    - ../../../packages/goldene-zeiten/products-core/ext_emconf.php
-    - ../../../packages/goldene-zeiten/products-core/ext_localconf.php
+    - ../../../packages
+    - ../../../packages-dev
+  # Exclude every package's other-major version-split folder (a wildcard, so a Core switch introduced
+  # in any future package or dev package is pre-excluded from the wrong major automatically).
+  excludePaths:
+    - ../../../packages/*/*/Core14/*
+    - ../../../packages-dev/*/Core14/*
