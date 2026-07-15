@@ -36,6 +36,7 @@ works; the mock does not check them. The checkout then shows the mock's UPS Stan
 ## Automated integration test
 
 `Tests/Functional/Integration/UpsMockIntegrationTest.php` drives the real Guzzle client against the mock.
-It is skipped unless `UPS_MOCK_BASE_URL` points at a reachable mock, so it never runs in the normal
-hermetic suite (no container dependency, no startup race). With the mock reachable from the test runner,
-export `UPS_MOCK_BASE_URL` and run the functional suite to execute it.
+It **runs automatically** as part of `Build/Scripts/runTests.sh -s functional`: the runner builds this
+mock, starts it, `waitFor`s port 4010 (so the test never races the container), and hands the test its URL.
+Run plain phpunit instead and it **skips** unless `UPS_MOCK_BASE_URL` is set — so it never fails just for
+lack of a running mock.
