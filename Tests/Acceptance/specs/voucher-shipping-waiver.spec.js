@@ -1,4 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { hasAnyCarrier } from '../helper/combination.js';
+
+// The nominal shipping rate this asserts is the table-rate carrier's; a live carrier supersedes it.
+test.beforeEach(() => {
+  test.skip(hasAnyCarrier(), 'Table-rate shipping is superseded by a live carrier in this combination.');
+});
 
 test('a free-shipping voucher waives the actual shipping cost even though the review page still shows the nominal rate', async ({
   page,
@@ -23,7 +29,7 @@ test('a free-shipping voucher waives the actual shipping cost even though the re
   await page.locator('label', { hasText: 'Standard Shipping' }).click();
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 
-  await page.locator('input[name="tx_productscore_checkout[paymentMethod]"]').first().check();
+  await page.locator('input[name="tx_productscore_checkout[paymentMethod]"][value="invoice"]').check();
   await page.getByRole('button', { name: 'Continue to review' }).click();
 
   // The review still shows the carrier's nominal rate - the free-shipping voucher offsets the cost,

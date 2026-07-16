@@ -1,0 +1,23 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "GET",
+    "urlPath": "/shipping/dhl-express/rates",
+    "queryParameters": {
+      "destinationPostalCode": {
+        "equalTo": "00000"
+      }
+    }
+  },
+  "response": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "detail": "No products available for the requested lane.",
+      "title": "Bad Request",
+      "status": "400"
+    }
+  }
+}
