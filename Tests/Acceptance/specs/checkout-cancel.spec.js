@@ -61,7 +61,7 @@ test('cancelling at the review step leaves the basket untouched and places no or
   await page.getByRole('button', { name: 'Continue to payment' }).click();
   await page.locator('input[name="tx_productscore_checkout[shippingOption]"]').first().check();
   await page.getByRole('button', { name: 'Continue to payment' }).click();
-  await page.locator('input[name="tx_productscore_checkout[paymentMethod]"]').first().check();
+  await page.locator('input[name="tx_productscore_checkout[paymentMethod]"][value="invoice"]').check();
   await page.getByRole('button', { name: 'Continue to review' }).click();
 
   await page.goto('/');

@@ -483,8 +483,17 @@ fi
 # Suite execution
 case ${TEST_SUITE} in
     acceptance)
+        # Which payment/shipping combination this run installs + tests. Default "baseline" installs no
+        # payment/shipping add-on (the inert state the pre-existing specs assert). CI matrixes the rest.
+        ACCEPTANCE_COMBO="${PRODUCTS_COMBO:-baseline}"
         NPM_COMMAND=(npm ci)
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-npm-${SUFFIX} -e npm_config_cache=.Build/.cache/npm ${IMAGE_NODEJS} "${NPM_COMMAND[@]}"
+        # WireMock serves every third-party API the configured methods call, so the checkout flow runs
+        # end to end without credentials or live infrastructure (same image/mount as the functional suite).
+        ${CONTAINER_BIN} run --name mock-${SUFFIX} --network ${NETWORK} -d -v ${ROOT_DIR}/Build/mocks/wiremock:/home/wiremock:ro ${IMAGE_WIREMOCK} >/dev/null
+        waitFor mock-${SUFFIX} 8080
+        ACCEPTANCE_SETUP_ENV="-e PRODUCTS_COMBO=${ACCEPTANCE_COMBO} -e MOCK_BASE_URL=http://mock-${SUFFIX}:8080"
+        echo "Acceptance combination: ${ACCEPTANCE_COMBO}"
         case ${DBMS} in
             mariadb)
                 echo "Using driver: ${DATABASE_DRIVER}"
@@ -494,11 +503,11 @@ case ${TEST_SUITE} in
                 # scratch database), `typo3 setup --dbname=...` expects the target database to
                 # already exist - it does not create one itself.
                 ${CONTAINER_BIN} run --rm --network ${NETWORK} ${IMAGE_MARIADB} mysql -h mariadb-acceptance-${SUFFIX} -uroot -pfuncp -e "CREATE DATABASE IF NOT EXISTS func_test;"
-                ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-setup-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} sh Tests/Acceptance/setupInstance.sh ${CORE_VERSION} ${DATABASE_DRIVER} mariadb-acceptance-${SUFFIX} func_test root funcp
+                ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-setup-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${ACCEPTANCE_SETUP_ENV} ${IMAGE_PHP} sh Tests/Acceptance/setupInstance.sh ${CORE_VERSION} ${DATABASE_DRIVER} mariadb-acceptance-${SUFFIX} func_test root funcp
                 SETUP_EXIT_CODE=$?
                 ;;
             sqlite)
-                ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-setup-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} sh Tests/Acceptance/setupInstance.sh ${CORE_VERSION} sqlite
+                ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-setup-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${ACCEPTANCE_SETUP_ENV} ${IMAGE_PHP} sh Tests/Acceptance/setupInstance.sh ${CORE_VERSION} sqlite
                 SETUP_EXIT_CODE=$?
                 ;;
         esac
@@ -508,7 +517,7 @@ case ${TEST_SUITE} in
         else
             ${CONTAINER_BIN} run -d --name acceptance-web-${SUFFIX} --network ${NETWORK} -v ${ROOT_DIR}:${ROOT_DIR} -w ${ROOT_DIR} ${IMAGE_PHP} php -S 0.0.0.0:8080 -t .Build/Web/typo3temp/var/tests/acceptance/public .Build/Web/typo3temp/var/tests/acceptance/public/index.php >/dev/null
             waitFor acceptance-web-${SUFFIX} 8080
-            ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name playwright-${SUFFIX} -e PLAYWRIGHT_BASE_URL="http://acceptance-web-${SUFFIX}:8080/" -e CI=1 ${IMAGE_PLAYWRIGHT} npx playwright test --config=Tests/Acceptance/playwright.config.js
+            ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name playwright-${SUFFIX} -e PLAYWRIGHT_BASE_URL="http://acceptance-web-${SUFFIX}:8080/" -e PRODUCTS_COMBINATION="${ACCEPTANCE_COMBO}" -e CI=1 ${IMAGE_PLAYWRIGHT} npx playwright test --config=Tests/Acceptance/playwright.config.js
             SUITE_EXIT_CODE=$?
         fi
         ;;
