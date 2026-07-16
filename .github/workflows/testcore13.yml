@@ -146,6 +146,7 @@ jobs:
           - { combo: paypal, db: sqlite }
           - { combo: stripe, db: sqlite }
           - { combo: klarna, db: sqlite }
+          - { combo: amazon, db: sqlite }
           - { combo: ups, db: sqlite }
           - { combo: dhl, db: sqlite }
           - { combo: dhl-stripe, db: sqlite }

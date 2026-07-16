@@ -49,7 +49,7 @@ case "${COMBO}" in
     dhl) COMBO_PACKAGES="goldene-zeiten/products-shipping-dhl-express" ;;
     dhl-stripe) COMBO_PACKAGES="goldene-zeiten/products-shipping-dhl-express goldene-zeiten/products-payment-stripe" ;;
     ups-paypal) COMBO_PACKAGES="goldene-zeiten/products-shipping-ups goldene-zeiten/products-payment-paypal" ;;
-    all) COMBO_PACKAGES="goldene-zeiten/products-shipping-ups goldene-zeiten/products-shipping-dhl-express goldene-zeiten/products-payment-paypal goldene-zeiten/products-payment-stripe goldene-zeiten/products-payment-klarna" ;;
+    all) COMBO_PACKAGES="goldene-zeiten/products-shipping-ups goldene-zeiten/products-shipping-dhl-express goldene-zeiten/products-payment-paypal goldene-zeiten/products-payment-stripe goldene-zeiten/products-payment-klarna goldene-zeiten/products-payment-amazon" ;;
     *) echo "Unknown PRODUCTS_COMBO '${COMBO}'." >&2; exit 1 ;;
 esac
 

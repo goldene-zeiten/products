@@ -13,11 +13,12 @@ const PAYMENTS = {
   paypal: ['paypal'],
   stripe: ['stripe'],
   klarna: ['klarna'],
+  amazon: ['amazon'],
   ups: [],
   dhl: [],
   'dhl-stripe': ['stripe'],
   'ups-paypal': ['paypal'],
-  all: ['paypal', 'stripe', 'klarna'],
+  all: ['paypal', 'stripe', 'klarna', 'amazon'],
 };
 
 const CARRIERS = {
