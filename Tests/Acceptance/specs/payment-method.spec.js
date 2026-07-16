@@ -36,7 +36,9 @@ for (const method of ['paypal', 'stripe', 'klarna']) {
         navigations.push(request.url());
       }
     });
-    await page.route(GATEWAY, (route) => route.fulfill({ status: 200, contentType: 'text/plain', body: 'MOCK GATEWAY' }));
+    await page.route(GATEWAY, (route) =>
+      route.fulfill({ status: 200, contentType: 'text/plain', body: 'MOCK GATEWAY' }),
+    );
 
     await page.getByRole('button', { name: 'Order with obligation to pay' }).click();
     await page.waitForLoadState('networkidle').catch(() => {});
