@@ -5,17 +5,16 @@ import {
   fillAddressAndReachShipping,
   selectFirstShippingAndReachPayment,
 } from '../helper/checkout.js';
+import { GATEWAY, resetMockJournal, gatewayReturnUrl } from '../helper/roundtrip.js';
 
-// The external gateway approval pages the shop redirects to. They are fake mock URLs, so the specs
-// intercept the navigation rather than actually leaving for the real gateway.
-const GATEWAY = /checkout\.stripe\.com|sandbox\.paypal\.com|pay\.playground\.klarna\.com/;
+const MOCK = process.env.MOCK_BASE_URL;
 
 test.beforeEach(() => {
   test.skip(!hasAnyRedirectPayment(), 'No redirect payment method configured in this combination.');
 });
 
 for (const method of ['paypal', 'stripe', 'klarna']) {
-  test(`the ${method} method is offered and redirects to the gateway on order placement`, async ({ page }) => {
+  test(`${method} takes the order through the gateway round-trip to a placed order`, async ({ page, request }) => {
     test.skip(!hasPayment(method), `${method} is not active in this combination.`);
 
     await addProductAndOpenCheckout(page);
@@ -28,12 +27,13 @@ for (const method of ['paypal', 'stripe', 'klarna']) {
     await page.getByRole('button', { name: 'Continue to review' }).click();
     await page.locator('#termsAccepted').check();
 
-    // Record every top-level navigation, and short-circuit the (unreachable) gateway URL so the browser
-    // does not hang trying to load it.
+    // Isolate this order's create request, and short-circuit the (unreachable) external gateway URL so
+    // the browser does not hang trying to load it; record navigations to assert the redirect happened.
+    await resetMockJournal(request, MOCK);
     const navigations = [];
-    page.on('request', (request) => {
-      if (request.isNavigationRequest()) {
-        navigations.push(request.url());
+    page.on('request', (navigationRequest) => {
+      if (navigationRequest.isNavigationRequest()) {
+        navigations.push(navigationRequest.url());
       }
     });
     await page.route(GATEWAY, (route) =>
@@ -43,10 +43,17 @@ for (const method of ['paypal', 'stripe', 'klarna']) {
     await page.getByRole('button', { name: 'Order with obligation to pay' }).click();
     await page.waitForLoadState('networkidle').catch(() => {});
 
+    // The shop created the order and redirected the customer to the gateway to approve.
     const gateway = navigations.find((url) => GATEWAY.test(url));
     expect(
       gateway,
       `Expected a redirect to the ${method} gateway. Navigations seen: ${JSON.stringify(navigations)}. Final URL: ${page.url()}`,
     ).toBeTruthy();
+
+    // Come back from the gateway the way it would return the customer; the shop captures and finalizes.
+    const returnUrl = await gatewayReturnUrl(request, MOCK, method);
+    await page.goto(returnUrl);
+
+    await expect(page.getByText('Your order number is', { exact: false })).toBeVisible();
   });
 }

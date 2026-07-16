@@ -517,7 +517,7 @@ case ${TEST_SUITE} in
         else
             ${CONTAINER_BIN} run -d --name acceptance-web-${SUFFIX} --network ${NETWORK} -v ${ROOT_DIR}:${ROOT_DIR} -w ${ROOT_DIR} ${IMAGE_PHP} php -S 0.0.0.0:8080 -t .Build/Web/typo3temp/var/tests/acceptance/public .Build/Web/typo3temp/var/tests/acceptance/public/index.php >/dev/null
             waitFor acceptance-web-${SUFFIX} 8080
-            ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name playwright-${SUFFIX} -e PLAYWRIGHT_BASE_URL="http://acceptance-web-${SUFFIX}:8080/" -e PRODUCTS_COMBINATION="${ACCEPTANCE_COMBO}" -e CI=1 ${IMAGE_PLAYWRIGHT} npx playwright test --config=Tests/Acceptance/playwright.config.js
+            ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name playwright-${SUFFIX} -e PLAYWRIGHT_BASE_URL="http://acceptance-web-${SUFFIX}:8080/" -e PRODUCTS_COMBINATION="${ACCEPTANCE_COMBO}" -e MOCK_BASE_URL="http://mock-${SUFFIX}:8080" -e CI=1 ${IMAGE_PLAYWRIGHT} npx playwright test --config=Tests/Acceptance/playwright.config.js
             SUITE_EXIT_CODE=$?
         fi
         ;;
