@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_payment_amazon/Resources/Private/Language/locallang.xlf" date="2026-07-16T12:00:00Z" product-name="products_payment_amazon">
+		<header/>
+		<body>
+			<trans-unit id="payment_method_amazon" resname="payment_method_amazon">
+				<source>Amazon Pay</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

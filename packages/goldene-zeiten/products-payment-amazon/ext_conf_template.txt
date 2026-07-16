@@ -1,0 +1,20 @@
+# cat=access/enable/10; type=options[EU=eu,North America=na,Japan=jp]; label=Region: Which Amazon Pay API region to call. Default is EU.
+region = eu
+
+# cat=access/enable/20; type=options[Sandbox=sandbox,Live=live]; label=Environment: Which Amazon Pay environment to call. Sandbox is the test environment; Live moves real money.
+environment = sandbox
+
+# cat=access/enable/30; type=string; label=Public Key ID: The Amazon Pay Public Key ID from Seller Central (e.g. SANDBOX-AB...). System-wide default; a site may override it.
+publicKeyId =
+
+# cat=access/enable/40; type=string; label=Private Key: The merchant RSA private key: either an absolute path to the PEM file (recommended) or the PEM contents inline. Kept out of version control; stored in the Install Tool.
+privateKey =
+
+# cat=access/enable/50; type=string; label=Store ID: The Amazon Pay Store ID (amzn1.application-oa2-client...). System-wide default; a site may override it.
+storeId =
+
+# cat=access/enable/60; type=string; label=Store Name: The shop name shown to the buyer on Amazon's pages (e.g. "My Shop"). Kept out of version control; stored in the Install Tool.
+merchantStoreName =
+
+# cat=advanced/enable/10; type=string; label=API base URL override: Advanced. Overrides the region's Amazon Pay API base URL, e.g. a proxy or a local mock server. Leave empty to use the region's default.
+apiBaseUrl =

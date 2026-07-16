@@ -31,4 +31,16 @@ enum AmazonPayRegion: string
             self::Jp => 'pay-api.amazon.jp',
         };
     }
+
+    /**
+     * The buyer-facing host the customer is first redirected to, to sign in and pick their instrument.
+     */
+    public function checkoutHost(): string
+    {
+        return match ($this) {
+            self::Eu => 'pay.amazon.eu',
+            self::Na => 'pay.amazon.com',
+            self::Jp => 'pay.amazon.jp',
+        };
+    }
 }

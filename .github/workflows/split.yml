@@ -65,6 +65,9 @@ jobs:
           - package: products-payment-klarna
             directory: packages/goldene-zeiten/products-payment-klarna
             repository: products-payment-klarna
+          - package: products-payment-amazon
+            directory: packages/goldene-zeiten/products-payment-amazon
+            repository: products-payment-amazon
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4

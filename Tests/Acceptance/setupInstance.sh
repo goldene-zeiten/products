@@ -44,6 +44,7 @@ case "${COMBO}" in
     paypal) COMBO_PACKAGES="goldene-zeiten/products-payment-paypal" ;;
     stripe) COMBO_PACKAGES="goldene-zeiten/products-payment-stripe" ;;
     klarna) COMBO_PACKAGES="goldene-zeiten/products-payment-klarna" ;;
+    amazon) COMBO_PACKAGES="goldene-zeiten/products-payment-amazon" ;;
     ups) COMBO_PACKAGES="goldene-zeiten/products-shipping-ups" ;;
     dhl) COMBO_PACKAGES="goldene-zeiten/products-shipping-dhl-express" ;;
     dhl-stripe) COMBO_PACKAGES="goldene-zeiten/products-shipping-dhl-express goldene-zeiten/products-payment-stripe" ;;
@@ -72,7 +73,7 @@ cat > "${INSTANCE_PATH}/composer.json" <<EOF
     "description": "Disposable TYPO3 instance for EXT:products Playwright acceptance tests. Rebuilt by Tests/Acceptance/setupInstance.sh on every run - never committed.",
     "license": "GPL-2.0-or-later",
     "repositories": [
-        {"type": "path", "url": "${ROOT_DIR}/packages/*/*", "options": {"symlink": true, "versions": {"goldene-zeiten/products-api-client": "1.0.0", "goldene-zeiten/products-core": "1.0.0", "goldene-zeiten/products-search": "1.0.0", "goldene-zeiten/products-recently-viewed": "1.0.0", "goldene-zeiten/products-wishlist": "1.0.0", "goldene-zeiten/products-credit-points": "1.0.0", "goldene-zeiten/products-voucher": "1.0.0", "goldene-zeiten/products-watermark": "1.0.0", "goldene-zeiten/products-shipping-ups": "1.0.0", "goldene-zeiten/products-shipping-dhl-express": "1.0.0", "goldene-zeiten/products-payment-paypal": "1.0.0", "goldene-zeiten/products-payment-stripe": "1.0.0", "goldene-zeiten/products-payment-klarna": "1.0.0"}}},
+        {"type": "path", "url": "${ROOT_DIR}/packages/*/*", "options": {"symlink": true, "versions": {"goldene-zeiten/products-api-client": "1.0.0", "goldene-zeiten/products-core": "1.0.0", "goldene-zeiten/products-search": "1.0.0", "goldene-zeiten/products-recently-viewed": "1.0.0", "goldene-zeiten/products-wishlist": "1.0.0", "goldene-zeiten/products-credit-points": "1.0.0", "goldene-zeiten/products-voucher": "1.0.0", "goldene-zeiten/products-watermark": "1.0.0", "goldene-zeiten/products-shipping-ups": "1.0.0", "goldene-zeiten/products-shipping-dhl-express": "1.0.0", "goldene-zeiten/products-payment-paypal": "1.0.0", "goldene-zeiten/products-payment-stripe": "1.0.0", "goldene-zeiten/products-payment-klarna": "1.0.0", "goldene-zeiten/products-payment-amazon": "1.0.0"}}},
         {"type": "path", "url": "${ROOT_DIR}/Tests/Acceptance/Packages/dataset_import", "options": {"symlink": true}}
     ],
     "require": {
@@ -141,6 +142,17 @@ case " ${COMBO_PACKAGES} " in
     *" goldene-zeiten/products-payment-klarna "*) append_config <<EOF
 \$GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['products_payment_klarna'] = [
     'environment' => 'playground', 'username' => 'mock-user', 'password' => 'mock-pass', 'apiBaseUrl' => '${MOCK}/payment/klarna',
+];
+EOF
+    ;;
+esac
+case " ${COMBO_PACKAGES} " in
+    *" goldene-zeiten/products-payment-amazon "*) append_config <<EOF
+\$GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['products_payment_amazon'] = [
+    'region' => 'eu', 'environment' => 'sandbox', 'publicKeyId' => 'SANDBOX-AMZN-TEST-KEY',
+    'privateKey' => '${ROOT_DIR}/packages/goldene-zeiten/products-payment-amazon/Tests/Functional/Fixtures/test_private_key.pem',
+    'storeId' => 'amzn1.application-oa2-client.test', 'merchantStoreName' => 'Acceptance Shop',
+    'apiBaseUrl' => '${MOCK}/payment/amazon',
 ];
 EOF
     ;;

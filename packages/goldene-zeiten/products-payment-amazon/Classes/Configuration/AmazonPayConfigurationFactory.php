@@ -22,7 +22,7 @@ final readonly class AmazonPayConfigurationFactory
 
     private const FIELDS = [
         'region',
-        'sandbox',
+        'environment',
         'publicKeyId',
         'privateKey',
         'storeId',
@@ -46,17 +46,12 @@ final readonly class AmazonPayConfigurationFactory
 
         return new AmazonPayConfiguration(
             region: AmazonPayRegion::fromSetting($value['region']),
-            sandbox: $this->isTrue($value['sandbox']),
+            sandbox: strtolower($value['environment']) !== 'live',
             publicKeyId: $value['publicKeyId'],
             privateKey: $value['privateKey'],
             storeId: $value['storeId'],
             merchantStoreName: $value['merchantStoreName'],
             apiBaseUrl: rtrim($value['apiBaseUrl'], '/'),
         );
-    }
-
-    private function isTrue(string $value): bool
-    {
-        return $value === '1' || strtolower($value) === 'true';
     }
 }
