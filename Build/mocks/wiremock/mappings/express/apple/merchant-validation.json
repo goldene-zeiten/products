@@ -1,0 +1,19 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/express/apple/applepay/merchant-validation"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "epochTimestamp": 1700000000000,
+      "merchantSessionIdentifier": "MOCK-MERCHANT-SESSION",
+      "displayName": "Test Shop",
+      "signature": "MOCK-SIGNATURE"
+    }
+  }
+}

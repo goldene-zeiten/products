@@ -1,0 +1,65 @@
+plugin.tx_productsexpressapplepay {
+    settings {
+        validate {
+            pageType = {$plugin.tx_productsexpressapplepay.settings.validate.pageType}
+        }
+        confirm {
+            pageType = {$plugin.tx_productsexpressapplepay.settings.confirm.pageType}
+        }
+    }
+}
+
+# The Apple Pay JS posts to these typeNum PAGEs, each running only its one action and returning the action's
+# JSON verbatim (disableAllHeaderCode). no_cache is mandatory: validate reaches the processor and confirm
+# authorizes a payment and creates an order.
+products_express_apple_pay_validate = PAGE
+products_express_apple_pay_validate {
+    typeNum = {$plugin.tx_productsexpressapplepay.settings.validate.pageType}
+    config {
+        disableAllHeaderCode = 1
+        xhtml_cleaning = 0
+        admPanel = 0
+        debug = 0
+        no_cache = 1
+    }
+    10 = USER
+    10 {
+        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+        extensionName = ProductsExpressApplePay
+        pluginName = ExpressCheckout
+        vendorName = GoldeneZeiten
+        controller = ExpressCheckoutController
+        action = validate
+        switchableControllerActions {
+            ExpressCheckoutController {
+                1 = validate
+            }
+        }
+    }
+}
+
+products_express_apple_pay_confirm = PAGE
+products_express_apple_pay_confirm {
+    typeNum = {$plugin.tx_productsexpressapplepay.settings.confirm.pageType}
+    config {
+        disableAllHeaderCode = 1
+        xhtml_cleaning = 0
+        admPanel = 0
+        debug = 0
+        no_cache = 1
+    }
+    10 = USER
+    10 {
+        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+        extensionName = ProductsExpressApplePay
+        pluginName = ExpressCheckout
+        vendorName = GoldeneZeiten
+        controller = ExpressCheckoutController
+        action = confirm
+        switchableControllerActions {
+            ExpressCheckoutController {
+                1 = confirm
+            }
+        }
+    }
+}

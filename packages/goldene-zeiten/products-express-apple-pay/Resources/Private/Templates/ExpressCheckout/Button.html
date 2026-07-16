@@ -1,0 +1,20 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
+<f:if condition="{configuration}">
+    <f:asset.script identifier="products-express-apple-pay"
+                    src="EXT:products_express_apple_pay/Resources/Public/JavaScript/express-checkout.js" type="module" />
+    <div class="products-express-checkout products-express-checkout--apple-pay"
+         data-apple-pay-express-checkout
+         data-merchant-identifier="{configuration.merchantIdentifier}"
+         data-display-name="{configuration.displayName}"
+         data-country-code="{configuration.countryCode}"
+         data-currency="{configuration.currency}"
+         data-amount="{configuration.amount}"
+         data-basket-token="{basketToken}"
+         data-shipping-quote-url="{configuration.shippingQuoteUrl}"
+         data-validate-url="{f:uri.action(action: 'validate', pageType: settings.validate.pageType)}"
+         data-confirm-url="{f:uri.action(action: 'confirm', pageType: settings.confirm.pageType)}"
+    ></div>
+</f:if>
+</html>

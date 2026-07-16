@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_express_apple_pay/Resources/Private/Language/locallang_settings.xlf" date="2026-07-17T12:00:00Z" product-name="products_express_apple_pay">
+		<header/>
+		<body>
+			<trans-unit id="category.expressApplePay" resname="category.expressApplePay">
+				<source>Apple Pay Express Checkout</source>
+			</trans-unit>
+			<trans-unit id="setting.merchantIdentifier" resname="setting.merchantIdentifier">
+				<source>Merchant identifier</source>
+			</trans-unit>
+			<trans-unit id="setting.merchantIdentifier.description" resname="setting.merchantIdentifier.description">
+				<source>The Apple Pay merchant identifier (merchant.com.example) the payment request is made for.</source>
+			</trans-unit>
+			<trans-unit id="setting.displayName" resname="setting.displayName">
+				<source>Display name</source>
+			</trans-unit>
+			<trans-unit id="setting.displayName.description" resname="setting.displayName.description">
+				<source>The store name shown in the Apple Pay sheet.</source>
+			</trans-unit>
+			<trans-unit id="setting.countryCode" resname="setting.countryCode">
+				<source>Merchant country code</source>
+			</trans-unit>
+			<trans-unit id="setting.countryCode.description" resname="setting.countryCode.description">
+				<source>The two-letter country the merchant is based in (e.g. DE), required by the Apple Pay payment request.</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl" resname="setting.apiBaseUrl">
+				<source>Processor base URL</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl.description" resname="setting.apiBaseUrl.description">
+				<source>Base URL of the payment processor that validates the Apple Pay merchant session and authorizes the token. Point at your acquirer/PSP endpoint (or a local mock).</source>
+			</trans-unit>
+			<trans-unit id="setting.apiKey" resname="setting.apiKey">
+				<source>Processor API key</source>
+			</trans-unit>
+			<trans-unit id="setting.apiKey.description" resname="setting.apiKey.description">
+				<source>Bearer credential the processor authorizes the requests with.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

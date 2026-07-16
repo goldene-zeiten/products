@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-express-apple-pay
+label: Products Apple Pay Express Checkout
+dependencies:
+  - goldene-zeiten/products-core

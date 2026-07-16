@@ -1,0 +1,12 @@
+plugin.tx_productsexpressapplepay {
+    settings {
+        validate {
+            # cat=plugin.tx_productsexpressapplepay/validate; type=int; label=Apple Pay merchant-validation page typeNum
+            pageType = 1784220850
+        }
+        confirm {
+            # cat=plugin.tx_productsexpressapplepay/confirm; type=int; label=Apple Pay confirm page typeNum
+            pageType = 1784220851
+        }
+    }
+}

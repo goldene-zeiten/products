@@ -1,0 +1,22 @@
+{
+  "priority": 5,
+  "request": {
+    "method": "POST",
+    "urlPath": "/express/apple/applepay/authorize",
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": "$.token[?(@.transactionIdentifier == 'DECLINE')]"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "status": "declined",
+      "transactionId": ""
+    }
+  }
+}

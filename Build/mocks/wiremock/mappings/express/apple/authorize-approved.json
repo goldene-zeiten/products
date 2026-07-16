@@ -1,0 +1,17 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/express/apple/applepay/authorize"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "status": "approved",
+      "transactionId": "APPLE-TXN-1"
+    }
+  }
+}

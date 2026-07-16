@@ -31,7 +31,8 @@
     "goldene-zeiten/products-payment-klarna": "^1.0",
     "goldene-zeiten/products-payment-amazon": "^1.0",
     "goldene-zeiten/products-express-stripe": "^1.0",
-    "goldene-zeiten/products-express-paypal": "^1.0"
+    "goldene-zeiten/products-express-paypal": "^1.0",
+    "goldene-zeiten/products-express-apple-pay": "^1.0"
   },
   "autoload-dev": {
     "psr-4": {
@@ -51,7 +52,8 @@
       "GoldeneZeiten\\Products\\Payment\\Klarna\\Tests\\": "packages/goldene-zeiten/products-payment-klarna/Tests/",
       "GoldeneZeiten\\Products\\Payment\\Amazon\\Tests\\": "packages/goldene-zeiten/products-payment-amazon/Tests/",
       "GoldeneZeiten\\Products\\Express\\Stripe\\Tests\\": "packages/goldene-zeiten/products-express-stripe/Tests/",
-      "GoldeneZeiten\\Products\\Express\\Paypal\\Tests\\": "packages/goldene-zeiten/products-express-paypal/Tests/"
+      "GoldeneZeiten\\Products\\Express\\Paypal\\Tests\\": "packages/goldene-zeiten/products-express-paypal/Tests/",
+      "GoldeneZeiten\\Products\\Express\\ApplePay\\Tests\\": "packages/goldene-zeiten/products-express-apple-pay/Tests/"
     }
   },
   "require-dev": {
@@ -89,7 +91,8 @@
           "goldene-zeiten/products-payment-klarna": "1.0.0",
           "goldene-zeiten/products-payment-amazon": "1.0.0",
           "goldene-zeiten/products-express-stripe": "1.0.0",
-          "goldene-zeiten/products-express-paypal": "1.0.0"
+          "goldene-zeiten/products-express-paypal": "1.0.0",
+          "goldene-zeiten/products-express-apple-pay": "1.0.0"
         }
       }
     }

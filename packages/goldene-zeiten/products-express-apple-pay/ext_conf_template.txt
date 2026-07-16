@@ -1,0 +1,14 @@
+# cat=access/enable/10; type=string; label=Merchant identifier: The Apple Pay merchant identifier (merchant.com.example) the payment request is made for.
+merchantIdentifier =
+
+# cat=access/enable/20; type=string; label=Display name: The store name shown in the Apple Pay sheet.
+displayName =
+
+# cat=access/enable/25; type=string; label=Merchant country code: The two-letter country the merchant is based in (e.g. DE), required by the Apple Pay payment request.
+countryCode =
+
+# cat=access/enable/30; type=string; label=Processor base URL: Base URL of the payment processor that validates the Apple Pay merchant session and authorizes the Apple Pay token. Point at your acquirer/PSP endpoint (or a local mock).
+apiBaseUrl =
+
+# cat=access/enable/40; type=string; label=Processor API key: Bearer credential the processor authorizes the requests with.
+apiKey =
