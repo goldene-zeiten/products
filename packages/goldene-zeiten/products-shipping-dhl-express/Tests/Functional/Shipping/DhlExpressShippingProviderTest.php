@@ -137,7 +137,7 @@ final class DhlExpressShippingProviderTest extends AbstractFunctionalTestCase
         return new class () implements DhlExpressRatingClient {
             public function rate(ShippingContext $context, DhlExpressConfiguration $configuration): array
             {
-                throw new DhlExpressRatingException('boom', 1752600802);
+                throw new DhlExpressRatingException('Simulated DHL Express rating failure for the fallback test.', 1752600802);
             }
         };
     }
