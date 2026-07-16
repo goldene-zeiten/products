@@ -1,0 +1,10 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "PATCH",
+    "urlPathPattern": "/express/paypal/v2/checkout/orders/PAYPAL-EXPRESS-ORDER-[A-Z0-9-]+"
+  },
+  "response": {
+    "status": 204
+  }
+}
