@@ -12,6 +12,12 @@ websiteTitle: 'Products Acceptance'
 # see them - no TypoScript bridges them into plugin.tx_productscore.settings). Without this, every
 # checkout spec silently skipped the shipping-method step (isShippingEnabled() fell back to
 # false) and hung waiting for a shippingMethod radio that was never rendered.
+#
+# The payment/shipping add-on Site Sets are deliberately NOT listed here: which add-on is active is
+# decided per test combination by setupInstance.sh (env PRODUCTS_COMBO), which installs and configures
+# only that combination's packages via ExtensionConfiguration. The providers/methods are plain tagged
+# services that need no Site Set to function, so listing a set here would break every combination that
+# does not install it.
 dependencies:
   - goldene-zeiten/products-core
   - goldene-zeiten/products-search
@@ -20,7 +26,6 @@ dependencies:
   - goldene-zeiten/products-credit-points
   - goldene-zeiten/products-voucher
   - goldene-zeiten/products-watermark
-  - goldene-zeiten/products-shipping-ups
 settings:
   products:
     creditPoints:
@@ -29,6 +34,12 @@ settings:
       enabled: true
     wishlist:
       enabled: true
+    # PaymentUrlFactory reads the checkout page from Site Settings to build the redirect return/cancel
+    # URLs a gateway sends the customer back to; without it, a redirect payment method has nowhere to
+    # return to and initiate() fails.
+    pids:
+      checkoutPage: 7
+      storageFolder: 2
 languages:
   -
     title: English

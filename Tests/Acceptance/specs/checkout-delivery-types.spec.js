@@ -1,4 +1,11 @@
 import { test, expect } from '@playwright/test';
+import { hasAnyCarrier } from '../helper/combination.js';
+
+// The Standard/Express labels and prices come from the built-in table-rate carrier; a live carrier
+// (UPS/DHL Express) supersedes it, so this table-rate assertion only holds when no carrier is active.
+test.beforeEach(() => {
+  test.skip(hasAnyCarrier(), 'Table-rate shipping is superseded by a live carrier in this combination.');
+});
 
 async function fillAddressAndReachShippingStep(page, email) {
   await page.goto('/product/soundmax-headphones');
@@ -19,7 +26,7 @@ test('choosing standard shipping is reflected on the review page', async ({ page
 
   await page.locator('label', { hasText: 'Standard Shipping' }).click();
   await page.getByRole('button', { name: 'Continue to payment' }).click();
-  await page.locator('input[name="tx_productscore_checkout[paymentMethod]"]').first().check();
+  await page.locator('input[name="tx_productscore_checkout[paymentMethod]"][value="invoice"]').check();
   await page.getByRole('button', { name: 'Continue to review' }).click();
 
   await expect(page.getByText('Standard Shipping - 4.99', { exact: false })).toBeVisible();
@@ -30,7 +37,7 @@ test('choosing express shipping is reflected on the review page', async ({ page 
 
   await page.locator('label', { hasText: 'Express Shipping' }).click();
   await page.getByRole('button', { name: 'Continue to payment' }).click();
-  await page.locator('input[name="tx_productscore_checkout[paymentMethod]"]').first().check();
+  await page.locator('input[name="tx_productscore_checkout[paymentMethod]"][value="invoice"]').check();
   await page.getByRole('button', { name: 'Continue to review' }).click();
 
   await expect(page.getByText('Express Shipping - 9.99', { exact: false })).toBeVisible();

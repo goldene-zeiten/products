@@ -132,16 +132,30 @@ jobs:
         run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional ${{ matrix.db.options }}"
 
   acceptance:
-    name: acceptance tests with core v13
+    name: "acceptance ${{ matrix.combo }} (${{ matrix.db }}) with core v13"
     runs-on: ubuntu-22.04
     needs: code-quality
     strategy:
       fail-fast: false
       matrix:
-        sql-version: [ 'sqlite', 'mariadb' ]
+        # Each payment/shipping combination is a fresh, isolated instance build (PRODUCTS_COMBO), so a
+        # split or add-on breaking the shop is caught per combination. baseline also runs on MariaDB.
+        include:
+          - { combo: baseline, db: sqlite }
+          - { combo: baseline, db: mariadb }
+          - { combo: paypal, db: sqlite }
+          - { combo: stripe, db: sqlite }
+          - { combo: klarna, db: sqlite }
+          - { combo: ups, db: sqlite }
+          - { combo: dhl, db: sqlite }
+          - { combo: dhl-stripe, db: sqlite }
+          - { combo: ups-paypal, db: sqlite }
+          - { combo: all, db: sqlite }
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
 
-      - name: "Acceptance SQLite"
-        run: "Build/Scripts/runTests.sh -b podman -t 13 -s acceptance -d ${{ matrix.sql-version }}"
+      - name: "Acceptance ${{ matrix.combo }} (${{ matrix.db }})"
+        env:
+          PRODUCTS_COMBO: ${{ matrix.combo }}
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -s acceptance -d ${{ matrix.db }}"
