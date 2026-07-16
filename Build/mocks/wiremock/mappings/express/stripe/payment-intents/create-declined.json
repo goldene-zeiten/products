@@ -1,0 +1,15 @@
+{
+  "priority": 5,
+  "request": {
+    "method": "POST",
+    "urlPath": "/express/stripe/v1/payment_intents",
+    "bodyPatterns": [ { "contains": "payment_method=pm_declined" } ]
+  },
+  "response": {
+    "status": 402,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "error": { "type": "card_error", "code": "card_declined", "message": "Your card was declined." }
+    }
+  }
+}
