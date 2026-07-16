@@ -63,6 +63,24 @@ jobs:
           && composer config "extra"."typo3/cms"."version" "${{ env.version }}" \
           && composer validate --strict --no-check-lock --no-check-version
 
+      # Extensions that require third-party Composer libraries must ship them for TYPO3 Classic mode, where
+      # Composer does not resolve dependencies. The libraries are vendored into the path each extension
+      # declares in `extra.typo3/cms.Package.providesPackages` (from where TYPO3 loads their autoload.php) -
+      # built here, into the artifact only, never committed. A no-op for extensions that provide nothing.
+      - name: Bundle third-party libraries for TYPO3 Classic mode
+        run: |
+          jq -r '.extra."typo3/cms".Package.providesPackages // {} | to_entries[] | [.key, .value] | @tsv' composer.json |
+          while IFS=$'\t' read -r package path; do
+            [ -z "$package" ] && continue
+            constraint=$(jq -r --arg p "$package" '.require[$p] // "*"' composer.json)
+            echo "Bundling ${package} (${constraint}) into ${path}"
+            workdir="$(mktemp -d)"
+            composer --working-dir="$workdir" require "${package}:${constraint}" \
+              --no-interaction --no-progress --optimize-autoloader --no-dev
+            mkdir -p "$path"
+            cp -a "$workdir/vendor/." "$path/"
+          done
+
       # Note that step will fail when `env.version` does not match the `ext_emconf.php` version.
       - name: Create local TER package upload artifact
         run: |

@@ -37,7 +37,9 @@
       "extension-key": "products_payment_stripe",
       "version": "1.0.0",
       "Package": {
-        "providesPackages": {}
+        "providesPackages": {
+          "stripe/stripe-php": "Resources/Private/Php/ComposerVendor"
+        }
       }
     },
     "branch-alias": {
