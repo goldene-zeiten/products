@@ -1,0 +1,15 @@
+{
+  "priority": 10,
+  "request": { "method": "POST", "urlPath": "/express/stripe/v1/payment_intents" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "id": "pi_test_1",
+      "object": "payment_intent",
+      "status": "succeeded",
+      "amount": 10500,
+      "currency": "eur"
+    }
+  }
+}
