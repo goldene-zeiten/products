@@ -1,3 +1,4 @@
 "tx_products_domain_model_order",,,,,,,,,,,,,
 ,"uid","pid","deleted","order_number","email","currency","total_gross","payment_method","payment_status","status"
 ,1,2,0,"ORD-CALLBACK-1","callback@example.com","EUR",5000,"fixture-redirect","open","new"
+,2,2,0,"ORD-CALLBACK-2","twohop@example.com","EUR",5000,"fixture-twohop","open","new"

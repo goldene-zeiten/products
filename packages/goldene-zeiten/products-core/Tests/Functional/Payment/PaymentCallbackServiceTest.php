@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Payment;
 
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentResultState;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
@@ -29,7 +30,7 @@ final class PaymentCallbackServiceTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
-    public function handleReturnWithValidTokenReturnsOrderAndFinalizesIt(): void
+    public function handleReturnWithValidTokenReturnsPaidResultAndFinalizesTheOrder(): void
     {
         $order = $this->fetchOrder(1);
         $tokenService = $this->get(PaymentTokenService::class);
@@ -38,9 +39,23 @@ final class PaymentCallbackServiceTest extends AbstractFunctionalTestCase
 
         $result = $subject->handleReturn(1, $token, $this->request());
 
-        $this->assertInstanceOf(Order::class, $result);
-        $refreshedOrder = $this->fetchOrder(1);
-        $this->assertSame(PaymentStatus::PAID, $refreshedOrder->getPaymentStatus());
+        $this->assertSame(PaymentStatus::PAID, $result->getPaymentStatus());
+        $this->assertSame(PaymentStatus::PAID, $this->fetchOrder(1)->getPaymentStatus());
+    }
+
+    #[Test]
+    public function handleReturnOfAMultiHopGatewayReturnsTheRedirectWithoutFinalizing(): void
+    {
+        $order = $this->fetchOrder(2);
+        $token = $this->get(PaymentTokenService::class)->generateToken($order);
+        $subject = $this->get(PaymentCallbackService::class);
+
+        $result = $subject->handleReturn(2, $token, $this->request());
+
+        $this->assertSame(PaymentResultState::REDIRECT_REQUIRED, $result->getState());
+        $this->assertSame('https://gateway.example/second-hop', $result->getRedirectUrl());
+        // The order must stay open: the customer still has to complete the second hop at the gateway.
+        $this->assertSame(PaymentStatus::OPEN, $this->fetchOrder(2)->getPaymentStatus());
     }
 
     #[Test]
