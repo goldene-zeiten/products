@@ -18,7 +18,8 @@ final readonly class Address
         private string $street = '',
         private string $zip = '',
         private string $city = '',
-        private string $country = ''
+        private string $country = '',
+        private string $state = ''
     ) {}
 
     public function getEmail(): string
@@ -64,5 +65,15 @@ final readonly class Address
     public function getCountry(): string
     {
         return $this->country;
+    }
+
+    /**
+     * The administrative area / state / province. Empty for countries that do not use one; a wallet
+     * express checkout (Apple/Google/Stripe) supplies it for US/CA/… addresses where tax and shipping
+     * depend on it.
+     */
+    public function getState(): string
+    {
+        return $this->state;
     }
 }
