@@ -1,0 +1,14 @@
+{
+  "priority": 10,
+  "request": { "method": "GET", "urlPath": "/payment/amazon/v2/checkoutSessions/amzn_session_1" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "checkoutSessionId": "amzn_session_1",
+      "buyer": { "buyerId": "buyer_1", "name": "Combo Tester", "email": "amazon@example.com" },
+      "shippingAddress": { "name": "Combo Tester", "addressLine1": "Test Street 1", "city": "Bonn", "postalCode": "53113", "countryCode": "DE" },
+      "statusDetails": { "state": "Open" }
+    }
+  }
+}

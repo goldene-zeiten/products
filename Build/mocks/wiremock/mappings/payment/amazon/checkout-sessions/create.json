@@ -1,0 +1,15 @@
+{
+  "priority": 10,
+  "request": { "method": "POST", "urlPath": "/payment/amazon/v2/checkoutSessions" },
+  "response": {
+    "status": 201,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "checkoutSessionId": "amzn_session_1",
+      "webCheckoutDetails": { "amazonPayRedirectUrl": null },
+      "statusDetails": { "state": "Open", "reasonCode": null },
+      "constraints": [ { "constraintId": "PaymentPreferenceNotSet" } ],
+      "chargePermissionType": "OneTime"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "priority": 10,
+  "request": { "method": "PATCH", "urlPath": "/payment/amazon/v2/checkoutSessions/amzn_session_1" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "checkoutSessionId": "amzn_session_1",
+      "webCheckoutDetails": { "amazonPayRedirectUrl": "https://pay.amazon.eu/checkout/amzn_session_1" },
+      "statusDetails": { "state": "Open" },
+      "constraints": []
+    }
+  }
+}
