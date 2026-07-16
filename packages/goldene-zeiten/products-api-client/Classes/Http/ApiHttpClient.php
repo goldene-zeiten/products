@@ -25,7 +25,7 @@ final class ApiHttpClient
     ) {}
 
     /**
-     * @param array<string, mixed> $body
+     * @param array<int|string, mixed> $body a JSON object (string keys) or, for APIs that take one, a list
      * @param array<string, string> $headers
      */
     public function postJson(string $url, array $body, array $headers = []): ResponseInterface
@@ -36,10 +36,10 @@ final class ApiHttpClient
     }
 
     /**
-     * A JSON PATCH - a partial update of a resource. Amazon Pay's Update Checkout Session, for one, is a
-     * genuine HTTP PATCH rather than a POST sub-resource.
+     * A JSON PATCH - a partial update of a resource. Amazon Pay's Update Checkout Session sends a JSON
+     * object; PayPal's Orders v2 patch sends a JSON Patch list of operations - hence the mixed key type.
      *
-     * @param array<string, mixed> $body
+     * @param array<int|string, mixed> $body a JSON object (string keys) or a JSON Patch list (int keys)
      * @param array<string, string> $headers
      */
     public function patchJson(string $url, array $body, array $headers = []): ResponseInterface
