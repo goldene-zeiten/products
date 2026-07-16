@@ -1,0 +1,14 @@
+{
+  "priority": 10,
+  "request": { "method": "POST", "urlPath": "/payment/amazon/v2/checkoutSessions/amzn_session_1/complete" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "checkoutSessionId": "amzn_session_1",
+      "statusDetails": { "state": "Completed", "reasonCode": null },
+      "chargeId": "S01-0000000-0000000-C000000",
+      "chargePermissionId": "S01-0000000-0000000"
+    }
+  }
+}

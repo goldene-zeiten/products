@@ -36,6 +36,20 @@ final class ApiHttpClient
     }
 
     /**
+     * A JSON PATCH - a partial update of a resource. Amazon Pay's Update Checkout Session, for one, is a
+     * genuine HTTP PATCH rather than a POST sub-resource.
+     *
+     * @param array<string, mixed> $body
+     * @param array<string, string> $headers
+     */
+    public function patchJson(string $url, array $body, array $headers = []): ResponseInterface
+    {
+        return $this->send('PATCH', $url, json_encode($body, JSON_THROW_ON_ERROR), [
+            'Content-Type' => 'application/json',
+        ] + $headers);
+    }
+
+    /**
      * @param array<string, string> $headers
      */
     public function postForm(string $url, string $body, array $headers = []): ResponseInterface

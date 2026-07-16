@@ -1,0 +1,56 @@
+{
+  "name": "goldene-zeiten/products-payment-amazon",
+  "description": "Amazon Pay (Checkout v2) payment method for the Products TYPO3 shop system",
+  "type": "typo3-cms-extension",
+  "license": [
+    "GPL-2.0-or-later"
+  ],
+  "authors": [
+    {
+      "name": "Markus Hofmann",
+      "email": "typo3@calien.de",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^8.2 || ^8.3 || ^8.4 || ^8.5",
+    "ext-json": "*",
+    "amzn/amazon-pay-api-sdk-php": "^2.6",
+    "goldene-zeiten/products-api-client": "^1.0",
+    "goldene-zeiten/products-core": "^1.0",
+    "psr/http-message": "^1.1 || ^2.0",
+    "typo3/cms-core": "^13.4 || ^14.3",
+    "typo3/cms-extbase": "^13.4 || ^14.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\Payment\\Amazon\\": "Classes/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\Payment\\Amazon\\Tests\\": "Tests/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "typo3/cms-composer-installers": true,
+      "typo3/class-alias-loader": true
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "products_payment_amazon",
+      "version": "1.0.0",
+      "Package": {
+        "providesPackages": {
+          "amzn/amazon-pay-api-sdk-php": "Resources/Private/Php/ComposerVendor"
+        }
+      }
+    },
+    "branch-alias": {
+      "dev-main": "1.0.x-dev"
+    }
+  }
+}
