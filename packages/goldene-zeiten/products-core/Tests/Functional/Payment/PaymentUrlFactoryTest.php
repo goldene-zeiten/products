@@ -29,27 +29,28 @@ final class PaymentUrlFactoryTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
-    public function theReturnUrlPointsAtTheCheckoutPageAndCarriesTheSignedOrder(): void
+    public function theReturnUrlIsTheFixedReturnPathCarryingTheSignedOrder(): void
     {
         $subject = $this->get(PaymentUrlFactory::class);
         $order = $this->order();
 
         $returnUrl = $subject->createFor($order, $this->requestWithCheckoutPage(5))->getReturnUrl();
 
-        $this->assertStringContainsString('/checkout', $returnUrl);
-        $this->assertStringContainsString('paymentReturn', $returnUrl);
-        $this->assertStringContainsString('[order]=1', urldecode($returnUrl));
-        $this->assertStringContainsString($this->token($order), urldecode($returnUrl));
+        $this->assertStringStartsWith('http', $returnUrl);
+        $this->assertStringContainsString(PaymentUrlFactory::RETURN_PATH, $returnUrl);
+        $this->assertStringContainsString('order=1', $returnUrl);
+        $this->assertStringContainsString('signature=' . $this->token($order), $returnUrl);
     }
 
     #[Test]
-    public function theCancelUrlPointsAtTheCancelAction(): void
+    public function theCancelUrlIsTheFixedCancelPath(): void
     {
         $subject = $this->get(PaymentUrlFactory::class);
 
         $cancelUrl = $subject->createFor($this->order(), $this->requestWithCheckoutPage(5))->getCancelUrl();
 
-        $this->assertStringContainsString('paymentCancel', $cancelUrl);
+        $this->assertStringContainsString(PaymentUrlFactory::CANCEL_PATH, $cancelUrl);
+        $this->assertStringContainsString('order=1', $cancelUrl);
     }
 
     #[Test]
@@ -63,7 +64,7 @@ final class PaymentUrlFactoryTest extends AbstractFunctionalTestCase
         $this->assertStringStartsWith('http', $webhookUrl);
         $this->assertStringContainsString(PaymentUrlFactory::WEBHOOK_PATH, $webhookUrl);
         $this->assertStringContainsString('order=1', $webhookUrl);
-        $this->assertStringContainsString('token=' . $this->token($order), $webhookUrl);
+        $this->assertStringContainsString('signature=' . $this->token($order), $webhookUrl);
     }
 
     /**

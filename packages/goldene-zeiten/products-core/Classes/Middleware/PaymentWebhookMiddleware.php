@@ -33,8 +33,8 @@ final readonly class PaymentWebhookMiddleware implements MiddlewareInterface
         }
 
         $queryParams = $request->getQueryParams();
-        $orderUid = (int)($queryParams['order'] ?? 0);
-        $token = (string)($queryParams['token'] ?? '');
+        $orderUid = (int)($queryParams[PaymentUrlFactory::ORDER_PARAM] ?? 0);
+        $token = (string)($queryParams[PaymentUrlFactory::SIGNATURE_PARAM] ?? '');
 
         try {
             $paymentResult = $this->paymentCallbackService->handleWebhook($orderUid, $token, $request);
