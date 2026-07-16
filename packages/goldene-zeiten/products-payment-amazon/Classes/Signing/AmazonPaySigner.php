@@ -44,8 +44,10 @@ final class AmazonPaySigner
 
         $headers = [];
         foreach ($client->getPostSignedHeaders($method, $url, [], $payloadJson, $preSigned) as $line) {
-            [$name, $value] = explode(':', $line, 2);
-            $headers[$name] = $value;
+            $parts = explode(':', (string)$line, 2);
+            if (count($parts) === 2) {
+                $headers[$parts[0]] = $parts[1];
+            }
         }
         if ($idempotencyKey !== null) {
             $headers['x-amz-pay-idempotency-key'] = $idempotencyKey;

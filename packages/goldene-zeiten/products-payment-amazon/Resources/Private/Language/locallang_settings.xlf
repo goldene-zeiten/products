@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf" date="2026-07-16T12:00:00Z" product-name="products_payment_amazon">
+		<header/>
+		<body>
+			<trans-unit id="category.paymentAmazon" resname="category.paymentAmazon">
+				<source>Amazon Pay</source>
+			</trans-unit>
+			<trans-unit id="setting.inherit.description" resname="setting.inherit.description">
+				<source>Leave empty to inherit the value from the extension configuration. Set it to override that default for this site.</source>
+			</trans-unit>
+			<trans-unit id="setting.region" resname="setting.region">
+				<source>Region (eu / na / jp)</source>
+			</trans-unit>
+			<trans-unit id="setting.region.description" resname="setting.region.description">
+				<source>Which Amazon Pay API region to call: "eu" (EU), "na" (North America), or "jp" (Japan). Leave empty to inherit the extension configuration.</source>
+			</trans-unit>
+			<trans-unit id="setting.environment" resname="setting.environment">
+				<source>Environment</source>
+			</trans-unit>
+			<trans-unit id="setting.environment.description" resname="setting.environment.description">
+				<source>Which Amazon Pay environment to call: sandbox (test) or live. Empty inherits the extension default.</source>
+			</trans-unit>
+			<trans-unit id="setting.publicKeyId" resname="setting.publicKeyId">
+				<source>Public Key ID</source>
+			</trans-unit>
+			<trans-unit id="setting.privateKey" resname="setting.privateKey">
+				<source>Private Key</source>
+			</trans-unit>
+			<trans-unit id="setting.privateKey.description" resname="setting.privateKey.description">
+				<source>The merchant RSA private key: either an absolute path to the PEM file (recommended) or the PEM contents inline. Prefer referencing an environment variable so the key stays out of version control. Leave empty to inherit the extension configuration.</source>
+			</trans-unit>
+			<trans-unit id="setting.storeId" resname="setting.storeId">
+				<source>Store ID</source>
+			</trans-unit>
+			<trans-unit id="setting.merchantStoreName" resname="setting.merchantStoreName">
+				<source>Store Name</source>
+			</trans-unit>
+			<trans-unit id="setting.merchantStoreName.description" resname="setting.merchantStoreName.description">
+				<source>The shop name shown to the buyer on Amazon's pages (e.g. "My Shop"). Leave empty to inherit the extension configuration.</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl" resname="setting.apiBaseUrl">
+				<source>API base URL override</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl.description" resname="setting.apiBaseUrl.description">
+				<source>Send the Amazon Pay calls to this host instead of the real Amazon Pay host, e.g. a proxy or a local mock server. Leave empty to use the region's real host.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

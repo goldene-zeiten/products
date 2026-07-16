@@ -1,0 +1,48 @@
+categories:
+  paymentAmazon:
+    label: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:category.paymentAmazon'
+    parent: payment
+
+settings:
+  products.payment.amazon.region:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.region'
+    description: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.region.description'
+    category: paymentAmazon
+  products.payment.amazon.environment:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.environment'
+    description: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.environment.description'
+    category: paymentAmazon
+  products.payment.amazon.publicKeyId:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.publicKeyId'
+    description: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.inherit.description'
+    category: paymentAmazon
+  products.payment.amazon.privateKey:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.privateKey'
+    description: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.privateKey.description'
+    category: paymentAmazon
+  products.payment.amazon.storeId:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.storeId'
+    description: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.inherit.description'
+    category: paymentAmazon
+  products.payment.amazon.merchantStoreName:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.merchantStoreName'
+    description: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.merchantStoreName.description'
+    category: paymentAmazon
+  products.payment.amazon.apiBaseUrl:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl'
+    description: 'LLL:EXT:products_payment_amazon/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl.description'
+    category: paymentAmazon

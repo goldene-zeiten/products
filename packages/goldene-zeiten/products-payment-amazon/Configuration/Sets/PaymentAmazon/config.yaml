@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-payment-amazon
+label: Products Amazon Pay Payment
+dependencies:
+  - goldene-zeiten/products-core
