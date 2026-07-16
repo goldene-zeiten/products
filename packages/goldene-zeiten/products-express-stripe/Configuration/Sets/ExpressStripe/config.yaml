@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-express-stripe
+label: Products Stripe Express Checkout
+dependencies:
+  - goldene-zeiten/products-core

@@ -1,0 +1,36 @@
+plugin.tx_productsexpressstripe {
+    settings {
+        confirm {
+            pageType = {$plugin.tx_productsexpressstripe.settings.confirm.pageType}
+        }
+    }
+}
+
+# The wallet JS posts the authorized payment to this typeNum PAGE, which runs only the confirm action and
+# returns its JSON response verbatim (disableAllHeaderCode), so the browser gets the thank-you URL rather
+# than a page-embedded fragment. no_cache is mandatory: the action settles a payment and creates an order.
+products_express_stripe_confirm = PAGE
+products_express_stripe_confirm {
+    typeNum = {$plugin.tx_productsexpressstripe.settings.confirm.pageType}
+    config {
+        disableAllHeaderCode = 1
+        xhtml_cleaning = 0
+        admPanel = 0
+        debug = 0
+        no_cache = 1
+    }
+    10 = USER
+    10 {
+        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+        extensionName = ProductsExpressStripe
+        pluginName = ExpressCheckout
+        vendorName = GoldeneZeiten
+        controller = ExpressCheckoutController
+        action = confirm
+        switchableControllerActions {
+            ExpressCheckoutController {
+                1 = confirm
+            }
+        }
+    }
+}

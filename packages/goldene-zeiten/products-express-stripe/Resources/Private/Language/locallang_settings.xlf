@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_express_stripe/Resources/Private/Language/locallang_settings.xlf" date="2026-07-16T12:00:00Z" product-name="products_express_stripe">
+		<header/>
+		<body>
+			<trans-unit id="category.expressStripe" resname="category.expressStripe">
+				<source>Stripe Express Checkout</source>
+			</trans-unit>
+			<trans-unit id="setting.publishableKey" resname="setting.publishableKey">
+				<source>Publishable key</source>
+			</trans-unit>
+			<trans-unit id="setting.publishableKey.description" resname="setting.publishableKey.description">
+				<source>The Stripe publishable key (pk_...) the browser needs to render the Express Checkout Element. Leave empty to inherit the extension configuration default.</source>
+			</trans-unit>
+			<trans-unit id="setting.secretKey" resname="setting.secretKey">
+				<source>Secret key</source>
+			</trans-unit>
+			<trans-unit id="setting.secretKey.description" resname="setting.secretKey.description">
+				<source>The Stripe secret key (sk_...) used server-side to settle the wallet payment via a PaymentIntent. Leave empty to inherit the extension configuration default.</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl" resname="setting.apiBaseUrl">
+				<source>API base URL override</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl.description" resname="setting.apiBaseUrl.description">
+				<source>Advanced. Overrides Stripe's API base URL, e.g. a proxy or a local mock server. Leave empty to use Stripe's default.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

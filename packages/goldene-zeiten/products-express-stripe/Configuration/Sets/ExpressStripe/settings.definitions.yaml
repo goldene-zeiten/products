@@ -1,0 +1,24 @@
+categories:
+  expressStripe:
+    label: 'LLL:EXT:products_express_stripe/Resources/Private/Language/locallang_settings.xlf:category.expressStripe'
+    parent: payment
+
+settings:
+  products.express.stripe.publishableKey:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_express_stripe/Resources/Private/Language/locallang_settings.xlf:setting.publishableKey'
+    description: 'LLL:EXT:products_express_stripe/Resources/Private/Language/locallang_settings.xlf:setting.publishableKey.description'
+    category: expressStripe
+  products.express.stripe.secretKey:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_express_stripe/Resources/Private/Language/locallang_settings.xlf:setting.secretKey'
+    description: 'LLL:EXT:products_express_stripe/Resources/Private/Language/locallang_settings.xlf:setting.secretKey.description'
+    category: expressStripe
+  products.express.stripe.apiBaseUrl:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_express_stripe/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl'
+    description: 'LLL:EXT:products_express_stripe/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl.description'
+    category: expressStripe
