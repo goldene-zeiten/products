@@ -68,6 +68,9 @@ jobs:
           - package: products-payment-amazon
             directory: packages/goldene-zeiten/products-payment-amazon
             repository: products-payment-amazon
+          - package: products-express-stripe
+            directory: packages/goldene-zeiten/products-express-stripe
+            repository: products-express-stripe
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
