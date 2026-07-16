@@ -39,7 +39,9 @@
       "extension-key": "products_core",
       "version": "1.0.0",
       "Package": {
-        "providesPackages": {}
+        "providesPackages": {
+          "dompdf/dompdf": "Resources/Private/Php/ComposerVendor"
+        }
       }
     },
     "branch-alias": {
