@@ -9,7 +9,10 @@ export async function addProductAndOpenCheckout(page, slug = 'soundmax-headphone
 }
 
 // Fills the address step and advances to the shipping step.
-export async function fillAddressAndReachShipping(page, { email = 'combo@example.com', zip = '53113', city = 'Bonn' } = {}) {
+export async function fillAddressAndReachShipping(
+  page,
+  { email = 'combo@example.com', zip = '53113', city = 'Bonn' } = {},
+) {
   await page.locator('input[name="tx_productscore_checkout[address][email]"]').fill(email);
   await page.locator('input[name="tx_productscore_checkout[address][firstName]"]').fill('Combo');
   await page.locator('input[name="tx_productscore_checkout[address][lastName]"]').fill('Tester');
