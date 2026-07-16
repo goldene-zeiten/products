@@ -1,0 +1,8 @@
+# cat=access/enable/10; type=string; label=Publishable key: The Stripe publishable key (pk_...) the browser needs to render the Express Checkout Element. Safe to expose to the client.
+publishableKey =
+
+# cat=access/enable/20; type=string; label=Secret key: The Stripe secret key (sk_...) used server-side to create the PaymentIntent that settles the wallet payment. Kept out of version control; stored in the Install Tool.
+secretKey =
+
+# cat=advanced/enable/10; type=string; label=API base URL override: Advanced. Overrides Stripe's API base URL, e.g. a proxy or a local mock server. Leave empty to use Stripe's default.
+apiBaseUrl =
