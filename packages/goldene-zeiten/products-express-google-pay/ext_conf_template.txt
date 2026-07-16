@@ -1,0 +1,23 @@
+# cat=access/enable/10; type=options[Test=TEST,Production=PRODUCTION]; label=Environment: TEST uses Google's test cards; PRODUCTION moves real money and needs an approved Google Pay merchant.
+environment = TEST
+
+# cat=access/enable/20; type=string; label=Google merchant id: The Google Pay merchant identifier (required in PRODUCTION).
+merchantId =
+
+# cat=access/enable/30; type=string; label=Merchant name: The store name shown in the Google Pay sheet.
+merchantName =
+
+# cat=access/enable/40; type=string; label=Merchant country code: The two-letter country the merchant is based in (e.g. DE).
+countryCode =
+
+# cat=access/enable/50; type=string; label=Tokenization gateway: The Google Pay tokenization gateway id your processor uses (PAYMENT_GATEWAY spec).
+gateway =
+
+# cat=access/enable/60; type=string; label=Gateway merchant id: Your merchant id at that gateway.
+gatewayMerchantId =
+
+# cat=access/enable/70; type=string; label=Processor base URL: Base URL of the processor that authorizes the Google Pay token. Point at your acquirer/PSP endpoint (or a local mock).
+apiBaseUrl =
+
+# cat=access/enable/80; type=string; label=Processor API key: Bearer credential the processor authorizes the requests with.
+apiKey =

@@ -1,0 +1,22 @@
+{
+  "priority": 5,
+  "request": {
+    "method": "POST",
+    "urlPath": "/express/google/googlepay/authorize",
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": "$[?(@.token == 'DECLINE-TOKEN')]"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "status": "declined",
+      "transactionId": ""
+    }
+  }
+}

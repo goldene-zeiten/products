@@ -1,0 +1,54 @@
+categories:
+  expressGooglePay:
+    label: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:category.expressGooglePay'
+    parent: payment
+
+settings:
+  products.express.googlepay.environment:
+    type: string
+    default: 'TEST'
+    label: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.environment'
+    description: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.environment.description'
+    category: expressGooglePay
+  products.express.googlepay.merchantId:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.merchantId'
+    description: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.merchantId.description'
+    category: expressGooglePay
+  products.express.googlepay.merchantName:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.merchantName'
+    description: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.merchantName.description'
+    category: expressGooglePay
+  products.express.googlepay.countryCode:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.countryCode'
+    description: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.countryCode.description'
+    category: expressGooglePay
+  products.express.googlepay.gateway:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.gateway'
+    description: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.gateway.description'
+    category: expressGooglePay
+  products.express.googlepay.gatewayMerchantId:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.gatewayMerchantId'
+    description: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.gatewayMerchantId.description'
+    category: expressGooglePay
+  products.express.googlepay.apiBaseUrl:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl'
+    description: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.apiBaseUrl.description'
+    category: expressGooglePay
+  products.express.googlepay.apiKey:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.apiKey'
+    description: 'LLL:EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf:setting.apiKey.description'
+    category: expressGooglePay

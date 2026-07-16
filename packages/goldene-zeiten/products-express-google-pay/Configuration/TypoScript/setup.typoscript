@@ -1,0 +1,36 @@
+plugin.tx_productsexpressgooglepay {
+    settings {
+        confirm {
+            pageType = {$plugin.tx_productsexpressgooglepay.settings.confirm.pageType}
+        }
+    }
+}
+
+# The Google Pay JS posts the authorized payment to this typeNum PAGE, which runs only the confirm action
+# and returns its JSON verbatim (disableAllHeaderCode). no_cache is mandatory: the action authorizes a
+# payment and creates an order.
+products_express_google_pay_confirm = PAGE
+products_express_google_pay_confirm {
+    typeNum = {$plugin.tx_productsexpressgooglepay.settings.confirm.pageType}
+    config {
+        disableAllHeaderCode = 1
+        xhtml_cleaning = 0
+        admPanel = 0
+        debug = 0
+        no_cache = 1
+    }
+    10 = USER
+    10 {
+        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+        extensionName = ProductsExpressGooglePay
+        pluginName = ExpressCheckout
+        vendorName = GoldeneZeiten
+        controller = ExpressCheckoutController
+        action = confirm
+        switchableControllerActions {
+            ExpressCheckoutController {
+                1 = confirm
+            }
+        }
+    }
+}

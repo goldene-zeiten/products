@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-express-google-pay
+label: Products Google Pay Express Checkout
+dependencies:
+  - goldene-zeiten/products-core

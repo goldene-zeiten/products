@@ -1,0 +1,22 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
+<f:if condition="{configuration}">
+    <f:asset.script identifier="products-express-google-pay"
+                    src="EXT:products_express_google_pay/Resources/Public/JavaScript/express-checkout.js" type="module" />
+    <div class="products-express-checkout products-express-checkout--google-pay"
+         data-google-pay-express-checkout
+         data-environment="{configuration.environment}"
+         data-merchant-id="{configuration.merchantId}"
+         data-merchant-name="{configuration.merchantName}"
+         data-gateway="{configuration.gateway}"
+         data-gateway-merchant-id="{configuration.gatewayMerchantId}"
+         data-country-code="{configuration.countryCode}"
+         data-currency="{configuration.currency}"
+         data-amount="{configuration.amount}"
+         data-basket-token="{basketToken}"
+         data-shipping-quote-url="{configuration.shippingQuoteUrl}"
+         data-confirm-url="{f:uri.action(action: 'confirm', pageType: settings.confirm.pageType)}"
+    ></div>
+</f:if>
+</html>

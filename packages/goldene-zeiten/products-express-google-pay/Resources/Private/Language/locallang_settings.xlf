@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_express_google_pay/Resources/Private/Language/locallang_settings.xlf" date="2026-07-17T12:00:00Z" product-name="products_express_google_pay">
+		<header/>
+		<body>
+			<trans-unit id="category.expressGooglePay" resname="category.expressGooglePay">
+				<source>Google Pay Express Checkout</source>
+			</trans-unit>
+			<trans-unit id="setting.environment" resname="setting.environment">
+				<source>Environment</source>
+			</trans-unit>
+			<trans-unit id="setting.environment.description" resname="setting.environment.description">
+				<source>TEST uses Google's test cards; PRODUCTION moves real money and needs an approved Google Pay merchant.</source>
+			</trans-unit>
+			<trans-unit id="setting.merchantId" resname="setting.merchantId">
+				<source>Google merchant id</source>
+			</trans-unit>
+			<trans-unit id="setting.merchantId.description" resname="setting.merchantId.description">
+				<source>The Google Pay merchant identifier (required in PRODUCTION).</source>
+			</trans-unit>
+			<trans-unit id="setting.merchantName" resname="setting.merchantName">
+				<source>Merchant name</source>
+			</trans-unit>
+			<trans-unit id="setting.merchantName.description" resname="setting.merchantName.description">
+				<source>The store name shown in the Google Pay sheet.</source>
+			</trans-unit>
+			<trans-unit id="setting.countryCode" resname="setting.countryCode">
+				<source>Merchant country code</source>
+			</trans-unit>
+			<trans-unit id="setting.countryCode.description" resname="setting.countryCode.description">
+				<source>The two-letter country the merchant is based in (e.g. DE).</source>
+			</trans-unit>
+			<trans-unit id="setting.gateway" resname="setting.gateway">
+				<source>Tokenization gateway</source>
+			</trans-unit>
+			<trans-unit id="setting.gateway.description" resname="setting.gateway.description">
+				<source>The Google Pay tokenization gateway id your processor uses (PAYMENT_GATEWAY spec).</source>
+			</trans-unit>
+			<trans-unit id="setting.gatewayMerchantId" resname="setting.gatewayMerchantId">
+				<source>Gateway merchant id</source>
+			</trans-unit>
+			<trans-unit id="setting.gatewayMerchantId.description" resname="setting.gatewayMerchantId.description">
+				<source>Your merchant id at that gateway.</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl" resname="setting.apiBaseUrl">
+				<source>Processor base URL</source>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl.description" resname="setting.apiBaseUrl.description">
+				<source>Base URL of the processor that authorizes the Google Pay token. Point at your acquirer/PSP endpoint (or a local mock).</source>
+			</trans-unit>
+			<trans-unit id="setting.apiKey" resname="setting.apiKey">
+				<source>Processor API key</source>
+			</trans-unit>
+			<trans-unit id="setting.apiKey.description" resname="setting.apiKey.description">
+				<source>Bearer credential the processor authorizes the requests with.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

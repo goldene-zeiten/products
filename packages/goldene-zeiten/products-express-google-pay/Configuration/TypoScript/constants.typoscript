@@ -1,0 +1,8 @@
+plugin.tx_productsexpressgooglepay {
+    settings {
+        confirm {
+            # cat=plugin.tx_productsexpressgooglepay/confirm; type=int; label=Google Pay confirm page typeNum
+            pageType = 1784220870
+        }
+    }
+}
