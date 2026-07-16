@@ -69,6 +69,32 @@ final class PaymentReturnMiddlewareTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function aMultiHopReturnRedirectsBackToTheGatewayWithoutFinalizing(): void
+    {
+        $response = $this->get(PaymentReturnMiddleware::class)->process(
+            $this->request(PaymentUrlFactory::RETURN_PATH, $this->validToken(2), [], 2),
+            $this->failingHandler()
+        );
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame('https://gateway.example/second-hop', $response->getHeaderLine('location'));
+        $this->assertSame(PaymentStatus::OPEN, $this->fetchOrder(2)->getPaymentStatus());
+    }
+
+    #[Test]
+    public function theSecondLegOfAMultiHopReturnFinalizesAndRedirectsToThankYou(): void
+    {
+        $response = $this->get(PaymentReturnMiddleware::class)->process(
+            $this->request(PaymentUrlFactory::RETURN_PATH, $this->validToken(2), ['leg' => 'second'], 2),
+            $this->failingHandler()
+        );
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertStringContainsString('thankYou', urldecode($response->getHeaderLine('location')));
+        $this->assertSame(PaymentStatus::PAID, $this->fetchOrder(2)->getPaymentStatus());
+    }
+
+    #[Test]
     public function cancelLeavesTheOrderOpenAndRedirectsToPayment(): void
     {
         $response = $this->get(PaymentReturnMiddleware::class)->process(
@@ -93,15 +119,15 @@ final class PaymentReturnMiddlewareTest extends AbstractFunctionalTestCase
         $this->assertSame('PASSED-THROUGH', (string)$response->getBody());
     }
 
-    private function validToken(): string
+    private function validToken(int $uid = 1): string
     {
-        return $this->get(PaymentTokenService::class)->generateToken($this->fetchOrder(1));
+        return $this->get(PaymentTokenService::class)->generateToken($this->fetchOrder($uid));
     }
 
     /**
      * @param array<string, string> $extraQuery parameters a real gateway would append to the return URL
      */
-    private function request(string $path, string $token, array $extraQuery = []): ServerRequestInterface
+    private function request(string $path, string $token, array $extraQuery = [], int $orderUid = 1): ServerRequestInterface
     {
         $site = new Site('products', 1, [
             'base' => 'http://localhost/',
@@ -119,7 +145,7 @@ final class PaymentReturnMiddlewareTest extends AbstractFunctionalTestCase
 
         return (new ServerRequest('http://localhost' . $path))
             ->withAttribute('site', $site)
-            ->withQueryParams(['order' => '1', 'signature' => $token, ...$extraQuery]);
+            ->withQueryParams(['order' => (string)$orderUid, 'signature' => $token, ...$extraQuery]);
     }
 
     private function failingHandler(): RequestHandlerInterface

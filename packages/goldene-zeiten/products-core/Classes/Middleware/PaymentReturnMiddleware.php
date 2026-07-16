@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Middleware;
 
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentResultState;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentCallbackException;
 use GoldeneZeiten\Products\Core\Payment\PaymentCallbackService;
 use GoldeneZeiten\Products\Core\Payment\PaymentUrlFactory;
@@ -54,13 +55,18 @@ final readonly class PaymentReturnMiddleware implements MiddlewareInterface
     private function finalize(Site $site, int $orderUid, string $token, ServerRequestInterface $request): ResponseInterface
     {
         try {
-            $order = $this->paymentCallbackService->handleReturn($orderUid, $token, $request);
+            $result = $this->paymentCallbackService->handleReturn($orderUid, $token, $request);
         } catch (PaymentCallbackException | OrderPlacementExceptionInterface) {
             return new RedirectResponse($this->paymentUrlFactory->checkoutStepUrl($site, 'payment'));
         }
 
+        // A multi-hop gateway (Amazon Pay) asks for one more redirect back to itself before it settles.
+        if ($result->getState() === PaymentResultState::REDIRECT_REQUIRED) {
+            return new RedirectResponse($result->getRedirectUrl());
+        }
+
         return new RedirectResponse(
-            $this->paymentUrlFactory->checkoutStepUrl($site, 'thankYou', ['order' => (int)$order->getUid()])
+            $this->paymentUrlFactory->checkoutStepUrl($site, 'thankYou', ['order' => $orderUid])
         );
     }
 

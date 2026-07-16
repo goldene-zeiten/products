@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Payment;
 
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentResultState;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentCallbackException;
@@ -32,13 +33,19 @@ final class PaymentCallbackService
         private readonly OrderFinalizationService $orderFinalizationService
     ) {}
 
-    public function handleReturn(int $orderUid, string $token, ServerRequestInterface $request): Order
+    public function handleReturn(int $orderUid, string $token, ServerRequestInterface $request): PaymentResult
     {
         $order = $this->resolveOrder($orderUid, $token);
         $paymentResult = $this->redirectMethodFor($order)->handleReturn($request, $order);
-        $this->orderFinalizationService->finalize($order, $paymentResult, $request);
 
-        return $order;
+        // A multi-hop gateway (Amazon Pay) returns the customer once to settle the amount, then needs a
+        // second redirect back to itself before the payment exists; finalizing on that first return would
+        // confirm an unpaid order. Only a settled - or failed - result finalizes {@see PaymentReturnMiddleware}.
+        if ($paymentResult->getState() !== PaymentResultState::REDIRECT_REQUIRED) {
+            $this->orderFinalizationService->finalize($order, $paymentResult, $request);
+        }
+
+        return $paymentResult;
     }
 
     public function handleWebhook(int $orderUid, string $token, ServerRequestInterface $request): PaymentResult
