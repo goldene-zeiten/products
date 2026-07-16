@@ -1,0 +1,23 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/express/paypal/v2/checkout/orders/PAYPAL-EXPRESS-ORDER-DECLINE/capture"
+  },
+  "response": {
+    "status": 422,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "name": "UNPROCESSABLE_ENTITY",
+      "details": [
+        {
+          "issue": "INSTRUMENT_DECLINED",
+          "description": "The instrument presented was either declined by the processor or bank, or it can't be used for this payment."
+        }
+      ],
+      "message": "The requested action could not be performed, semantically incorrect, or failed business validation."
+    }
+  }
+}

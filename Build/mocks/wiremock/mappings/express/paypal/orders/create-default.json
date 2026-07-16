@@ -1,0 +1,17 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/express/paypal/v2/checkout/orders"
+  },
+  "response": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "PAYPAL-EXPRESS-ORDER-1",
+      "status": "CREATED"
+    }
+  }
+}

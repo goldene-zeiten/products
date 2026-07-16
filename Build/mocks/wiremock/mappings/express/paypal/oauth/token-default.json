@@ -1,0 +1,20 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/express/paypal/v1/oauth2/token"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "scope": "https://uri.paypal.com/services/checkout/one-click-with-merchant-issued-token",
+      "access_token": "MOCK-EXPRESS-ACCESS-TOKEN",
+      "token_type": "Bearer",
+      "app_id": "APP-MOCK",
+      "expires_in": "3599"
+    }
+  }
+}
