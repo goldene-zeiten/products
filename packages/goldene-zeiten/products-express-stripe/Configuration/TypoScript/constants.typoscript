@@ -1,0 +1,8 @@
+plugin.tx_productsexpressstripe {
+    settings {
+        confirm {
+            # cat=plugin.tx_productsexpressstripe/confirm; type=int; label=Express confirm page typeNum
+            pageType = 1784220800
+        }
+    }
+}
