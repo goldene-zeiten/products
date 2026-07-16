@@ -11,9 +11,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
 use GoldeneZeiten\Products\Core\Event\EnrichCheckoutReviewEvent;
-use GoldeneZeiten\Products\Core\Payment\Exception\PaymentCallbackException;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException;
-use GoldeneZeiten\Products\Core\Payment\PaymentCallbackService;
 use GoldeneZeiten\Products\Core\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
@@ -38,7 +36,6 @@ final class CheckoutController extends ActionController
     public function __construct(
         private readonly CheckoutService $checkoutService,
         private readonly PaymentMethodRegistry $paymentMethodRegistry,
-        private readonly PaymentCallbackService $paymentCallbackService,
         private readonly PaymentContextFactory $paymentContextFactory,
         private readonly OrderPlacementService $orderPlacementService,
         private readonly FrontendUserResolver $frontendUserResolver,
@@ -215,37 +212,6 @@ final class CheckoutController extends ActionController
         }
 
         return $this->redirect('thankYou', null, null, ['order' => $result->getOrder()->getUid()]);
-    }
-
-    /**
-     * Where a redirect payment method sends the customer back to. The gateway decides the outcome, not
-     * this request - the payment method verifies it before the order is finalized.
-     */
-    public function paymentReturnAction(int $order = 0, string $token = ''): ResponseInterface
-    {
-        try {
-            $placedOrder = $this->paymentCallbackService->handleReturn($order, $token, $this->request);
-        } catch (PaymentCallbackException|OrderPlacementExceptionInterface $exception) {
-            $this->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
-            return $this->redirect('review');
-        }
-
-        return $this->redirect('thankYou', null, null, ['order' => $placedOrder->getUid()]);
-    }
-
-    /**
-     * Where a redirect payment method sends the customer that abandoned the payment. The order stays as
-     * it is, so they can pick another method and try again.
-     */
-    public function paymentCancelAction(int $order = 0, string $token = ''): ResponseInterface
-    {
-        try {
-            $this->paymentCallbackService->resolveOrder($order, $token);
-        } catch (PaymentCallbackException $exception) {
-            $this->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
-        }
-
-        return $this->redirect('payment');
     }
 
     public function thankYouAction(int $order): ResponseInterface
