@@ -325,11 +325,11 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::LEGACY_MM_TABLE);
         $queryBuilder->getRestrictions()->removeAll();
-        $rows = $queryBuilder->select('*')->from(self::LEGACY_MM_TABLE)
+        $result = $queryBuilder->select('*')->from(self::LEGACY_MM_TABLE)
             ->andWhere($queryBuilder->expr()->eq('deleted', 0))
             ->andWhere($queryBuilder->expr()->eq('uid_local', $queryBuilder->createNamedParameter($legacyOrderUid)))
-            ->executeQuery()->fetchAllAssociative();
-        foreach ($rows as $row) {
+            ->executeQuery();
+        while ($row = $result->fetchAssociative()) {
             $this->migrateItem($row, $orderUid, $pid);
         }
     }

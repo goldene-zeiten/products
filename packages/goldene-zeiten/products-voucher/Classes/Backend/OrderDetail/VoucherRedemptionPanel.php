@@ -55,21 +55,21 @@ final readonly class VoucherRedemptionPanel implements OrderDetailPanelInterface
     private function fetchRedemptions(int $orderUid): array
     {
         $queryBuilder = $this->queryBuilderFor(self::REDEMPTION_TABLE);
-        $rows = $queryBuilder
+        $result = $queryBuilder
             ->select('*')
             ->from(self::REDEMPTION_TABLE)
             ->where($queryBuilder->expr()->eq('order_uid', $queryBuilder->createNamedParameter($orderUid, Connection::PARAM_INT)))
-            ->executeQuery()
-            ->fetchAllAssociative();
+            ->executeQuery();
 
-        return array_map(
-            static fn(array $row): array => [
+        $redemptions = [];
+        while ($row = $result->fetchAssociative()) {
+            $redemptions[] = [
                 'voucherCode' => (string)$row['voucher_code'],
                 'discountTotalCents' => (int)$row['discount_total'],
                 'redeemedAt' => (int)($row['redeemed_at'] ?? 0) > 0 ? date('Y-m-d H:i', (int)$row['redeemed_at']) : null,
-            ],
-            $rows,
-        );
+            ];
+        }
+        return $redemptions;
     }
 
     /**

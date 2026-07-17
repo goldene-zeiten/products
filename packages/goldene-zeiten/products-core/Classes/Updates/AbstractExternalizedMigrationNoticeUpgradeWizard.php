@@ -126,16 +126,15 @@ abstract class AbstractExternalizedMigrationNoticeUpgradeWizard implements Upgra
      */
     private function columnIsPopulated(string $table, string $column): bool
     {
-        $values = $this->connectionPool
+        $result = $this->connectionPool
             ->getConnectionForTable($table)
             ->createQueryBuilder()
             ->select($column)
             ->distinct()
             ->from($table)
-            ->executeQuery()
-            ->fetchFirstColumn();
+            ->executeQuery();
 
-        foreach ($values as $value) {
+        while (($value = $result->fetchOne()) !== false) {
             if ($value !== null && (string)$value !== '' && (string)$value !== '0') {
                 return true;
             }

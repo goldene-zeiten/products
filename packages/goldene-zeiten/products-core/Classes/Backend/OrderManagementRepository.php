@@ -33,8 +33,12 @@ final class OrderManagementRepository
     {
         $queryBuilder = $this->baseQueryBuilder();
         $this->applyFilter($queryBuilder, $filter);
-        $rows = $queryBuilder->orderBy('order_date', 'DESC')->setMaxResults(100)->executeQuery()->fetchAllAssociative();
-        return array_map($this->mapRow(...), $rows);
+        $result = $queryBuilder->orderBy('order_date', 'DESC')->setMaxResults(100)->executeQuery();
+        $orders = [];
+        while ($row = $result->fetchAssociative()) {
+            $orders[] = $this->mapRow($row);
+        }
+        return $orders;
     }
 
     /**

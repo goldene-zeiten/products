@@ -64,14 +64,17 @@ final class ProductArchiveService
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
-        $rows = $queryBuilder->select('uid')
+        $result = $queryBuilder->select('uid')
             ->from($table)
             ->where(
                 $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pid, ParameterType::INTEGER)),
                 $queryBuilder->expr()->lt('crdate', $queryBuilder->createNamedParameter($cutoff, ParameterType::INTEGER))
             )
-            ->executeQuery()
-            ->fetchFirstColumn();
-        return array_map(intval(...), $rows);
+            ->executeQuery();
+        $uids = [];
+        while (($uid = $result->fetchOne()) !== false) {
+            $uids[] = (int)$uid;
+        }
+        return $uids;
     }
 }

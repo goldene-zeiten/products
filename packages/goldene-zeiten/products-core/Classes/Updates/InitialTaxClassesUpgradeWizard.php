@@ -85,12 +85,15 @@ final class InitialTaxClassesUpgradeWizard implements UpgradeWizardInterface, Re
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
         $queryBuilder->getRestrictions()->removeAll();
-        $rows = $queryBuilder->select('code')
+        $result = $queryBuilder->select('code')
             ->from(self::TABLE)
             ->andWhere($queryBuilder->expr()->eq('deleted', 0))
-            ->executeQuery()
-            ->fetchFirstColumn();
-        return array_map('strval', $rows);
+            ->executeQuery();
+        $codes = [];
+        while (($code = $result->fetchOne()) !== false) {
+            $codes[] = (string)$code;
+        }
+        return $codes;
     }
 
     private function insertTaxClass(string $code, int $pid): void
