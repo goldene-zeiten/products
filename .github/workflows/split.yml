@@ -71,6 +71,9 @@ jobs:
           - package: products-express-stripe
             directory: packages/goldene-zeiten/products-express-stripe
             repository: products-express-stripe
+          - package: products-express-paypal
+            directory: packages/goldene-zeiten/products-express-paypal
+            repository: products-express-paypal
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
