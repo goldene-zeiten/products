@@ -688,7 +688,7 @@ case ${TEST_SUITE} in
             [ -d "${DOCUMENTATION_DIR}" ] || continue
             PACKAGE_DIR="$(dirname "${DOCUMENTATION_DIR}")"
             echo "Rendering ${PACKAGE_DIR#"${ROOT_DIR}/"}"
-            ${CONTAINER_BIN} run ${CONTAINER_INTERACTIVE} --pull always -v ${PACKAGE_DIR}:/project -it ghcr.io/typo3-documentation/render-guides:latest --config=Documentation
+            ${CONTAINER_BIN} run ${CONTAINER_INTERACTIVE} --pull always -v ${PACKAGE_DIR}:/project -it ghcr.io/typo3-documentation/render-guides:latest --config=Documentation --no-progress --fail-on-log
             [ $? -eq 0 ] || SUITE_EXIT_CODE=$?
         done
         ;;
