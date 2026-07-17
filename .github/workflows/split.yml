@@ -93,3 +93,24 @@ jobs:
           user_email: "noreply@goldene-zeiten.de"
           # Only set on tag pushes: this is what Packagist publishes as a release.
           tag: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
+
+      # The monorepo-split action exits 0 even when its git push is rejected - an empty target repository,
+      # a token without access to that repository, or a token missing the `workflow` scope needed to push
+      # each package's .github/workflows/publish.yml all leave the mirror empty or frozen at an older commit
+      # while the step above still reports success. This check is the real gate: it clones the mirror and
+      # fails the job unless its content byte-matches the package directory that was just split.
+      - name: "Verify goldene-zeiten/${{ matrix.repository }} received the split"
+        run: |
+          set -euo pipefail
+          mirror="https://github.com/goldene-zeiten/${{ matrix.repository }}.git"
+          work="$(mktemp -d)"
+          if ! git clone --quiet --depth 1 "$mirror" "$work/mirror"; then
+            echo "::error title=Split not delivered::goldene-zeiten/${{ matrix.repository }} could not be cloned - the split did not deliver it (missing repository, or the token lacks access to it)."
+            exit 1
+          fi
+          rm -rf "$work/mirror/.git"
+          if ! diff -rq -x '.git' -x 'Documentation-GENERATED-temp' "${{ matrix.directory }}" "$work/mirror"; then
+            echo "::error title=Split out of sync::goldene-zeiten/${{ matrix.repository }} does not match ${{ matrix.directory }} - the push in the split step above did not land (token repository access, the 'workflow' scope for publish.yml, or branch protection)."
+            exit 1
+          fi
+          echo "goldene-zeiten/${{ matrix.repository }} is in sync with ${{ matrix.directory }}."
