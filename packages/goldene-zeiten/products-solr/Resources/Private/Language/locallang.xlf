@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_solr/Resources/Private/Language/locallang.xlf" date="2026-07-17T12:00:00Z" product-name="products_solr">
+		<header/>
+		<body>
+			<trans-unit id="facet.category" resname="facet.category">
+				<source>Category</source>
+			</trans-unit>
+			<trans-unit id="facet.categoryTree" resname="facet.categoryTree">
+				<source>Categories</source>
+			</trans-unit>
+			<trans-unit id="facet.attribute" resname="facet.attribute">
+				<source>Attributes</source>
+			</trans-unit>
+			<trans-unit id="facet.price" resname="facet.price">
+				<source>Price</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

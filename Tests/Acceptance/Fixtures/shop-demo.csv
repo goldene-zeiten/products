@@ -1,22 +1,22 @@
-"pages",,,,,,
-,"uid","pid","sorting","deleted","title","slug"
-,1,0,256,0,"Home","/"
-,2,1,256,0,"Shop","/shop"
-,4,1,768,0,"Categories","/categories"
-,5,1,1024,0,"Product","/product"
-,6,1,1280,0,"Basket","/basket"
-,7,1,1536,0,"Checkout","/checkout"
-,8,1,1792,0,"Order History","/order-history"
-,9,1,2048,0,"Login","/login"
-,10,1,2304,0,"Cancel Order","/cancel-order"
-,11,1,2560,0,"Wishlist","/wishlist"
-,12,1,2816,0,"Recently Viewed","/recently-viewed"
-,13,1,3072,0,"Most Viewed","/most-viewed"
-,14,1,3328,0,"My Most Viewed","/my-most-viewed"
+"pages",,,,,,,
+,"uid","pid","sorting","deleted","title","slug","is_siteroot"
+,1,0,256,0,"Home","/",1
+,2,1,256,0,"Shop","/shop",0
+,4,1,768,0,"Categories","/categories",0
+,5,1,1024,0,"Product","/product",0
+,6,1,1280,0,"Basket","/basket",0
+,7,1,1536,0,"Checkout","/checkout",0
+,8,1,1792,0,"Order History","/order-history",0
+,9,1,2048,0,"Login","/login",0
+,10,1,2304,0,"Cancel Order","/cancel-order",0
+,11,1,2560,0,"Wishlist","/wishlist",0
+,12,1,2816,0,"Recently Viewed","/recently-viewed",0
+,13,1,3072,0,"Most Viewed","/most-viewed",0
+,14,1,3328,0,"My Most Viewed","/my-most-viewed",0
 
 "sys_template",,,,,,,
 ,"uid","pid","title","root","clear","include_static_file","config"
-,1,1,"Products Acceptance","1",3,"EXT:fluid_styled_content/Configuration/TypoScript,EXT:products_core/Configuration/TypoScript,EXT:products_search/Configuration/TypoScript,EXT:products_recently_viewed/Configuration/TypoScript,EXT:products_wishlist/Configuration/TypoScript,EXT:products_credit_points/Configuration/TypoScript,EXT:products_voucher/Configuration/TypoScript","page = PAGE
+,1,1,"Products Acceptance","1",3,"EXT:fluid_styled_content/Configuration/TypoScript,EXT:products_core/Configuration/TypoScript,EXT:products_search/Configuration/TypoScript,EXT:products_recently_viewed/Configuration/TypoScript,EXT:products_wishlist/Configuration/TypoScript,EXT:products_credit_points/Configuration/TypoScript,EXT:products_voucher/Configuration/TypoScript,EXT:solr/Configuration/TypoScript/Solr,EXT:products_solr/Configuration/TypoScript","page = PAGE
 page.10 < styles.content.get
 plugin.tx_productscore.persistence.storagePid = 2
 plugin.tx_productscore.settings.pids.storageFolder = 2

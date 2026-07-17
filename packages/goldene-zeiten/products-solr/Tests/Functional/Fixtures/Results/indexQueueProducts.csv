@@ -1,0 +1,4 @@
+"tx_solr_indexqueue_item",,,,
+,"root","item_type","item_uid","indexing_configuration","indexed"
+,1,"tx_products_domain_model_product",1,"products",0
+,1,"tx_products_domain_model_product",2,"products",0

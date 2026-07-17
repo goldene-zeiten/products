@@ -45,6 +45,7 @@ case "${COMBO}" in
     stripe) COMBO_PACKAGES="goldene-zeiten/products-payment-stripe" ;;
     klarna) COMBO_PACKAGES="goldene-zeiten/products-payment-klarna" ;;
     amazon) COMBO_PACKAGES="goldene-zeiten/products-payment-amazon" ;;
+    solr) COMBO_PACKAGES="goldene-zeiten/products-solr goldene-zeiten/products-solr-index-test" ;;
     ups) COMBO_PACKAGES="goldene-zeiten/products-shipping-ups" ;;
     dhl) COMBO_PACKAGES="goldene-zeiten/products-shipping-dhl-express" ;;
     dhl-stripe) COMBO_PACKAGES="goldene-zeiten/products-shipping-dhl-express goldene-zeiten/products-payment-stripe" ;;
@@ -73,8 +74,9 @@ cat > "${INSTANCE_PATH}/composer.json" <<EOF
     "description": "Disposable TYPO3 instance for EXT:products Playwright acceptance tests. Rebuilt by Tests/Acceptance/setupInstance.sh on every run - never committed.",
     "license": "GPL-2.0-or-later",
     "repositories": [
-        {"type": "path", "url": "${ROOT_DIR}/packages/*/*", "options": {"symlink": true, "versions": {"goldene-zeiten/products-api-client": "1.0.0", "goldene-zeiten/products-core": "1.0.0", "goldene-zeiten/products-search": "1.0.0", "goldene-zeiten/products-recently-viewed": "1.0.0", "goldene-zeiten/products-wishlist": "1.0.0", "goldene-zeiten/products-credit-points": "1.0.0", "goldene-zeiten/products-voucher": "1.0.0", "goldene-zeiten/products-watermark": "1.0.0", "goldene-zeiten/products-shipping-ups": "1.0.0", "goldene-zeiten/products-shipping-dhl-express": "1.0.0", "goldene-zeiten/products-payment-paypal": "1.0.0", "goldene-zeiten/products-payment-stripe": "1.0.0", "goldene-zeiten/products-payment-klarna": "1.0.0", "goldene-zeiten/products-payment-amazon": "1.0.0"}}},
-        {"type": "path", "url": "${ROOT_DIR}/Tests/Acceptance/Packages/dataset_import", "options": {"symlink": true}}
+        {"type": "path", "url": "${ROOT_DIR}/packages/*/*", "options": {"symlink": true, "versions": {"goldene-zeiten/products-api-client": "1.0.0", "goldene-zeiten/products-core": "1.0.0", "goldene-zeiten/products-search": "1.0.0", "goldene-zeiten/products-solr": "1.0.0", "goldene-zeiten/products-recently-viewed": "1.0.0", "goldene-zeiten/products-wishlist": "1.0.0", "goldene-zeiten/products-credit-points": "1.0.0", "goldene-zeiten/products-voucher": "1.0.0", "goldene-zeiten/products-watermark": "1.0.0", "goldene-zeiten/products-shipping-ups": "1.0.0", "goldene-zeiten/products-shipping-dhl-express": "1.0.0", "goldene-zeiten/products-payment-paypal": "1.0.0", "goldene-zeiten/products-payment-stripe": "1.0.0", "goldene-zeiten/products-payment-klarna": "1.0.0", "goldene-zeiten/products-payment-amazon": "1.0.0"}}},
+        {"type": "path", "url": "${ROOT_DIR}/Tests/Acceptance/Packages/dataset_import", "options": {"symlink": true}},
+        {"type": "path", "url": "${ROOT_DIR}/Tests/Acceptance/Packages/solr_index", "options": {"symlink": true}}
     ],
     "require": {
 ${REQUIRE}
@@ -201,9 +203,31 @@ else
 fi
 
 mkdir -p config/sites/products-acceptance
-cp "${ROOT_DIR}/Tests/Acceptance/Fixtures/site-config.yaml" config/sites/products-acceptance/config.yaml
+if [ "${COMBO}" = "solr" ]; then
+    # The Solr combination needs a site that depends on the products-solr set and carries the live
+    # Solr connection coordinates. Substitute the container name/port (threaded in as SOLR_HOST/SOLR_PORT).
+    cp "${ROOT_DIR}/Tests/Acceptance/Fixtures/site-config-solr.yaml" config/sites/products-acceptance/config.yaml
+    sed -i -e "s/___SOLR_HOST___/${SOLR_HOST}/g" -e "s/___SOLR_PORT___/${SOLR_PORT}/g" config/sites/products-acceptance/config.yaml
+    # A relative "/" base is enough for the browser but not for EXT:solr's in-process indexing sub-request;
+    # pin the fully qualified per-run acceptance web host (escaping the slashes for sed).
+    sed -i -e "s#___BASE_URL___#${ACCEPTANCE_BASE_URL}#g" config/sites/products-acceptance/config.yaml
+else
+    cp "${ROOT_DIR}/Tests/Acceptance/Fixtures/site-config.yaml" config/sites/products-acceptance/config.yaml
+fi
 
 vendor/bin/typo3 dataset:import "${ROOT_DIR}/Tests/Acceptance/Fixtures/shop-demo.csv"
+
+if [ "${COMBO}" = "solr" ]; then
+    # Add the Solr search results plugin to the Shop page, then fill EXT:solr's index queue and index
+    # the product records into the live Solr server so the Playwright spec can query them.
+    vendor/bin/typo3 dataset:import "${ROOT_DIR}/Tests/Acceptance/Fixtures/shop-demo-solr.csv"
+    # The site configuration (with the products-solr set that carries plugin.tx_solr.index.queue.*) was
+    # written after `typo3 setup` warmed the caches, so the site-set TypoScript is not yet reflected in
+    # the cached configuration EXT:solr reads when building the root page's Solr config from CLI. Flush
+    # so the index-queue configuration is actually present, otherwise the queue initializes zero items.
+    vendor/bin/typo3 cache:flush
+    vendor/bin/typo3 solr:index
+fi
 
 # Suppress a favicon 404 in the browser console, same reasoning as TYPO3 core's own acceptance
 # instance setup (Build/Scripts/setupAcceptanceComposer.sh).

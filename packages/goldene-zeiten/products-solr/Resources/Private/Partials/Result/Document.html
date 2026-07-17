@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+    xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+    xmlns:s="http://typo3.org/ns/ApacheSolrForTypo3/Solr/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:section name="Document">
+
+    <div class="product-search-result card mb-3 results-entry"
+            data-document-id="{document.id}"
+            data-document-url="{document.url}"
+    >
+        <div class="row g-0">
+            <f:if condition="{document.image}">
+                <div class="col-md-3">
+                    <f:image src="{document.image}" alt="{document.title}" width="300c" height="200c" class="card-img" />
+                </div>
+            </f:if>
+            <div class="col">
+                <div class="card-body">
+                    <h3 class="card-title h5">
+                        <a href="{s:uri.result.addSearchWordList(url:document.url, searchWords:resultSet.usedQuery.query)}">{document.title}</a>
+                    </h3>
+                    <f:if condition="{document.subTitle}">
+                        <h4 class="card-subtitle h6 text-muted mb-2">{document.subTitle}</h4>
+                    </f:if>
+                    <f:if condition="{document.price}">
+                        <p class="card-text product-search-result__price">
+                            <f:format.currency currencySign="" decimalSeparator="." thousandsSeparator="">{document.price}</f:format.currency>
+                        </p>
+                    </f:if>
+                    <p class="card-text results-teaser">{s:document.highlightResult(resultSet:resultSet, document:document, fieldName:'content')}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</f:section>
+
+</html>

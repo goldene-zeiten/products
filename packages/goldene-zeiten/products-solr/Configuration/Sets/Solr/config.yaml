@@ -1,0 +1,11 @@
+name: goldene-zeiten/products-solr
+label: Products Solr Search
+dependencies:
+  - goldene-zeiten/products-core
+optionalDependencies:
+  # EXT:solr ships its "Solr search - Base Configuration" site set only on TYPO3 14, not on 13.1. Declaring
+  # it as an OPTIONAL dependency keeps this set valid on 13 (absent optional dependencies are ignored) while
+  # on 14 it orders this set AFTER EXT:solr's set, so all of EXT:solr's set contributions (TypoScript AND
+  # page.tsconfig) are already loaded before ours layer on top. The TYPO3-13 fallback that statically imports
+  # EXT:solr's base TypoScript lives in setup.typoscript / constants.typoscript, gated to that major.
+  - apache-solr-for-typo3/solr

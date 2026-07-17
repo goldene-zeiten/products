@@ -1,0 +1,6 @@
+# See setup.typoscript for why EXT:solr's base constants are imported here only on TYPO3 13: on 14 they
+# arrive through EXT:solr's own site set (this set's optional dependency) and re-importing would double-load.
+[typo3.version matches "/^13\./"]
+@import 'EXT:solr/Configuration/TypoScript/Solr/constants.typoscript'
+[END]
+@import 'EXT:products_solr/Configuration/TypoScript/constants.typoscript'

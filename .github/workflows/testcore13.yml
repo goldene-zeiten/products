@@ -152,6 +152,9 @@ jobs:
           - { combo: dhl-stripe, db: sqlite }
           - { combo: ups-paypal, db: sqlite }
           - { combo: all, db: sqlite }
+          # Solr runs a live Apache Solr container, so it is exercised on both the low and high PHP lane.
+          - { combo: solr, db: sqlite }
+          - { combo: solr, db: sqlite, php: '8.5' }
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -159,4 +162,4 @@ jobs:
       - name: "Acceptance ${{ matrix.combo }} (${{ matrix.db }})"
         env:
           PRODUCTS_COMBO: ${{ matrix.combo }}
-        run: "Build/Scripts/runTests.sh -b podman -t 13 -s acceptance -d ${{ matrix.db }}"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php || '8.2' }} -s acceptance -d ${{ matrix.db }}"
