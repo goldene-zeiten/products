@@ -1,0 +1,50 @@
+{
+  "name": "goldene-zeiten/products-solr",
+  "description": "Apache Solr backed product search for the Products TYPO3 shop system",
+  "type": "typo3-cms-extension",
+  "license": [
+    "GPL-2.0-or-later"
+  ],
+  "authors": [
+    {
+      "name": "Markus Hofmann",
+      "email": "typo3@calien.de",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^8.2 || ^8.3 || ^8.4 || ^8.5",
+    "apache-solr-for-typo3/solr": "^13.1.3 || 14.0.*@beta",
+    "goldene-zeiten/products-core": "^1.0",
+    "typo3/cms-core": "^13.4 || ^14.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\Solr\\": "Classes/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\Solr\\Tests\\": "Tests/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "typo3/cms-composer-installers": true,
+      "typo3/class-alias-loader": true
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "products_solr",
+      "version": "1.0.0",
+      "Package": {
+        "providesPackages": {}
+      }
+    },
+    "branch-alias": {
+      "dev-main": "1.0.x-dev"
+    }
+  }
+}

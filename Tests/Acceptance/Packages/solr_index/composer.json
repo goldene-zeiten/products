@@ -1,0 +1,24 @@
+{
+    "name": "goldene-zeiten/products-solr-index-test",
+    "version": "1.0.0",
+    "description": "CLI command that fills EXT:solr's index queue for the acceptance site and indexes it into the live Solr server. Dev-only, installed only for the Solr acceptance combination - EXT:solr itself ships no console command for this.",
+    "type": "typo3-cms-extension",
+    "license": [
+        "GPL-2.0-or-later"
+    ],
+    "require": {
+        "php": "^8.2 || ^8.3 || ^8.4 || ^8.5",
+        "typo3/cms-core": "^13.4 || ^14.3",
+        "apache-solr-for-typo3/solr": "^13.1.3 || 14.0.*@beta"
+    },
+    "autoload": {
+        "psr-4": {
+            "GoldeneZeiten\\ProductsSolrIndexTest\\": "Classes/"
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "products_solr_index_test"
+        }
+    }
+}

@@ -1,0 +1,183 @@
+plugin.tx_solr {
+
+    # ------------------------------------------------------------------------------------------
+    # Index Queue: product records -> Solr documents.
+    #
+    # The mapping reuses EXT:solr's shipped default schema fields wherever one exists (title,
+    # subTitle, description, content, category, price, url, image) and only falls back to a
+    # dynamic field (itemNumber_stringS, ean_stringS, *_boolS, attribute_stringM) where the
+    # default schema has none. The Solr server configset is EXT:solr's - do not change it.
+    #
+    # No additionalPageIds/initializer is needed: the product storage folder lives inside the
+    # site rootline (required for localization), so the default record initializer picks the
+    # records up by the configured table.
+    # ------------------------------------------------------------------------------------------
+    index.queue {
+        products = 1
+        products {
+            type = tx_products_domain_model_product
+            fields {
+                title = title
+                subTitle = subtitle
+                description = description
+
+                content = SOLR_CONTENT
+                content {
+                    cObject = COA
+                    cObject {
+                        10 = TEXT
+                        10 {
+                            field = title
+                            noTrimWrap = || |
+                        }
+                        20 = TEXT
+                        20 {
+                            field = subtitle
+                            noTrimWrap = || |
+                        }
+                        30 = TEXT
+                        30 {
+                            field = description
+                            stripHtml = 1
+                            noTrimWrap = || |
+                        }
+                        40 = TEXT
+                        40 {
+                            field = item_number
+                            noTrimWrap = || |
+                        }
+                        50 = TEXT
+                        50 {
+                            field = ean
+                            noTrimWrap = || |
+                        }
+                    }
+                }
+
+                itemNumber_stringS = item_number
+                ean_stringS = ean
+
+                price = price
+
+                isOffer_boolS = is_offer
+                isHighlight_boolS = is_highlight
+
+                # Flat category facet (category titles). SOLR_RELATION resolves the MM relation and
+                # indexes the related record's title instead of its uid.
+                category_stringM = SOLR_RELATION
+                category_stringM {
+                    localField = categories
+                    foreignLabelField = title
+                    multiValue = 1
+                }
+
+                # Hierarchical (tree) category facet. The depth-prefixed path format
+                # (0-/Root, 1-/Root/Child, ...) that Solr's hierarchy facet expects is walked up
+                # the parent chain in PHP - a flat MM cannot express it.
+                categoryPath_stringM = SOLR_MULTIVALUE
+                categoryPath_stringM {
+                    stdWrap.cObject = USER
+                    stdWrap.cObject.userFunc = GoldeneZeiten\Products\Solr\Indexing\ProductIndexFieldMapper->categoryPaths
+                    separator = |
+                }
+
+                # Product attribute/variant values (Product -> Article -> AttributeValue -> Attribute)
+                # for the attribute facet - a multi-hop traversal, also resolved in PHP.
+                attribute_stringM = SOLR_MULTIVALUE
+                attribute_stringM {
+                    stdWrap.cObject = USER
+                    stdWrap.cObject.userFunc = GoldeneZeiten\Products\Solr\Indexing\ProductIndexFieldMapper->attributeValues
+                    separator = |
+                }
+
+                # Speaking product detail URL, built exactly like the core catalog's product links:
+                # the same detail page constant and the ProductDetail plugin arguments, so the
+                # site's route enhancers rewrite it to the real product slug. EXT:solr resolves this
+                # typolink inside its own indexing request, so route enhancers apply on v13 and v14.
+                url = TEXT
+                url {
+                    typolink.parameter = {$plugin.tx_productscore.settings.pids.detailPage}
+                    typolink.additionalParams = &tx_productscore_productdetail[controller]=Product&tx_productscore_productdetail[action]=show&tx_productscore_productdetail[product]={field:uid}
+                    typolink.additionalParams.insertData = 1
+                    typolink.returnLast = url
+                    typolink.forceAbsoluteUrl = 1
+                }
+            }
+        }
+    }
+
+    # ------------------------------------------------------------------------------------------
+    # Search: results, template overrides and facets.
+    # ------------------------------------------------------------------------------------------
+    search {
+        targetPage = {$plugin.tx_solr.products.searchTargetPage}
+        results.resultsPerPage = {$plugin.tx_solr.products.resultsPerPage}
+
+        faceting = 1
+        faceting.facets {
+            category {
+                label = LLL:EXT:products_solr/Resources/Private/Language/locallang.xlf:facet.category
+                field = category_stringM
+                if.isTrue = {$plugin.tx_solr.products.categoryFacet.enable}
+            }
+
+            categoryTree {
+                label = LLL:EXT:products_solr/Resources/Private/Language/locallang.xlf:facet.categoryTree
+                field = categoryPath_stringM
+                type = hierarchy
+                # The generic Hierarchy partial renders the path segment labels directly. EXT:solr's other
+                # hierarchy partial, "Rootline", is page-specific: it pipes each label through
+                # lib.tx_solr.pagetitle (a page-uid HMENU), which this add-on's category-title paths are not.
+                partialName = Hierarchy
+                if.isTrue = {$plugin.tx_solr.products.categoryFacet.enable}
+            }
+
+            attribute {
+                label = LLL:EXT:products_solr/Resources/Private/Language/locallang.xlf:facet.attribute
+                field = attribute_stringM
+                if.isTrue = {$plugin.tx_solr.products.attributeFacet.enable}
+            }
+
+            price {
+                label = LLL:EXT:products_solr/Resources/Private/Language/locallang.xlf:facet.price
+                field = price
+                type = queryGroup
+                if.isTrue = {$plugin.tx_solr.products.priceFacet.enable}
+                queryGroup {
+                    below25.query = [* TO 25]
+                    from25to50.query = [25 TO 50]
+                    from50to100.query = [50 TO 100]
+                    from100to250.query = [100 TO 250]
+                    above250.query = [250 TO *]
+                }
+                renderingInstruction = CASE
+                renderingInstruction {
+                    key.field = optionValue
+                    default = TEXT
+                    default.field = optionValue
+                    below25 = TEXT
+                    below25.value = < 25
+                    from25to50 = TEXT
+                    from25to50.value = 25 – 50
+                    from50to100 = TEXT
+                    from50to100.value = 50 – 100
+                    from100to250 = TEXT
+                    from100to250.value = 100 – 250
+                    above250 = TEXT
+                    above250.value = > 250
+                }
+            }
+        }
+    }
+
+    # Product-styled result rendering: this extension's partial root path is searched first, so its
+    # Result/Document override replaces EXT:solr's generic result item with a product card built from
+    # the indexed fields (title, url, price, image). Everything else stays EXT:solr's own templates.
+    view {
+        templateRootPaths.100 = EXT:products_solr/Resources/Private/Templates/
+        partialRootPaths.100 = EXT:products_solr/Resources/Private/Partials/
+        layoutRootPaths.100 = EXT:products_solr/Resources/Private/Layouts/
+    }
+
+    logging.indexing.queue.products = 1
+}

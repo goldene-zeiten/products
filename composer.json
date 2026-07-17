@@ -19,6 +19,7 @@
     "goldene-zeiten/products-api-client": "^1.0",
     "goldene-zeiten/products-core": "^1.0",
     "goldene-zeiten/products-search": "^1.0",
+    "goldene-zeiten/products-solr": "^1.0",
     "goldene-zeiten/products-recently-viewed": "^1.0",
     "goldene-zeiten/products-wishlist": "^1.0",
     "goldene-zeiten/products-credit-points": "^1.0",
@@ -38,6 +39,7 @@
       "GoldeneZeiten\\Products\\Core\\Tests\\": "packages/goldene-zeiten/products-core/Tests/",
       "GoldeneZeiten\\Products\\ApiClient\\Tests\\": "packages/goldene-zeiten/products-api-client/Tests/",
       "GoldeneZeiten\\Products\\Search\\Tests\\": "packages/goldene-zeiten/products-search/Tests/",
+      "GoldeneZeiten\\Products\\Solr\\Tests\\": "packages/goldene-zeiten/products-solr/Tests/",
       "GoldeneZeiten\\Products\\Testing\\": "packages-dev/products_testing/Classes/",
       "GoldeneZeiten\\Products\\RecentlyViewed\\Tests\\": "packages/goldene-zeiten/products-recently-viewed/Tests/",
       "GoldeneZeiten\\Products\\Wishlist\\Tests\\": "packages/goldene-zeiten/products-wishlist/Tests/",
@@ -55,6 +57,7 @@
     }
   },
   "require-dev": {
+    "apache-solr-for-typo3/solr": "^13.1.3 || 14.0.*@beta",
     "friendsofphp/php-cs-fixer": "^3.64",
     "helmich/typo3-typoscript-lint": "^3.3",
     "phpstan/phpstan": "^2.1",
@@ -77,6 +80,7 @@
           "goldene-zeiten/products-api-client": "1.0.0",
           "goldene-zeiten/products-core": "1.0.0",
           "goldene-zeiten/products-search": "1.0.0",
+          "goldene-zeiten/products-solr": "1.0.0",
           "goldene-zeiten/products-recently-viewed": "1.0.0",
           "goldene-zeiten/products-wishlist": "1.0.0",
           "goldene-zeiten/products-credit-points": "1.0.0",

@@ -27,6 +27,31 @@ waitFor() {
     fi
 }
 
+waitForHttp() {
+    # A bare TCP check is not enough for Apache Solr: the JVM binds :8983 seconds before the Solr
+    # cores are actually loaded and answering requests, so indexing/queries fired in that window fail.
+    # Poll the cores STATUS admin endpoint until it answers HTTP 200 (up to ~2 min, covering the
+    # Java cold start). alpine:3.8 ships BusyBox wget, which exits non-zero until the endpoint is up.
+    local HOST=${1}
+    local PORT=${2}
+    local URLPATH=${3}
+    local TESTCOMMAND="
+        COUNT=0;
+        while ! wget -q -O /dev/null \"http://${HOST}:${PORT}${URLPATH}\"; do
+            if [ \"\${COUNT}\" -gt 60 ]; then
+              echo \"Can not reach http://${HOST}:${PORT}${URLPATH}. Aborting.\";
+              exit 1;
+            fi;
+            sleep 2;
+            COUNT=\$((COUNT + 1));
+        done;
+    "
+    ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name wait-for-http-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_ALPINE} /bin/sh -c "${TESTCOMMAND}"
+    if [[ $? -gt 0 ]]; then
+        kill -SIGINT -$$
+    fi
+}
+
 cleanUp() {
     ATTACHED_CONTAINERS=$(${CONTAINER_BIN} ps --filter network=${NETWORK} --format='{{.Names}}')
     for ATTACHED_CONTAINER in ${ATTACHED_CONTAINERS}; do
@@ -441,6 +466,14 @@ IMAGE_MARIADB="docker.io/mariadb:${DBMS_VERSION}"
 IMAGE_MYSQL="docker.io/mysql:${DBMS_VERSION}"
 IMAGE_POSTGRES="docker.io/postgres:${DBMS_VERSION}-alpine"
 IMAGE_WIREMOCK="docker.io/wiremock/wiremock:3.10.0"
+# The official TYPO3 Solr image ships the cores/configset matching its EXT:solr version, so the tag is
+# paired with the core version: EXT:solr 13.1 (Apache Solr 9) for TYPO3 13, EXT:solr 14 beta (Apache
+# Solr 10) for TYPO3 14. Only the acceptance suite drives a live Solr; functional never does.
+if [ "${CORE_VERSION}" = "14" ]; then
+    IMAGE_SOLR="docker.io/typo3solr/ext-solr:14.0.0-beta3"
+else
+    IMAGE_SOLR="docker.io/typo3solr/ext-solr:13.1.3"
+fi
 
 
 # Detect arm64 and use a seleniarm image.
@@ -493,6 +526,22 @@ case ${TEST_SUITE} in
         ${CONTAINER_BIN} run --name mock-${SUFFIX} --network ${NETWORK} -d -v ${ROOT_DIR}/Build/mocks/wiremock:/home/wiremock:ro ${IMAGE_WIREMOCK} >/dev/null
         waitFor mock-${SUFFIX} 8080
         ACCEPTANCE_SETUP_ENV="-e PRODUCTS_COMBO=${ACCEPTANCE_COMBO} -e MOCK_BASE_URL=http://mock-${SUFFIX}:8080"
+        # The Solr combination needs a live Apache Solr server. Start the official TYPO3 Solr image
+        # (default cores, no configset changes) and thread its coordinates into the instance setup, the
+        # web server and Playwright so the site's Solr connection resolves by container name.
+        ACCEPTANCE_RUN_ENV=""
+        if [ "${ACCEPTANCE_COMBO}" = "solr" ]; then
+            ${CONTAINER_BIN} run --name solr-${SUFFIX} --network ${NETWORK} -d ${IMAGE_SOLR} >/dev/null
+            waitFor solr-${SUFFIX} 8983
+            waitForHttp solr-${SUFFIX} 8983 "/solr/admin/cores?action=STATUS"
+            SOLR_ENV="-e SOLR_HOST=solr-${SUFFIX} -e SOLR_PORT=8983 -e SOLR_BASE_URL=http://solr-${SUFFIX}:8983/solr/"
+            # EXT:solr indexes each record through an in-process frontend sub-request and needs the site
+            # base to be a fully qualified URL (scheme + host) to build it - a relative "/" base fails.
+            # The acceptance frontend is served by acceptance-web-${SUFFIX} on 8080 (started below), which
+            # is also the host Playwright drives, so the Solr site base is pinned to exactly that.
+            ACCEPTANCE_SETUP_ENV="${ACCEPTANCE_SETUP_ENV} ${SOLR_ENV} -e ACCEPTANCE_BASE_URL=http://acceptance-web-${SUFFIX}:8080/"
+            ACCEPTANCE_RUN_ENV="${SOLR_ENV}"
+        fi
         echo "Acceptance combination: ${ACCEPTANCE_COMBO}"
         case ${DBMS} in
             mariadb)
@@ -515,9 +564,9 @@ case ${TEST_SUITE} in
             echo "Acceptance instance setup failed, aborting before starting the web server/Playwright." >&2
             SUITE_EXIT_CODE=${SETUP_EXIT_CODE}
         else
-            ${CONTAINER_BIN} run -d --name acceptance-web-${SUFFIX} --network ${NETWORK} -v ${ROOT_DIR}:${ROOT_DIR} -w ${ROOT_DIR} ${IMAGE_PHP} php -S 0.0.0.0:8080 -t .Build/Web/typo3temp/var/tests/acceptance/public .Build/Web/typo3temp/var/tests/acceptance/public/index.php >/dev/null
+            ${CONTAINER_BIN} run -d --name acceptance-web-${SUFFIX} --network ${NETWORK} ${ACCEPTANCE_RUN_ENV} -v ${ROOT_DIR}:${ROOT_DIR} -w ${ROOT_DIR} ${IMAGE_PHP} php -S 0.0.0.0:8080 -t .Build/Web/typo3temp/var/tests/acceptance/public .Build/Web/typo3temp/var/tests/acceptance/public/index.php >/dev/null
             waitFor acceptance-web-${SUFFIX} 8080
-            ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name playwright-${SUFFIX} -e PLAYWRIGHT_BASE_URL="http://acceptance-web-${SUFFIX}:8080/" -e PRODUCTS_COMBINATION="${ACCEPTANCE_COMBO}" -e MOCK_BASE_URL="http://mock-${SUFFIX}:8080" -e CI=1 ${IMAGE_PLAYWRIGHT} npx playwright test --config=Tests/Acceptance/playwright.config.js
+            ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name playwright-${SUFFIX} -e PLAYWRIGHT_BASE_URL="http://acceptance-web-${SUFFIX}:8080/" -e PRODUCTS_COMBINATION="${ACCEPTANCE_COMBO}" -e MOCK_BASE_URL="http://mock-${SUFFIX}:8080" ${ACCEPTANCE_RUN_ENV} -e CI=1 ${IMAGE_PLAYWRIGHT} npx playwright test --config=Tests/Acceptance/playwright.config.js
             SUITE_EXIT_CODE=$?
         fi
         ;;

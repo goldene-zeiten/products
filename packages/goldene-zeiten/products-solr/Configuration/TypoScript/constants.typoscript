@@ -1,0 +1,25 @@
+plugin.tx_solr {
+    products {
+        # cat=plugin.tx_solr.products//10; type=int+; label=Storage folder UID(s) holding the product records (comma separated). Empty indexes the whole site.
+        indexPageIds =
+
+        # cat=plugin.tx_solr.products//20; type=int; label=Search results target page UID
+        searchTargetPage = 0
+
+        # cat=plugin.tx_solr.products//30; type=int; label=Results per page
+        resultsPerPage = 12
+
+        priceFacet {
+            # cat=plugin.tx_solr.products//40; type=boolean; label=Enable the price range facet
+            enable = 1
+        }
+        categoryFacet {
+            # cat=plugin.tx_solr.products//50; type=boolean; label=Enable the category facet
+            enable = 1
+        }
+        attributeFacet {
+            # cat=plugin.tx_solr.products//60; type=boolean; label=Enable the product attribute facet
+            enable = 1
+        }
+    }
+}

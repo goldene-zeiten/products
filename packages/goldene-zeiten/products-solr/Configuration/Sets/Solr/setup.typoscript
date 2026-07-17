@@ -1,0 +1,8 @@
+# On TYPO3 14 EXT:solr ships its own site set ("apache-solr-for-typo3/solr"), declared as this set's
+# optional dependency, so its base TypoScript is already loaded before this file - importing it again would
+# double-load it. On TYPO3 13.1 EXT:solr ships no site set, so its base TypoScript is imported here instead.
+# The gate is therefore restricted to the TYPO3 13 branch; the product configuration below always loads.
+[typo3.version matches "/^13\./"]
+@import 'EXT:solr/Configuration/TypoScript/Solr/setup.typoscript'
+[END]
+@import 'EXT:products_solr/Configuration/TypoScript/setup.typoscript'

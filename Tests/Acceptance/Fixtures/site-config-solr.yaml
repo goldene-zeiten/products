@@ -1,0 +1,124 @@
+rootPageId: 1
+# A fully qualified base (scheme + host) is required so EXT:solr can build the in-process frontend
+# sub-request it renders every product record through when indexing. Substituted by setupInstance.sh
+# with the per-run acceptance web host (which is also the host Playwright drives).
+base: '___BASE_URL___'
+websiteTitle: 'Products Acceptance'
+# Activates the goldene-zeiten/products-core Site Set so `settings:` below (Site Settings, not the
+# classic TypoScript constants already included via the sys_template row in shop-demo.csv) can
+# actually resolve - see CreditPointsConfigurationFactoryEarningTiersTest for the same pattern.
+#
+# products.shipping.enabled is required here, not just as the legacy
+# `plugin.tx_productscore.settings.shipping.enabled = 1` TypoScript constant already set in
+# shop-demo.csv's sys_template row: since 56d53db, ProductsConfigurationFactory reads
+# shipping/handling/rounding straight from Site Settings (ConfigurationManagerInterface can never
+# see them - no TypoScript bridges them into plugin.tx_productscore.settings). Without this, every
+# checkout spec silently skipped the shipping-method step (isShippingEnabled() fell back to
+# false) and hung waiting for a shippingMethod radio that was never rendered.
+#
+# The payment/shipping add-on Site Sets are deliberately NOT listed here: which add-on is active is
+# decided per test combination by setupInstance.sh (env PRODUCTS_COMBO), which installs and configures
+# only that combination's packages via ExtensionConfiguration. The providers/methods are plain tagged
+# services that need no Site Set to function, so listing a set here would break every combination that
+# does not install it.
+#
+# Solr combination only (Tests/Acceptance/setupInstance.sh copies this file instead of
+# site-config.yaml when PRODUCTS_COMBO=solr). Unlike the payment/shipping add-on sets, the
+# products-solr set IS required to make the site's Solr connection, index-queue and search
+# TypoScript active - and it is loaded for this combination only, so a dedicated fixture is the
+# correct place to depend on it. On TYPO3 14 its optionalDependency pulls EXT:solr's own site set;
+# on 13 the set's gated import pulls EXT:solr's base TypoScript.
+dependencies:
+  - goldene-zeiten/products-core
+  - goldene-zeiten/products-search
+  - goldene-zeiten/products-recently-viewed
+  - goldene-zeiten/products-wishlist
+  - goldene-zeiten/products-credit-points
+  - goldene-zeiten/products-voucher
+  - goldene-zeiten/products-watermark
+  - goldene-zeiten/products-solr
+# Solr connection coordinates. The literal placeholders are substituted with the live Solr
+# container's name/port by setupInstance.sh (env SOLR_HOST/SOLR_PORT threaded from runTests.sh).
+solr_enabled_read: true
+solr_scheme_read: 'http'
+solr_host_read: '___SOLR_HOST___'
+solr_port_read: ___SOLR_PORT___
+solr_path_read: '/'
+settings:
+  products:
+    creditPoints:
+      enabled: true
+    shipping:
+      enabled: true
+    wishlist:
+      enabled: true
+    # PaymentUrlFactory reads the checkout page from Site Settings to build the redirect return/cancel
+    # URLs a gateway sends the customer back to; without it, a redirect payment method has nowhere to
+    # return to and initiate() fails.
+    pids:
+      checkoutPage: 7
+      storageFolder: 2
+languages:
+  -
+    title: English
+    enabled: true
+    languageId: 0
+    base: /
+    typo3Language: default
+    locale: en_US.UTF-8
+    iso-639-1: en
+    navigationTitle: English
+    hreflang: en-US
+    direction: ltr
+    flag: us
+    # The core name shipped by the typo3solr/ext-solr image for the English index.
+    solr_core_read: 'core_en'
+routeEnhancers:
+  ProductsDetail:
+    type: Extbase
+    extension: ProductsCore
+    plugin: ProductDetail
+    routes:
+      -
+        routePath: '/{product}'
+        _controller: 'Product::show'
+        _arguments:
+          product: product
+    aspects:
+      product:
+        type: PersistedAliasMapper
+        tableName: tx_products_domain_model_product
+        routeFieldName: slug
+  ProductsCategoryList:
+    type: Extbase
+    extension: ProductsCore
+    plugin: CategoryList
+    routes:
+      -
+        routePath: '/{category1}'
+        _controller: 'Category::list'
+        _arguments:
+          category1: category
+      -
+        routePath: '/{category1}/{category2}'
+        _controller: 'Category::list'
+        _arguments:
+          category2: category
+      -
+        routePath: '/{category1}/{category2}/{category3}'
+        _controller: 'Category::list'
+        _arguments:
+          category3: category
+    aspects:
+      category1:
+        type: PersistedAliasMapper
+        tableName: tx_products_domain_model_category
+        routeFieldName: slug
+      category2:
+        type: PersistedAliasMapper
+        tableName: tx_products_domain_model_category
+        routeFieldName: slug
+      category3:
+        type: PersistedAliasMapper
+        tableName: tx_products_domain_model_category
+        routeFieldName: slug
