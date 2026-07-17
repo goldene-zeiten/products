@@ -47,17 +47,16 @@ final class PricePeriodOverlapGuard
 
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
-        $siblings = $queryBuilder->select('uid', 'valid_from', 'valid_until')
+        $result = $queryBuilder->select('uid', 'valid_from', 'valid_until')
             ->from(self::TABLE)
             ->where(
                 $queryBuilder->expr()->eq($parentColumn, $queryBuilder->createNamedParameter($parentUid, Connection::PARAM_INT)),
                 $queryBuilder->expr()->eq('fe_group', $queryBuilder->createNamedParameter($feGroup, Connection::PARAM_INT)),
                 $queryBuilder->expr()->neq('uid', $queryBuilder->createNamedParameter(is_int($id) ? $id : 0, Connection::PARAM_INT)),
             )
-            ->executeQuery()
-            ->fetchAllAssociative();
+            ->executeQuery();
 
-        foreach ($siblings as $sibling) {
+        while ($sibling = $result->fetchAssociative()) {
             $siblingFrom = (int)$sibling['valid_from'];
             $siblingUntil = (int)$sibling['valid_until'] ?: PHP_INT_MAX;
             $overlaps = $newFrom < $siblingUntil && $siblingFrom < $newUntil;

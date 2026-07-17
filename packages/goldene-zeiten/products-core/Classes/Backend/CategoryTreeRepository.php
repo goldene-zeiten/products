@@ -136,15 +136,18 @@ final class CategoryTreeRepository
     public function fetchCategoryUidsOfProduct(int $productUid): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_PRODUCT_CATEGORY_MM);
-        $rows = $queryBuilder->select('uid_foreign')
+        $result = $queryBuilder->select('uid_foreign')
             ->from(self::TABLE_PRODUCT_CATEGORY_MM)
             ->where($queryBuilder->expr()->eq(
                 'uid_local',
                 $queryBuilder->createNamedParameter($productUid, ParameterType::INTEGER)
             ))
-            ->executeQuery()
-            ->fetchFirstColumn();
-        return array_map(intval(...), $rows);
+            ->executeQuery();
+        $categoryUids = [];
+        while (($uid = $result->fetchOne()) !== false) {
+            $categoryUids[] = (int)$uid;
+        }
+        return $categoryUids;
     }
 
     public function fetchParentCategoryUid(int $categoryUid): ?int
@@ -252,7 +255,7 @@ final class CategoryTreeRepository
         }
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_ARTICLE);
         $this->applyRestrictions($queryBuilder);
-        $rows = $queryBuilder->select('uid', ...$fields)
+        $result = $queryBuilder->select('uid', ...$fields)
             ->from(self::TABLE_ARTICLE)
             ->andWhere($queryBuilder->expr()->eq('sys_language_uid', 0))
             ->andWhere($queryBuilder->expr()->eq(
@@ -260,10 +263,9 @@ final class CategoryTreeRepository
                 $queryBuilder->createNamedParameter($productUid, ParameterType::INTEGER)
             ))
             ->orderBy('sorting')
-            ->executeQuery()
-            ->fetchAllAssociative();
+            ->executeQuery();
         $indexed = [];
-        foreach ($rows as $row) {
+        while ($row = $result->fetchAssociative()) {
             $indexed[(int)$row['uid']] = $row;
         }
         return $indexed;
@@ -282,7 +284,7 @@ final class CategoryTreeRepository
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_PRODUCT);
         $this->applyRestrictions($queryBuilder);
         $qualifiedFields = array_map(static fn(string $field): string => 'product.' . $field, $fields);
-        $rows = $queryBuilder->select('product.uid', ...$qualifiedFields)
+        $result = $queryBuilder->select('product.uid', ...$qualifiedFields)
             ->from(self::TABLE_PRODUCT, 'product')
             ->join(
                 'product',
@@ -294,10 +296,9 @@ final class CategoryTreeRepository
                 'mm.uid_foreign',
                 $queryBuilder->createNamedParameter($categoryUid, ParameterType::INTEGER)
             ))
-            ->executeQuery()
-            ->fetchAllAssociative();
+            ->executeQuery();
         $indexed = [];
-        foreach ($rows as $row) {
+        while ($row = $result->fetchAssociative()) {
             $indexed[(int)$row['uid']] = $row;
         }
         return $indexed;
@@ -490,11 +491,12 @@ final class CategoryTreeRepository
      */
     private function fetchCategories(QueryBuilder $queryBuilder): array
     {
-        $rows = $queryBuilder->executeQuery()->fetchAllAssociative();
-        return array_map(
-            static fn(array $row): array => ['uid' => (int)$row['uid'], 'title' => (string)$row['title'], 'hidden' => (bool)$row['hidden']],
-            $rows
-        );
+        $result = $queryBuilder->executeQuery();
+        $categories = [];
+        while ($row = $result->fetchAssociative()) {
+            $categories[] = ['uid' => (int)$row['uid'], 'title' => (string)$row['title'], 'hidden' => (bool)$row['hidden']];
+        }
+        return $categories;
     }
 
     /**
@@ -502,15 +504,16 @@ final class CategoryTreeRepository
      */
     private function fetchItems(QueryBuilder $queryBuilder): array
     {
-        $rows = $queryBuilder->executeQuery()->fetchAllAssociative();
-        return array_map(
-            static fn(array $row): array => [
+        $result = $queryBuilder->executeQuery();
+        $items = [];
+        while ($row = $result->fetchAssociative()) {
+            $items[] = [
                 'uid' => (int)$row['uid'],
                 'title' => (string)$row['title'],
                 'hidden' => (bool)$row['hidden'],
                 'itemNumber' => (string)$row['item_number'],
-            ],
-            $rows
-        );
+            ];
+        }
+        return $items;
     }
 }
