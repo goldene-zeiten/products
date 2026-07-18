@@ -43,7 +43,7 @@ final class OrderExportService
         return new ExportResult(
             $exporter->export($context->getOrder()),
             $exporter->getContentType(),
-            sprintf('%s.%s', $context->getOrder()->getOrderNumber(), $exporter->getFileExtension())
+            sprintf('%s.%s', $context->getOrder()->orderNumber, $exporter->getFileExtension())
         );
     }
 }

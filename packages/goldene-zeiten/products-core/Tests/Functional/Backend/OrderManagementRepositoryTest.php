@@ -6,9 +6,6 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Backend;
 
 use GoldeneZeiten\Products\Core\Backend\OrderListFilter;
 use GoldeneZeiten\Products\Core\Backend\OrderManagementRepository;
-use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
-use GoldeneZeiten\Products\Core\Domain\Model\Order;
-use GoldeneZeiten\Products\Core\Service\Order\OrderStatusManager;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -103,34 +100,5 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
             'expectedShippingLabel' => '',
             'expectedShippingTotalCents' => 0,
         ];
-    }
-
-    #[Test]
-    public function findForEditingAndPersistWritesTheTransitionToTheDatabase(): void
-    {
-        $subject = $this->get(OrderManagementRepository::class);
-        $order = $subject->findForEditing(1);
-        $this->assertInstanceOf(Order::class, $order);
-
-        $this->get(OrderStatusManager::class)->transitionPayment($order, PaymentStatus::PAID);
-        $subject->persist($order);
-
-        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/order_management_payment_transition.csv');
-    }
-
-    /**
-     * Regression: Money-backed fields need explicit @var int docblock for Extbase property reflection.
-     */
-    #[Test]
-    public function findForEditingHydratesAnOrderWithNonZeroMoneyBackedFieldsWithoutCrashing(): void
-    {
-        $subject = $this->get(OrderManagementRepository::class);
-
-        $order = $subject->findForEditing(1);
-
-        $this->assertInstanceOf(Order::class, $order);
-        $this->assertSame(1999, $order->getTotalGross()->getCents());
-        $this->assertSame(500, $order->getDiscountTotal()->getCents());
-        $this->assertSame(500, $order->getShippingTotal()->getCents());
     }
 }

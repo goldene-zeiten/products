@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Controller\Backend;
 
+use GoldeneZeiten\Products\Core\Backend\OrderDataFactory;
 use GoldeneZeiten\Products\Core\Backend\OrderDetail\OrderDetailPanelRegistry;
 use GoldeneZeiten\Products\Core\Backend\OrderListFilter;
 use GoldeneZeiten\Products\Core\Backend\OrderManagementRepository;
+use GoldeneZeiten\Products\Core\Backend\OrderStatusWriter;
 use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderData;
 use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentResultState;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
-use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Export\Exception\OrderExporterNotAvailableException;
 use GoldeneZeiten\Products\Core\Export\Exception\OrderExporterNotFoundException;
 use GoldeneZeiten\Products\Core\Export\OrderExportInterface;
@@ -20,7 +23,6 @@ use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Core\Payment\RefundablePaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\InvalidOrderStatusTransitionException;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\InvalidPaymentStatusTransitionException;
-use GoldeneZeiten\Products\Core\Service\Order\OrderStatusManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
@@ -42,7 +44,8 @@ final class OrderManagementModuleController
         private readonly ModuleTemplateFactory $moduleTemplateFactory,
         private readonly UriBuilder $uriBuilder,
         private readonly OrderManagementRepository $orderRepository,
-        private readonly OrderStatusManager $orderStatusManager,
+        private readonly OrderStatusWriter $orderStatusWriter,
+        private readonly OrderDataFactory $orderDataFactory,
         private readonly PaymentMethodRegistry $paymentMethodRegistry,
         private readonly OrderExportService $orderExportService,
         private readonly OrderDetailPanelRegistry $orderDetailPanelRegistry,
@@ -76,7 +79,7 @@ final class OrderManagementModuleController
         ModuleTemplate $moduleTemplate
     ): ?ResponseInterface {
         $identifier = $this->stringOrNull($request->getQueryParams()['export'] ?? null);
-        $order = $identifier !== null && $orderUid > 0 ? $this->orderRepository->findForEditing($orderUid) : null;
+        $order = $identifier !== null && $orderUid > 0 ? $this->orderDataFactory->build($orderUid) : null;
         if ($identifier === null || $order === null) {
             return null;
         }
@@ -97,7 +100,7 @@ final class OrderManagementModuleController
      * The backend user comes from the global, not from a request attribute: TYPO3 never puts one on the
      * request, so asking the request for it would hand every exporter a user of 0.
      */
-    private function buildExportContext(Order $order): ExportContext
+    private function buildExportContext(OrderData $order): ExportContext
     {
         return new ExportContext($order, (int)$this->getBackendUser()->getUserId());
     }
@@ -147,7 +150,7 @@ final class OrderManagementModuleController
      */
     private function availableExporters(int $orderUid): array
     {
-        $order = $this->orderRepository->findForEditing($orderUid);
+        $order = $this->orderDataFactory->build($orderUid);
         if ($order === null) {
             return [];
         }
@@ -214,13 +217,12 @@ final class OrderManagementModuleController
     private function handlePostedAction(ServerRequestInterface $request, ModuleTemplate $moduleTemplate): void
     {
         $body = (array)$request->getParsedBody();
-        $order = $this->orderRepository->findForEditing((int)($body['orderUid'] ?? 0));
-        if ($order === null) {
+        $orderUid = (int)($body['orderUid'] ?? 0);
+        if ($orderUid <= 0 || $this->orderRepository->fetchRow($orderUid) === null) {
             return;
         }
         try {
-            $this->applyAction($order, (string)($body['action'] ?? ''), $body);
-            $this->orderRepository->persist($order);
+            $this->applyAction($orderUid, (string)($body['action'] ?? ''), $body);
             $moduleTemplate->addFlashMessage($this->translate('message.order_updated'));
         } catch (InvalidOrderStatusTransitionException|InvalidPaymentStatusTransitionException|PaymentMethodNotFoundException $exception) {
             $moduleTemplate->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
@@ -230,30 +232,38 @@ final class OrderManagementModuleController
     /**
      * @param array<string, mixed> $body
      */
-    private function applyAction(Order $order, string $action, array $body): void
+    private function applyAction(int $orderUid, string $action, array $body): void
     {
+        $backendUser = $this->getBackendUser();
         if ($action === 'markPaid') {
-            $this->orderStatusManager->transitionPayment($order, PaymentStatus::PAID);
+            $this->orderStatusWriter->changePaymentStatus($orderUid, PaymentStatus::PAID, $backendUser);
             return;
         }
         if ($action === 'refund') {
-            $this->applyRefund($order);
+            $this->applyRefund($orderUid, $backendUser);
             return;
         }
         if ($action === 'transition') {
             $target = OrderStatus::tryFrom((string)($body['targetStatus'] ?? ''));
             if ($target !== null) {
-                $this->orderStatusManager->transition($order, $target);
+                $this->orderStatusWriter->changeStatus($orderUid, $target, null, $backendUser);
             }
         }
     }
 
-    private function applyRefund(Order $order): void
+    private function applyRefund(int $orderUid, BackendUserAuthentication $backendUser): void
     {
-        $paymentMethod = $this->paymentMethodRegistry->get($order->getPaymentMethod());
-        if ($paymentMethod instanceof RefundablePaymentMethodInterface) {
-            $paymentMethod->refund($order, $order->getTotalGross());
-            $this->orderStatusManager->transitionPayment($order, PaymentStatus::REFUNDED);
+        $order = $this->orderDataFactory->build($orderUid);
+        if ($order === null) {
+            return;
+        }
+        $paymentMethod = $this->paymentMethodRegistry->get($order->paymentMethod);
+        if (!$paymentMethod instanceof RefundablePaymentMethodInterface) {
+            return;
+        }
+        $result = $paymentMethod->refund($order, $order->totalGross);
+        if ($result->getState() === PaymentResultState::COMPLETED) {
+            $this->orderStatusWriter->changePaymentStatus($orderUid, PaymentStatus::REFUNDED, $backendUser);
         }
     }
 

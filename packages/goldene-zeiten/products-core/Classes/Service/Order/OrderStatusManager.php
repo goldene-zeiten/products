@@ -34,7 +34,7 @@ final class OrderStatusManager
 
         $order->setStatus($target);
         $this->appendStatusLog($order, $current, $target, $note);
-        $this->eventDispatcher->dispatch(new OrderStatusChangedEvent($order, $current, $target));
+        $this->eventDispatcher->dispatch(new OrderStatusChangedEvent((int)$order->getUid(), $current, $target));
     }
 
     public function transitionPayment(Order $order, PaymentStatus $target): void
@@ -51,7 +51,7 @@ final class OrderStatusManager
         }
 
         $order->setPaymentStatus($target);
-        $this->eventDispatcher->dispatch(new PaymentStatusChangedEvent($order, $current, $target));
+        $this->eventDispatcher->dispatch(new PaymentStatusChangedEvent((int)$order->getUid(), $current, $target));
     }
 
     private function appendStatusLog(Order $order, OrderStatus $from, OrderStatus $to, ?string $note): void

@@ -1,0 +1,12 @@
+"tx_products_domain_model_order",,,,,,,,,,,,,,,,,,,,
+,"uid","pid","deleted","order_number","email","currency","total_net","total_tax","total_gross","discount_total","shipping_total","order_date","status","payment_status","payment_method","invoice_number","tax_country","tax_breakdown","status_log","billing_address","delivery_address"
+,1,1,0,"ORD-77","carol@example.com","EUR",1680,320,2000,500,500,1700000000,"confirmed","paid","invoice","INV-77","DE","{""19"":320}","[{""from"":""new"",""to"":""confirmed"",""at"":""2023-11-14T00:00:00+00:00""}]",10,11
+,2,1,1,"ORD-DEL","del@example.com","EUR",0,0,0,0,0,1700000000,"new","open","invoice","","","[]","[]",0,0
+"tx_products_domain_model_orderaddress",,,,,,,,,,,,,
+,"uid","pid","deleted","address_type","company","salutation","first_name","last_name","street","house_number","zip","city","country"
+,10,1,0,"billing","ACME","mr","Carol","Baker","Main St","1","10115","Berlin","DE"
+,11,1,0,"delivery","","ms","Dana","Miller","Side St","2","20095","Hamburg","DE"
+"tx_products_domain_model_orderitem",,,,,,,,,,,
+,"uid","pid","deleted","parent_order","product","article","title","quantity","unit_price_gross","line_total_gross","tax_rate"
+,100,1,0,1,5,7,"First Item",2,500,1000,19.0
+,101,1,0,1,6,8,"Second Item",1,1000,1000,7.0

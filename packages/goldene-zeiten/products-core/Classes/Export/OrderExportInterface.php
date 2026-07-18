@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Export;
 
 use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
-use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderData;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 /**
@@ -43,5 +43,5 @@ interface OrderExportInterface
     /**
      * Execution phase: produce the payload for the order the editor selected this exporter for.
      */
-    public function export(Order $order): string;
+    public function export(OrderData $order): string;
 }

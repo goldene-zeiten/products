@@ -280,19 +280,23 @@ additionally implement :php:`RefundablePaymentMethodInterface`:
 
     interface RefundablePaymentMethodInterface
     {
-        public function cancel(Order $order): PaymentResult;
-        public function refund(Order $order, Money $amount): PaymentResult;
+        public function cancel(OrderData $order): PaymentResult;
+        public function refund(OrderData $order, Money $amount): PaymentResult;
     }
 
-:php:`cancel(Order $order): PaymentResult`
+:php:`cancel(OrderData $order): PaymentResult`
     The backend is cancelling the order entirely. If the payment was initiated with a
     gateway, reverse it (refund 100%, void the authorization, or cancel the invoice).
-    Return a :php:`PaymentResult` describing the outcome.
+    Return a :php:`PaymentResult` describing the outcome. The :php:`$order` is a
+    :php:`GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderData` snapshot; access its
+    properties directly (e.g., :php:`$order->invoiceNumber`, :php:`$order->status`).
 
-:php:`refund(Order $order, Money $amount): PaymentResult`
+:php:`refund(OrderData $order, Money $amount): PaymentResult`
     The backend is issuing a partial or full refund for an amount. Call the gateway's
-    refund API. Return a :php:`PaymentResult` describing the outcome. The amount is a
-    :php:`Money` value object; call :php:`getAmount()` to get the cents value.
+    refund API. Return a :php:`PaymentResult` describing the outcome. The :php:`$order`
+    is a :php:`GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderData` snapshot. The
+    :php:`$amount` is a :php:`Money` value object; call :php:`getAmount()` to get the
+    cents value.
 
 The backend only offers refund/cancel actions if the order's payment method implements
 :php:`RefundablePaymentMethodInterface` (checked via :code:`instanceof`). Methods that do

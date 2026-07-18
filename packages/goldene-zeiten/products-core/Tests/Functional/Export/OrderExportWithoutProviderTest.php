@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Export;
 
 use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
-use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderData;
 use GoldeneZeiten\Products\Core\Export\Exception\OrderExporterNotFoundException;
 use GoldeneZeiten\Products\Core\Export\OrderExportRegistry;
 use GoldeneZeiten\Products\Core\Export\OrderExportService;
+use GoldeneZeiten\Products\Core\Tests\Functional\OrderDataTestFactory;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -46,10 +47,8 @@ final class OrderExportWithoutProviderTest extends AbstractFunctionalTestCase
         $subject->get('dummy');
     }
 
-    private function order(): Order
+    private function order(): OrderData
     {
-        $order = new Order();
-        $order->setOrderNumber('ORD-42');
-        return $order;
+        return OrderDataTestFactory::minimal('ORD-42');
     }
 }
