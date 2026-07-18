@@ -120,7 +120,7 @@ Example listener:
     {
         public function __invoke(OrderStatusChangedEvent $event): void
         {
-            $order = $event->getOrder();
+            $orderUid = $event->getOrderUid();
             $newStatus = $event->getNewStatus();
             // Send status update notification
         }

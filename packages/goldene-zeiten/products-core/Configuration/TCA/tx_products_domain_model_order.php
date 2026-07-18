@@ -107,7 +107,6 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'readOnly' => true,
             ],
         ],
         'status' => [
@@ -115,7 +114,6 @@ return [
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'readOnly' => true,
             ],
         ],
         'invoice_number' => [
@@ -223,7 +221,6 @@ return [
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.status_log',
             'config' => [
                 'type' => 'text',
-                'readOnly' => true,
             ],
         ],
         'items' => [

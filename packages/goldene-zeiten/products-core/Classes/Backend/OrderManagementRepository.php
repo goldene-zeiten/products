@@ -5,16 +5,13 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Backend;
 
 use Doctrine\DBAL\ParameterType;
-use GoldeneZeiten\Products\Core\Domain\Model\Order;
-use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 /**
- * QueryBuilder reads for the backend order module, with Extbase persistence for editing.
+ * QueryBuilder reads for the backend order module; writes go through {@see OrderStatusWriter}.
  */
 final class OrderManagementRepository
 {
@@ -22,8 +19,6 @@ final class OrderManagementRepository
 
     public function __construct(
         private readonly ConnectionPool $connectionPool,
-        private readonly OrderRepository $orderRepository,
-        private readonly PersistenceManagerInterface $persistenceManager,
     ) {}
 
     /**
@@ -54,25 +49,11 @@ final class OrderManagementRepository
         return $row === false ? null : $this->mapRow($row);
     }
 
-    public function findForEditing(int $uid): ?Order
-    {
-        return $this->orderRepository->findByUidIgnoringStoragePage($uid);
-    }
-
     private function queryBuilderFor(string $table): QueryBuilder
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         return $queryBuilder;
-    }
-
-    /**
-     * Explicitly update() before persistAll() since the order was fetched, not add()'d.
-     */
-    public function persist(Order $order): void
-    {
-        $this->orderRepository->update($order);
-        $this->persistenceManager->persistAll();
     }
 
     private function applyFilter(QueryBuilder $queryBuilder, OrderListFilter $filter): void

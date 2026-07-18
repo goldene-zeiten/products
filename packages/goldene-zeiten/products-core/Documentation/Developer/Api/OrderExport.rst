@@ -32,7 +32,7 @@ The editor sees only the exporters that passed the availability check for this o
 **Execution Phase**
 
 The editor selects an exporter by its identifier. The registry resolves the exporter by identifier
-via :php:`OrderExportRegistry::get(string)` and calls its :php:`export(Order)` method to produce
+via :php:`OrderExportRegistry::get(string)` and calls its :php:`export(OrderData)` method to produce
 the payload.
 
 Interface Contract
@@ -48,7 +48,7 @@ Interface Contract
         public function getFileExtension(): string;
         public function isAvailable(ExportContext $context): bool;
         public function getPriority(): int;
-        public function export(Order $order): string;
+        public function export(OrderData $order): string;
     }
 
 **Methods:**
@@ -76,7 +76,7 @@ Interface Contract
     order. Use :code:`0` for default priority. Example: :code:`100` for a primary exporter,
     :code:`10` for secondary.
 
-:php:`export(Order $order): string`
+:php:`export(OrderData $order): string`
     **Execution phase:** Produce and return the export payload as a string. The backend writes
     this string to a file with the extension from :php:`getFileExtension()` and the MIME type
     from :php:`getContentType()`.
@@ -95,7 +95,7 @@ ExportContext
 The :php:`ExportContext` is an immutable, read-only value object passed to both
 :php:`isAvailable()` and dispatched with the event. It carries:
 
-:php:`getOrder(): Order`
+:php:`getOrder(): OrderData`
     The order being exported.
 
 :php:`getBackendUserUid(): int`
@@ -149,8 +149,8 @@ This example exports paid orders to CSV, with products and totals:
     namespace MyVendor\MyExtension\Export;
 
     use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
+    use GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderData;
     use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
-    use GoldeneZeiten\Products\Core\Domain\Model\Order;
     use GoldeneZeiten\Products\Core\Export\OrderExportInterface;
 
     /**
@@ -183,7 +183,7 @@ This example exports paid orders to CSV, with products and totals:
             $order = $context->getOrder();
 
             // Only export paid orders
-            return $order->getPaymentStatus() === PaymentStatus::PAID;
+            return $order->paymentStatus === PaymentStatus::PAID;
         }
 
         public function getPriority(): int
@@ -191,7 +191,7 @@ This example exports paid orders to CSV, with products and totals:
             return 10; // Offered above default exporters
         }
 
-        public function export(Order $order): string
+        public function export(OrderData $order): string
         {
             $lines = [];
 
@@ -207,18 +207,18 @@ This example exports paid orders to CSV, with products and totals:
             ]);
 
             // Order header
-            $billingCity = $order->getBillingAddress()?->getCity() ?? '';
+            $billingCity = $order->billingAddress?->city ?? '';
 
             // Products
-            foreach ($order->getItems() as $item) {
+            foreach ($order->items as $item) {
                 $lines[] = implode(',', [
-                    $order->getOrderNumber(),
-                    $order->getEmail(),
+                    $order->orderNumber,
+                    $order->email,
                     $billingCity,
-                    $item->getProduct()->getName(),
-                    (string)$item->getQuantity(),
-                    (string)$item->getPricePerUnit()->getAmount(),
-                    (string)$item->getTotalPrice()->getAmount(),
+                    $item->title,
+                    (string)$item->quantity,
+                    (string)$item->unitPriceGross->getAmount(),
+                    (string)$item->lineTotalGross->getAmount(),
                 ]);
             }
 

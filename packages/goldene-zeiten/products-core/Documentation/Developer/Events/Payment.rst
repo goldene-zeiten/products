@@ -48,7 +48,7 @@ Example listener:
     {
         public function __invoke(PaymentStatusChangedEvent $event): void
         {
-            $order = $event->getOrder();
+            $orderUid = $event->getOrderUid();
             $newStatus = $event->getNewStatus();
             // Update accounting system
         }

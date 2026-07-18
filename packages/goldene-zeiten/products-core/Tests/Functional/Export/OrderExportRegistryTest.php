@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Export;
 
 use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
-use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Export\Exception\OrderExporterNotFoundException;
 use GoldeneZeiten\Products\Core\Export\OrderExportRegistry;
+use GoldeneZeiten\Products\Core\Tests\Functional\OrderDataTestFactory;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -29,9 +29,7 @@ final class OrderExportRegistryTest extends AbstractFunctionalTestCase
     public function getAvailableContainsDummyExporter(): void
     {
         $subject = $this->get(OrderExportRegistry::class);
-        $order = new Order();
-        $order->setOrderNumber('ORD-42');
-        $context = new ExportContext($order);
+        $context = new ExportContext(OrderDataTestFactory::minimal('ORD-42'));
 
         $identifiers = array_map(
             static fn($exporter): string => $exporter->getIdentifier(),
@@ -45,9 +43,7 @@ final class OrderExportRegistryTest extends AbstractFunctionalTestCase
     public function getAvailableDoesNotContainUnavailableExporter(): void
     {
         $subject = $this->get(OrderExportRegistry::class);
-        $order = new Order();
-        $order->setOrderNumber('ORD-42');
-        $context = new ExportContext($order);
+        $context = new ExportContext(OrderDataTestFactory::minimal('ORD-42'));
 
         $identifiers = array_map(
             static fn($exporter): string => $exporter->getIdentifier(),
@@ -61,9 +57,7 @@ final class OrderExportRegistryTest extends AbstractFunctionalTestCase
     public function getAvailableReturnHighPriorityExporterBeforeDummyExporter(): void
     {
         $subject = $this->get(OrderExportRegistry::class);
-        $order = new Order();
-        $order->setOrderNumber('ORD-42');
-        $context = new ExportContext($order);
+        $context = new ExportContext(OrderDataTestFactory::minimal('ORD-42'));
 
         $identifiers = array_map(
             static fn($exporter): string => $exporter->getIdentifier(),
@@ -81,9 +75,7 @@ final class OrderExportRegistryTest extends AbstractFunctionalTestCase
     public function contextWithBackendUserUidOneIncludesBeUserBoundExporter(): void
     {
         $subject = $this->get(OrderExportRegistry::class);
-        $order = new Order();
-        $order->setOrderNumber('ORD-42');
-        $context = new ExportContext($order, 1);
+        $context = new ExportContext(OrderDataTestFactory::minimal('ORD-42'), 1);
 
         $identifiers = array_map(
             static fn($exporter): string => $exporter->getIdentifier(),
@@ -97,9 +89,7 @@ final class OrderExportRegistryTest extends AbstractFunctionalTestCase
     public function contextWithBackendUserUidZeroExcludesBeUserBoundExporter(): void
     {
         $subject = $this->get(OrderExportRegistry::class);
-        $order = new Order();
-        $order->setOrderNumber('ORD-42');
-        $context = new ExportContext($order, 0);
+        $context = new ExportContext(OrderDataTestFactory::minimal('ORD-42'), 0);
 
         $identifiers = array_map(
             static fn($exporter): string => $exporter->getIdentifier(),
@@ -113,10 +103,8 @@ final class OrderExportRegistryTest extends AbstractFunctionalTestCase
     public function theDummyExporterProducesTheExpectedContent(): void
     {
         $subject = $this->get(OrderExportRegistry::class);
-        $order = new Order();
-        $order->setOrderNumber('ORD-42');
 
-        $this->assertSame('order:ORD-42', $subject->get('dummy')->export($order));
+        $this->assertSame('order:ORD-42', $subject->get('dummy')->export(OrderDataTestFactory::minimal('ORD-42')));
     }
 
     #[Test]

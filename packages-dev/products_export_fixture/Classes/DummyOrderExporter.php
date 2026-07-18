@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\ExportFixture;
 
 use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
-use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderData;
 use GoldeneZeiten\Products\Core\Export\OrderExportInterface;
 
 /**
@@ -43,8 +43,8 @@ final class DummyOrderExporter implements OrderExportInterface
         return 0;
     }
 
-    public function export(Order $order): string
+    public function export(OrderData $order): string
     {
-        return sprintf('order:%s', $order->getOrderNumber());
+        return sprintf('order:%s', $order->orderNumber);
     }
 }
