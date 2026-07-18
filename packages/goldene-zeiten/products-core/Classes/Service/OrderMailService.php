@@ -57,8 +57,8 @@ final class OrderMailService
     /**
      * The global recipient (if configured) always gets notified; each category- and
      * shipping-point-specific recipient resolved from the order's line items is notified in
-     * addition, not instead of it - a simplification of legacy's per-suffix template-bucket
-     * system, one recipient per address, with both routing axes firing independently.
+     * addition, not instead of it - one recipient per address, with both routing axes firing
+     * independently.
      */
     public function sendMerchantNotification(Order $order): void
     {

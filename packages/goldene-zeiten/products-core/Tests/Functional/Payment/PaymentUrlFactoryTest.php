@@ -16,8 +16,7 @@ use TYPO3\CMS\Core\Site\Entity\Site;
 
 /**
  * A redirect payment method is useless unless it can tell its gateway where to send the customer back to
- * and where to post its confirmation. These URLs used to be empty strings, which made every redirect
- * gateway unimplementable, so what matters here is that they are actually filled in - and signed.
+ * and where to post its confirmation. This proves those URLs are actually filled in - and signed.
  */
 final class PaymentUrlFactoryTest extends AbstractFunctionalTestCase
 {
