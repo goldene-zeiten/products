@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Service\Withdrawal;
 use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\InvalidWithdrawalRequestException;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\InvalidWithdrawalTokenException;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\OrderNotWithdrawableException;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalEmailMismatchException;
@@ -140,9 +141,74 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
         ];
     }
 
-    private function fetchOrder(): Order
+    #[Test]
+    #[DataProvider('exclusionWithdrawabilityProvider')]
+    public function isStillWithdrawableHonoursArt16Exclusions(int $orderUid, bool $expected): void
     {
-        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_with_excluded_items.csv');
+        $subject = $this->get(WithdrawalService::class);
+        $order = $this->fetchOrder($orderUid);
+        $order->setOrderDate(new \DateTime());
+
+        $request = (new ServerRequest('http://localhost/'))->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
+        $this->assertSame($expected, $subject->isStillWithdrawable($order, $request));
+    }
+
+    public static function exclusionWithdrawabilityProvider(): \Generator
+    {
+        yield 'false for an order of only personalized items' => ['orderUid' => 11, 'expected' => false];
+        yield 'false for digital content after the waiver was consented' => ['orderUid' => 12, 'expected' => false];
+        yield 'true for digital content without the waiver' => ['orderUid' => 13, 'expected' => true];
+        yield 'true for a mixed order - one item retains the right' => ['orderUid' => 14, 'expected' => true];
+    }
+
+    #[Test]
+    public function withdrawThrowsForAFullyExcludedOrder(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/order_with_excluded_items.csv');
+        $subject = $this->get(WithdrawalService::class);
+        $order = $this->fetchOrder(11);
+        $order->setOrderDate(new \DateTime());
+
+        $this->expectException(OrderNotWithdrawableException::class);
+        $this->expectExceptionCode(1784937602);
+
+        $request = (new ServerRequest('http://localhost/'))->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
+        $subject->withdraw($order, 'personalized@example.com', '', $request);
+    }
+
+    #[Test]
+    public function resolveOrderByNumberAndEmailResolvesCaseInsensitively(): void
+    {
+        $subject = $this->get(WithdrawalService::class);
+
+        $resolved = $subject->resolveOrderByNumberAndEmail('ORD-1', 'SHOPPER@example.com');
+
+        $this->assertSame(1, $resolved->getUid());
+    }
+
+    #[Test]
+    #[DataProvider('resolveByNumberAndEmailThrowsProvider')]
+    public function resolveOrderByNumberAndEmailThrowsForANonMatchingPair(string $orderNumber, string $email): void
+    {
+        $subject = $this->get(WithdrawalService::class);
+
+        $this->expectException(InvalidWithdrawalRequestException::class);
+        $this->expectExceptionCode(1784937601);
+
+        $subject->resolveOrderByNumberAndEmail($orderNumber, $email);
+    }
+
+    public static function resolveByNumberAndEmailThrowsProvider(): \Generator
+    {
+        yield 'the email belongs to a different order' => ['orderNumber' => 'ORD-1', 'email' => 'someone-else@example.com'];
+        yield 'the order number does not exist' => ['orderNumber' => 'ORD-UNKNOWN', 'email' => 'shopper@example.com'];
+        yield 'an empty order number never matches' => ['orderNumber' => '', 'email' => 'shopper@example.com'];
+    }
+
+    private function fetchOrder(int $uid = 1): Order
+    {
+        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage($uid);
         $this->assertInstanceOf(Order::class, $order);
         return $order;
     }

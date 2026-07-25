@@ -30,6 +30,8 @@ test('a product flagged as unlimited stock can be ordered past its nominal stock
 
   await expect(page.getByText('Jane Doe')).toBeVisible();
   await page.locator('#termsAccepted').check();
+  // Digital content: the Art. 16(m) immediate-supply waiver is mandatory at review
+  await page.locator('#withdrawalWaiverAccepted').check();
   await page.getByRole('button', { name: 'Order with obligation to pay' }).click();
 
   await expect(page.getByText('Your order number is', { exact: false })).toBeVisible();

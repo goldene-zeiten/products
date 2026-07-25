@@ -118,6 +118,7 @@ $GLOBALS['TYPO3_CONF_VARS']['FE']['checkFeUserPid'] = false;
 // rate limit (10/minute in production) would throttle legitimate specs. Raise it for this disposable
 // instance only; the production default still guards a real shop.
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['rateLimiter']['products-voucher-apply']['limit'] = 100000;
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['rateLimiter']['products-withdrawal-confirm']['limit'] = 100000;
 EOF
 
 # Configure only this combination's methods, pointed at the WireMock mock. The methods resolve their

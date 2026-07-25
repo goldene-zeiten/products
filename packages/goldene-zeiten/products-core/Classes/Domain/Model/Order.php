@@ -55,6 +55,7 @@ class Order extends AbstractEntity
     protected string $customerNote = '';
     protected string $giftMessage = '';
     protected ?\DateTime $termsAcceptedAt = null;
+    protected ?\DateTime $withdrawalWaiverAcceptedAt = null;
     /**
      * @var ObjectStorage<FileReference>
      */
@@ -380,6 +381,21 @@ class Order extends AbstractEntity
     public function setTermsAcceptedAt(?\DateTime $termsAcceptedAt): void
     {
         $this->termsAcceptedAt = $termsAcceptedAt;
+    }
+
+    /**
+     * When the customer expressly consented to immediate supply of digital content and
+     * acknowledged losing the withdrawal right for it (Art. 16(m) Directive 2011/83/EU).
+     * Null on orders without digital items - or placed before this consent existed.
+     */
+    public function getWithdrawalWaiverAcceptedAt(): ?\DateTime
+    {
+        return $this->withdrawalWaiverAcceptedAt;
+    }
+
+    public function setWithdrawalWaiverAcceptedAt(?\DateTime $withdrawalWaiverAcceptedAt): void
+    {
+        $this->withdrawalWaiverAcceptedAt = $withdrawalWaiverAcceptedAt;
     }
 
     public function getSiteIdentifier(): string

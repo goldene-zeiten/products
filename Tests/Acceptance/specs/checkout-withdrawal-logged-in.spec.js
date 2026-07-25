@@ -28,11 +28,11 @@ test('a logged-in shopper cancels their own order from the order-detail page', a
   await page.goto('/order-history');
   await page.locator('tr', { hasText: orderNumber }).getByRole('link', { name: 'Details' }).click();
 
-  await page.getByRole('link', { name: 'Cancel order' }).click();
+  await page.getByRole('link', { name: 'Withdraw from contract here' }).click();
 
-  await expect(page.getByRole('heading', { name: /Cancel order/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Withdraw from contract' })).toBeVisible();
   await page.getByLabel('Confirm your email address').fill('shopper1@example.com');
-  await page.getByRole('button', { name: 'Cancel this order' }).click();
+  await page.getByRole('button', { name: 'Confirm withdrawal' }).click();
 
   await expect(page.getByRole('heading', { name: 'Order cancelled' })).toBeVisible();
   await expect(page.getByText(orderNumber)).toBeVisible();

@@ -20,7 +20,8 @@ final readonly class PlacementDetails
         private AdjustmentCollection $adjustments,
         private ?ShippingSelection $shippingSelection = null,
         private ?Address $deliveryAddress = null,
-        private string $giftMessage = ''
+        private string $giftMessage = '',
+        private bool $withdrawalWaiverAccepted = false
     ) {}
 
     public function getAdjustments(): AdjustmentCollection
@@ -41,5 +42,10 @@ final readonly class PlacementDetails
     public function getGiftMessage(): string
     {
         return $this->giftMessage;
+    }
+
+    public function isWithdrawalWaiverAccepted(): bool
+    {
+        return $this->withdrawalWaiverAccepted;
     }
 }

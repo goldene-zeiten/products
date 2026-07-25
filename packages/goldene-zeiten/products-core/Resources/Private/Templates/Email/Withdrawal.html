@@ -9,3 +9,9 @@
         <p><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_reason" />: {reason}</p>
     </f:then>
 </f:if>
+<f:if condition="{withdrawalExcludedItems}">
+    <p>
+        <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_merchant_excluded_items" /><br>
+        <f:for each="{withdrawalExcludedItems}" as="excludedItem">- {excludedItem.title}<br></f:for>
+    </p>
+</f:if>

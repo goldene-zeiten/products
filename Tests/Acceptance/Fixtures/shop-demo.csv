@@ -1,22 +1,22 @@
-"pages",,,,,,,
-,"uid","pid","sorting","deleted","title","slug","is_siteroot"
-,1,0,256,0,"Home","/",1
-,2,1,256,0,"Shop","/shop",0
-,4,1,768,0,"Categories","/categories",0
-,5,1,1024,0,"Product","/product",0
-,6,1,1280,0,"Basket","/basket",0
-,7,1,1536,0,"Checkout","/checkout",0
-,8,1,1792,0,"Order History","/order-history",0
-,9,1,2048,0,"Login","/login",0
-,10,1,2304,0,"Cancel Order","/cancel-order",0
-,11,1,2560,0,"Wishlist","/wishlist",0
-,12,1,2816,0,"Recently Viewed","/recently-viewed",0
-,13,1,3072,0,"Most Viewed","/most-viewed",0
-,14,1,3328,0,"My Most Viewed","/my-most-viewed",0
+pages,,,,,,,,,
+,uid,pid,sorting,deleted,title,slug,is_siteroot,doktype,tx_products_nav_class
+,1,0,256,0,Home,/,1,1,
+,2,1,256,0,Shop,/shop,0,1,
+,4,1,768,0,Categories,/categories,0,1,
+,5,1,1024,0,Product,/product,0,1,
+,6,1,1280,0,Basket,/basket,0,1,
+,7,1,1536,0,Checkout,/checkout,0,1,
+,8,1,1792,0,Order History,/order-history,0,1,
+,9,1,2048,0,Login,/login,0,1,
+,10,1,2304,0,Withdraw from contract,/cancel-order,0,175,nav-link-withdrawal
+,11,1,2560,0,Wishlist,/wishlist,0,1,
+,12,1,2816,0,Recently Viewed,/recently-viewed,0,1,
+,13,1,3072,0,Most Viewed,/most-viewed,0,1,
+,14,1,3328,0,My Most Viewed,/my-most-viewed,0,1,
 
-"sys_template",,,,,,,
-,"uid","pid","title","root","clear","include_static_file","config"
-,1,1,"Products Acceptance","1",3,"EXT:fluid_styled_content/Configuration/TypoScript,EXT:products_core/Configuration/TypoScript,EXT:products_search/Configuration/TypoScript,EXT:products_recently_viewed/Configuration/TypoScript,EXT:products_wishlist/Configuration/TypoScript,EXT:products_credit_points/Configuration/TypoScript,EXT:products_voucher/Configuration/TypoScript,EXT:solr/Configuration/TypoScript/Solr,EXT:products_solr/Configuration/TypoScript","page = PAGE
+sys_template,,,,,,,
+,uid,pid,title,root,clear,include_static_file,config
+,1,1,Products Acceptance,1,3,"EXT:fluid_styled_content/Configuration/TypoScript,EXT:products_core/Configuration/TypoScript,EXT:products_search/Configuration/TypoScript,EXT:products_recently_viewed/Configuration/TypoScript,EXT:products_wishlist/Configuration/TypoScript,EXT:products_credit_points/Configuration/TypoScript,EXT:products_voucher/Configuration/TypoScript,EXT:solr/Configuration/TypoScript/Solr,EXT:products_solr/Configuration/TypoScript","page = PAGE
 page.10 < styles.content.get
 plugin.tx_productscore.persistence.storagePid = 2
 plugin.tx_productscore.settings.pids.storageFolder = 2
@@ -30,78 +30,86 @@ plugin.tx_productscore.settings.pids.wishlistPage = 11
 plugin.tx_productscore.settings.shipping.enabled = 1
 plugin.tx_productssearch.settings < plugin.tx_productscore.settings
 plugin.tx_productsrecentlyviewed.settings < plugin.tx_productscore.settings
-plugin.tx_productswishlist.settings < plugin.tx_productscore.settings"
+plugin.tx_productswishlist.settings < plugin.tx_productscore.settings
+page.20 = HMENU
+page.20.wrap = <footer id=""site-footer"">|</footer>
+page.20.special = list
+page.20.special.value = 10
+page.20.1 = TMENU
+page.20.1.NO.ATagParams.dataWrap = class=""{field:tx_products_nav_class}""
+page.20.1.NO.allWrap = <span class=""footer-nav-item"">|</span>"
 
-"tx_products_domain_model_taxclass",,,
-,"uid","title","code"
-,1,"Standard Tax","standard"
+tx_products_domain_model_taxclass,,,
+,uid,title,code
+,1,Standard Tax,standard
 
-"tx_products_domain_model_taxrate",,,,
-,"uid","tax_class","country","rate"
-,1,1,"",19.00
+tx_products_domain_model_taxrate,,,,
+,uid,tax_class,country,rate
+,1,1,,19.00
 
-"tx_products_domain_model_shippingmethod",,,,,,,,
-,"uid","pid","title","country","min_order_value","max_order_value","min_weight","max_weight","rate"
-,1,2,"Standard Shipping","","0.00","0.00",0,0,"4.99"
-,2,2,"Express Shipping","","0.00","0.00",0,0,"9.99"
+tx_products_domain_model_shippingmethod,,,,,,,,
+,uid,pid,title,country,min_order_value,max_order_value,min_weight,max_weight,rate
+,1,2,Standard Shipping,,0.00,0.00,0,0,4.99
+,2,2,Express Shipping,,0.00,0.00,0,0,9.99
 
-"fe_groups",,,
-,"uid","pid","title","tx_products_discount_percent"
-,1,2,"Wholesale","10.00"
+fe_groups,,,
+,uid,pid,title,tx_products_discount_percent
+,1,2,Wholesale,10.00
 
-"fe_users",,,,,,,
-,"uid","pid","username","password","email","name","usergroup"
-,1,2,"shopper1","$argon2i$v=19$m=65536,t=16,p=1$UWQyb0NjZkgyOHRuTXVrZA$+iS7LsM8MXrkyYFwKqVyJzl6YlCHrsLm9j1KIngrF2I","shopper1@example.com","Shopper One","1"
+fe_users,,,,,,,
+,uid,pid,username,password,email,name,usergroup
+,1,2,shopper1,"$argon2i$v=19$m=65536,t=16,p=1$UWQyb0NjZkgyOHRuTXVrZA$+iS7LsM8MXrkyYFwKqVyJzl6YlCHrsLm9j1KIngrF2I",shopper1@example.com,Shopper One,1
 
-"tx_products_domain_model_category",,,,,,
-,"uid","pid","title","slug","parent_category","discount_percent"
-,1,2,"Clothing","clothing",0,"0.00"
-,2,2,"Men","men",1,"0.00"
-,3,2,"Women","women",1,"15.00"
-,4,2,"Kids","kids",1,"0.00"
-,20,2,"Shirts","mens-shirts",2,"0.00"
-,21,2,"Trousers","mens-trousers",2,"0.00"
-,22,2,"Shirts","womens-shirts",3,"0.00"
-,23,2,"Dresses","womens-dresses",3,"0.00"
-,24,2,"Shirts","kids-shirts",4,"0.00"
-,25,2,"Shoes","kids-shoes",4,"0.00"
-,5,2,"Electronics","electronics",0,"0.00"
-,6,2,"Phones","phones",5,"0.00"
-,7,2,"Laptops","laptops",5,"0.00"
-,8,2,"Audio","audio",5,"0.00"
-,26,2,"Smartphones","smartphones",6,"0.00"
-,27,2,"Accessories","phone-accessories",6,"0.00"
-,28,2,"Ultrabooks","ultrabooks",7,"0.00"
-,29,2,"Gaming Laptops","gaming-laptops",7,"0.00"
-,30,2,"Headphones","headphones",8,"0.00"
-,31,2,"Speakers","speakers",8,"0.00"
+tx_products_domain_model_category,,,,,,
+,uid,pid,title,slug,parent_category,discount_percent
+,1,2,Clothing,clothing,0,0.00
+,2,2,Men,men,1,0.00
+,3,2,Women,women,1,15.00
+,4,2,Kids,kids,1,0.00
+,20,2,Shirts,mens-shirts,2,0.00
+,21,2,Trousers,mens-trousers,2,0.00
+,22,2,Shirts,womens-shirts,3,0.00
+,23,2,Dresses,womens-dresses,3,0.00
+,24,2,Shirts,kids-shirts,4,0.00
+,25,2,Shoes,kids-shoes,4,0.00
+,5,2,Electronics,electronics,0,0.00
+,6,2,Phones,phones,5,0.00
+,7,2,Laptops,laptops,5,0.00
+,8,2,Audio,audio,5,0.00
+,26,2,Smartphones,smartphones,6,0.00
+,27,2,Accessories,phone-accessories,6,0.00
+,28,2,Ultrabooks,ultrabooks,7,0.00
+,29,2,Gaming Laptops,gaming-laptops,7,0.00
+,30,2,Headphones,headphones,8,0.00
+,31,2,Speakers,speakers,8,0.00
 
-"tx_products_domain_model_product",,,,,,,,,,
-,"uid","pid","title","slug","price","tax_class","in_stock","weight","credit_points","unlimited_stock","basket_max_quantity"
-,101,2,"Blue Cotton Shirt","blue-cotton-shirt","29.99",1,100,300,0,0,0
-,102,2,"Red Cotton Shirt","red-cotton-shirt","29.99",1,100,300,0,0,0
-,103,2,"Black Denim Jeans","black-denim-jeans","49.99",1,100,600,0,0,0
-,104,2,"Blue Denim Jeans","blue-denim-jeans","49.99",1,100,600,0,0,0
-,105,2,"White Silk Blouse","white-silk-blouse","39.99",1,100,200,0,0,0
-,106,2,"Photon X100 Smartphone","photon-x100-smartphone","499.00",1,50,180,0,0,0
-,107,2,"Photon X200 Smartphone","photon-x200-smartphone","699.00",1,50,180,0,0,0
-,108,2,"Photon Phone Case","photon-phone-case","19.99",1,200,50,0,0,0
-,109,2,"UltraBook Air 13","ultrabook-air-13","999.00",1,30,1200,0,0,0
-,110,2,"UltraBook Air 15","ultrabook-air-15","1199.00",1,30,1500,0,0,0
-,111,2,"SoundMax Headphones","soundmax-headphones","89.99",1,80,250,0,0,0
-,112,2,"Reward Mug","reward-mug","20.00",1,50,250,30,0,0
-,113,2,"Variant Tee","variant-tee","10.00",1,999,150,0,0,0
-,114,2,"Popularity Test Item","popularity-test-item","15.00",1,999,100,0,0,0
-,115,2,"Limited Vintage Compass","limited-vintage-compass","45.00",1,1,150,0,0,0
-,116,2,"Everlasting Digital Download","everlasting-digital-download","9.99",1,1,0,0,1,0
-,117,2,"Employee Discount Sample","employee-discount-sample","5.00",1,999,50,0,0,3
-,201,2,"Flash Sale Jacket","flash-sale-jacket","39.99",1,100,400,0,0,0
-,202,2,"Expired Sale Hat","expired-sale-hat","34.99",1,100,150,0,0,0
-,203,2,"Reseller Precedence Shirt","reseller-precedence-shirt","44.99",1,100,350,0,0,0
-,204,2,"Bulk Tier vs Sale Socks","bulk-tier-vs-sale-socks","29.99",1,100,200,0,0,0
+tx_products_domain_model_product,,,,,,,,,,,
+,uid,pid,title,slug,price,tax_class,in_stock,weight,credit_points,unlimited_stock,basket_max_quantity,withdrawal_exclusion
+,101,2,Blue Cotton Shirt,blue-cotton-shirt,29.99,1,100,300,0,0,0,
+,102,2,Red Cotton Shirt,red-cotton-shirt,29.99,1,100,300,0,0,0,
+,103,2,Black Denim Jeans,black-denim-jeans,49.99,1,100,600,0,0,0,
+,104,2,Blue Denim Jeans,blue-denim-jeans,49.99,1,100,600,0,0,0,
+,105,2,White Silk Blouse,white-silk-blouse,39.99,1,100,200,0,0,0,
+,106,2,Photon X100 Smartphone,photon-x100-smartphone,499.00,1,50,180,0,0,0,
+,107,2,Photon X200 Smartphone,photon-x200-smartphone,699.00,1,50,180,0,0,0,
+,108,2,Photon Phone Case,photon-phone-case,19.99,1,200,50,0,0,0,
+,109,2,UltraBook Air 13,ultrabook-air-13,999.00,1,30,1200,0,0,0,
+,110,2,UltraBook Air 15,ultrabook-air-15,1199.00,1,30,1500,0,0,0,
+,111,2,SoundMax Headphones,soundmax-headphones,89.99,1,80,250,0,0,0,
+,112,2,Reward Mug,reward-mug,20.00,1,50,250,30,0,0,
+,113,2,Variant Tee,variant-tee,10.00,1,999,150,0,0,0,
+,114,2,Popularity Test Item,popularity-test-item,15.00,1,999,100,0,0,0,
+,115,2,Limited Vintage Compass,limited-vintage-compass,45.00,1,1,150,0,0,0,
+,116,2,Everlasting Digital Download,everlasting-digital-download,9.99,1,1,0,0,1,0,digital_content
+,117,2,Employee Discount Sample,employee-discount-sample,5.00,1,999,50,0,0,3,
+,118,2,Engraved Silver Ring,engraved-silver-ring,149.00,1,50,20,0,0,0,personalized
+,201,2,Flash Sale Jacket,flash-sale-jacket,39.99,1,100,400,0,0,0,
+,202,2,Expired Sale Hat,expired-sale-hat,34.99,1,100,150,0,0,0,
+,203,2,Reseller Precedence Shirt,reseller-precedence-shirt,44.99,1,100,350,0,0,0,
+,204,2,Bulk Tier vs Sale Socks,bulk-tier-vs-sale-socks,29.99,1,100,200,0,0,0,
 
-"tx_products_product_category_mm",,,
-,"uid_local","uid_foreign","sorting"
+tx_products_product_category_mm,,,
+,uid_local,uid_foreign,sorting
 ,101,20,1
 ,102,20,1
 ,103,21,1
@@ -114,73 +122,73 @@ plugin.tx_productswishlist.settings < plugin.tx_productscore.settings"
 ,110,28,1
 ,111,30,1
 
-"tx_products_product_accessory_mm",,,
-,"uid_local","uid_foreign","sorting"
+tx_products_product_accessory_mm,,,
+,uid_local,uid_foreign,sorting
 ,106,108,1
 
-"tx_products_domain_model_priceperiod",,,,,,,
-,"uid","pid","product","article","price","fe_group","valid_from","valid_until"
-,501,2,201,0,"24.99",0,946684800,4102444800
-,502,2,202,0,"19.99",0,946684800,978307200
-,503,2,203,0,"34.99",0,946684800,4102444800
-,504,2,203,0,"29.99",1,946684800,4102444800
-,505,2,204,0,"19.99",0,946684800,4102444800
+tx_products_domain_model_priceperiod,,,,,,,
+,uid,pid,product,article,price,fe_group,valid_from,valid_until
+,501,2,201,0,24.99,0,946684800,4102444800
+,502,2,202,0,19.99,0,946684800,978307200
+,503,2,203,0,34.99,0,946684800,4102444800
+,504,2,203,0,29.99,1,946684800,4102444800
+,505,2,204,0,19.99,0,946684800,4102444800
 
-"tx_products_domain_model_pricetier",,,,
-,"uid","pid","product","min_quantity","price"
-,601,2,204,5,"17.99"
+tx_products_domain_model_pricetier,,,,
+,uid,pid,product,min_quantity,price
+,601,2,204,5,17.99
 
-"tx_products_domain_model_attribute",,,
-,"uid","pid","title"
-,1,2,"Size"
+tx_products_domain_model_attribute,,,
+,uid,pid,title
+,1,2,Size
 
-"tx_products_domain_model_attributevalue",,,,
-,"uid","pid","attribute","value","sorting"
-,1,2,1,"Small",1
-,2,2,1,"Large",2
+tx_products_domain_model_attributevalue,,,,
+,uid,pid,attribute,value,sorting
+,1,2,1,Small,1
+,2,2,1,Large,2
 
-"tx_products_domain_model_article",,,,,,
-,"uid","pid","product","title","price","in_stock"
-,1,2,113,"Variant Tee - Small","25.00",10
-,2,2,113,"Variant Tee - Large","28.00",4
+tx_products_domain_model_article,,,,,,
+,uid,pid,product,title,price,in_stock
+,1,2,113,Variant Tee - Small,25.00,10
+,2,2,113,Variant Tee - Large,28.00,4
 
-"tx_products_article_attributevalue_mm",,,
-,"uid_local","uid_foreign","sorting"
+tx_products_article_attributevalue_mm,,,
+,uid_local,uid_foreign,sorting
 ,1,1,1
 ,2,2,1
 
-"tx_products_domain_model_voucher",,,,,,,,,,
-,"uid","pid","code","discount_type","discount_value","combinable","usage_limit","min_basket_value","bound_frontend_user","valid_until","waives_shipping_cost"
-,1,2,"SAVE5","fixed","5.00",1,0,"0.00",0,0,0
-,2,2,"ONETIME5","fixed","3.00",1,1,"0.00",0,0,0
-,3,2,"FREESHIP","fixed","0.00",1,0,"0.00",0,0,1
+tx_products_domain_model_voucher,,,,,,,,,,
+,uid,pid,code,discount_type,discount_value,combinable,usage_limit,min_basket_value,bound_frontend_user,valid_until,waives_shipping_cost
+,1,2,SAVE5,fixed,5.00,1,0,0.00,0,0,0
+,2,2,ONETIME5,fixed,3.00,1,1,0.00,0,0,0
+,3,2,FREESHIP,fixed,0.00,1,0,0.00,0,0,1
 
-"tx_products_domain_model_creditpointstransaction",,,,
-,"uid","pid","frontend_user","points","type"
-,1,2,1,100,"earn"
+tx_products_domain_model_creditpointstransaction,,,,
+,uid,pid,frontend_user,points,type
+,1,2,1,100,earn
 
-"tx_products_domain_model_orderaddress",,,,,,,,,
-,"uid","pid","address_type","first_name","last_name","street","zip","city","country"
-,1,2,"billing","Sam","Shopper","Shop Street 5","54321","Hamburg","DE"
+tx_products_domain_model_orderaddress,,,,,,,,,
+,uid,pid,address_type,first_name,last_name,street,zip,city,country
+,1,2,billing,Sam,Shopper,Shop Street 5,54321,Hamburg,DE
 
-"tx_products_domain_model_order",,,,,,,,,,,,,
-,"uid","pid","order_number","frontend_user","email","currency","total_gross","items","status","payment_status","order_date","billing_address","payment_method"
-,1,2,"ORD-EXPIRED-1",1,"shopper1@example.com","EUR",8999,0,"confirmed","paid",1700000000,1,"invoice"
+tx_products_domain_model_order,,,,,,,,,,,,,
+,uid,pid,order_number,frontend_user,email,currency,total_gross,items,status,payment_status,order_date,billing_address,payment_method
+,1,2,ORD-EXPIRED-1,1,shopper1@example.com,EUR,8999,0,confirmed,paid,1700000000,1,invoice
 
-"tt_content",,,,,,,,
-,"uid","pid","sorting","deleted","colPos","CType","header","pi_flexform"
-,1,1,256,0,0,"productscore_productlist","Products",
-,2,1,512,0,0,"productscore_categorynavigation","Categories",
-,3,1,768,0,0,"productssearch_search","Search",
-,4,4,256,0,0,"productscore_categorynavigation","Categories",
-,5,4,512,0,0,"productscore_categorylist","Category products",
-,6,5,256,0,0,"productscore_productdetail","Product",
-,7,6,256,0,0,"productscore_basket","Basket",
-,8,7,256,0,0,"productscore_checkout","Checkout",
-,9,8,256,0,0,"productscore_orderhistory","Order History",
-,10,9,256,0,0,"felogin_login","Login",
-,11,10,256,0,0,"productscore_withdrawal","Cancel Order",
-,12,11,256,0,0,"productswishlist_wishlist","Wishlist",
-,13,12,256,0,0,"productsrecentlyviewed_recentlyviewed","Recently Viewed",
-,14,13,256,0,0,"productsrecentlyviewed_recentlyviewed","Most Viewed","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""switchableControllerActions""><value index=""vDEF"">RecentlyViewed->mostViewed</value></field></language></sheet></data></T3FlexForms>"
-,15,14,256,0,0,"productsrecentlyviewed_recentlyviewed","My Most Viewed","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""switchableControllerActions""><value index=""vDEF"">RecentlyViewed->myMostViewed</value></field></language></sheet></data></T3FlexForms>"
+tt_content,,,,,,,,
+,uid,pid,sorting,deleted,colPos,CType,header,pi_flexform
+,1,1,256,0,0,productscore_productlist,Products,
+,2,1,512,0,0,productscore_categorynavigation,Categories,
+,3,1,768,0,0,productssearch_search,Search,
+,4,4,256,0,0,productscore_categorynavigation,Categories,
+,5,4,512,0,0,productscore_categorylist,Category products,
+,6,5,256,0,0,productscore_productdetail,Product,
+,7,6,256,0,0,productscore_basket,Basket,
+,8,7,256,0,0,productscore_checkout,Checkout,
+,9,8,256,0,0,productscore_orderhistory,Order History,
+,10,9,256,0,0,felogin_login,Login,
+,11,10,256,0,0,productscore_withdrawal,,
+,12,11,256,0,0,productswishlist_wishlist,Wishlist,
+,13,12,256,0,0,productsrecentlyviewed_recentlyviewed,Recently Viewed,
+,14,13,256,0,0,productsrecentlyviewed_recentlyviewed,Most Viewed,"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""switchableControllerActions""><value index=""vDEF"">RecentlyViewed->mostViewed</value></field></language></sheet></data></T3FlexForms>"
+,15,14,256,0,0,productsrecentlyviewed_recentlyviewed,My Most Viewed,"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""switchableControllerActions""><value index=""vDEF"">RecentlyViewed->myMostViewed</value></field></language></sheet></data></T3FlexForms>"

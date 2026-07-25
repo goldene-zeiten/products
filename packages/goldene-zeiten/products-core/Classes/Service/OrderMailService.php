@@ -14,6 +14,8 @@ use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Service\Exception\AgbFileNotFoundException;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoicePdfService;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceRenderer;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalExclusionService;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalUrlFactory;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mime\Address;
 use TYPO3\CMS\Core\Mail\FluidEmail;
@@ -37,21 +39,42 @@ final class OrderMailService
         private readonly InvoicePdfService $invoicePdfService,
         private readonly ProductRepository $productRepository,
         private readonly ResourceFactory $resourceFactory,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly WithdrawalUrlFactory $withdrawalUrlFactory,
+        private readonly WithdrawalExclusionService $withdrawalExclusionService
     ) {}
 
     public function sendOrderConfirmation(Order $order): void
     {
         $email = $this->buildEmail($order, 'OrderConfirmation', self::LANGUAGE_FILE . 'order_confirmation_subject', $order->getEmail());
         $settings = $this->settingsResolver->getSettings($order);
-        $days = $this->getIntSetting($settings, 'products.checkout.withdrawalPeriodDays', 14);
-        if ($days > 0 && $order->getOrderDate() !== null) {
-            $deadline = (clone $order->getOrderDate())->modify(sprintf('+%d days', $days));
-            $email->assignMultiple(['withdrawalPeriodDays' => $days, 'withdrawalDeadline' => $deadline]);
-        }
+        $this->assignWithdrawalVariables($email, $order, $this->getIntSetting($settings, 'products.checkout.withdrawalPeriodDays', 14));
         $this->attachInvoice($email, $order);
         $this->attachAgb($email, $order);
         $this->mailer->send($email);
+    }
+
+    /**
+     * The confirmation mail is the durable medium carrying the withdrawal instruction: the period,
+     * the deadline, the one-click button to the prefilled form (Art. 11a Directive 2011/83/EU) -
+     * or, for orders (partially) made up of Art. 16 exempt items, the notice which items carry no
+     * withdrawal right instead.
+     */
+    private function assignWithdrawalVariables(FluidEmail $email, Order $order, int $days): void
+    {
+        $fullyExcluded = $this->withdrawalExclusionService->isFullyExcluded($order);
+        $email->assignMultiple([
+            'withdrawalFullyExcluded' => $fullyExcluded,
+            'withdrawalExcludedItems' => $this->withdrawalExclusionService->excludedItems($order),
+        ]);
+        if ($fullyExcluded || $days <= 0 || $order->getOrderDate() === null) {
+            return;
+        }
+        $email->assignMultiple([
+            'withdrawalPeriodDays' => $days,
+            'withdrawalDeadline' => (clone $order->getOrderDate())->modify(sprintf('+%d days', $days))->format('Y-m-d'),
+            'withdrawalUrl' => $this->withdrawalUrlFactory->createFor($order),
+        ]);
     }
 
     /**
@@ -174,6 +197,7 @@ final class OrderMailService
         foreach ($this->resolveMerchantRecipients($order) as $recipient) {
             $email = $this->buildEmail($order, 'Withdrawal', self::LANGUAGE_FILE . 'withdrawal_subject', $recipient);
             $email->assign('reason', $reason);
+            $email->assign('withdrawalExcludedItems', $this->withdrawalExclusionService->excludedItems($order));
             $this->mailer->send($email);
         }
     }

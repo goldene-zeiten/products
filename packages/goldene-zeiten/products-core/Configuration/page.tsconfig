@@ -1,0 +1,2 @@
+# 175 = \GoldeneZeiten\Products\Core\Page\PageTypes::DOKTYPE_WITHDRAWAL
+options.pageTree.doktypesToShowInNewPageDragArea := addToList(175)

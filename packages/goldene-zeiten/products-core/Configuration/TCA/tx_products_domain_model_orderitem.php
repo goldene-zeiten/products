@@ -13,7 +13,7 @@ return [
         'iconfile' => 'EXT:products_core/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'parent_order, --palette--;;productRef, --palette--;;titles, quantity, --palette--;;pricing, --palette--;;lineTotals, options'],
+        '1' => ['showitem' => 'parent_order, --palette--;;productRef, --palette--;;titles, quantity, --palette--;;pricing, --palette--;;lineTotals, options, withdrawal_exclusion'],
     ],
     'palettes' => [
         'productRef' => [
@@ -143,6 +143,29 @@ return [
             'config' => [
                 'type' => 'text',
                 'readOnly' => true,
+            ],
+        ],
+        'withdrawal_exclusion' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderitem.withdrawal_exclusion',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'readOnly' => true,
+                'default' => '',
+                'items' => [
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.withdrawal_exclusion.none',
+                        'value' => '',
+                    ],
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.withdrawal_exclusion.personalized',
+                        'value' => 'personalized',
+                    ],
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.withdrawal_exclusion.digital_content',
+                        'value' => 'digital_content',
+                    ],
+                ],
             ],
         ],
     ],

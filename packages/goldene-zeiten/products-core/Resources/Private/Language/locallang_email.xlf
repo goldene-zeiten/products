@@ -69,6 +69,18 @@
 			<trans-unit id="withdrawal_notice_deadline" resname="withdrawal_notice_deadline">
 				<source>The withdrawal period expires on %s.</source>
 			</trans-unit>
+			<trans-unit id="withdrawal_button_label" resname="withdrawal_button_label">
+				<source>Withdraw from contract here</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_notice_fully_excluded" resname="withdrawal_notice_fully_excluded">
+				<source>All items of this order are exempt from the statutory right of withdrawal (personalized items, or digital content supplied immediately with your express consent), so the order cannot be withdrawn.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_notice_excluded_items" resname="withdrawal_notice_excluded_items">
+				<source>The following items are exempt from the right of withdrawal and cannot be returned:</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_merchant_excluded_items" resname="withdrawal_merchant_excluded_items">
+				<source>Note: this order contains items exempt from the right of withdrawal:</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

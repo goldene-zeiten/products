@@ -219,17 +219,11 @@
 			<trans-unit id="final_total" resname="final_total">
 				<source>Total to pay</source>
 			</trans-unit>
-			<trans-unit id="cancel_order" resname="cancel_order">
-				<source>Cancel order</source>
-			</trans-unit>
 			<trans-unit id="confirm_email" resname="confirm_email">
 				<source>Confirm your email address</source>
 			</trans-unit>
 			<trans-unit id="withdrawal_reason_label" resname="withdrawal_reason_label">
 				<source>Reason (optional)</source>
-			</trans-unit>
-			<trans-unit id="submit_withdrawal" resname="submit_withdrawal">
-				<source>Cancel this order</source>
 			</trans-unit>
 			<trans-unit id="order_no_longer_withdrawable" resname="order_no_longer_withdrawable">
 				<source>This order can no longer be cancelled online. Please contact us directly.</source>
@@ -263,6 +257,36 @@
 			</trans-unit>
 			<trans-unit id="tracking" resname="tracking">
 				<source>Tracking</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_heading" resname="withdrawal_heading">
+				<source>Withdraw from contract</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_form_intro" resname="withdrawal_form_intro">
+				<source>You can withdraw from your contract here. Confirm the order number and the email address the order was placed with.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_order_number_label" resname="withdrawal_order_number_label">
+				<source>Order number</source>
+			</trans-unit>
+			<trans-unit id="confirm_withdrawal" resname="confirm_withdrawal">
+				<source>Confirm withdrawal</source>
+			</trans-unit>
+			<trans-unit id="withdraw_from_contract" resname="withdraw_from_contract">
+				<source>Withdraw from contract here</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_excluded_notice" resname="withdrawal_excluded_notice">
+				<source>All items of this order are exempt from the statutory right of withdrawal (personalized items, or digital content supplied immediately with your express consent), so the order cannot be withdrawn.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_request_invalid" resname="withdrawal_request_invalid">
+				<source>The order number and email address did not match an order. Please check your input.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_too_many_attempts" resname="withdrawal_too_many_attempts">
+				<source>Too many withdrawal attempts. Please try again later.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_waiver_label" resname="withdrawal_waiver_label">
+				<source>I expressly consent to the immediate supply of the digital content in my order and acknowledge that I thereby lose my right of withdrawal for it.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_exempt_personalized_notice" resname="withdrawal_exempt_personalized_notice">
+				<source>Your order contains items made to your specifications or clearly personalized. These items are exempt from the statutory right of withdrawal.</source>
 			</trans-unit>
 		</body>
 	</file>

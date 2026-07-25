@@ -34,4 +34,8 @@ return [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:products_core/Resources/Public/Icons/Article.svg',
     ],
+    'products-page-withdrawal' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:products_core/Resources/Public/Icons/PageWithdrawal.svg',
+    ],
 ];
