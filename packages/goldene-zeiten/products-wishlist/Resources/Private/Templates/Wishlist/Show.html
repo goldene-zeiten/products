@@ -18,15 +18,24 @@
                                 </p>
                                 <div class="d-flex gap-2">
                                     <f:link.action action="show" controller="Product" extensionName="ProductsCore" pluginName="ProductDetail" pageUid="{settings.pids.detailPage}" arguments="{product: product}" class="btn btn-primary btn-sm"><f:translate key="details" extensionName="products_core" /></f:link.action>
-                                    <f:link.action action="remove" arguments="{product: product.uid}" class="btn btn-outline-danger btn-sm"><f:translate key="remove" extensionName="products_core" /></f:link.action>
+                                    <f:form action="remove" requestToken="products/wishlist" class="d-inline">
+                                        <f:form.hidden name="product" value="{product.uid}" />
+                                        <f:form.submit value="{f:translate(key: 'remove', extensionName: 'products_core')}" class="btn btn-outline-danger btn-sm" />
+                                    </f:form>
                                     <f:if condition="{iterator.isFirst} == 0">
                                         <f:then>
-                                            <f:link.action action="moveUp" arguments="{product: product.uid}" class="btn btn-outline-secondary btn-sm"><f:translate key="move_up" /></f:link.action>
+                                            <f:form action="moveUp" requestToken="products/wishlist" class="d-inline">
+                                                <f:form.hidden name="product" value="{product.uid}" />
+                                                <f:form.submit value="{f:translate(key: 'move_up')}" class="btn btn-outline-secondary btn-sm" />
+                                            </f:form>
                                         </f:then>
                                     </f:if>
                                     <f:if condition="{iterator.isLast} == 0">
                                         <f:then>
-                                            <f:link.action action="moveDown" arguments="{product: product.uid}" class="btn btn-outline-secondary btn-sm"><f:translate key="move_down" /></f:link.action>
+                                            <f:form action="moveDown" requestToken="products/wishlist" class="d-inline">
+                                                <f:form.hidden name="product" value="{product.uid}" />
+                                                <f:form.submit value="{f:translate(key: 'move_down')}" class="btn btn-outline-secondary btn-sm" />
+                                            </f:form>
                                         </f:then>
                                     </f:if>
                                 </div>

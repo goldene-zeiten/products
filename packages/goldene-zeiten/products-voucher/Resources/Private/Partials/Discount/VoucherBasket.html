@@ -14,7 +14,10 @@
                 <f:for each="{discountSummary.appliedVouchers}" as="voucher">
                     <li>
                         <f:translate key="voucher_applied" extensionName="ProductsVoucher" arguments="{0: voucher.code}" />
-                        <f:link.action action="remove" controller="Voucher" arguments="{voucherCode: voucher.code}" class="btn btn-link btn-sm"><f:translate key="remove" /></f:link.action>
+                        <f:form action="remove" controller="Voucher" requestToken="products/voucher" class="d-inline">
+                            <f:form.hidden name="voucherCode" value="{voucher.code}" />
+                            <f:form.submit value="{f:translate(key: 'remove')}" class="btn btn-link btn-sm" />
+                        </f:form>
                     </li>
                 </f:for>
             </ul>
@@ -32,7 +35,7 @@
             </table>
         </f:then>
     </f:if>
-    <f:form action="apply" controller="Voucher" class="d-flex gap-2">
+    <f:form action="apply" controller="Voucher" requestToken="products/voucher" class="d-flex gap-2">
         <f:form.textfield name="voucherCode" class="form-control" placeholder="{f:translate(key: 'voucher_code', extensionName: 'ProductsVoucher')}" />
         <f:form.submit value="{f:translate(key: 'apply_voucher', extensionName: 'ProductsVoucher')}" class="btn btn-default" />
     </f:form>

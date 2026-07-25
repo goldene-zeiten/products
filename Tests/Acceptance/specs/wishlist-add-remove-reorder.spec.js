@@ -19,19 +19,19 @@ test('guest adds products to wishlist, reorders them, and removes them one by on
 
   // "Move up" is hidden for the first item, so use the second (Red) to swap positions
   const redProductCard = page.locator('.card', { has: page.locator('.card-title', { hasText: 'Red Cotton Shirt' }) });
-  await redProductCard.getByRole('link', { name: 'Move up' }).click();
+  await redProductCard.getByRole('button', { name: 'Move up' }).click();
 
   await expect(titles.nth(0)).toContainText('Red Cotton Shirt');
   await expect(titles.nth(1)).toContainText('Blue Cotton Shirt');
 
   const firstProductCard = page.locator('.card').first();
-  await firstProductCard.getByRole('link', { name: 'Remove' }).click();
+  await firstProductCard.getByRole('button', { name: 'Remove' }).click();
 
   await expect(page.getByText('Red Cotton Shirt')).toHaveCount(0);
   await expect(page.getByText('Blue Cotton Shirt')).toBeVisible();
 
   const lastProductCard = page.locator('.card').first();
-  await lastProductCard.getByRole('link', { name: 'Remove' }).click();
+  await lastProductCard.getByRole('button', { name: 'Remove' }).click();
 
   await expect(page.getByText('Your wishlist is empty.')).toBeVisible();
 });

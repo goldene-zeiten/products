@@ -6,6 +6,9 @@
 			<trans-unit id="no_products_found" resname="no_products_found">
 				<source>No products found.</source>
 			</trans-unit>
+			<trans-unit id="csrf.invalid_request" resname="csrf.invalid_request">
+				<source>Your session has expired. Please try again.</source>
+			</trans-unit>
 			<trans-unit id="item_no" resname="item_no">
 				<source>Item No:</source>
 			</trans-unit>

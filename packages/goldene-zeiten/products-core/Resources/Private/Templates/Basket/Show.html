@@ -29,7 +29,7 @@
                                 </f:if>
                             </td>
                             <td>
-                                <f:form action="update" controller="Basket">
+                                <f:form action="update" controller="Basket" requestToken="products/basket">
                                     <f:form.hidden name="product" value="{item.product.uid}" />
                                     <f:if condition="{item.article}">
                                         <f:then>
@@ -43,7 +43,15 @@
                             <td>{item.unitPriceGross.decimalString} {basket.currency}</td>
                             <td>{item.lineTotalGross.decimalString} {basket.currency}</td>
                             <td>
-                                <f:link.action action="remove" controller="Basket" arguments="{product: item.product.uid, article: item.article.uid}" class="btn btn-danger btn-sm"><f:translate key="remove" /></f:link.action>
+                                <f:form action="remove" controller="Basket" requestToken="products/basket" class="d-inline">
+                                    <f:form.hidden name="product" value="{item.product.uid}" />
+                                    <f:if condition="{item.article}">
+                                        <f:then>
+                                            <f:form.hidden name="article" value="{item.article.uid}" />
+                                        </f:then>
+                                    </f:if>
+                                    <f:form.submit value="{f:translate(key: 'remove')}" class="btn btn-danger btn-sm" />
+                                </f:form>
                             </td>
                         </tr>
                     </f:for>

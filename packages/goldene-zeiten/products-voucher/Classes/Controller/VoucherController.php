@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Voucher\Controller;
 
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Security\FrontendRequestTokenValidator;
 use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Voucher\Discount\VoucherCheckoutState;
@@ -14,6 +15,7 @@ use GoldeneZeiten\Products\Voucher\Service\VoucherService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * The customer's voucher input, owned by the voucher feature rather than the basket. It keeps the codes
@@ -22,15 +24,21 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
  */
 final class VoucherController extends ActionController
 {
+    private const REQUEST_TOKEN_SCOPE = 'products/voucher';
+
     public function __construct(
         private readonly BasketService $basketService,
         private readonly VoucherService $voucherService,
         private readonly VoucherCheckoutState $voucherCheckoutState,
-        private readonly FrontendUserResolver $frontendUserResolver
+        private readonly FrontendUserResolver $frontendUserResolver,
+        private readonly FrontendRequestTokenValidator $requestTokenValidator
     ) {}
 
     public function applyAction(string $voucherCode): ResponseInterface
     {
+        if (($rejected = $this->rejectForgedRequest()) !== null) {
+            return $rejected;
+        }
         $basketViewModel = $this->basketService->getBasketViewModel($this->request);
         $frontendUser = $this->frontendUserResolver->getUid($this->request);
 
@@ -52,7 +60,28 @@ final class VoucherController extends ActionController
 
     public function removeAction(string $voucherCode): ResponseInterface
     {
+        if (($rejected = $this->rejectForgedRequest()) !== null) {
+            return $rejected;
+        }
         $this->voucherCheckoutState->removeCode($this->request, $voucherCode);
+        return $this->redirectToBasket();
+    }
+
+    /**
+     * A cross-site POST that cannot present the voucher forms' request token is bounced back to the basket
+     * without touching the applied vouchers.
+     */
+    private function rejectForgedRequest(): ?ResponseInterface
+    {
+        if ($this->requestTokenValidator->isValid(self::REQUEST_TOKEN_SCOPE)) {
+            return null;
+        }
+        $this->addFlashMessage(
+            (string)LocalizationUtility::translate('csrf.invalid_request', 'ProductsCore'),
+            '',
+            ContextualFeedbackSeverity::ERROR
+        );
+
         return $this->redirectToBasket();
     }
 
