@@ -50,7 +50,7 @@ abstract class AbstractPaypalMockTestCase extends AbstractApiMockTestCase
 
     protected function orderClient(): HttpPaypalOrderClient
     {
-        $apiHttpClient = new ApiHttpClient($this->httpClient());
+        $apiHttpClient = new ApiHttpClient($this->requestFactory());
 
         return new HttpPaypalOrderClient(
             $apiHttpClient,
@@ -63,7 +63,7 @@ abstract class AbstractPaypalMockTestCase extends AbstractApiMockTestCase
 
     protected function webhookVerifier(): PaypalWebhookVerifier
     {
-        $apiHttpClient = new ApiHttpClient($this->httpClient());
+        $apiHttpClient = new ApiHttpClient($this->requestFactory());
 
         return new PaypalWebhookVerifier(
             $apiHttpClient,

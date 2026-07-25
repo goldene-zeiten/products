@@ -47,7 +47,7 @@ abstract class AbstractDhlExpressMockTestCase extends AbstractApiMockTestCase
     protected function client(): HttpDhlExpressRatingClient
     {
         return new HttpDhlExpressRatingClient(
-            new ApiHttpClient($this->httpClient()),
+            new ApiHttpClient($this->requestFactory()),
             new DhlExpressRateRequestBuilder(),
             $this->get(EventDispatcherInterface::class),
             new NullLogger(),

@@ -34,6 +34,6 @@ abstract class AbstractKlarnaMockTestCase extends AbstractApiMockTestCase
 
     protected function client(): HttpKlarnaClient
     {
-        return new HttpKlarnaClient(new ApiHttpClient($this->httpClient()));
+        return new HttpKlarnaClient(new ApiHttpClient($this->requestFactory()));
     }
 }

@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Testing;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\Request;
+use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Http\Stream;
 
 /**
@@ -38,6 +39,11 @@ abstract class AbstractApiMockTestCase extends AbstractFunctionalTestCase
     protected function httpClient(): ClientInterface
     {
         return $this->get(ClientInterface::class);
+    }
+
+    protected function requestFactory(): RequestFactory
+    {
+        return $this->get(RequestFactory::class);
     }
 
     /**
