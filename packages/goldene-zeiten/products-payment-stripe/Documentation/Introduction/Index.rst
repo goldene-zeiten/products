@@ -37,12 +37,14 @@ moving parts, and this extension implements all three:
     confirms it **server-to-server** by retrieving the session from Stripe; only a :code:`payment_status`
     of :code:`paid` marks the order paid.
 
-3.  **`handleWebhook()`** runs independently, whenever Stripe posts an asynchronous event to the shop's
-    fixed payment webhook middleware (registered by ``products-core`` at path
-    :code:`/products/payment/webhook`). Before trusting it, the extension verifies the webhook's signature
-    against the configured webhook signing secret via Stripe's own SDK
-    (:php:`\Stripe\Webhook::constructEvent()` — see :ref:`introduction-webhook-verification` below); an
-    unverified or forged notification is never allowed to mark an order paid. Only the
+3.  **`handleStaticWebhook()`** runs independently, whenever Stripe posts an asynchronous event to the
+    shop's Stripe webhook endpoint (registered by ``products-core`` at path
+    :code:`/products/payment/webhook/stripe`). Because that endpoint is configured once in the Stripe
+    dashboard rather than per order, it carries no per-order token: the extension verifies the webhook's
+    signature against the configured webhook signing secret via Stripe's own SDK
+    (:php:`\Stripe\Webhook::constructEvent()` — see :ref:`introduction-webhook-verification` below), and
+    only then resolves the order from the verified session's :code:`client_reference_id`. An unverified or
+    forged notification is never allowed to mark an order paid. Only the
     :code:`checkout.session.completed` event type is acted on; any other event is acknowledged as pending.
 
 Both callbacks are idempotent, as the core API requires: an order that is already
@@ -54,7 +56,7 @@ session's :code:`payment_status` is safe to run more than once for the same sess
 Webhook signature verification
 ================================
 
-`handleWebhook()` verifies an incoming webhook by calling
+`handleStaticWebhook()` verifies an incoming webhook by calling
 :php:`\Stripe\Webhook::constructEvent()` with the raw request body, the :code:`Stripe-Signature` header,
 and the configured `products.payment.stripe.webhookSecret` — this is the same "verify with the gateway,
 never trust the caller" rule the core Payment Methods API requires of every redirect method. A body/

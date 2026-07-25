@@ -35,11 +35,13 @@ extension implements all three:
     collide). The method captures that order **server-to-server** against the PayPal API and, once
     PayPal confirms the capture, marks the order paid.
 
-3.  **`handleWebhook()`** runs independently, whenever PayPal posts an asynchronous event to the
-    shop's fixed payment webhook middleware (registered by ``products-core`` at path
-    :code:`/products/payment/webhook`). Before trusting it, the extension verifies the webhook's
-    transmission signature against PayPal itself (see :ref:`introduction-webhook-verification`
-    below) — an unverified or forged notification is never allowed to mark an order paid.
+3.  **`handleStaticWebhook()`** runs independently, whenever PayPal posts an asynchronous event to the
+    shop's PayPal webhook endpoint (registered by ``products-core`` at path
+    :code:`/products/payment/webhook/paypal`). Because that endpoint is configured once on the PayPal app
+    rather than per order, it carries no per-order token: the extension verifies the webhook's
+    transmission signature against PayPal itself (see :ref:`introduction-webhook-verification` below),
+    then resolves the order from the verified capture's :code:`custom_id` and reconciles the captured
+    amount against it — an unverified or forged notification is never allowed to mark an order paid.
 
 Both callbacks are idempotent, as the core API requires: an order that is already
 :php:`PaymentStatus::PAID` is not captured again on a replayed return, and a capture that PayPal

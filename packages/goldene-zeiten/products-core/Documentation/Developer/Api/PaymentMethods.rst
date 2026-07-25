@@ -270,6 +270,37 @@ request (some gateways allow async confirmation without a return URL).
 The webhook URL is always set (it is a fixed middleware path and does not require a checkout
 page). It is absolute and HMAC-signed per order.
 
+Static (Dashboard-Configured) Webhooks
+======================================
+
+The per-order webhook above works when the shop hands the gateway a callback URL as it creates the
+payment session, so the callback can carry that order's signed token (Klarna, Amazon Pay).
+
+Other gateways (Stripe, PayPal) call a single webhook endpoint that is registered once in the
+gateway's own dashboard. That endpoint cannot carry a per-order token, so the order has to be
+resolved from the payload itself. Such a method implements
+:php:`StaticWebhookPaymentMethodInterface`:
+
+..  code-block:: php
+
+    interface StaticWebhookPaymentMethodInterface extends PaymentMethodInterface
+    {
+        public function handleStaticWebhook(ServerRequestInterface $request): WebhookResolution;
+    }
+
+:php:`PaymentWebhookMiddleware` serves these at :code:`/products/payment/webhook/<gateway>` (e.g.
+:code:`/products/payment/webhook/stripe`), where :code:`<gateway>` is the method's
+:php:`getIdentifier()`. :php:`handleStaticWebhook()` returns a :php:`WebhookResolution` carrying the
+resolved order (or :php:`null`) and the :php:`PaymentResult` to finalize it with; only a resolved
+order is finalized.
+
+**Verify the gateway signature before trusting the payload's order reference.** The signature is
+the only thing that authenticates the body, so resolve the order named by the payload (Stripe's
+:code:`client_reference_id`, PayPal's :code:`custom_id`) and reconcile its amount and currency
+*after* the signature verifies, never before. Return :php:`WebhookResolution::unresolved()` when the
+signature fails, the payload names no known order, or the amount does not match — nothing is
+finalized then.
+
 Refundable Payment Methods
 ============================
 

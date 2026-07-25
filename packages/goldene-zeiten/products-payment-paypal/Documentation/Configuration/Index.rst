@@ -62,7 +62,7 @@ everything once in the extension configuration and never touch the site settings
 
         The id of the PayPal webhook whose transmission signature incoming notifications are
         verified against (see :ref:`configuration-webhook`). Required for the asynchronous webhook
-        confirmation to ever succeed; without it, `handleWebhook()` always fails verification and
+        confirmation to ever succeed; without it, `handleStaticWebhook()` always fails verification and
         payment confirmation relies on the customer's browser return alone.
 
     ..  confval:: products.payment.paypal.brandName
@@ -93,15 +93,18 @@ independently of the browser, so the order is still confirmed even if the return
 #.  In the same PayPal app used for the client id/secret (`developer.paypal.com
     <https://developer.paypal.com/dashboard/>`__ → :guilabel:`Apps & Credentials` → your app), add a
     webhook.
-#.  Set the webhook URL to the shop's fixed payment webhook endpoint:
-    ``https://your-shop.example/products/payment/webhook`` (the same middleware path every redirect
-    payment method in this shop shares — nothing PayPal-specific in the path itself).
+#.  Set the webhook URL to the shop's PayPal webhook endpoint:
+    ``https://your-shop.example/products/payment/webhook/paypal``. The trailing ``paypal`` segment
+    identifies the gateway: because the PayPal webhook is configured once on the app rather than per
+    order, the callback carries no per-order token, so the shop resolves the order from the signed event
+    payload (the capture's ``custom_id``) and checks the captured amount against that order. The
+    transmission signature is verified before that reference is trusted.
 #.  Subscribe the webhook to at least the ``PAYMENT.CAPTURE.COMPLETED`` event. Subscribing to
     ``CHECKOUT.ORDER.APPROVED`` as well is harmless (it is only acknowledged, not acted on) but not
     required.
 #.  Save the webhook, then copy its :guilabel:`Webhook ID` into
     `products.payment.paypal.webhookId`.
 
-Without a matching webhook id configured, `handleWebhook()` cannot verify any notification and
+Without a matching webhook id configured, `handleStaticWebhook()` cannot verify any notification and
 always reports failure — payment confirmation then depends entirely on the customer's browser
 successfully returning to the shop.
