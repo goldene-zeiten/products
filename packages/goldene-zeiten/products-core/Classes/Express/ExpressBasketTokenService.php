@@ -22,32 +22,56 @@ final class ExpressBasketTokenService
 {
     private const ADDITIONAL_SECRET = 'products-express-basket';
 
+    /**
+     * How long after issuing the token stays valid. It only has to outlast the wallet sheet's checkout, so
+     * a bounded window - rather than an indefinitely replayable token - caps how long a captured basket
+     * snapshot can be replayed against the rate callback.
+     */
+    private const LIFETIME_SECONDS = 1800;
+
     public function __construct(
         private readonly HashService $hashService
     ) {}
 
     public function issue(ExpressBasket $basket): string
     {
-        $payload = $this->encode($basket->toArray());
+        $payload = $this->encode($basket->toArray()) . '.' . $this->now();
 
         return $payload . '.' . $this->hashService->hmac($payload, self::ADDITIONAL_SECRET);
     }
 
     /**
-     * The basket the token was issued for, or null if the token is missing, malformed or tampered with.
+     * The basket the token was issued for, or null if the token is missing, malformed, tampered with or
+     * past its checkout window.
      */
     public function resolve(?string $token): ?ExpressBasket
     {
-        if ($token === null || !str_contains($token, '.')) {
+        if ($token === null || substr_count($token, '.') !== 2) {
             return null;
         }
-        [$payload, $signature] = explode('.', $token, 2);
+        [$encoded, $issuedAt, $signature] = explode('.', $token, 3);
+        $payload = $encoded . '.' . $issuedAt;
         if (!hash_equals($this->hashService->hmac($payload, self::ADDITIONAL_SECRET), $signature)) {
             return null;
         }
-        $data = json_decode($this->decode($payload), true);
+        if ($this->hasExpired((int)$issuedAt)) {
+            return null;
+        }
+        $data = json_decode($this->decode($encoded), true);
 
         return is_array($data) ? ExpressBasket::fromArray($data) : null;
+    }
+
+    private function hasExpired(int $issuedAt): bool
+    {
+        $now = $this->now();
+
+        return $issuedAt <= 0 || $issuedAt > $now || $now - $issuedAt > self::LIFETIME_SECONDS;
+    }
+
+    private function now(): int
+    {
+        return (int)($GLOBALS['EXEC_TIME'] ?? time());
     }
 
     /**
