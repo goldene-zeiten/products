@@ -79,7 +79,7 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface
             $paypalOrder = $this->orderClient->createOrder($order, $context, $configuration);
         } catch (PaypalApiException $exception) {
             $this->logger->error('PayPal order creation failed.', ['exception' => $exception]);
-            return PaymentResult::failed('PayPal order could not be created: ' . $exception->getMessage());
+            return PaymentResult::failed('The payment could not be started. Please try again.');
         }
         if ($paypalOrder->approveUrl === '') {
             return PaymentResult::failed('PayPal returned no approval URL.', $paypalOrder->id);
@@ -126,7 +126,7 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface
             $capture = $this->orderClient->capture($paypalOrderId, $configuration);
         } catch (PaypalApiException $exception) {
             $this->logger->error('PayPal capture failed.', ['exception' => $exception]);
-            return PaymentResult::failed('PayPal capture failed: ' . $exception->getMessage(), $paypalOrderId);
+            return PaymentResult::failed('The PayPal payment could not be completed.', $paypalOrderId);
         }
         if (!$capture->isCompleted()) {
             return PaymentResult::failed(sprintf('PayPal capture returned status "%s".', $capture->status), $paypalOrderId);

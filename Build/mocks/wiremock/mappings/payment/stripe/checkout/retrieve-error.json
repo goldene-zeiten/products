@@ -1,0 +1,19 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "GET",
+    "urlPath": "/payment/stripe/v1/checkout/sessions/cs_test_error"
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "error": {
+        "type": "invalid_request_error",
+        "message": "No such checkout.session: 'cs_test_error'"
+      }
+    }
+  }
+}

@@ -74,6 +74,15 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
     }
 
     #[Test]
+    public function handleReturnDoesNotLeakTheStripeErrorMessageToTheCustomer(): void
+    {
+        $result = $this->subject()->handleReturn($this->returnRequest('cs_test_error'), $this->order());
+
+        $this->assertSame(PaymentResultState::FAILED, $result->getState());
+        $this->assertStringNotContainsString('No such checkout.session', $result->getFailureReason(), 'The raw gateway message must not reach the shopper.');
+    }
+
+    #[Test]
     public function handleReturnRejectsAPaidSessionBoundToADifferentOrder(): void
     {
         $order = $this->order();

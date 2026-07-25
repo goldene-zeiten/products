@@ -77,7 +77,7 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface
                 ->checkout->sessions->create($this->sessionParameters($order, $context, $configuration));
         } catch (ApiErrorException $exception) {
             $this->logger->error('Stripe session creation failed.', ['exception' => $exception]);
-            return PaymentResult::failed('Stripe session could not be created: ' . $exception->getMessage());
+            return PaymentResult::failed('The payment could not be started. Please try again.');
         }
 
         return PaymentResult::redirectRequired((string)$session->url, (string)$session->id);
@@ -122,7 +122,7 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface
             $session = $this->clientFactory->create($configuration)->checkout->sessions->retrieve($sessionId);
         } catch (ApiErrorException $exception) {
             $this->logger->error('Stripe session retrieval failed.', ['exception' => $exception]);
-            return PaymentResult::failed('Stripe session could not be verified: ' . $exception->getMessage(), $sessionId);
+            return PaymentResult::failed('The Stripe payment could not be verified.', $sessionId);
         }
 
         return $this->interpretSession($session, $order);
