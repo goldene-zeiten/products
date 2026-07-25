@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Voucher\Discount\VoucherCheckoutState;
 use GoldeneZeiten\Products\Voucher\Domain\Model\Voucher;
 use GoldeneZeiten\Products\Voucher\Service\Exception\VoucherExceptionInterface;
+use GoldeneZeiten\Products\Voucher\Service\VoucherRedemptionRateLimiter;
 use GoldeneZeiten\Products\Voucher\Service\VoucherService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
@@ -31,13 +32,22 @@ final class VoucherController extends ActionController
         private readonly VoucherService $voucherService,
         private readonly VoucherCheckoutState $voucherCheckoutState,
         private readonly FrontendUserResolver $frontendUserResolver,
-        private readonly FrontendRequestTokenValidator $requestTokenValidator
+        private readonly FrontendRequestTokenValidator $requestTokenValidator,
+        private readonly VoucherRedemptionRateLimiter $rateLimiter
     ) {}
 
     public function applyAction(string $voucherCode): ResponseInterface
     {
         if (($rejected = $this->rejectForgedRequest()) !== null) {
             return $rejected;
+        }
+        if (!$this->rateLimiter->isWithinLimit($this->request)) {
+            $this->addFlashMessage(
+                (string)LocalizationUtility::translate('voucher.rate_limited', 'ProductsVoucher'),
+                '',
+                ContextualFeedbackSeverity::ERROR
+            );
+            return $this->redirectToBasket();
         }
         $basketViewModel = $this->basketService->getBasketViewModel($this->request);
         $frontendUser = $this->frontendUserResolver->getUid($this->request);
