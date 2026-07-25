@@ -11,7 +11,7 @@ test('user removes the suggested product, leaving only the product added twice',
   await page.getByRole('button', { name: 'Add to Basket' }).click();
 
   await page.goto('/basket');
-  await page.locator('tr', { hasText: 'Photon Phone Case' }).getByRole('link', { name: 'Remove' }).click();
+  await page.locator('tr', { hasText: 'Photon Phone Case' }).getByRole('button', { name: 'Remove' }).click();
 
   await expect(page.locator('tr', { hasText: 'Photon Phone Case' })).toHaveCount(0);
   const smartphoneRow = page.locator('tr', { hasText: 'Photon X100 Smartphone' });

@@ -14,10 +14,10 @@ async function rowValue(page, label) {
 // first so leftovers from other specs don't skew this test's total/point arithmetic.
 async function emptyBasket(page) {
   await page.goto('/basket');
-  let removeLink = page.locator('tbody tr').getByRole('link', { name: 'Remove' }).first();
+  let removeLink = page.locator('tbody tr').getByRole('button', { name: 'Remove' }).first();
   while ((await removeLink.count()) > 0) {
     await removeLink.click();
-    removeLink = page.locator('tbody tr').getByRole('link', { name: 'Remove' }).first();
+    removeLink = page.locator('tbody tr').getByRole('button', { name: 'Remove' }).first();
   }
 }
 

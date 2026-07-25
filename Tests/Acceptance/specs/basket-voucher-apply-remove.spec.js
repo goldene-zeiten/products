@@ -17,7 +17,7 @@ test('applying a voucher discounts the basket, removing it reverts to the full p
   await expect(page.locator('tr', { hasText: 'Voucher discount' })).toContainText('5.00 EUR');
   await expect(page.getByText('24.99 EUR')).toBeVisible();
 
-  await page.locator('.basket-vouchers').getByRole('link', { name: 'Remove' }).click();
+  await page.locator('.basket-vouchers').getByRole('button', { name: 'Remove' }).click();
 
   await expect(page.getByText('Voucher applied:', { exact: false })).toHaveCount(0);
   await expect(page.getByText('24.99 EUR')).toHaveCount(0);
