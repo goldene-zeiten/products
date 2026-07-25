@@ -1,0 +1,3 @@
+"tx_products_domain_model_order",,,,,,,,
+,"uid","pid","deleted","order_number","currency","total_gross","payment_status","status"
+,42,1,0,"ORD-42","EUR",1234,"open","new"

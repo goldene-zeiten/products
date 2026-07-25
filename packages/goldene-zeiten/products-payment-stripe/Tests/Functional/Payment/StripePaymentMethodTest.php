@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentResultState;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Payment\Stripe\Client\StripeClientFactory;
 use GoldeneZeiten\Products\Payment\Stripe\Configuration\StripeConfigurationFactory;
@@ -129,12 +130,35 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
         $this->assertSame(PaymentResultState::FAILED, $result->getState());
     }
 
+    #[Test]
+    public function handleStaticWebhookResolvesTheOrderFromTheSessionAndMarksItPaid(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->webhookRequest(true));
+
+        $this->assertInstanceOf(Order::class, $resolution->getOrder());
+        $this->assertSame(42, $resolution->getOrder()->getUid());
+        $this->assertSame(PaymentStatus::PAID, $resolution->getResult()->getPaymentStatus());
+    }
+
+    #[Test]
+    public function handleStaticWebhookRejectsAnInvalidSignature(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->webhookRequest(false));
+
+        $this->assertNull($resolution->getOrder(), 'An unverified webhook must not resolve an order.');
+    }
+
     private function subject(): StripePaymentMethod
     {
         return new StripePaymentMethod(
             $this->configurationFactory(),
             new StripeClientFactory(),
             $this->get(\Psr\EventDispatcher\EventDispatcherInterface::class),
+            $this->get(OrderRepository::class),
             new NullLogger(),
         );
     }

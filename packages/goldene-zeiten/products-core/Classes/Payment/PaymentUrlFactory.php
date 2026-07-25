@@ -26,6 +26,24 @@ final class PaymentUrlFactory
     public const CANCEL_PATH = '/products/payment/cancel';
 
     /**
+     * The fixed, per-gateway webhook endpoint for gateways whose webhook is configured once in the gateway's
+     * dashboard rather than per session (Stripe, PayPal). It carries no order token - the gateway signs the
+     * body and the order is resolved from the verified payload {@see StaticWebhookPaymentMethodInterface}.
+     */
+    public static function staticWebhookPath(string $gateway): string
+    {
+        return self::WEBHOOK_PATH . '/' . $gateway;
+    }
+
+    /**
+     * The absolute static webhook URL a merchant registers in the gateway dashboard.
+     */
+    public function staticWebhookUrl(Site $site, string $gateway): string
+    {
+        return rtrim((string)$site->getBase(), '/') . self::staticWebhookPath($gateway);
+    }
+
+    /**
      * The query parameter carrying the HMAC that proves a callback belongs to one of this shop's orders.
      * Deliberately not "token": a gateway appends its own parameters to the return URL - PayPal's is called
      * `token` - and a collision would let its value overwrite ours on the shared callback path.

@@ -58,6 +58,40 @@ final class PaymentCallbackService
     }
 
     /**
+     * A gateway with a single dashboard-configured webhook (Stripe, PayPal) cannot carry a per-order token,
+     * so the method verifies the gateway's signature and resolves the order from the verified payload; only
+     * a resolved order is finalized.
+     */
+    public function handleStaticWebhook(string $gateway, ServerRequestInterface $request): PaymentResult
+    {
+        $resolution = $this->staticWebhookMethodFor($gateway)->handleStaticWebhook($request);
+        $order = $resolution->getOrder();
+        if ($order === null) {
+            throw new PaymentCallbackException(
+                sprintf('The "%s" webhook payload did not resolve to a known order.', $gateway),
+                1784975564
+            );
+        }
+        $this->orderFinalizationService->finalize($order, $resolution->getResult(), $request);
+
+        return $resolution->getResult();
+    }
+
+    private function staticWebhookMethodFor(string $gateway): StaticWebhookPaymentMethodInterface
+    {
+        try {
+            $paymentMethod = $this->paymentMethodRegistry->get($gateway);
+        } catch (PaymentMethodNotFoundException $exception) {
+            throw new PaymentCallbackException(sprintf('Payment method "%s" is not registered.', $gateway), 1784975565, $exception);
+        }
+        if (!$paymentMethod instanceof StaticWebhookPaymentMethodInterface) {
+            throw new PaymentCallbackException(sprintf('Payment method "%s" has no static webhook.', $gateway), 1784975566);
+        }
+
+        return $paymentMethod;
+    }
+
+    /**
      * The order is resolved from the signed token alone, never from a session: a webhook arrives without
      * one, and the customer may return in a different browser than they left in.
      */

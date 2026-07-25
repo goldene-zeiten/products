@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Middleware;
 
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentCallbackException;
 use GoldeneZeiten\Products\Core\Payment\PaymentCallbackService;
 use GoldeneZeiten\Products\Core\Payment\PaymentUrlFactory;
@@ -30,16 +31,30 @@ final readonly class PaymentWebhookMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if ($request->getUri()->getPath() !== PaymentUrlFactory::WEBHOOK_PATH) {
-            return $handler->handle($request);
+        $path = $request->getUri()->getPath();
+        if ($path === PaymentUrlFactory::WEBHOOK_PATH) {
+            $queryParams = $request->getQueryParams();
+            $orderUid = (int)($queryParams[PaymentUrlFactory::ORDER_PARAM] ?? 0);
+            $token = (string)($queryParams[PaymentUrlFactory::SIGNATURE_PARAM] ?? '');
+
+            return $this->respond(fn(): PaymentResult => $this->paymentCallbackService->handleWebhook($orderUid, $token, $request));
         }
 
-        $queryParams = $request->getQueryParams();
-        $orderUid = (int)($queryParams[PaymentUrlFactory::ORDER_PARAM] ?? 0);
-        $token = (string)($queryParams[PaymentUrlFactory::SIGNATURE_PARAM] ?? '');
+        $gateway = $this->staticGateway($path);
+        if ($gateway !== null) {
+            return $this->respond(fn(): PaymentResult => $this->paymentCallbackService->handleStaticWebhook($gateway, $request));
+        }
 
+        return $handler->handle($request);
+    }
+
+    /**
+     * @param callable(): PaymentResult $handle
+     */
+    private function respond(callable $handle): ResponseInterface
+    {
         try {
-            $paymentResult = $this->paymentCallbackService->handleWebhook($orderUid, $token, $request);
+            $paymentResult = $handle();
         } catch (PaymentCallbackException $exception) {
             // The caller is a gateway, not a browser: keep the reason in the log and never confirm which
             // order uids exist by echoing the resolution failure back.
@@ -48,5 +63,16 @@ final readonly class PaymentWebhookMiddleware implements MiddlewareInterface
         }
 
         return new JsonResponse(['status' => $paymentResult->getPaymentStatus()->value]);
+    }
+
+    private function staticGateway(string $path): ?string
+    {
+        $prefix = PaymentUrlFactory::WEBHOOK_PATH . '/';
+        if (!str_starts_with($path, $prefix)) {
+            return null;
+        }
+        $gateway = substr($path, strlen($prefix));
+
+        return $gateway !== '' && !str_contains($gateway, '/') ? $gateway : null;
     }
 }

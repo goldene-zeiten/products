@@ -46,8 +46,9 @@ configuration and never touch the site settings at all.
 
         The signing secret (:code:`whsec_...`) of the Stripe webhook endpoint, used to verify incoming
         events (see :ref:`configuration-webhook`). Required for the asynchronous webhook confirmation to
-        ever succeed; without it, `handleWebhook()` always fails signature verification and payment
-        confirmation relies on the customer's browser return alone.
+        ever succeed; without it, `handleStaticWebhook()` always fails signature verification and payment
+        confirmation relies on the customer's browser return alone. Stripe is not offered at checkout until
+        both this and the secret key are set.
 
     ..  confval:: products.payment.stripe.apiBaseUrl
         :type: string
@@ -69,15 +70,18 @@ browser, so the order is still confirmed even if the return never happens.
 
 #.  In the Stripe Dashboard, go to :guilabel:`Developers` → :guilabel:`Webhooks` → :guilabel:`Add
     endpoint`.
-#.  Set the endpoint URL to the shop's fixed payment webhook endpoint:
-    ``https://your-shop.example/products/payment/webhook`` (the same middleware path every redirect
-    payment method in this shop shares — nothing Stripe-specific in the path itself).
+#.  Set the endpoint URL to the shop's Stripe webhook endpoint:
+    ``https://your-shop.example/products/payment/webhook/stripe``. The trailing ``stripe`` segment
+    identifies the gateway: because the Stripe webhook is configured once in the dashboard rather than per
+    order, the callback carries no per-order token, so the shop resolves the order from the signed event
+    payload (the session's ``client_reference_id``) instead. The signature is verified before that
+    reference is trusted.
 #.  Select at least the :code:`checkout.session.completed` event to listen to; other events are
     acknowledged but ignored.
 #.  Save the endpoint, then copy its :guilabel:`Signing secret` into
     `products.payment.stripe.webhookSecret`.
 
-Without a matching webhook secret configured, `handleWebhook()` cannot verify any notification and
+Without a matching webhook secret configured, `handleStaticWebhook()` cannot verify any notification and
 always reports failure — payment confirmation then depends entirely on the customer's browser
 successfully returning to the shop. Test mode and live mode each have their own webhook endpoint and
 signing secret in the Stripe Dashboard.
