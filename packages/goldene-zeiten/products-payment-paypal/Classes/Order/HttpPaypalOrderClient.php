@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\ApiClient\Exception\ApiTransportException;
 use GoldeneZeiten\Products\ApiClient\Http\ApiHttpClient;
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Payment\Paypal\Authentication\PaypalCredentialsFactory;
 use GoldeneZeiten\Products\Payment\Paypal\Configuration\PaypalConfiguration;
 use GoldeneZeiten\Products\Payment\Paypal\Domain\Dto\PaypalCapture;
@@ -52,8 +53,29 @@ final class HttpPaypalOrderClient implements PaypalOrderClient
     public function capture(string $paypalOrderId, PaypalConfiguration $configuration): PaypalCapture
     {
         $url = $configuration->baseUrl() . self::ORDERS_PATH . '/' . rawurlencode($paypalOrderId) . '/capture';
+        $response = $this->authorizedPost($url, null, $configuration);
+        $data = $this->decode($response);
+        if ($response->getStatusCode() === 422 && $this->hasIssue($data, 'ORDER_ALREADY_CAPTURED')) {
+            // A replayed return: the order was captured on the first pass. The 422 body carries no capture
+            // details, so re-read the order and let the caller verify it still belongs to this order.
+            return $this->showCapturedOrder($paypalOrderId, $configuration);
+        }
+        if ($response->getStatusCode() !== 200 && $response->getStatusCode() !== 201) {
+            throw new PaypalApiException(sprintf('PayPal capture returned HTTP %d.', $response->getStatusCode()), 1752600302);
+        }
 
-        return $this->toCapture($this->authorizedPost($url, null, $configuration));
+        return $this->toCapture($data);
+    }
+
+    private function showCapturedOrder(string $paypalOrderId, PaypalConfiguration $configuration): PaypalCapture
+    {
+        $url = $configuration->baseUrl() . self::ORDERS_PATH . '/' . rawurlencode($paypalOrderId);
+        $response = $this->authorizedGet($url, $configuration);
+        if ($response->getStatusCode() !== 200) {
+            throw new PaypalApiException(sprintf('PayPal order lookup returned HTTP %d.', $response->getStatusCode()), 1752600303);
+        }
+
+        return $this->toCapture($this->decode($response));
     }
 
     /**
@@ -87,6 +109,17 @@ final class HttpPaypalOrderClient implements PaypalOrderClient
         return $response;
     }
 
+    private function authorizedGet(string $url, PaypalConfiguration $configuration): ResponseInterface
+    {
+        $credentials = $this->credentialsFactory->forConfiguration($configuration);
+        $response = $this->dispatchGet($url, $this->tokenProvider->getToken($credentials));
+        if ($response->getStatusCode() === 401) {
+            $response = $this->dispatchGet($url, $this->tokenProvider->getToken($credentials, true));
+        }
+
+        return $response;
+    }
+
     /**
      * @param array<string, mixed>|null $payload
      */
@@ -105,6 +138,25 @@ final class HttpPaypalOrderClient implements PaypalOrderClient
         }
     }
 
+    private function dispatchGet(string $url, string $token): ResponseInterface
+    {
+        try {
+            return $this->httpClient->get($url, ['Authorization' => 'Bearer ' . $token]);
+        } catch (ApiTransportException $exception) {
+            throw new PaypalApiException('PayPal request failed at transport level.', 1752600304, $exception);
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function decode(ResponseInterface $response): array
+    {
+        $data = json_decode((string)$response->getBody(), true);
+
+        return is_array($data) ? $data : [];
+    }
+
     private function toOrder(ResponseInterface $response): PaypalOrder
     {
         $status = $response->getStatusCode();
@@ -120,20 +172,22 @@ final class HttpPaypalOrderClient implements PaypalOrderClient
         );
     }
 
-    private function toCapture(ResponseInterface $response): PaypalCapture
+    /**
+     * @param array<string, mixed> $data a capture or order-details response body
+     */
+    private function toCapture(array $data): PaypalCapture
     {
-        $status = $response->getStatusCode();
-        $data = json_decode((string)$response->getBody(), true);
-        $data = is_array($data) ? $data : [];
-        if ($status === 422 && $this->hasIssue($data, 'ORDER_ALREADY_CAPTURED')) {
-            // A replayed return: the order was captured on the first pass. Treat it as the success it is.
-            return new PaypalCapture('COMPLETED', '');
-        }
-        if ($status !== 200 && $status !== 201) {
-            throw new PaypalApiException(sprintf('PayPal capture returned HTTP %d.', $status), 1752600302);
-        }
+        $purchaseUnit = (array)($data['purchase_units'][0] ?? []);
+        $capture = (array)($purchaseUnit['payments']['captures'][0] ?? []);
+        $amount = (array)($capture['amount'] ?? []);
 
-        return new PaypalCapture((string)($data['status'] ?? ''), $this->captureId($data));
+        return new PaypalCapture(
+            (string)($capture['status'] ?? $data['status'] ?? ''),
+            (string)($capture['id'] ?? ''),
+            (string)($capture['custom_id'] ?? $purchaseUnit['custom_id'] ?? ''),
+            isset($amount['value']) ? Money::fromDecimalString((string)$amount['value']) : null,
+            (string)($amount['currency_code'] ?? ''),
+        );
     }
 
     /**
@@ -148,14 +202,6 @@ final class HttpPaypalOrderClient implements PaypalOrderClient
         }
 
         return '';
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function captureId(array $data): string
-    {
-        return (string)($data['purchase_units'][0]['payments']['captures'][0]['id'] ?? '');
     }
 
     /**

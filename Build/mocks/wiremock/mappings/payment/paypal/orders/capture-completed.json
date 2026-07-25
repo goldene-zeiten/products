@@ -15,11 +15,13 @@
       "purchase_units": [
         {
           "reference_id": "default",
+          "custom_id": "42",
           "payments": {
             "captures": [
               {
                 "id": "CAPTURE-1",
                 "status": "COMPLETED",
+                "custom_id": "42",
                 "amount": {
                   "currency_code": "EUR",
                   "value": "12.34"

@@ -83,6 +83,36 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
     }
 
     #[Test]
+    public function handleReturnRejectsACaptureBoundToADifferentOrder(): void
+    {
+        $order = $this->order();
+        $order->_setProperty('uid', 999);
+
+        $result = $this->subject()->handleReturn($this->returnRequest('PAYPAL-ORDER-1'), $order);
+
+        $this->assertSame(PaymentResultState::FAILED, $result->getState(), 'A capture for order 42 must not settle order 999.');
+    }
+
+    #[Test]
+    public function handleReturnRejectsACaptureWithATamperedAmount(): void
+    {
+        $order = $this->order();
+        $order->setTotalGross(Money::fromCents(999999));
+
+        $result = $this->subject()->handleReturn($this->returnRequest('PAYPAL-ORDER-1'), $order);
+
+        $this->assertSame(PaymentResultState::FAILED, $result->getState(), 'A capture paying less than the order total must not settle it.');
+    }
+
+    #[Test]
+    public function handleReturnRejectsAReplayedForeignAlreadyCapturedOrder(): void
+    {
+        $result = $this->subject()->handleReturn($this->returnRequest('PAYPAL-ORDER-CAPTURED'), $this->order());
+
+        $this->assertSame(PaymentResultState::FAILED, $result->getState(), 'An already-captured PayPal order belonging elsewhere must not settle this order.');
+    }
+
+    #[Test]
     public function handleReturnRetriesAfterUnauthorized(): void
     {
         $result = $this->subject()->handleReturn($this->returnRequest('PAYPAL-ORDER-RETRY'), $this->order());
@@ -182,7 +212,10 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
     private function order(): Order
     {
         $order = new Order();
+        $order->_setProperty('uid', 42);
         $order->setOrderNumber('ORD-1');
+        $order->setCurrency('EUR');
+        $order->setTotalGross(Money::fromCents(1234));
 
         return $order;
     }
