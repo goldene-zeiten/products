@@ -68,6 +68,17 @@ final class GainedVoucherServiceTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function anIssuedVoucherCodeHasEnoughEntropyToResistGuessing(): void
+    {
+        $order = $this->order(frontendUser: 0, totalGross: '100.00');
+        $voucher = $this->subject()->maybeIssue($order, $this->configuration(enabled: true, minimumOrderValue: '50.00'));
+
+        $this->assertNotNull($voucher);
+        $random = substr($voucher->getCode(), strlen('GAINED-'));
+        $this->assertMatchesRegularExpression('/^[0-9A-F]{32}$/', $random, 'A guest-issued voucher code is a bearer token and needs at least 128 bits of entropy.');
+    }
+
+    #[Test]
     public function issuedVouchersArePersistedAndFindableByCode(): void
     {
         $order = $this->order(frontendUser: 5, totalGross: '100.00');

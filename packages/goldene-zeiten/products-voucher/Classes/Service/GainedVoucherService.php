@@ -68,7 +68,7 @@ final class GainedVoucherService
     private function generateUniqueCode(): string
     {
         for ($attempt = 0; $attempt < self::MAX_CODE_ATTEMPTS; $attempt++) {
-            $code = 'GAINED-' . strtoupper(bin2hex(random_bytes(4)));
+            $code = 'GAINED-' . strtoupper(bin2hex(random_bytes(16)));
             if ($this->voucherRepository->findOneByCode($code) === null) {
                 return $code;
             }
