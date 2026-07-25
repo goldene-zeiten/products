@@ -11,6 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Http\JsonResponse;
 
 /**
@@ -23,7 +24,8 @@ use TYPO3\CMS\Core\Http\JsonResponse;
 final readonly class PaymentWebhookMiddleware implements MiddlewareInterface
 {
     public function __construct(
-        private PaymentCallbackService $paymentCallbackService
+        private PaymentCallbackService $paymentCallbackService,
+        private LoggerInterface $logger
     ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -39,7 +41,10 @@ final readonly class PaymentWebhookMiddleware implements MiddlewareInterface
         try {
             $paymentResult = $this->paymentCallbackService->handleWebhook($orderUid, $token, $request);
         } catch (PaymentCallbackException $exception) {
-            return new JsonResponse(['error' => $exception->getMessage()], 404);
+            // The caller is a gateway, not a browser: keep the reason in the log and never confirm which
+            // order uids exist by echoing the resolution failure back.
+            $this->logger->warning('Rejected a payment webhook.', ['exception' => $exception]);
+            return new JsonResponse(['error' => 'Invalid payment callback.'], 404);
         }
 
         return new JsonResponse(['status' => $paymentResult->getPaymentStatus()->value]);
