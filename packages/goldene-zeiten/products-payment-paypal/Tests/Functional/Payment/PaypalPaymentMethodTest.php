@@ -83,6 +83,15 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
     }
 
     #[Test]
+    public function handleReturnDeclinedCaptureDoesNotLeakInternalDetailToTheCustomer(): void
+    {
+        $result = $this->subject()->handleReturn($this->returnRequest('PAYPAL-ORDER-DECLINE'), $this->order());
+
+        $this->assertSame(PaymentResultState::FAILED, $result->getState());
+        $this->assertStringNotContainsString('HTTP 422', $result->getFailureReason(), 'Internal transport detail must not reach the shopper.');
+    }
+
+    #[Test]
     public function handleReturnRejectsACaptureBoundToADifferentOrder(): void
     {
         $order = $this->order();
