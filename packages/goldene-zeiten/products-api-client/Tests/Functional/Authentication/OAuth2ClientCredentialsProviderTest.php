@@ -75,6 +75,17 @@ final class OAuth2ClientCredentialsProviderTest extends AbstractApiMockTestCase
     }
 
     #[Test]
+    public function rotatingTheClientSecretFetchesANewToken(): void
+    {
+        $subject = $this->subject();
+        $tokenUrl = $this->mockRoot . self::TOKEN_PATH;
+        $subject->getToken(new OAuth2Credentials($tokenUrl, 'mock-client', 'secret'));
+        $subject->getToken(new OAuth2Credentials($tokenUrl, 'mock-client', 'rotated-secret'));
+
+        $this->assertSame(2, $this->recordedRequests(self::TOKEN_PATH), 'A rotated secret must not reuse the token cached under the old one.');
+    }
+
+    #[Test]
     public function sendsTheClientCredentialsGrantWithBasicAuth(): void
     {
         $this->subject()->getToken($this->credentials());

@@ -22,12 +22,14 @@ final readonly class OAuth2Credentials
     ) {}
 
     /**
-     * Cache key for the token these credentials obtain. It is scoped to the endpoint and the client id,
-     * so a change of environment or client never reuses a stale token; the consuming package's own cache
-     * keeps it separate from every other integration.
+     * Cache key for the token these credentials obtain. It is scoped to the endpoint, the client id and the
+     * secret, so a change of environment, client or a rotated secret never reuses a stale token - rotating a
+     * leaked secret must drop the token it obtained, not keep serving it until expiry. The secret only feeds
+     * a one-way digest, so the key never exposes it; the consuming package's own cache keeps it separate from
+     * every other integration.
      */
     public function cacheIdentifier(): string
     {
-        return 'token_' . md5($this->tokenUrl . '|' . $this->clientId);
+        return 'token_' . hash('sha256', $this->tokenUrl . '|' . $this->clientId . '|' . $this->clientSecret);
     }
 }
