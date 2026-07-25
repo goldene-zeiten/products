@@ -5,23 +5,25 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\ApiClient\Http;
 
 use GoldeneZeiten\Products\ApiClient\Exception\ApiTransportException;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Client\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
-use TYPO3\CMS\Core\Http\Request;
-use TYPO3\CMS\Core\Http\Stream;
+use TYPO3\CMS\Core\Http\RequestFactory;
 
 /**
- * A thin wrapper around the PSR-18 client that removes the request-building boilerplate every carrier or
- * gateway integration would otherwise repeat: create a stream, wrap it in a {@see Request}, send it, and
- * translate a transport-level failure into a single exception type. It deliberately returns the raw
- * response and never inspects the status code - mapping HTTP statuses to business meaning (a 400 that is
- * really "no rate available", a 422 that is a declined capture) is the caller's job.
+ * A thin wrapper around TYPO3's {@see RequestFactory} that removes the request-building boilerplate every
+ * carrier or gateway integration would otherwise repeat, and bounds the total request time so a stalled
+ * third party cannot hang the synchronous checkout request. It deliberately returns the raw response and
+ * never inspects the status code - mapping HTTP statuses to business meaning (a 400 that is really "no rate
+ * available", a 422 that is a declined capture) is the caller's job.
  */
 final class ApiHttpClient
 {
+    private const DEFAULT_TIMEOUT_SECONDS = 30.0;
+
+    private const DEFAULT_CONNECT_TIMEOUT_SECONDS = 10.0;
+
     public function __construct(
-        private readonly ClientInterface $httpClient,
+        private readonly RequestFactory $requestFactory,
     ) {}
 
     /**
@@ -83,21 +85,38 @@ final class ApiHttpClient
      */
     private function send(string $method, string $url, ?string $body, array $headers): ResponseInterface
     {
-        $stream = new Stream('php://temp', 'rw');
+        $options = [
+            'headers' => ['Accept' => 'application/json'] + $headers,
+            // The caller maps an error status to business meaning, so never let Guzzle raise on one.
+            'http_errors' => false,
+            'connect_timeout' => $this->boundedTimeout('connect_timeout', self::DEFAULT_CONNECT_TIMEOUT_SECONDS),
+            'timeout' => $this->boundedTimeout('timeout', self::DEFAULT_TIMEOUT_SECONDS),
+        ];
         if ($body !== null) {
-            $stream->write($body);
-            $stream->rewind();
+            $options['body'] = $body;
         }
-        $request = new Request($url, $method, $stream, ['Accept' => 'application/json'] + $headers);
 
         try {
-            return $this->httpClient->sendRequest($request);
-        } catch (ClientExceptionInterface $exception) {
+            return $this->requestFactory->request($url, $method, $options);
+        } catch (GuzzleException $exception) {
             throw new ApiTransportException(
                 sprintf('%s request to %s failed at transport level.', $method, $url),
                 1752600000,
                 $exception,
             );
         }
+    }
+
+    /**
+     * A gateway or carrier call runs synchronously inside the checkout request, so it must never be able to
+     * hang a PHP worker forever. Defer to an integrator's explicit HTTP timeout, but substitute a bounded
+     * default whenever the global value is left deactivated (0) - which is TYPO3's own default for the total
+     * `timeout`.
+     */
+    private function boundedTimeout(string $option, float $default): float
+    {
+        $configured = (float)($GLOBALS['TYPO3_CONF_VARS']['HTTP'][$option] ?? 0);
+
+        return $configured > 0.0 ? $configured : $default;
     }
 }

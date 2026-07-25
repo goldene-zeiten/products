@@ -94,7 +94,7 @@ final class OAuth2ClientCredentialsProviderTest extends AbstractApiMockTestCase
 
     private function subject(): OAuth2ClientCredentialsProvider
     {
-        return new OAuth2ClientCredentialsProvider(new ApiHttpClient($this->httpClient()), $this->tokenCache());
+        return new OAuth2ClientCredentialsProvider(new ApiHttpClient($this->requestFactory()), $this->tokenCache());
     }
 
     private function tokenCache(): FrontendInterface

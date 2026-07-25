@@ -39,7 +39,7 @@ abstract class AbstractAmazonPayMockTestCase extends AbstractApiMockTestCase
 
     protected function client(): HttpAmazonPayClient
     {
-        return new HttpAmazonPayClient(new ApiHttpClient($this->httpClient()), new AmazonPaySigner());
+        return new HttpAmazonPayClient(new ApiHttpClient($this->requestFactory()), new AmazonPaySigner());
     }
 
     private function testPrivateKey(): string
