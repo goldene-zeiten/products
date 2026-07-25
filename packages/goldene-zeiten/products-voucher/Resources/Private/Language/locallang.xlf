@@ -6,6 +6,9 @@
 			<trans-unit id="voucher_code" resname="voucher_code">
 				<source>Voucher code</source>
 			</trans-unit>
+			<trans-unit id="voucher.rate_limited" resname="voucher.rate_limited">
+				<source>Too many voucher attempts. Please wait a moment and try again.</source>
+			</trans-unit>
 			<trans-unit id="apply_voucher" resname="apply_voucher">
 				<source>Apply</source>
 			</trans-unit>

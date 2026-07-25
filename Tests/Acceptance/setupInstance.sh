@@ -114,6 +114,10 @@ $GLOBALS['TYPO3_CONF_VARS']['FE']['cookieSecure'] = 0;
 // configured storage pid this disposable instance's site config never sets up - without this,
 // the demo shopper's login is silently rejected regardless of a correct password.
 $GLOBALS['TYPO3_CONF_VARS']['FE']['checkFeUserPid'] = false;
+// The whole suite drives the voucher-apply endpoint from one client IP, so its per-IP redemption
+// rate limit (10/minute in production) would throttle legitimate specs. Raise it for this disposable
+// instance only; the production default still guards a real shop.
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['rateLimiter']['products-voucher-apply']['limit'] = 100000;
 EOF
 
 # Configure only this combination's methods, pointed at the WireMock mock. The methods resolve their
