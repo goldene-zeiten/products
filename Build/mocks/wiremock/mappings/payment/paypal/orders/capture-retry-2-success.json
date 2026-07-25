@@ -16,11 +16,17 @@
       "status": "COMPLETED",
       "purchase_units": [
         {
+          "custom_id": "42",
           "payments": {
             "captures": [
               {
                 "id": "CAPTURE-RETRY",
-                "status": "COMPLETED"
+                "status": "COMPLETED",
+                "custom_id": "42",
+                "amount": {
+                  "currency_code": "EUR",
+                  "value": "12.34"
+                }
               }
             ]
           }

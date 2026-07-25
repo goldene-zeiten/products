@@ -74,6 +74,28 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
     }
 
     #[Test]
+    public function handleReturnRejectsAPaidSessionBoundToADifferentOrder(): void
+    {
+        $order = $this->order();
+        $order->_setProperty('uid', 999);
+
+        $result = $this->subject()->handleReturn($this->returnRequest('cs_test_1'), $order);
+
+        $this->assertSame(PaymentResultState::FAILED, $result->getState(), 'A paid session for order 42 must not settle order 999.');
+    }
+
+    #[Test]
+    public function handleReturnRejectsAPaidSessionWithATamperedAmount(): void
+    {
+        $order = $this->order();
+        $order->setTotalGross(Money::fromCents(999999));
+
+        $result = $this->subject()->handleReturn($this->returnRequest('cs_test_1'), $order);
+
+        $this->assertSame(PaymentResultState::FAILED, $result->getState(), 'A session paying less than the order total must not settle it.');
+    }
+
+    #[Test]
     public function handleReturnFailsWithoutASessionId(): void
     {
         $result = $this->subject()->handleReturn(new ServerRequest('https://shop.example/return', 'GET'), $this->order());
@@ -138,6 +160,9 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
                         'object' => 'checkout.session',
                         'payment_status' => 'paid',
                         'payment_intent' => 'pi_test_1',
+                        'client_reference_id' => '42',
+                        'amount_total' => 1234,
+                        'currency' => 'eur',
                     ],
                 ],
             ],
@@ -165,7 +190,10 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
     private function order(): Order
     {
         $order = new Order();
+        $order->_setProperty('uid', 42);
         $order->setOrderNumber('ORD-1');
+        $order->setCurrency('EUR');
+        $order->setTotalGross(Money::fromCents(1234));
 
         return $order;
     }

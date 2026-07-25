@@ -93,7 +93,7 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface
             return PaymentResult::failed('Stripe did not return a session id on the return URL.');
         }
 
-        return $this->confirm($sessionId);
+        return $this->confirm($sessionId, $order);
     }
 
     public function handleWebhook(ServerRequestInterface $request, Order $order): PaymentResult
@@ -112,10 +112,10 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface
             return PaymentResult::pending();
         }
 
-        return $this->interpretSession($event->data->object);
+        return $this->interpretSession($event->data->object, $order);
     }
 
-    private function confirm(string $sessionId): PaymentResult
+    private function confirm(string $sessionId, Order $order): PaymentResult
     {
         $configuration = $this->configurationFactory->forCurrentRequest();
         try {
@@ -125,14 +125,27 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface
             return PaymentResult::failed('Stripe session could not be verified: ' . $exception->getMessage(), $sessionId);
         }
 
-        return $this->interpretSession($session);
+        return $this->interpretSession($session, $order);
     }
 
-    private function interpretSession(StripeObject $session): PaymentResult
+    /**
+     * A valid callback token only proves the caller owns *some* order of this shop; the `session_id` on the
+     * return URL is a separate, caller-controlled value. Binding the paid session to this order - by the
+     * `client_reference_id` set at creation, the settled amount and the currency - stops a cheap paid session
+     * from being replayed onto an expensive unpaid order.
+     */
+    private function interpretSession(StripeObject $session, Order $order): PaymentResult
     {
         $externalId = (string)($session->payment_intent ?? $session->id);
         $paymentStatus = (string)($session->payment_status ?? '');
         if ($paymentStatus === 'paid') {
+            if (!$this->belongsToOrder($session, $order)) {
+                $this->logger->warning('Stripe session does not match the order it was returned for.', [
+                    'order' => $order->getUid(),
+                    'session' => (string)($session->id ?? ''),
+                ]);
+                return PaymentResult::failed('The Stripe payment did not match the order.', $externalId);
+            }
             return PaymentResult::completed(PaymentStatus::PAID, $externalId);
         }
         if ($paymentStatus === 'unpaid') {
@@ -140,6 +153,16 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface
         }
 
         return PaymentResult::pending($externalId);
+    }
+
+    private function belongsToOrder(StripeObject $session, Order $order): bool
+    {
+        $amountTotal = $session->amount_total ?? null;
+
+        return (string)($session->client_reference_id ?? '') === (string)($order->getUid() ?? 0)
+            && $amountTotal !== null
+            && (int)$amountTotal === $order->getTotalGross()->getCents()
+            && strtolower((string)($session->currency ?? '')) === strtolower($order->getCurrency());
     }
 
     /**

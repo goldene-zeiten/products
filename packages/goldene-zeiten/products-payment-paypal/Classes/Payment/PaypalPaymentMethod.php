@@ -101,7 +101,7 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface
             return PaymentResult::failed('PayPal did not return an order token on the return URL.');
         }
 
-        return $this->capture($paypalOrderId);
+        return $this->capture($paypalOrderId, $order);
     }
 
     public function handleWebhook(ServerRequestInterface $request, Order $order): PaymentResult
@@ -119,7 +119,7 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface
         return $this->interpretEvent($event);
     }
 
-    private function capture(string $paypalOrderId): PaymentResult
+    private function capture(string $paypalOrderId, Order $order): PaymentResult
     {
         $configuration = $this->configurationFactory->forCurrentRequest();
         try {
@@ -131,8 +131,29 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface
         if (!$capture->isCompleted()) {
             return PaymentResult::failed(sprintf('PayPal capture returned status "%s".', $capture->status), $paypalOrderId);
         }
+        if (!$this->belongsToOrder($capture, $order)) {
+            $this->logger->warning('PayPal capture does not match the order it was returned for.', [
+                'order' => $order->getUid(),
+                'paypalOrder' => $paypalOrderId,
+            ]);
+            return PaymentResult::failed('The PayPal payment did not match the order.', $this->externalId($capture, $paypalOrderId));
+        }
 
         return PaymentResult::completed(PaymentStatus::PAID, $this->externalId($capture, $paypalOrderId));
+    }
+
+    /**
+     * A valid callback token only proves the caller owns *some* order of this shop; the PayPal order id on
+     * the return URL is a separate, caller-controlled value. Binding the capture to this order - by the
+     * `custom_id` set at creation, the settled amount and the currency - stops a cheap captured PayPal order
+     * from being replayed onto an expensive unpaid order.
+     */
+    private function belongsToOrder(PaypalCapture $capture, Order $order): bool
+    {
+        return $capture->customId === (string)($order->getUid() ?? 0)
+            && $capture->amount !== null
+            && $capture->amount->getCents() === $order->getTotalGross()->getCents()
+            && strtoupper($capture->currency) === strtoupper($order->getCurrency());
     }
 
     /**
