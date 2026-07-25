@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Core\Payment\Exception\PaymentCallbackException;
 use GoldeneZeiten\Products\Core\Payment\PaymentCallbackService;
 use GoldeneZeiten\Products\Core\Payment\PaymentUrlFactory;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\OrderPlacementExceptionInterface;
+use GoldeneZeiten\Products\Core\Service\Order\OrderTokenService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -29,7 +30,8 @@ final readonly class PaymentReturnMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private PaymentCallbackService $paymentCallbackService,
-        private PaymentUrlFactory $paymentUrlFactory
+        private PaymentUrlFactory $paymentUrlFactory,
+        private OrderTokenService $orderTokenService
     ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -65,8 +67,15 @@ final readonly class PaymentReturnMiddleware implements MiddlewareInterface
             return new RedirectResponse($result->getRedirectUrl());
         }
 
+        // The thank-you page gates on the order token, so hand it the one for this order - the token proves
+        // the caller just settled this order rather than guessing a neighbouring order's uid.
+        $order = $this->paymentCallbackService->resolveOrder($orderUid, $token);
+
         return new RedirectResponse(
-            $this->paymentUrlFactory->checkoutStepUrl($site, 'thankYou', ['order' => $orderUid])
+            $this->paymentUrlFactory->checkoutStepUrl($site, 'thankYou', [
+                'order' => $orderUid,
+                'hash' => $this->orderTokenService->generateToken($order),
+            ])
         );
     }
 
