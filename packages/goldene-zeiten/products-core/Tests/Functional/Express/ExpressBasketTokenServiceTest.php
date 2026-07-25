@@ -50,6 +50,22 @@ final class ExpressBasketTokenServiceTest extends AbstractFunctionalTestCase
         $this->assertNull($service->resolve('not-a-token'));
     }
 
+    #[Test]
+    public function aTokenPastItsCheckoutWindowIsRejected(): void
+    {
+        $service = $this->get(ExpressBasketTokenService::class);
+        $originalExecTime = $GLOBALS['EXEC_TIME'] ?? null;
+        try {
+            $GLOBALS['EXEC_TIME'] = 1_000_000;
+            $token = $service->issue($this->basket());
+            $GLOBALS['EXEC_TIME'] = 1_000_000 + 1801;
+
+            $this->assertNull($service->resolve($token), 'A basket token past its checkout window must be rejected.');
+        } finally {
+            $GLOBALS['EXEC_TIME'] = $originalExecTime;
+        }
+    }
+
     private function basket(): ExpressBasket
     {
         return new ExpressBasket(
