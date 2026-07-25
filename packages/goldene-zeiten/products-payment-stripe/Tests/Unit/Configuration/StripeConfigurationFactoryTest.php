@@ -53,6 +53,16 @@ final class StripeConfigurationFactoryTest extends UnitTestCase
     }
 
     #[Test]
+    public function aConfigurationWithoutAWebhookSecretIsIncomplete(): void
+    {
+        $configuration = $this->factory(['secretKey' => 'sk_test_ext'])->forSite(null);
+
+        $this->assertSame('sk_test_ext', $configuration->secretKey);
+        $this->assertSame('', $configuration->webhookSecret);
+        $this->assertFalse($configuration->isComplete(), 'Stripe must not be offered when it cannot verify its webhook confirmations.');
+    }
+
+    #[Test]
     public function apiBaseUrlOverridesTheStripeHostWhenSet(): void
     {
         $overridden = $this->factory(['apiBaseUrl' => 'http://localhost:8080/payment/stripe'] + self::EXTENSION_DEFAULTS)->forSite(null);

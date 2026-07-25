@@ -29,11 +29,13 @@ final readonly class StripeConfiguration
     }
 
     /**
-     * Stripe is offered only when it can actually create a Checkout Session, so a missing secret key keeps
-     * the method hidden at checkout instead of failing when the customer picks it.
+     * Stripe is offered only when it can both create a Checkout Session and verify the confirmation of one:
+     * without the webhook secret, {@see \Stripe\Webhook::constructEvent()} can never validate a webhook, so a
+     * customer who pays but does not return to the shop would leave the order unconfirmable. A missing key
+     * keeps the method hidden at checkout instead of stranding orders.
      */
     public function isComplete(): bool
     {
-        return $this->secretKey !== '';
+        return $this->secretKey !== '' && $this->webhookSecret !== '';
     }
 }
