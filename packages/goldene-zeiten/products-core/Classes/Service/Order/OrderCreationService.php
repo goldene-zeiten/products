@@ -123,7 +123,8 @@ final class OrderCreationService
             $adjustments,
             $shippingSelection,
             $checkoutSelections->getDeliveryAddress(),
-            $checkoutSelections->getGiftMessage()
+            $checkoutSelections->getGiftMessage(),
+            $checkoutSelections->isWithdrawalWaiverAccepted()
         );
 
         return new PlacementContext($details, $discountContext, $loyaltyContext, $frontendUser);

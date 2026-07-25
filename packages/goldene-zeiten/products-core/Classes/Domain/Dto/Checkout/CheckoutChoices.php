@@ -14,7 +14,8 @@ final readonly class CheckoutChoices
         private string $shippingOptionKey = '',
         private ?Address $deliveryAddress = null,
         private string $giftMessage = '',
-        private bool $termsAccepted = false
+        private bool $termsAccepted = false,
+        private bool $withdrawalWaiverAccepted = false
     ) {}
 
     public function getShippingOptionKey(): string
@@ -35,5 +36,10 @@ final readonly class CheckoutChoices
     public function isTermsAccepted(): bool
     {
         return $this->termsAccepted;
+    }
+
+    public function isWithdrawalWaiverAccepted(): bool
+    {
+        return $this->withdrawalWaiverAccepted;
     }
 }

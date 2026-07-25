@@ -27,7 +27,7 @@ final class WithdrawalControllerTest extends AbstractFrontendTestCase
 
     #[Test]
     #[DataProvider('formActionTokenProvider')]
-    public function formActionRendersOrHidesTheFormDependingOnTokenValidity(bool $useValidToken, bool $expectFormVisible): void
+    public function formActionPrefillsOrFallsBackToThePlainFormDependingOnTokenValidity(bool $useValidToken): void
     {
         $order = $this->fetchWithinWithdrawalPeriodOrder();
         $hash = $useValidToken
@@ -40,24 +40,39 @@ final class WithdrawalControllerTest extends AbstractFrontendTestCase
         ]));
 
         $this->assertSame(200, $response->getStatusCode());
-        if ($expectFormVisible) {
-            $this->assertStringContainsString('tx_productscore_withdrawal[email]', (string)$response->getBody());
+        $body = (string)$response->getBody();
+        if ($useValidToken) {
+            $this->assertStringContainsString('value="ORD-1"', $body);
+            $this->assertStringContainsString('value="shopper@example.com"', $body);
+            $this->assertStringNotContainsString('This cancellation link is invalid or has expired.', $body);
         } else {
-            $this->assertStringNotContainsString('tx_productscore_withdrawal[email]', (string)$response->getBody());
+            $this->assertStringContainsString('This cancellation link is invalid or has expired.', $body);
+            $this->assertStringContainsString('tx_productscore_withdrawal[orderNumber]', $body);
+            $this->assertStringNotContainsString('ORD-1', $body);
         }
     }
 
     public static function formActionTokenProvider(): \Generator
     {
-        yield 'valid token renders the form' => [
+        yield 'valid token prefills the form' => [
             'useValidToken' => true,
-            'expectFormVisible' => true,
         ];
 
-        yield 'tampered token shows the invalid link message' => [
+        yield 'tampered token shows the invalid link message and the plain form' => [
             'useValidToken' => false,
-            'expectFormVisible' => false,
         ];
+    }
+
+    #[Test]
+    public function formActionWithoutATokenRendersThePlainForm(): void
+    {
+        $response = $this->executeFrontendSubRequest($this->requestFor('form', []));
+
+        $this->assertSame(200, $response->getStatusCode());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('tx_productscore_withdrawal[orderNumber]', $body);
+        $this->assertStringContainsString('tx_productscore_withdrawal[email]', $body);
+        $this->assertStringNotContainsString('This cancellation link is invalid or has expired.', $body);
     }
 
     #[Test]
@@ -75,6 +90,40 @@ final class WithdrawalControllerTest extends AbstractFrontendTestCase
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/withdrawal_confirm_cancels_order.csv');
+    }
+
+    #[Test]
+    public function confirmActionCancelsTheOrderForAPlainOrderNumberAndEmail(): void
+    {
+        $this->fetchWithinWithdrawalPeriodOrder();
+
+        $response = $this->executeFrontendSubRequest($this->requestFor('confirm', [
+            'orderNumber' => 'ORD-1',
+            'email' => 'shopper@example.com',
+            'reason' => 'Found a better price',
+        ]));
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/withdrawal_confirm_cancels_order.csv');
+    }
+
+    /**
+     * The redirect back to the form is emitted via header() by Extbase's USER_INT handling and is
+     * therefore invisible to the sub-request harness - what this test pins is the contract that
+     * matters: a non-matching pair never renders a confirmation and never touches the order.
+     */
+    #[Test]
+    public function confirmActionLeavesTheOrderUntouchedForANonMatchingPlainPair(): void
+    {
+        $this->fetchWithinWithdrawalPeriodOrder();
+
+        $response = $this->executeFrontendSubRequest($this->requestFor('confirm', [
+            'orderNumber' => 'ORD-1',
+            'email' => 'someone-else@example.com',
+        ]));
+
+        $this->assertStringNotContainsString('Order cancelled', (string)$response->getBody());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/withdrawal_confirm_leaves_order_confirmed.csv');
     }
 
     /**

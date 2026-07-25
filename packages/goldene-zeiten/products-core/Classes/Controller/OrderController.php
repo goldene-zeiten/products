@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Core\Event\ModifyOrderTrackingEvent;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceTokenService;
 use GoldeneZeiten\Products\Core\Service\Order\OrderTokenService;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalExclusionService;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalTokenService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -21,7 +22,8 @@ final class OrderController extends ActionController
         private readonly InvoiceTokenService $invoiceTokenService,
         private readonly WithdrawalTokenService $withdrawalTokenService,
         private readonly OrderTokenService $orderTokenService,
-        private readonly FrontendUserResolver $frontendUserResolver
+        private readonly FrontendUserResolver $frontendUserResolver,
+        private readonly WithdrawalExclusionService $withdrawalExclusionService
     ) {}
 
     public function listAction(): ResponseInterface
@@ -55,6 +57,7 @@ final class OrderController extends ActionController
             'invoiceHash' => $this->invoiceTokenService->generateToken($order),
             'withdrawalHash' => $this->withdrawalTokenService->generateToken($order),
             'trackingLinks' => $trackingEvent->getTrackingLinks(),
+            'withdrawalExcluded' => $this->withdrawalExclusionService->isFullyExcluded($order),
         ]);
         return $this->htmlResponse();
     }

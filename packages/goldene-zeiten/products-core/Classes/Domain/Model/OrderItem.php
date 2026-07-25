@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Domain\Model;
 
+use GoldeneZeiten\Products\Core\Domain\Enum\WithdrawalExclusion;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
@@ -33,6 +34,7 @@ class OrderItem extends AbstractEntity
     protected int $depositTotal = 0;
     /** @var string */
     protected string $options = '[]';
+    protected WithdrawalExclusion $withdrawalExclusion = WithdrawalExclusion::NONE;
 
     public function getParentOrder(): ?Order
     {
@@ -188,5 +190,19 @@ class OrderItem extends AbstractEntity
     public function setOptions(array $options): void
     {
         $this->options = (string)json_encode($options);
+    }
+
+    /**
+     * Snapshotted from the product at placement time - like the title, the legal status the
+     * item was sold under must survive later product edits.
+     */
+    public function getWithdrawalExclusion(): WithdrawalExclusion
+    {
+        return $this->withdrawalExclusion;
+    }
+
+    public function setWithdrawalExclusion(WithdrawalExclusion $withdrawalExclusion): void
+    {
+        $this->withdrawalExclusion = $withdrawalExclusion;
     }
 }

@@ -237,6 +237,15 @@
 			<trans-unit id="tt_content.tx_products_category" resname="tt_content.tx_products_category">
 				<source>Category Restriction</source>
 			</trans-unit>
+			<trans-unit id="pages.doktype.withdrawal" resname="pages.doktype.withdrawal">
+				<source>Withdrawal page</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_products_nav_class" resname="pages.tx_products_nav_class">
+				<source>Navigation item CSS class(es)</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_products_nav_class.description" resname="pages.tx_products_nav_class.description">
+				<source>Applied by menus rendering this page's navigation entry - e.g. to style the withdrawal link as a button in the footer.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

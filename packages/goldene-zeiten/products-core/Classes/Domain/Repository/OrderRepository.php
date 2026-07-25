@@ -34,4 +34,13 @@ final class OrderRepository extends Repository
         $result = $query->execute()->getFirst();
         return $result instanceof Order ? $result : null;
     }
+
+    public function findOneByOrderNumberIgnoringStoragePage(string $orderNumber): ?Order
+    {
+        $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage(false);
+        $query->matching($query->equals('orderNumber', $orderNumber));
+        $result = $query->execute()->getFirst();
+        return $result instanceof Order ? $result : null;
+    }
 }

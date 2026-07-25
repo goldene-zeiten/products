@@ -25,6 +25,8 @@ use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\EmptyBasketException;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\OrderPlacementVetoedException;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\TermsNotAcceptedException;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\WithdrawalWaiverNotAcceptedException;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalExclusionService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -39,7 +41,8 @@ final class OrderPlacementService
         private readonly LoyaltyRegistry $loyaltyRegistry,
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly PriceQuoteService $priceQuoteService,
-        private readonly ProductsConfigurationFactory $configurationFactory
+        private readonly ProductsConfigurationFactory $configurationFactory,
+        private readonly WithdrawalExclusionService $withdrawalExclusionService
     ) {}
 
     public function place(
@@ -55,6 +58,12 @@ final class OrderPlacementService
         if (!$choices->isTermsAccepted()) {
             throw new TermsNotAcceptedException('Please accept the terms and conditions before placing your order.', 1752422400);
         }
+        if (!$choices->isWithdrawalWaiverAccepted() && $this->withdrawalExclusionService->basketRequiresWaiver($basketViewModel)) {
+            throw new WithdrawalWaiverNotAcceptedException(
+                'Please consent to the immediate supply of the digital content in your basket and acknowledge the loss of your withdrawal right for it.',
+                1784937600
+            );
+        }
         $liveBasket = $this->basketService->getBasketViewModel($request);
         $this->loyaltyRegistry->assertRedeemable(new LoyaltyContext(
             $request,
@@ -65,7 +74,8 @@ final class OrderPlacementService
         $checkoutSelections = new CheckoutSelections(
             $choices->getShippingOptionKey(),
             $choices->getDeliveryAddress(),
-            $choices->getGiftMessage()
+            $choices->getGiftMessage(),
+            $choices->isWithdrawalWaiverAccepted()
         );
         $paymentMethod = $this->paymentMethodRegistry->get($paymentMethodIdentifier);
         $this->dispatchBeforeOrderPlaced($request, $basketViewModel, $address, $paymentMethod);

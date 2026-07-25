@@ -8,3 +8,8 @@
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_reason" />: {reason}
 </f:then>
 </f:if>
+<f:if condition="{withdrawalExcludedItems}">
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_merchant_excluded_items" />
+<f:for each="{withdrawalExcludedItems}" as="excludedItem">- {excludedItem.title}
+</f:for>
+</f:if>

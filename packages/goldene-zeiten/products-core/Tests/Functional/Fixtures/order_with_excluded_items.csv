@@ -1,0 +1,18 @@
+"tx_products_domain_model_orderaddress",,,,,,,,,,,
+,"uid","pid","address_type","company","salutation","first_name","last_name","street","house_number","zip","city","country"
+,11,2,"billing","","Mr","Perso","Shopper","Main Street","2","12345","Sampletown","DE"
+
+"tx_products_domain_model_order",,,,,,,,,,,,,,,
+,"uid","pid","order_number","invoice_number","email","currency","total_net","total_tax","total_gross","billing_address","site_identifier","status","payment_status","withdrawal_waiver_accepted_at"
+,11,2,"ORD-PERS","","personalized@example.com","EUR",8403,1597,10000,11,"products","confirmed","paid",0
+,12,2,"ORD-DIGI-WAIVED","","digital@example.com","EUR",840,160,1000,11,"products","confirmed","paid",1750000000
+,13,2,"ORD-DIGI-OPEN","","digital-open@example.com","EUR",840,160,1000,11,"products","confirmed","paid",0
+,14,2,"ORD-MIXED","","mixed@example.com","EUR",9243,1757,11000,11,"products","confirmed","paid",0
+
+"tx_products_domain_model_orderitem",,,,,,,,,
+,"uid","pid","parent_order","title","item_number","quantity","unit_price_gross","line_total_gross","withdrawal_exclusion"
+,11,2,11,"Engraved Ring","RING-1",1,10000,10000,"personalized"
+,12,2,12,"PDF Guide","PDF-1",1,1000,1000,"digital_content"
+,13,2,13,"PDF Guide","PDF-1",1,1000,1000,"digital_content"
+,14,2,14,"Red Shoes","SHOE-RED",1,10000,10000,""
+,15,2,14,"Engraved Ring","RING-1",1,1000,1000,"personalized"

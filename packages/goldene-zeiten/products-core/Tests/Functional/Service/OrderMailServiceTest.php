@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Service;
 use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Model\OrderItem;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Service\OrderMailService;
 use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\TestMailer;
@@ -75,6 +76,57 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $sentEmails = TestMailer::getSentEmails();
         $this->assertCount(1, $sentEmails);
         $this->assertSame('accounting@example.com', $sentEmails[0]->getBcc()[0]->getAddress());
+    }
+
+    #[Test]
+    public function sendOrderConfirmationCarriesTheWithdrawalButtonUrl(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_with_items_and_addresses.csv');
+        $this->writeSiteConfiguration(
+            'products',
+            $this->buildSiteConfiguration(1, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
+                'settings' => [
+                    'products' => [
+                        'pids' => ['withdrawalPage' => 2],
+                    ],
+                ],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+        $subject = $this->get(OrderMailService::class);
+        $order = $this->fetchPersistedOrder(1);
+        $order->setOrderDate(new \DateTime());
+        $order->setInvoiceNumber('');
+
+        $subject->sendOrderConfirmation($order);
+
+        $html = (string)TestMailer::getSentEmails()[0]->getHtmlBody();
+        $this->assertStringContainsString('Withdraw from contract here', $html);
+        $this->assertStringContainsString('tx_productscore_withdrawal', $html);
+        $this->assertStringContainsString('cHash=', $html);
+    }
+
+    #[Test]
+    public function sendOrderConfirmationNoticesFullExclusionInsteadOfTheButton(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_with_excluded_items.csv');
+        $subject = $this->get(OrderMailService::class);
+        $order = $this->fetchPersistedOrder(11);
+        $order->setOrderDate(new \DateTime());
+
+        $subject->sendOrderConfirmation($order);
+
+        $email = TestMailer::getSentEmails()[0];
+        $this->assertStringContainsString('exempt from the statutory right of withdrawal', (string)$email->getTextBody());
+        $this->assertStringNotContainsString('cHash=', (string)$email->getHtmlBody());
+    }
+
+    private function fetchPersistedOrder(int $uid): Order
+    {
+        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage($uid);
+        $this->assertInstanceOf(Order::class, $order);
+        return $order;
     }
 
     #[Test]

@@ -22,6 +22,7 @@ use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceTokenService;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\OrderPlacementExceptionInterface;
 use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementService;
 use GoldeneZeiten\Products\Core\Service\Order\OrderTokenService;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalExclusionService;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalTokenService;
 use GoldeneZeiten\Products\Core\Shipping\ShippingContextFactory;
 use GoldeneZeiten\Products\Core\Shipping\ShippingQuoteService;
@@ -45,7 +46,8 @@ final class CheckoutController extends ActionController
         private readonly WithdrawalTokenService $withdrawalTokenService,
         private readonly OrderTokenService $orderTokenService,
         private readonly ProductsConfigurationFactory $configurationFactory,
-        private readonly PriceQuoteService $priceQuoteService
+        private readonly PriceQuoteService $priceQuoteService,
+        private readonly WithdrawalExclusionService $withdrawalExclusionService
     ) {}
 
     public function addressAction(): ResponseInterface
@@ -172,6 +174,8 @@ final class CheckoutController extends ActionController
             'shippingSelection' => $this->shippingQuoteService->resolveSelection($this->configurationFactory->create($this->request), $this->shippingContext(), $shippingOptionKey, $this->request),
             'deliveryAddress' => $this->checkoutService->getDeliveryAddress($this->request),
             'giftMessage' => $this->checkoutService->getGiftMessage($this->request),
+            'withdrawalWaiverRequired' => $this->withdrawalExclusionService->basketRequiresWaiver($basket),
+            'withdrawalExemptPersonalizedItems' => $this->withdrawalExclusionService->basketContainsPersonalized($basket),
         ] + $enrichEvent->getVariables());
         return $this->htmlResponse();
     }
@@ -189,7 +193,7 @@ final class CheckoutController extends ActionController
         }
     }
 
-    public function finalizeAction(bool $termsAccepted = false): ResponseInterface
+    public function finalizeAction(bool $termsAccepted = false, bool $withdrawalWaiverAccepted = false): ResponseInterface
     {
         $address = $this->checkoutService->getAddress($this->request);
         $paymentMethodIdentifier = $this->checkoutService->getPaymentMethod($this->request);
@@ -197,7 +201,8 @@ final class CheckoutController extends ActionController
             $this->checkoutService->getShippingOption($this->request),
             $this->checkoutService->getDeliveryAddress($this->request),
             $this->checkoutService->getGiftMessage($this->request),
-            $termsAccepted
+            $termsAccepted,
+            $withdrawalWaiverAccepted
         );
 
         try {
@@ -238,6 +243,7 @@ final class CheckoutController extends ActionController
             'invoiceHash' => $this->invoiceTokenService->generateToken($orderObject),
             'withdrawalHash' => $this->withdrawalTokenService->generateToken($orderObject),
             'orderHash' => $this->orderTokenService->generateToken($orderObject),
+            'withdrawalExcluded' => $this->withdrawalExclusionService->isFullyExcluded($orderObject),
         ]);
         return $this->htmlResponse();
     }

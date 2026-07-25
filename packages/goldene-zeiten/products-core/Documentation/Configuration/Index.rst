@@ -74,8 +74,9 @@ from. Set it before creating any content.
         :type: int
         :Default: 0
 
-        Page uid the self-service order withdrawal/cancellation link (sent in the order
-        confirmation and shown on the thank-you/order-detail pages) points to. See
+        Page uid the withdrawal button in the order confirmation email and the withdrawal links on
+        the thank-you/order-detail pages point to - ideally a page of the shipped
+        :guilabel:`Withdrawal page` type. See
         :ref:`Order withdrawal <users-manual-withdrawal>`.
 
     ..  confval:: products.pricing.mode

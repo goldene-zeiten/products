@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Service\Order\OrderStatusManager;
 use GoldeneZeiten\Products\Core\Service\OrderMailService;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\InvalidWithdrawalRequestException;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\InvalidWithdrawalTokenException;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\OrderNotWithdrawableException;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalEmailMismatchException;
@@ -28,7 +29,8 @@ final class WithdrawalService
         private readonly OrderStatusManager $orderStatusManager,
         private readonly OrderMailService $orderMailService,
         private readonly PersistenceManagerInterface $persistenceManager,
-        private readonly ConfigurationManagerInterface $configurationManager
+        private readonly ConfigurationManagerInterface $configurationManager,
+        private readonly WithdrawalExclusionService $withdrawalExclusionService
     ) {}
 
     /**
@@ -46,9 +48,30 @@ final class WithdrawalService
         return $order;
     }
 
+    /**
+     * The plain form's counterpart to {@see resolveOrder()}: no capability token, so both lookup
+     * failure modes collapse into one generic exception - the response must not reveal whether an
+     * order number exists. Callers rate-limit this path.
+     *
+     * @throws InvalidWithdrawalRequestException
+     */
+    public function resolveOrderByNumberAndEmail(string $orderNumber, string $email): Order
+    {
+        $order = $orderNumber === '' ? null : $this->orderRepository->findOneByOrderNumberIgnoringStoragePage(trim($orderNumber));
+        if ($order === null || strcasecmp(trim($email), trim($order->getEmail())) !== 0) {
+            throw new InvalidWithdrawalRequestException(
+                'Order number and email did not resolve to an order.',
+                1784937601
+            );
+        }
+        return $order;
+    }
+
     public function isStillWithdrawable(Order $order, ServerRequestInterface $request): bool
     {
-        return $order->getStatus()->canTransitionTo(OrderStatus::CANCELLED) && $this->withinWithdrawalPeriod($order, $request);
+        return $order->getStatus()->canTransitionTo(OrderStatus::CANCELLED)
+            && !$this->withdrawalExclusionService->isFullyExcluded($order)
+            && $this->withinWithdrawalPeriod($order, $request);
     }
 
     /**
@@ -61,6 +84,7 @@ final class WithdrawalService
         $this->assertEmailMatches($order, $email);
         $this->assertWithinPeriod($order, $request);
         $this->assertCancellable($order);
+        $this->assertNotExcluded($order);
 
         $this->orderStatusManager->transition($order, OrderStatus::CANCELLED, $reason);
         $this->orderRepository->update($order);
@@ -94,6 +118,16 @@ final class WithdrawalService
             throw new OrderNotWithdrawableException(
                 sprintf('Order %d can no longer be withdrawn from status "%s".', $order->getUid() ?? 0, $order->getStatus()->value),
                 1752100003
+            );
+        }
+    }
+
+    private function assertNotExcluded(Order $order): void
+    {
+        if ($this->withdrawalExclusionService->isFullyExcluded($order)) {
+            throw new OrderNotWithdrawableException(
+                sprintf('Order %d consists entirely of items exempt from the right of withdrawal.', $order->getUid() ?? 0),
+                1784937602
             );
         }
     }

@@ -13,7 +13,8 @@ final readonly class CheckoutSelections
     public function __construct(
         private string $shippingOptionKey = '',
         private ?Address $deliveryAddress = null,
-        private string $giftMessage = ''
+        private string $giftMessage = '',
+        private bool $withdrawalWaiverAccepted = false
     ) {}
 
     public function getShippingOptionKey(): string
@@ -29,5 +30,10 @@ final readonly class CheckoutSelections
     public function getGiftMessage(): string
     {
         return $this->giftMessage;
+    }
+
+    public function isWithdrawalWaiverAccepted(): bool
+    {
+        return $this->withdrawalWaiverAccepted;
     }
 }

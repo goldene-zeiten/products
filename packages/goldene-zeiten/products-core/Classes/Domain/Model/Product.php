@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Domain\Model;
 
+use GoldeneZeiten\Products\Core\Domain\Enum\WithdrawalExclusion;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference;
@@ -44,6 +45,7 @@ class Product extends AbstractEntity
     protected bool $discountDisabled = false;
     protected bool $isOffer = false;
     protected bool $isHighlight = false;
+    protected WithdrawalExclusion $withdrawalExclusion = WithdrawalExclusion::NONE;
     protected ?\DateTime $crdate = null;
     /**
      * @var ObjectStorage<Article>
@@ -508,5 +510,15 @@ class Product extends AbstractEntity
     public function setCrdate(?\DateTime $crdate): void
     {
         $this->crdate = $crdate;
+    }
+
+    public function getWithdrawalExclusion(): WithdrawalExclusion
+    {
+        return $this->withdrawalExclusion;
+    }
+
+    public function setWithdrawalExclusion(WithdrawalExclusion $withdrawalExclusion): void
+    {
+        $this->withdrawalExclusion = $withdrawalExclusion;
     }
 }

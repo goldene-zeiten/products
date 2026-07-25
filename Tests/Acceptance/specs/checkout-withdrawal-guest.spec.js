@@ -25,12 +25,14 @@ test('a guest cancels their own order via the thank-you page link', async ({ pag
   const orderNumberText = await page.getByText('Your order number is', { exact: false }).textContent();
   const orderNumber = orderNumberText.replace('Your order number is', '').replace('.', '').trim();
 
-  await page.getByRole('link', { name: 'Cancel order' }).click();
+  await page.getByRole('link', { name: 'Withdraw from contract here' }).click();
 
-  await expect(page.getByRole('heading', { name: /Cancel order/ })).toBeVisible();
-  await page.getByLabel('Confirm your email address').fill('withdraw-guest@example.com');
+  await expect(page.getByRole('heading', { name: 'Withdraw from contract' })).toBeVisible();
+  // The tokened link prefills the form (Art. 11a: the function must be easy to use)
+  await expect(page.getByLabel('Order number')).toHaveValue(orderNumber);
+  await expect(page.getByLabel('Confirm your email address')).toHaveValue('withdraw-guest@example.com');
   await page.getByLabel('Reason (optional)').fill('Changed my mind');
-  await page.getByRole('button', { name: 'Cancel this order' }).click();
+  await page.getByRole('button', { name: 'Confirm withdrawal' }).click();
 
   await expect(page.getByRole('heading', { name: 'Order cancelled' })).toBeVisible();
   await expect(page.getByText(orderNumber)).toBeVisible();

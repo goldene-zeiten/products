@@ -603,6 +603,27 @@
 			<trans-unit id="tx_products_domain_model_orderitem.options" resname="tx_products_domain_model_orderitem.options">
 				<source>Options</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_orderitem.withdrawal_exclusion" resname="tx_products_domain_model_orderitem.withdrawal_exclusion">
+				<source>Withdrawal exemption (at time of order)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.withdrawal_exclusion" resname="tx_products_domain_model_product.withdrawal_exclusion">
+				<source>Withdrawal right exemption</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.withdrawal_exclusion.description" resname="tx_products_domain_model_product.withdrawal_exclusion.description">
+				<source>Art. 16 Directive 2011/83/EU: personalized goods carry no right of withdrawal; digital content loses it once the customer consents to immediate supply at checkout.</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.withdrawal_exclusion.none" resname="tx_products_domain_model_product.withdrawal_exclusion.none">
+				<source>None (standard withdrawal right)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.withdrawal_exclusion.personalized" resname="tx_products_domain_model_product.withdrawal_exclusion.personalized">
+				<source>Personalized / made to customer specifications (Art. 16(c))</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.withdrawal_exclusion.digital_content" resname="tx_products_domain_model_product.withdrawal_exclusion.digital_content">
+				<source>Digital content without tangible medium (Art. 16(m))</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.withdrawal_waiver_accepted_at" resname="tx_products_domain_model_order.withdrawal_waiver_accepted_at">
+				<source>Digital-content withdrawal waiver consented at</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_orderaddress" resname="tx_products_domain_model_orderaddress">
 				<source>Order Address</source>
 			</trans-unit>

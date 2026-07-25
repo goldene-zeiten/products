@@ -254,18 +254,83 @@ point.
 Order withdrawal
 ==================
 
-A customer can cancel an order themselves within `products.checkout.withdrawalPeriodDays` (14 days
-by default) of placing it, via a "Cancel this order" link on the thank-you page and order-detail
-page — there is no fe_user account requirement, matching this shop's guest-checkout-first design.
-Following the link asks for a cancellation reason and the billing email address again (a second
-factor, since the link itself could otherwise be forwarded to anyone); submitting it checks the
-email matches the order's billing address, the order is still within the withdrawal period, and its
-current status is still cancellable (not already shipped, cancelled, or refunded).
+A customer can withdraw from their order themselves within
+`products.checkout.withdrawalPeriodDays` (14 days by default) of placing it — there is no fe_user
+account requirement, matching this shop's guest-checkout-first design. The function follows
+Art. 11a of the Consumer Rights Directive 2011/83/EU (inserted by Directive (EU) 2023/2673,
+applicable since 19 June 2026): a clearly labelled "Withdraw from contract here" entry point
+leading to a confirmation form with a "Confirm withdrawal" button.
+
+The form is reachable in two ways:
+
+*   **Prefilled, via an order link.** The order confirmation email carries a prominent withdrawal
+    button, and the thank-you and order-detail pages carry the same link. These links transport
+    the order uid plus an HMAC capability token, so the form opens prefilled with the order number
+    and billing email — and the token, not the guessable uid, is what grants the prefill.
+
+*   **Plain, via the withdrawal page itself** — typically linked from a footer or meta navigation
+    (see :ref:`the page type below <users-manual-withdrawal-page-type>`). The customer identifies
+    the order by its order number and billing email address. Unknown number and wrong email answer
+    with the same generic message, so order numbers cannot be probed, and confirmation attempts
+    are rate limited per client IP
+    (``$GLOBALS['TYPO3_CONF_VARS']['SYS']['rateLimiter']['products-withdrawal-confirm']['limit']``,
+    10 per minute by default).
+
+Either way, submitting checks the email matches the order's billing address, the order is still
+within the withdrawal period, its current status is still cancellable (not already shipped,
+cancelled, or refunded), and the order is not entirely made up of
+:ref:`exempt items <users-manual-withdrawal-exemptions>`.
 
 A successful withdrawal moves the order straight to :guilabel:`Cancelled` and sends the merchant a
 dedicated notification (in addition to the customer's own status-change email) — a customer-driven
 cancellation specifically needs to alert the shop to act, unlike an ordinary backend-driven status
 change. Setting `products.checkout.withdrawalPeriodDays` to ``0`` disables the whole feature.
+
+..  _users-manual-withdrawal-page-type:
+
+The withdrawal page type
+--------------------------
+
+Rather than placing the :rst:dir:`Withdrawal` plugin by hand, create a page of type
+:guilabel:`Withdrawal page` (doktype ``175``): the plugin content element is inserted
+automatically when the page is created (or an existing page is switched to the type), so the page
+renders the form with no further editor steps. Put the page into your footer or meta navigation so
+the function stays continuously available during the withdrawal period, as Art. 11a requires. The
+page record carries a :guilabel:`Navigation item CSS class(es)` field
+(``pages.tx_products_nav_class``) to style that navigation entry, for example:
+
+..  code-block:: typoscript
+
+    page.20 = HMENU
+    page.20.special = list
+    page.20.special.value = <your withdrawal page uid>
+    page.20.1 = TMENU
+    page.20.1.NO.ATagParams.dataWrap = class="{field:tx_products_nav_class}"
+
+..  _users-manual-withdrawal-exemptions:
+
+Withdrawal exemptions (Art. 16)
+---------------------------------
+
+Products can be flagged in :guilabel:`Withdrawal right exemption` on the product record:
+
+*   **Personalized / made to customer specifications** (Art. 16(c)) — engraved jewelry and other
+    made-to-order goods. The right of withdrawal never arises for these items; the checkout review
+    step shows the corresponding pre-contract notice.
+
+*   **Digital content without tangible medium** (Art. 16(m)) — downloads. The checkout review step
+    requires an additional express-consent checkbox (immediate supply plus the acknowledgment of
+    losing the withdrawal right); the consent timestamp is stored on the order
+    (``withdrawal_waiver_accepted_at``), and without it an order containing digital content cannot
+    be placed through the normal checkout. Express/wallet checkouts collect no such consent, so
+    orders placed through them simply keep their withdrawal right.
+
+The exemption is snapshotted onto every order item at placement time, so a later product edit does
+not change the legal status an item was sold under. An order consisting entirely of exempt items
+offers no withdrawal function — the email button and page links are replaced by an explanatory
+notice, and the form refuses it. A mixed order stays withdrawable as a whole, because the
+statutory right on its non-exempt items cannot be denied; the merchant withdrawal notification
+lists the exempt items so the refund can be handled accordingly.
 
 The FE order-detail page (:rst:dir:`OrderHistory`'s ``show`` action, linked from the thank-you page
 and order history) works the same way as invoice download and withdrawal: a logged-in customer

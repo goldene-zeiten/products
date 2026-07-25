@@ -63,7 +63,25 @@ final class OrderFactory
             $order->setDeliveryAddress($event->getDeliveryAddress());
         }
         $order->setItems($this->buildOrderItems($basketViewModel, $order));
+        $this->applyWithdrawalWaiver($order, $details);
         return $order;
+    }
+
+    /**
+     * The waiver timestamp is only recorded when it has something to waive - a consent flag on an
+     * order without digital content would suggest a lost right that never existed.
+     */
+    private function applyWithdrawalWaiver(Order $order, PlacementDetails $details): void
+    {
+        if (!$details->isWithdrawalWaiverAccepted()) {
+            return;
+        }
+        foreach ($order->getItems() as $item) {
+            if ($item->getWithdrawalExclusion()->requiresWaiverConsent()) {
+                $order->setWithdrawalWaiverAcceptedAt(new \DateTime());
+                return;
+            }
+        }
     }
 
     /**
@@ -166,6 +184,7 @@ final class OrderFactory
         $orderItem->setLineTotalTax($viewItem->getLineTotalTax());
         $orderItem->setLineTotalGross($viewItem->getLineTotalGross());
         $orderItem->setDepositTotal($viewItem->getDepositTotal());
+        $orderItem->setWithdrawalExclusion($viewItem->getProduct()->getWithdrawalExclusion());
         $orderItem->setParentOrder($order);
         return $orderItem;
     }

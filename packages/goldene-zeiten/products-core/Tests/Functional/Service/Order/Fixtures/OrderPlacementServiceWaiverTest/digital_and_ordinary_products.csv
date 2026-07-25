@@ -1,0 +1,17 @@
+"pages",,,,
+,"uid","pid","sorting","title"
+,1,0,256,"Root"
+,2,1,256,"Shop"
+
+"tx_products_domain_model_taxclass",,,
+,"uid","title","code"
+,1,"Standard Tax","STANDARD"
+
+"tx_products_domain_model_taxrate",,,,
+,"uid","tax_class","country","rate"
+,1,1,"",19.00
+
+"tx_products_domain_model_product",,,,,,,,
+,"uid","pid","title","slug","price","tax_class","in_stock","withdrawal_exclusion"
+,1,2,"Downloadable Guide","downloadable-guide","10.00",1,100,"digital_content"
+,2,2,"Ordinary Mug","ordinary-mug","15.00",1,100,""
