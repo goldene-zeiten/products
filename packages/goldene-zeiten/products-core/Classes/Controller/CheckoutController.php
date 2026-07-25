@@ -211,13 +211,26 @@ final class CheckoutController extends ActionController
             return new RedirectResponse($result->getRedirectUrl());
         }
 
-        return $this->redirect('thankYou', null, null, ['order' => $result->getOrder()->getUid()]);
+        return $this->redirect('thankYou', null, null, [
+            'order' => $result->getOrder()->getUid(),
+            'hash' => $this->orderTokenService->generateToken($result->getOrder()),
+        ]);
     }
 
-    public function thankYouAction(int $order): ResponseInterface
+    /**
+     * The order id on the URL is caller-controlled and the plugin's cHash is not an authorization secret, so
+     * the thank-you page - which mints the invoice, withdrawal and order capability tokens - is gated exactly
+     * like {@see OrderController::showAction()}: the caller must own the order or present its order token.
+     */
+    public function thankYouAction(int $order, ?string $hash = null): ResponseInterface
     {
         $orderObject = $this->checkoutService->getOrder($order);
         if ($orderObject === null) {
+            return $this->redirect('list', 'Product');
+        }
+        $frontendUserUid = $this->frontendUserResolver->getUid($this->request);
+        $isOwner = $frontendUserUid !== 0 && $orderObject->getFrontendUser() === $frontendUserUid;
+        if (!$isOwner && !$this->orderTokenService->isValid($orderObject, $hash)) {
             return $this->redirect('list', 'Product');
         }
         $this->view->assignMultiple([
