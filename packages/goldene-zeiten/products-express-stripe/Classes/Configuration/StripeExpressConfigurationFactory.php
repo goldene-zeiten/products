@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Express\Stripe\Configuration;
 
 use GoldeneZeiten\Products\ApiClient\Configuration\ApiSettingsResolver;
 use GoldeneZeiten\Products\ApiClient\Configuration\CurrentSiteResolver;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 
 /**
@@ -33,6 +34,15 @@ final readonly class StripeExpressConfigurationFactory
     public function forCurrentRequest(): StripeExpressConfiguration
     {
         return $this->forSite($this->currentSiteResolver->resolve());
+    }
+
+    /**
+     * The configuration for the site of the given request. Use it wherever the request is at hand - an
+     * express callback can run before core publishes the request {@see forCurrentRequest()} reads.
+     */
+    public function forRequest(ServerRequestInterface $request): StripeExpressConfiguration
+    {
+        return $this->forSite($this->currentSiteResolver->fromRequest($request));
     }
 
     public function forSite(?Site $site): StripeExpressConfiguration
