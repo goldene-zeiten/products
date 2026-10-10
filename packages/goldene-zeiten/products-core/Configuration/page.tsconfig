@@ -1,2 +1,2 @@
-# 175 = \GoldeneZeiten\Products\Core\Page\PageTypes::DOKTYPE_WITHDRAWAL
+# Offer the withdrawal page doktype (PageTypes::DOKTYPE_WITHDRAWAL) in the new-page drag area.
 options.pageTree.doktypesToShowInNewPageDragArea := addToList(175)
