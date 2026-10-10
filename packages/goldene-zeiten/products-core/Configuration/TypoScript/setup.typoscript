@@ -81,6 +81,9 @@ plugin.tx_productscore {
     }
 }
 
+# The catalogue and order records live in the configured storage folder.
+plugin.tx_productscore.persistence.storagePid = {$products.pids.storageFolder}
+
 # A plugin whose record argument points at nothing (a deleted product, a mistyped order uid) or that is
 # called without its required argument answers with the site's "not found" page instead of an exception.
 plugin.tx_productscore.mvc {
