@@ -54,6 +54,21 @@ final class TtProductsPluginUpgradeWizardTest extends AbstractFunctionalTestCase
         $this->assertCSVDataSet(__DIR__ . '/Fixtures/TtProductsPluginUpgradeWizardTest/Result/multi_mode_migrated.csv');
     }
 
+    /**
+     * The translation of a split multi-mode element is split as well; each translated sibling must
+     * point at the default-language sibling of its own mode, not at the original element.
+     */
+    #[Test]
+    public function translatedSiblingsOfASplitElementPointAtTheirOwnDefaultSibling(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsPluginUpgradeWizardTest/multi_mode_translated.csv');
+        $subject = $this->subject(new BufferedOutput());
+
+        $this->assertTrue($subject->executeUpdate());
+
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/TtProductsPluginUpgradeWizardTest/Result/multi_mode_translated_migrated.csv');
+    }
+
     #[Test]
     public function checkoutModesDeduplicateIntoSingleElement(): void
     {

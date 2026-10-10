@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 // TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
@@ -98,8 +99,12 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         if (!$this->prerequisitesFulfilled()) {
             return false;
         }
-        foreach ($this->legacyRows() as $row) {
-            $this->migrateRow($row);
+        $splitDefaults = [];
+        foreach ($this->legacyRows(false) as $row) {
+            $splitDefaults[(int)$row['uid']] = $this->migrateRow($row, null);
+        }
+        foreach ($this->legacyRows(true) as $row) {
+            $this->migrateRow($row, $splitDefaults[(int)$row['l18n_parent']] ?? []);
         }
         return true;
     }
@@ -140,9 +145,11 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
      * result set of the underlying query, so advancing past the last seen uid is what terminates
      * this - never the absence of matching rows.
      *
+     * @param bool|null $translations true for translated elements only, false for default-language
+     *                                ones only, null for both
      * @return \Generator<array<string, mixed>>
      */
-    private function legacyRows(): \Generator
+    private function legacyRows(?bool $translations = null): \Generator
     {
         $lastUid = 0;
         while (true) {
@@ -156,7 +163,8 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
                         'list_type',
                         $queryBuilder->createNamedParameter(self::LEGACY_LIST_TYPES, Connection::PARAM_STR_ARRAY)
                     ),
-                    $queryBuilder->expr()->gt('uid', $queryBuilder->createNamedParameter($lastUid, Connection::PARAM_INT))
+                    $queryBuilder->expr()->gt('uid', $queryBuilder->createNamedParameter($lastUid, Connection::PARAM_INT)),
+                    ...$this->translationConditions($queryBuilder, $translations)
                 )
                 ->orderBy('uid')
                 ->setMaxResults(LegacyMigrationHelper::BATCH_SIZE)
@@ -173,24 +181,48 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
     }
 
     /**
-     * @param array<string, mixed> $row
+     * @return string[]
      */
-    private function migrateRow(array $row): void
+    private function translationConditions(QueryBuilder $queryBuilder, ?bool $translations): array
+    {
+        if ($translations === null) {
+            return [];
+        }
+        $zero = $queryBuilder->createNamedParameter(0, Connection::PARAM_INT);
+        return [
+            $translations ? $queryBuilder->expr()->gt('l18n_parent', $zero) : $queryBuilder->expr()->eq('l18n_parent', $zero),
+        ];
+    }
+
+    /**
+     * A translated element is split like its default-language element, and each translated part
+     * points at the default-language part carrying the same target.
+     *
+     * @param array<string, mixed> $row
+     * @param array<string, int>|null $defaultParts target signature => uid of the default-language part,
+     *                                              null for a default-language element
+     * @return array<string, int> target signature => uid of the element now carrying that target
+     */
+    private function migrateRow(array $row, ?array $defaultParts): array
     {
         $targets = $this->resolveTargets($row);
         if ($targets === []) {
             $this->reportUntouched($row);
-            return;
+            return [];
         }
         $selections = $this->resolveSelections($row);
-
-        $firstTarget = array_shift($targets);
-        $this->rewriteRow((int)$row['uid'], $firstTarget, $selections);
-        $sortingOffset = 1;
-        foreach ($targets as $target) {
-            $this->insertSibling($row, $target, $selections, $sortingOffset);
-            $sortingOffset++;
+        $parts = [];
+        foreach ($targets as $sortingOffset => $target) {
+            $signature = $this->targetSignature($target);
+            if ($sortingOffset === 0) {
+                $this->rewriteRow((int)$row['uid'], $target, $selections, $defaultParts[$signature] ?? null);
+                $parts[$signature] = (int)$row['uid'];
+                continue;
+            }
+            $translationParent = $defaultParts === null ? null : ($defaultParts[$signature] ?? 0);
+            $parts[$signature] = $this->insertSibling($row, $target, $selections, $sortingOffset, $translationParent);
         }
+        return $parts;
     }
 
     /**
@@ -301,13 +333,16 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
      * @param array{ctype: string, fields: array<string, string>} $target
      * @param array<string, string> $selections
      */
-    private function rewriteRow(int $uid, array $target, array $selections): void
+    private function rewriteRow(int $uid, array $target, array $selections, ?int $translationParent): void
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::CONTENT_TABLE);
         $queryBuilder->update(self::CONTENT_TABLE)
             ->set('CType', $target['ctype'])
             ->set('list_type', '')
             ->set('pi_flexform', '');
+        foreach ($this->translationParentValues($translationParent) as $column => $value) {
+            $queryBuilder->set($column, $value);
+        }
         foreach ($this->targetValues($target, $selections) as $column => $value) {
             $queryBuilder->set($column, $value);
         }
@@ -321,7 +356,7 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
      * @param array{ctype: string, fields: array<string, string>} $target
      * @param array<string, string> $selections
      */
-    private function insertSibling(array $row, array $target, array $selections, int $sortingOffset): void
+    private function insertSibling(array $row, array $target, array $selections, int $sortingOffset, ?int $translationParent): int
     {
         $values = $row;
         unset($values['uid']);
@@ -329,10 +364,24 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         $values['list_type'] = '';
         $values['pi_flexform'] = '';
         $values['sorting'] = (int)$row['sorting'] + $sortingOffset;
-        foreach ($this->targetValues($target, $selections) as $column => $value) {
-            $values[$column] = $value;
+        $values = array_merge($values, $this->translationParentValues($translationParent), $this->targetValues($target, $selections));
+        $connection = $this->connectionPool->getConnectionForTable(self::CONTENT_TABLE);
+        $connection->insert(self::CONTENT_TABLE, $values);
+        return (int)$connection->lastInsertId();
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function translationParentValues(?int $translationParent): array
+    {
+        if ($translationParent === null) {
+            return [];
         }
-        $this->connectionPool->getConnectionForTable(self::CONTENT_TABLE)->insert(self::CONTENT_TABLE, $values);
+        return [
+            'l18n_parent' => $translationParent,
+            'l10n_source' => $translationParent,
+        ];
     }
 
     /**
