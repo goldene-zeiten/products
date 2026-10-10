@@ -29,7 +29,7 @@ final class StockReleaseOnCancellationTest extends AbstractFunctionalTestCase
     public function cancellingAnUnshippedOrderPutsItsProductItemsBackIntoStock(): void
     {
         $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
-        self::assertNotNull($order);
+        $this->assertNotNull($order);
         $subject = $this->get(OrderStatusManager::class);
 
         $subject->transition($order, OrderStatus::CANCELLED);
@@ -42,7 +42,7 @@ final class StockReleaseOnCancellationTest extends AbstractFunctionalTestCase
     public function cancellingAnUnshippedOrderPutsItsArticleItemsBackIntoStock(): void
     {
         $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
-        self::assertNotNull($order);
+        $this->assertNotNull($order);
         $subject = $this->get(OrderStatusManager::class);
 
         $subject->transition($order, OrderStatus::CANCELLED);
@@ -55,7 +55,7 @@ final class StockReleaseOnCancellationTest extends AbstractFunctionalTestCase
     public function cancellingAnOrderLeavesUnlimitedStockUntouched(): void
     {
         $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(1);
-        self::assertNotNull($order);
+        $this->assertNotNull($order);
         $subject = $this->get(OrderStatusManager::class);
 
         $subject->transition($order, OrderStatus::CANCELLED);

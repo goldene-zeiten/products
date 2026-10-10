@@ -1,0 +1,12 @@
+"tx_products_domain_model_product",,,,,,
+,"uid","pid","title","slug","in_stock","unlimited_stock"
+,1,2,"Limited Product","limited-product",3,0
+"tx_products_domain_model_order",,,,,,,,,,
+,"uid","pid","deleted","order_number","email","currency","total_gross","payment_method","payment_status","status"
+,1,2,0,"ORD-OUTCOME-1","new@example.com","EUR",5000,"fixture-redirect","open","new"
+,2,2,0,"ORD-OUTCOME-2","cancelled@example.com","EUR",5000,"fixture-redirect","failed","cancelled"
+,3,2,0,"ORD-OUTCOME-3","sepa@example.com","EUR",5000,"fixture-redirect","pending","confirmed"
+,4,2,0,"ORD-OUTCOME-4","paid@example.com","EUR",5000,"fixture-redirect","paid","confirmed"
+"tx_products_domain_model_orderitem",,,,,,
+,"uid","pid","parent_order","product","article","quantity"
+,1,2,1,1,0,2
