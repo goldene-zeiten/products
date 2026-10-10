@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Express\ExpressCheckoutContext;
 use GoldeneZeiten\Products\Core\Express\ExpressCheckoutProviderInterface;
 use GoldeneZeiten\Products\Core\Middleware\ExpressShippingQuoteMiddleware;
 use GoldeneZeiten\Products\Express\Stripe\Configuration\StripeExpressConfigurationFactory;
+use GoldeneZeiten\Products\Payment\Stripe\Amount\StripeAmountConverter;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -33,7 +34,8 @@ final class StripeExpressCheckoutProvider implements ExpressCheckoutProviderInte
     ];
 
     public function __construct(
-        private readonly StripeExpressConfigurationFactory $configurationFactory
+        private readonly StripeExpressConfigurationFactory $configurationFactory,
+        private readonly StripeAmountConverter $amountConverter
     ) {}
 
     public function getIdentifier(): string
@@ -62,8 +64,10 @@ final class StripeExpressCheckoutProvider implements ExpressCheckoutProviderInte
         return [
             'provider' => self::IDENTIFIER,
             'publishableKey' => $this->configurationFactory->forCurrentRequest()->publishableKey,
-            'amount' => $context->getAmount()->getCents(),
+            'amount' => $this->amountConverter->toMinorUnits($context->getAmount(), $context->getCurrency()),
             'currency' => strtolower($context->getCurrency()),
+            // The shipping quote answers in the shop's hundredths; the button script converts them with this.
+            'minorUnitDecimals' => $this->amountConverter->decimals($context->getCurrency()),
             'shippingQuoteUrl' => ExpressShippingQuoteMiddleware::PATH,
         ];
     }

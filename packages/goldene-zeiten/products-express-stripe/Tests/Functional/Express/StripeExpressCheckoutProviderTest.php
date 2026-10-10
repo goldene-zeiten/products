@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Middleware\ExpressShippingQuoteMiddleware;
 use GoldeneZeiten\Products\Express\Stripe\Configuration\StripeExpressConfigurationFactory;
 use GoldeneZeiten\Products\Express\Stripe\Express\StripeExpressCheckoutProvider;
+use GoldeneZeiten\Products\Payment\Stripe\Amount\StripeAmountConverter;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
@@ -53,6 +54,17 @@ final class StripeExpressCheckoutProviderTest extends AbstractFunctionalTestCase
         $this->assertSame(ExpressShippingQuoteMiddleware::PATH, $config['shippingQuoteUrl']);
     }
 
+    #[Test]
+    public function theButtonConfigurationCarriesTheAmountInTheCurrencysMinorUnit(): void
+    {
+        $context = new ExpressCheckoutContext(Money::fromDecimalString('4990'), 'JPY');
+
+        $config = $this->subject(['publishableKey' => 'pk_test_123', 'secretKey' => 'sk_test'])->getButtonConfiguration($context);
+
+        $this->assertSame(4990, $config['amount']);
+        $this->assertSame(0, $config['minorUnitDecimals'], 'The button script converts the quoted hundredths with it.');
+    }
+
     /**
      * @param array<string, string> $extensionConfiguration
      */
@@ -62,7 +74,8 @@ final class StripeExpressCheckoutProviderTest extends AbstractFunctionalTestCase
         $extensionConfigurationService->method('get')->willReturn($extensionConfiguration);
 
         return new StripeExpressCheckoutProvider(
-            new StripeExpressConfigurationFactory(new ApiSettingsResolver($extensionConfigurationService), new CurrentSiteResolver())
+            new StripeExpressConfigurationFactory(new ApiSettingsResolver($extensionConfigurationService), new CurrentSiteResolver()),
+            new StripeAmountConverter()
         );
     }
 

@@ -11,8 +11,10 @@
  *    settles the PaymentIntent and creates the order server-side, then answers with the thank-you URL the
  *    browser is sent to.
  *
- * All amounts are integer minor units (cents); the element's own `amount` is kept in step with the chosen
- * shipping via `elements.update()` so the sheet total matches what the server will charge.
+ * All amounts handed to Stripe are integer minor units of the currency (whole yen, cents, thousandths of a
+ * dinar). The button's own amount arrives in them; the shipping quote answers in the shop's hundredths and
+ * is converted on arrival. The element's `amount` is kept in step with the chosen shipping via
+ * `elements.update()` so the sheet total matches what the server will charge.
  */
 export default class StripeExpressCheckout {
   constructor(container) {
@@ -20,6 +22,8 @@ export default class StripeExpressCheckout {
     this.publishableKey = container.getAttribute('data-publishable-key');
     this.goodsAmount = parseInt(container.getAttribute('data-amount'), 10) || 0;
     this.currency = container.getAttribute('data-currency');
+    const minorUnitDecimals = parseInt(container.getAttribute('data-minor-unit-decimals'), 10);
+    this.minorUnitsPerHundredth = 10 ** ((Number.isNaN(minorUnitDecimals) ? 2 : minorUnitDecimals) - 2);
     this.basketToken = container.getAttribute('data-basket-token');
     this.shippingQuoteUrl = container.getAttribute('data-shipping-quote-url');
     this.confirmUrl = container.getAttribute('data-confirm-url');
@@ -130,12 +134,18 @@ export default class StripeExpressCheckout {
         return null;
       }
       const quote = await response.json();
-      this.quoteOptions = Array.isArray(quote.options) ? quote.options : [];
+      this.quoteOptions = Array.isArray(quote.options)
+        ? quote.options.map((option) => ({ ...option, shippingAmount: this.toMinorUnits(option.shippingAmount) }))
+        : [];
       return quote;
     } catch (fetchError) {
       console.error('Stripe express shipping quote failed:', fetchError);
       return null;
     }
+  }
+
+  toMinorUnits(hundredths) {
+    return Math.round((parseInt(hundredths, 10) || 0) * this.minorUnitsPerHundredth);
   }
 
   toShippingRate(option) {
