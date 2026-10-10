@@ -58,7 +58,7 @@ final class HttpPaypalOrderClient implements PaypalOrderClient
         if ($response->getStatusCode() === 422 && $this->hasIssue($data, 'ORDER_ALREADY_CAPTURED')) {
             // A replayed return: the order was captured on the first pass. The 422 body carries no capture
             // details, so re-read the order and let the caller verify it still belongs to this order.
-            return $this->showCapturedOrder($paypalOrderId, $configuration);
+            return $this->show($paypalOrderId, $configuration);
         }
         if ($response->getStatusCode() !== 200 && $response->getStatusCode() !== 201) {
             throw new PaypalApiException(sprintf('PayPal capture returned HTTP %d.', $response->getStatusCode()), 1752600302);
@@ -67,7 +67,7 @@ final class HttpPaypalOrderClient implements PaypalOrderClient
         return $this->toCapture($data);
     }
 
-    private function showCapturedOrder(string $paypalOrderId, PaypalConfiguration $configuration): PaypalCapture
+    public function show(string $paypalOrderId, PaypalConfiguration $configuration): PaypalCapture
     {
         $url = $configuration->baseUrl() . self::ORDERS_PATH . '/' . rawurlencode($paypalOrderId);
         $response = $this->authorizedGet($url, $configuration);

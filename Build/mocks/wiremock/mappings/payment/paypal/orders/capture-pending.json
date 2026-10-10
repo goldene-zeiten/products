@@ -1,0 +1,39 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/payment/paypal/v2/checkout/orders/PAYPAL-ORDER-PENDING/capture"
+  },
+  "response": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "PAYPAL-ORDER-PENDING",
+      "status": "COMPLETED",
+      "purchase_units": [
+        {
+          "reference_id": "default",
+          "custom_id": "42",
+          "payments": {
+            "captures": [
+              {
+                "id": "CAPTURE-PENDING",
+                "status": "PENDING",
+                "status_details": {
+                  "reason": "PENDING_REVIEW"
+                },
+                "custom_id": "42",
+                "amount": {
+                  "currency_code": "EUR",
+                  "value": "12.34"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

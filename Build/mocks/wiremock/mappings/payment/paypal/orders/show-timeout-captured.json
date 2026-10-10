@@ -1,0 +1,36 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "GET",
+    "urlPath": "/payment/paypal/v2/checkout/orders/PAYPAL-ORDER-TIMEOUT"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "PAYPAL-ORDER-TIMEOUT",
+      "status": "COMPLETED",
+      "purchase_units": [
+        {
+          "reference_id": "default",
+          "custom_id": "42",
+          "payments": {
+            "captures": [
+              {
+                "id": "CAPTURE-AFTER-TIMEOUT",
+                "status": "COMPLETED",
+                "custom_id": "42",
+                "amount": {
+                  "currency_code": "EUR",
+                  "value": "12.34"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

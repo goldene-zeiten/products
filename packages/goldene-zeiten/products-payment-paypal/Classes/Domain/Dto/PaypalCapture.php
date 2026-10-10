@@ -27,4 +27,12 @@ final readonly class PaypalCapture
     {
         return $this->status === 'COMPLETED';
     }
+
+    /**
+     * Held by PayPal (e.g. for review); the money follows, announced by the capture webhook.
+     */
+    public function isPending(): bool
+    {
+        return $this->status === 'PENDING';
+    }
 }

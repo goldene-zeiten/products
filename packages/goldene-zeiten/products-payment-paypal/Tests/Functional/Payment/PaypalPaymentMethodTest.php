@@ -131,6 +131,48 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
         $this->assertSame(2, $this->recordedRequests(self::CAPTURE_RETRY_PATH));
     }
 
+    /**
+     * PayPal may hold a capture for review: the order is approved and the money is on its way, so the order
+     * is accepted with its payment pending rather than cancelled.
+     */
+    #[Test]
+    public function handleReturnReportsACaptureHeldForReviewAsPending(): void
+    {
+        $result = $this->subject()->handleReturn($this->returnRequest('PAYPAL-ORDER-PENDING'), $this->order());
+
+        $this->assertSame(PaymentResultState::PENDING, $result->getState());
+        $this->assertSame('CAPTURE-PENDING', $result->getExternalId());
+    }
+
+    /**
+     * A capture whose response is lost in transit may well have moved the money. Failing it would cancel an
+     * order the customer has paid for, so the order is read back instead.
+     */
+    #[Test]
+    public function handleReturnReadsTheOrderBackWhenTheCaptureResponseIsLost(): void
+    {
+        $result = $this->subject()->handleReturn($this->returnRequest('PAYPAL-ORDER-TIMEOUT'), $this->order());
+
+        $this->assertSame(PaymentStatus::PAID, $result->getPaymentStatus());
+        $this->assertSame('CAPTURE-AFTER-TIMEOUT', $result->getExternalId());
+    }
+
+    #[Test]
+    public function handleReturnKeepsThePaymentPendingWhenTheCaptureOutcomeCannotBeLearned(): void
+    {
+        $result = $this->subject()->handleReturn($this->returnRequest('PAYPAL-ORDER-TIMEOUT-UNKNOWN'), $this->order());
+
+        $this->assertSame(PaymentResultState::PENDING, $result->getState());
+    }
+
+    #[Test]
+    public function handleWebhookLeavesThePaymentUnchangedForAnApprovedButUncapturedOrder(): void
+    {
+        $result = $this->subject()->handleWebhook($this->webhookRequest('CHECKOUT.ORDER.APPROVED', 'PAYPAL-ORDER-1'), $this->order());
+
+        $this->assertSame(PaymentResultState::UNCHANGED, $result->getState());
+    }
+
     #[Test]
     public function handleWebhookMarksPaidOnAVerifiedCaptureCompleted(): void
     {
@@ -213,6 +255,38 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
     }
 
     #[Test]
+    public function handleStaticWebhookAcknowledgesAnEventTypeItDoesNotHandle(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->staticWebhookRequest('42', '12.34', 'EUR', 'CHECKOUT.ORDER.APPROVED'));
+
+        $this->assertTrue($resolution->isIgnored());
+    }
+
+    #[Test]
+    public function handleStaticWebhookFailsTheOrderOnADeniedCapture(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->staticWebhookRequest('42', '12.34', 'EUR', 'PAYMENT.CAPTURE.DENIED'));
+
+        $this->assertSame(42, $resolution->getOrder()?->getUid());
+        $this->assertSame(PaymentResultState::FAILED, $resolution->getResult()->getState());
+    }
+
+    #[Test]
+    public function handleStaticWebhookReportsAPendingCaptureAsPending(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->staticWebhookRequest('42', '12.34', 'EUR', 'PAYMENT.CAPTURE.PENDING'));
+
+        $this->assertSame(42, $resolution->getOrder()?->getUid());
+        $this->assertSame(PaymentResultState::PENDING, $resolution->getResult()->getState());
+    }
+
+    #[Test]
     public function handleStaticWebhookRejectsAnUnverifiedSignature(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_for_webhook.csv');
@@ -222,11 +296,11 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
         $this->assertNull($resolution->getOrder(), 'An unverified webhook must not resolve an order.');
     }
 
-    private function staticWebhookRequest(string $customId, string $amountValue, string $currency): ServerRequestInterface
+    private function staticWebhookRequest(string $customId, string $amountValue, string $currency, string $eventType = 'PAYMENT.CAPTURE.COMPLETED'): ServerRequestInterface
     {
         $body = json_encode(
             [
-                'event_type' => 'PAYMENT.CAPTURE.COMPLETED',
+                'event_type' => $eventType,
                 'resource' => [
                     'id' => 'CAPTURE-9',
                     'custom_id' => $customId,

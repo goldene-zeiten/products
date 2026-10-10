@@ -24,7 +24,7 @@ The extension is a single **redirect payment method** plugged into the core shop
 
 ## Create and capture: `HttpPaypalOrderClient`
 
-`Order/PaypalOrderClient` is the interface (`createOrder()`, `capture()`); `Order/HttpPaypalOrderClient` is
+`Order/PaypalOrderClient` is the interface (`createOrder()`, `capture()`, `show()`); `Order/HttpPaypalOrderClient` is
 the only implementation, aliased onto it via `#[AsAlias(PaypalOrderClient::class)]`. It:
 
 - Builds the create-order payload via `Order/PaypalOrderRequestBuilder` (a single purchase unit for the
@@ -91,6 +91,11 @@ PayPal order id / body / webhook id a test already controls:
 - `orders/capture-completed.json` — capturing `PAYPAL-ORDER-1` returns `201 COMPLETED` with capture id
   `CAPTURE-1`.
 - `orders/capture-declined.json` — capturing `PAYPAL-ORDER-DECLINE` returns `422 INSTRUMENT_DECLINED`.
+- `orders/capture-pending.json` — capturing `PAYPAL-ORDER-PENDING` returns a capture held as `PENDING`.
+- `orders/capture-transport-fault.json` — capturing `PAYPAL-ORDER-TIMEOUT` or `PAYPAL-ORDER-TIMEOUT-UNKNOWN`
+  resets the connection; reading `PAYPAL-ORDER-TIMEOUT` back shows it captured
+  (`orders/show-timeout-captured.json`), reading `PAYPAL-ORDER-TIMEOUT-UNKNOWN` back fails too
+  (`orders/show-timeout-unknown.json`).
 - `orders/capture-already-captured.json` — capturing `PAYPAL-ORDER-CAPTURED` returns `422
   ORDER_ALREADY_CAPTURED`, exercising the "treat as success" idempotency path in `toCapture()`.
 - `orders/capture-retry-1-unauthorized.json` + `orders/capture-retry-2-success.json` — capturing

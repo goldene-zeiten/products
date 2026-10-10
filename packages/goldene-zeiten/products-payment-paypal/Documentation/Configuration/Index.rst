@@ -99,9 +99,10 @@ independently of the browser, so the order is still confirmed even if the return
     order, the callback carries no per-order token, so the shop resolves the order from the signed event
     payload (the capture's ``custom_id``) and checks the captured amount against that order. The
     transmission signature is verified before that reference is trusted.
-#.  Subscribe the webhook to at least the ``PAYMENT.CAPTURE.COMPLETED`` event. Subscribing to
-    ``CHECKOUT.ORDER.APPROVED`` as well is harmless (it is only acknowledged, not acted on) but not
-    required.
+#.  Subscribe the webhook to the ``PAYMENT.CAPTURE.COMPLETED``, ``PAYMENT.CAPTURE.PENDING`` and
+    ``PAYMENT.CAPTURE.DENIED`` events: a capture PayPal holds for review accepts the order with its payment
+    pending, and the completed or denied event settles it later. Any other event (such as
+    ``CHECKOUT.ORDER.APPROVED``) is acknowledged and ignored.
 #.  Save the webhook, then copy its :guilabel:`Webhook ID` into
     `products.payment.paypal.webhookId`.
 
