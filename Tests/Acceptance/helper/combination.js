@@ -19,6 +19,8 @@ const PAYMENTS = {
   dhl: [],
   'dhl-stripe': ['stripe'],
   'ups-paypal': ['paypal'],
+  'express-stripe': ['stripe'],
+  'express-paypal': ['paypal'],
   all: ['paypal', 'stripe', 'klarna', 'amazon'],
 };
 
@@ -32,14 +34,24 @@ const CARRIERS = {
   dhl: ['dhl'],
   'dhl-stripe': ['dhl'],
   'ups-paypal': ['ups'],
+  'express-stripe': [],
+  'express-paypal': [],
   all: ['ups', 'dhl'],
+};
+
+// The express wallet add-ons each combination installs, with their button plugin on the basket page.
+const EXPRESS = {
+  'express-stripe': ['stripe'],
+  'express-paypal': ['paypal'],
 };
 
 export const currentCombination = combination;
 export const activePayments = PAYMENTS[combination] || [];
 export const activeCarriers = CARRIERS[combination] || [];
+export const activeExpress = EXPRESS[combination] || [];
 
 export const hasPayment = (id) => activePayments.includes(id);
 export const hasCarrier = (id) => activeCarriers.includes(id);
 export const hasAnyCarrier = () => activeCarriers.length > 0;
 export const hasAnyRedirectPayment = () => activePayments.length > 0;
+export const hasExpress = (id) => activeExpress.includes(id);

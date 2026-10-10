@@ -1,0 +1,6 @@
+"sys_template",,,,,,
+,"uid","pid","title","root","clear","include_static_file"
+,2,6,"Stripe Express Checkout","0",0,"EXT:products_express_stripe/Configuration/TypoScript"
+"tt_content",,,,,,
+,"uid","pid","sorting","deleted","colPos","CType"
+,600,6,512,0,0,"productsexpressstripe_expresscheckout"
