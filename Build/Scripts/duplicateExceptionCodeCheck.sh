@@ -17,8 +17,9 @@ print=0
 # Every package keeps its own Classes/, and an exception code must be unique across all of them.
 scanPath="packages/"
 
+# Paths (relative to scanPath, matched as a suffix) whose throw sites are exempt from the check.
+# Add an entry with ignoreFiles+=("vendor/package/Classes/Some/File.php").
 ignoreFiles=()
-ignoreFiles+="Service/Client/Client.php"
 
 
 # ------------------------
@@ -61,6 +62,20 @@ while getopts "hp" opt;do
 done
 
 shift $((OPTIND-1))
+
+# ---------------------------------------------------
+# --- check whether a file is on the ignore list ---
+# ---------------------------------------------------
+is_ignored() {
+    local candidate=$1
+    local ignoreFile
+    for ignoreFile in "${ignoreFiles[@]}"; do
+        if [[ "${candidate}" == *"${ignoreFile}" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
 
 # ------------------------------------------------
 # --- print list of found exceptions to stdout ---
@@ -125,7 +140,7 @@ scan_exceptions() {
             fi
 
             # skip file if in blacklist
-            if [[ {$ignoreFiles[@]} =~ ${currentFilename} ]]; then
+            if is_ignored "${currentFilename}"; then
                 continue
             fi
 
