@@ -102,7 +102,7 @@ jobs:
           if-no-files-found: error
 
   functional:
-    name: functional tests with core v14
+    name: "functional tests with core v14 (${{ matrix.php-version }}, ${{ matrix.db.name }})"
     runs-on: ubuntu-22.04
     needs: [ unit, functional-setup ]
     strategy:
@@ -132,7 +132,7 @@ jobs:
         run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s functional ${{ matrix.db.options }}"
 
   acceptance:
-    name: "acceptance ${{ matrix.combo }} (${{ matrix.db }}) with core v14"
+    name: "acceptance ${{ matrix.combo }} (${{ matrix.db }}${{ matrix.php && format(', {0}', matrix.php) || '' }}) with core v14"
     runs-on: ubuntu-22.04
     needs: code-quality
     strategy:
