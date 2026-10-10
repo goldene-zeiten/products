@@ -146,10 +146,10 @@ defined('TYPO3') or die();
         'ProductsCore',
         'Download',
         [
-            DownloadController::class => 'list',
+            DownloadController::class => 'list, file',
         ],
         [
-            DownloadController::class => 'list',
+            DownloadController::class => 'list, file',
         ],
         ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
     );
