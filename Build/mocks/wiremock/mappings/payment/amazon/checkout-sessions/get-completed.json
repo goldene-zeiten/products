@@ -1,0 +1,33 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "GET",
+    "urlPath": "/payment/amazon/v2/checkoutSessions/amzn_session_paid"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "checkoutSessionId": "amzn_session_paid",
+      "statusDetails": {
+        "state": "Completed",
+        "reasonCode": null
+      },
+      "chargeId": "S01-amzn_session_paid",
+      "chargePermissionId": "S01-PERMISSION",
+      "merchantMetadata": {
+        "merchantReferenceId": "ORD-1",
+        "merchantStoreName": "Test Shop"
+      },
+      "paymentDetails": {
+        "paymentIntent": "AuthorizeWithCapture",
+        "chargeAmount": {
+          "amount": "54.90",
+          "currencyCode": "EUR"
+        }
+      }
+    }
+  }
+}

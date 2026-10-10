@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Payment\RedirectPaymentMethodInterface;
 use GoldeneZeiten\Products\Payment\Amazon\Client\AmazonPayClient;
 use GoldeneZeiten\Products\Payment\Amazon\Configuration\AmazonPayConfiguration;
@@ -109,19 +110,22 @@ final class AmazonPayPaymentMethod implements RedirectPaymentMethodInterface
     {
         // Amazon Pay settles synchronously on the result return, so the account-level SNS IPN is not relied
         // on here (it carries no session id and cannot produce this per-order signature). When a session id
-        // is supplied, the session is re-read and honoured; otherwise the payment stays pending.
+        // is supplied, the session is re-read and honoured if it is this order's; otherwise nothing changes.
         $sessionId = $this->webhookSessionId($request);
         if ($sessionId === '') {
-            return PaymentResult::pending();
+            return PaymentResult::unchanged();
         }
         try {
             $session = $this->client->getCheckoutSession($sessionId, $this->configurationFactory->forCurrentRequest());
         } catch (AmazonPayApiException $exception) {
             $this->logger->error('Amazon Pay webhook verification failed.', ['exception' => $exception]);
-            return PaymentResult::failed('Amazon Pay webhook could not be verified: ' . $exception->getMessage());
+            return PaymentResult::unchanged($sessionId);
+        }
+        if (!$session->isCompleted() || !$this->belongsToOrder($session, $order)) {
+            return PaymentResult::unchanged($sessionId);
         }
 
-        return $session->isCompleted() ? PaymentResult::completed(PaymentStatus::PAID, $session->chargeId) : PaymentResult::pending();
+        return PaymentResult::completed(PaymentStatus::PAID, $session->chargeId);
     }
 
     private function reviewLeg(string $sessionId, Order $order, ServerRequestInterface $request): PaymentResult
@@ -144,6 +148,10 @@ final class AmazonPayPaymentMethod implements RedirectPaymentMethodInterface
         return PaymentResult::redirectRequired($updated->amazonPayRedirectUrl, $sessionId);
     }
 
+    /**
+     * The session id on the result URL is caller-controlled; only a session created for this order and
+     * still carrying its total is completed - a completed session of a cheaper order must not settle it.
+     */
     private function completeLeg(string $sessionId, Order $order): PaymentResult
     {
         if ($order->getPaymentStatus() === PaymentStatus::PAID) {
@@ -152,13 +160,36 @@ final class AmazonPayPaymentMethod implements RedirectPaymentMethodInterface
         $configuration = $this->configurationFactory->forCurrentRequest();
         $payload = ['chargeAmount' => $this->chargeAmount($order->getTotalGross()->getCents(), $order->getCurrency())];
         try {
-            $session = $this->client->completeCheckoutSession($sessionId, $payload, 'complete-' . $order->getOrderNumber(), $configuration);
+            $current = $this->client->getCheckoutSession($sessionId, $configuration);
+            if (!$this->belongsToOrder($current, $order)) {
+                $this->logger->warning('Amazon Pay session does not match the order it was returned for.', [
+                    'order' => $order->getUid(),
+                    'session' => $sessionId,
+                ]);
+                return PaymentResult::failed('The Amazon Pay payment did not match the order.', $sessionId);
+            }
+            $session = $current->isCompleted()
+                ? $current
+                : $this->client->completeCheckoutSession($sessionId, $payload, 'complete-' . $order->getOrderNumber(), $configuration);
         } catch (AmazonPayApiException $exception) {
             $this->logger->error('Amazon Pay completion failed.', ['exception' => $exception]);
             return PaymentResult::failed('Amazon Pay payment could not be completed: ' . $exception->getMessage());
         }
 
         return $this->interpret($session);
+    }
+
+    /**
+     * Binds a session to the order by what the shop set at creation: the order number as merchant
+     * reference, and the order total as charge amount.
+     */
+    private function belongsToOrder(AmazonCheckoutSession $session, Order $order): bool
+    {
+        return $session->merchantReferenceId !== ''
+            && $session->merchantReferenceId === $order->getOrderNumber()
+            && $session->chargeAmount !== ''
+            && Money::fromDecimalString($session->chargeAmount)->getCents() === $order->getTotalGross()->getCents()
+            && strtoupper($session->chargeCurrency) === strtoupper($order->getCurrency());
     }
 
     private function interpret(AmazonCheckoutSession $session): PaymentResult

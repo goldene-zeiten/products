@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Payment\Amazon\Configuration\AmazonPayConfigurationFactory;
 use GoldeneZeiten\Products\Payment\Amazon\Payment\AmazonPayPaymentMethod;
 use GoldeneZeiten\Products\Payment\Amazon\Tests\Functional\AbstractAmazonPayMockTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -83,11 +84,52 @@ final class AmazonPayPaymentMethodTest extends AbstractAmazonPayMockTestCase
     }
 
     #[Test]
-    public function handleWebhookStaysPendingWithoutASessionId(): void
+    public function handleWebhookLeavesThePaymentUnchangedWithoutASessionId(): void
     {
         $result = $this->subject()->handleWebhook(new ServerRequest('https://shop.example/webhook', 'POST'), $this->order());
 
-        $this->assertSame(PaymentResultState::PENDING, $result->getState());
+        $this->assertSame(PaymentResultState::UNCHANGED, $result->getState());
+    }
+
+    #[Test]
+    public function handleWebhookMarksPaidForACompletedSessionOfThisOrder(): void
+    {
+        $result = $this->subject()->handleWebhook($this->webhookRequest('amzn_session_paid'), $this->order());
+
+        $this->assertSame(PaymentStatus::PAID, $result->getPaymentStatus());
+    }
+
+    /**
+     * The session id comes from the caller. A completed session of a different order - or of this order at
+     * a different amount - proves nothing about this order and must not mark it paid.
+     */
+    #[Test]
+    #[DataProvider('foreignSessions')]
+    public function handleWebhookDoesNotMarkPaidForACompletedSessionThatIsNotThisOrders(string $sessionId): void
+    {
+        $result = $this->subject()->handleWebhook($this->webhookRequest($sessionId), $this->order());
+
+        $this->assertNotSame(PaymentStatus::PAID, $result->getPaymentStatus());
+    }
+
+    #[Test]
+    #[DataProvider('foreignSessions')]
+    public function theResultLegDoesNotSettleTheOrderWithASessionThatIsNotItsOwn(string $sessionId): void
+    {
+        $result = $this->subject()->handleReturn($this->returnRequest('result', $sessionId), $this->order());
+
+        $this->assertSame(PaymentResultState::FAILED, $result->getState());
+        $this->assertSame(0, $this->recordedRequests('/payment/amazon/v2/checkoutSessions/' . $sessionId . '/complete'));
+    }
+
+    public static function foreignSessions(): \Generator
+    {
+        yield 'a session of another order' => [
+            'sessionId' => 'amzn_session_foreign',
+        ];
+        yield 'a session of this order at another amount' => [
+            'sessionId' => 'amzn_session_cheap',
+        ];
     }
 
     private function subject(): AmazonPayPaymentMethod
@@ -116,10 +158,16 @@ final class AmazonPayPaymentMethodTest extends AbstractAmazonPayMockTestCase
         return new AmazonPayConfigurationFactory(new ApiSettingsResolver($extensionConfiguration), new CurrentSiteResolver());
     }
 
-    private function returnRequest(string $leg): ServerRequestInterface
+    private function returnRequest(string $leg, string $sessionId = 'amzn_session_1'): ServerRequestInterface
     {
-        return (new ServerRequest('https://shop.example/products/payment/return?order=1&signature=sig&leg=' . $leg . '&amazonCheckoutSessionId=amzn_session_1', 'GET'))
-            ->withQueryParams(['order' => '1', 'signature' => 'sig', 'leg' => $leg, 'amazonCheckoutSessionId' => 'amzn_session_1']);
+        return (new ServerRequest('https://shop.example/products/payment/return?order=1&signature=sig&leg=' . $leg . '&amazonCheckoutSessionId=' . $sessionId, 'GET'))
+            ->withQueryParams(['order' => '1', 'signature' => 'sig', 'leg' => $leg, 'amazonCheckoutSessionId' => $sessionId]);
+    }
+
+    private function webhookRequest(string $sessionId): ServerRequestInterface
+    {
+        return (new ServerRequest('https://shop.example/products/payment/webhook?order=1&signature=sig&amazonCheckoutSessionId=' . $sessionId, 'POST'))
+            ->withQueryParams(['order' => '1', 'signature' => 'sig', 'amazonCheckoutSessionId' => $sessionId]);
     }
 
     private function order(): Order

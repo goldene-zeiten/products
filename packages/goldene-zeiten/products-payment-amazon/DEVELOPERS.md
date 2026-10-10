@@ -28,6 +28,10 @@ Amazon Checkout v2 with a **two-hop redirect** flow.
   before trusting it — see "Webhook verification with signature" below.
 - Both callbacks are idempotent: if the order is already paid, the webhook handler or second return leg
   verifies the charge is complete before re-marking it paid.
+- Both callbacks bind the session to the order before acting on it: the session id arrives from the
+  caller, so the re-read session's `merchantMetadata.merchantReferenceId` must be the order number set at
+  creation and its `paymentDetails.chargeAmount` the order total. A session that is not the order's own
+  fails the result leg (without completing it) and leaves the payment unchanged on the webhook.
 
 ## The configuration value object and factory: `AmazonPayConfiguration`
 
