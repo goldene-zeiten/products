@@ -18,6 +18,7 @@ final class PriceHistoryLookbackService
 
     /**
      * Find the lowest price recorded for a product or article within the given lookback window.
+     * Compared in PHP, because TYPO3 stores decimal columns as text on SQLite.
      * Returns null if no matching history is found or if the minimum price is >= currentPrice.
      */
     public function findLowestPriceSince(?int $productUid, ?int $articleUid, int $sinceTimestamp): ?Money
@@ -55,16 +56,15 @@ final class PriceHistoryLookbackService
                     $queryBuilder->expr()->gt('valid_until', $queryBuilder->createNamedParameter($sinceTimestamp, ParameterType::INTEGER))
                 )
             )
-            ->orderBy('price', 'ASC')
-            ->setMaxResults(1)
             ->executeQuery();
 
-        $row = $result->fetchAssociative();
-
-        if ($row === false) {
-            return null;
+        $lowest = null;
+        while ($row = $result->fetchAssociative()) {
+            $price = Money::fromDecimalString((string)$row['price']);
+            if ($lowest === null || $price->getCents() < $lowest->getCents()) {
+                $lowest = $price;
+            }
         }
-
-        return Money::fromDecimalString((string)$row['price']);
+        return $lowest;
     }
 }
