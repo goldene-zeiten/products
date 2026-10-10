@@ -13,12 +13,19 @@ use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
+/**
+ * Places an order and starts its payment. The order with its stock, number and loyalty bookings is created
+ * atomically; the payment - usually a remote gateway call - is started only once that is committed, so the
+ * row locks are not held across it. An order whose payment cannot be started is cancelled, which returns
+ * its stock.
+ */
 final class OrderPlacementTransaction
 {
     public function __construct(
         private readonly ConnectionPool $connectionPool,
         private readonly OrderCreationService $orderCreationService,
-        private readonly PaymentInitiationService $paymentInitiationService
+        private readonly PaymentInitiationService $paymentInitiationService,
+        private readonly OrderFinalizationService $orderFinalizationService
     ) {}
 
     /**
@@ -35,12 +42,19 @@ final class OrderPlacementTransaction
         $connection->beginTransaction();
         try {
             $order = $this->orderCreationService->create($request, $basketViewModel, $checkoutSelections, $address, $paymentMethod);
-            $paymentResult = $this->paymentInitiationService->initiate($order, $paymentMethod, $request);
             $connection->commit();
-            return [$order, $paymentResult];
         } catch (\Throwable $exception) {
             $connection->rollBack();
             throw $exception;
         }
+
+        try {
+            $paymentResult = $this->paymentInitiationService->initiate($order, $paymentMethod, $request);
+        } catch (\Throwable $exception) {
+            $this->orderFinalizationService->reject($order, 'The payment could not be started.');
+            throw $exception;
+        }
+
+        return [$order, $paymentResult];
     }
 }
