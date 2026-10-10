@@ -16,4 +16,18 @@ $EM_CONF[$_EXTKEY] = [
         'conflicts' => [],
         'suggests' => [],
     ],
+    'autoload' => [
+        'psr-4' => [
+            'GoldeneZeiten\\Products\\Core\\' => 'Classes/',
+            'GoldeneZeiten\\Products\\Core\\Core13\\' => 'Core13/',
+            'GoldeneZeiten\\Products\\Core\\Core14\\' => 'Core14/',
+            'Dompdf\\' => [
+                'Resources/Private/Php/ComposerVendor/dompdf/dompdf/src/',
+                'Resources/Private/Php/ComposerVendor/dompdf/dompdf/lib/',
+            ],
+            'FontLib\\' => 'Resources/Private/Php/ComposerVendor/dompdf/php-font-lib/src/FontLib/',
+            'Svg\\' => 'Resources/Private/Php/ComposerVendor/dompdf/php-svg-lib/src/Svg/',
+            'Sabberworm\\CSS\\' => 'Resources/Private/Php/ComposerVendor/sabberworm/php-css-parser/src/',
+        ],
+    ],
 ];
