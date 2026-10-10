@@ -6,7 +6,9 @@ namespace GoldeneZeiten\Products\Express\Stripe\Payment;
 
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Express\Stripe\Configuration\StripeExpressConfiguration;
+use GoldeneZeiten\Products\Payment\Stripe\Amount\StripeAmountConverter;
 use GoldeneZeiten\Products\Payment\Stripe\Client\StripeClientFactory;
 use Psr\Log\LoggerInterface;
 use Stripe\Exception\ApiErrorException;
@@ -23,6 +25,7 @@ final class StripeExpressPaymentClient
 {
     public function __construct(
         private readonly StripeClientFactory $clientFactory,
+        private readonly StripeAmountConverter $amountConverter,
         private readonly LoggerInterface $logger
     ) {}
 
@@ -30,7 +33,7 @@ final class StripeExpressPaymentClient
     {
         try {
             $intent = $this->clientFactory->create($configuration->toStripeConfiguration())->paymentIntents->create([
-                'amount' => $amountCents,
+                'amount' => $this->amountConverter->toMinorUnits(Money::fromCents($amountCents), $currency),
                 'currency' => strtolower($currency),
                 'payment_method' => $paymentMethodId,
                 'confirm' => true,

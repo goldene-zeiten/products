@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Express\Stripe\Tests\Functional;
 
 use GoldeneZeiten\Products\Express\Stripe\Configuration\StripeExpressConfiguration;
 use GoldeneZeiten\Products\Express\Stripe\Payment\StripeExpressPaymentClient;
+use GoldeneZeiten\Products\Payment\Stripe\Amount\StripeAmountConverter;
 use GoldeneZeiten\Products\Payment\Stripe\Client\StripeClientFactory;
 use GoldeneZeiten\Products\Testing\AbstractApiMockTestCase;
 use Psr\Log\NullLogger;
@@ -29,6 +30,6 @@ abstract class AbstractStripeExpressMockTestCase extends AbstractApiMockTestCase
 
     protected function client(): StripeExpressPaymentClient
     {
-        return new StripeExpressPaymentClient(new StripeClientFactory(), new NullLogger());
+        return new StripeExpressPaymentClient(new StripeClientFactory(), new StripeAmountConverter(), new NullLogger());
     }
 }

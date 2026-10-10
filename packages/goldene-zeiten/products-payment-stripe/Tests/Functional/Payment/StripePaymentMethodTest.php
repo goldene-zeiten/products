@@ -12,10 +12,12 @@ use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Payment\Stripe\Amount\StripeAmountConverter;
 use GoldeneZeiten\Products\Payment\Stripe\Client\StripeClientFactory;
 use GoldeneZeiten\Products\Payment\Stripe\Configuration\StripeConfigurationFactory;
 use GoldeneZeiten\Products\Payment\Stripe\Payment\StripePaymentMethod;
 use GoldeneZeiten\Products\Payment\Stripe\Tests\Functional\AbstractStripeMockTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\NullLogger;
@@ -27,6 +29,7 @@ use TYPO3\CMS\Core\Site\Entity\Site;
 final class StripePaymentMethodTest extends AbstractStripeMockTestCase
 {
     private const RETRIEVE_PATH = '/payment/stripe/v1/checkout/sessions/cs_test_1';
+    private const CREATE_PATH = '/payment/stripe/v1/checkout/sessions';
 
     #[Test]
     public function initiateCreatesASessionAndRequiresRedirect(): void
@@ -36,6 +39,41 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
         $this->assertSame(PaymentResultState::REDIRECT_REQUIRED, $result->getState());
         $this->assertSame('cs_test_1', $result->getExternalId());
         $this->assertStringContainsString('checkout.stripe.com', $result->getRedirectUrl());
+    }
+
+    /**
+     * The shop keeps amounts in hundredths; Stripe wants the currency's own minor unit.
+     */
+    #[Test]
+    #[DataProvider('minorUnitProvider')]
+    public function initiateSendsTheAmountInTheCurrencysMinorUnit(string $currency, string $amount, string $expectedUnitAmount): void
+    {
+        $context = new PaymentContext(Money::fromDecimalString($amount), $currency, 'DE', 0, 'https://shop.example/return', 'https://shop.example/cancel', 'https://shop.example/webhook');
+
+        $this->subject()->initiate($this->order(), $context);
+
+        parse_str((string)$this->loggedRequests(self::CREATE_PATH)[0]['body'], $body);
+        $this->assertSame($expectedUnitAmount, $body['line_items'][0]['price_data']['unit_amount']);
+    }
+
+    public static function minorUnitProvider(): \Generator
+    {
+        yield 'a two-decimal currency in cents' => ['currency' => 'EUR', 'amount' => '12.34', 'expectedUnitAmount' => '1234'];
+        yield 'a zero-decimal currency in whole units' => ['currency' => 'JPY', 'amount' => '1000', 'expectedUnitAmount' => '1000'];
+        yield 'a three-decimal currency in thousandths' => ['currency' => 'KWD', 'amount' => '12.34', 'expectedUnitAmount' => '12340'];
+    }
+
+    #[Test]
+    #[DataProvider('minorUnitProvider')]
+    public function handleWebhookAcceptsASessionPaidInTheCurrencysMinorUnit(string $currency, string $amount, string $expectedUnitAmount): void
+    {
+        $order = $this->order();
+        $order->setCurrency($currency);
+        $order->setTotalGross(Money::fromDecimalString($amount));
+
+        $result = $this->subject()->handleWebhook($this->webhookRequest(true, amountTotal: (int)$expectedUnitAmount, currency: strtolower($currency)), $order);
+
+        $this->assertSame(PaymentStatus::PAID, $result->getPaymentStatus());
     }
 
     #[Test]
@@ -231,6 +269,7 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
             new StripeClientFactory(),
             $this->get(\Psr\EventDispatcher\EventDispatcherInterface::class),
             $this->get(OrderRepository::class),
+            new StripeAmountConverter(),
             new NullLogger(),
         );
 
@@ -276,6 +315,7 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
             new StripeClientFactory(),
             $this->get(\Psr\EventDispatcher\EventDispatcherInterface::class),
             $this->get(OrderRepository::class),
+            new StripeAmountConverter(),
             new NullLogger(),
         );
     }
@@ -297,8 +337,13 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
         return (new ServerRequest('https://shop.example/return', 'GET'))->withQueryParams(['session_id' => $sessionId]);
     }
 
-    private function webhookRequest(bool $validSignature, string $type = 'checkout.session.completed', string $paymentStatus = 'paid'): ServerRequestInterface
-    {
+    private function webhookRequest(
+        bool $validSignature,
+        string $type = 'checkout.session.completed',
+        string $paymentStatus = 'paid',
+        int $amountTotal = 1234,
+        string $currency = 'eur'
+    ): ServerRequestInterface {
         $payload = json_encode(
             [
                 'id' => 'evt_1',
@@ -312,8 +357,8 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
                         'payment_status' => $paymentStatus,
                         'payment_intent' => 'pi_test_1',
                         'client_reference_id' => '42',
-                        'amount_total' => 1234,
-                        'currency' => 'eur',
+                        'amount_total' => $amountTotal,
+                        'currency' => $currency,
                     ],
                 ],
             ],

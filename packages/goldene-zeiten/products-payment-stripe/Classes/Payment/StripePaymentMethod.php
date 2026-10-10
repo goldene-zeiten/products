@@ -12,6 +12,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Payment\RedirectPaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\StaticWebhookPaymentMethodInterface;
+use GoldeneZeiten\Products\Payment\Stripe\Amount\StripeAmountConverter;
 use GoldeneZeiten\Products\Payment\Stripe\Client\StripeClientFactory;
 use GoldeneZeiten\Products\Payment\Stripe\Configuration\StripeConfiguration;
 use GoldeneZeiten\Products\Payment\Stripe\Configuration\StripeConfigurationFactory;
@@ -53,6 +54,7 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface, Stati
         private readonly StripeClientFactory $clientFactory,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly OrderRepository $orderRepository,
+        private readonly StripeAmountConverter $amountConverter,
         private readonly LoggerInterface $logger,
     ) {}
 
@@ -225,7 +227,7 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface, Stati
 
         return (string)($session->client_reference_id ?? '') === (string)($order->getUid() ?? 0)
             && $amountTotal !== null
-            && (int)$amountTotal === $order->getTotalGross()->getCents()
+            && (int)$amountTotal === $this->amountConverter->toMinorUnits($order->getTotalGross(), $order->getCurrency())
             && strtolower((string)($session->currency ?? '')) === strtolower($order->getCurrency());
     }
 
@@ -260,7 +262,7 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface, Stati
                     'quantity' => 1,
                     'price_data' => [
                         'currency' => strtolower($context->getCurrency()),
-                        'unit_amount' => $context->getAmount()->getCents(),
+                        'unit_amount' => $this->amountConverter->toMinorUnits($context->getAmount(), $context->getCurrency()),
                         'product_data' => [
                             'name' => 'Order ' . $order->getOrderNumber(),
                         ],
