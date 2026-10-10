@@ -1,3 +1,7 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/Core/ViewHelpers"
+>
 <div class="product-list-item card mb-4">
     <f:if condition="{product.primaryImage}">
         <f:then>
@@ -11,12 +15,12 @@
             <f:then>
                 <p class="card-text">
                     <f:translate key="price_from" extensionName="products_core" />
-                    <f:render partial="Product/Price" arguments="{price: product.lowestPriceTier.price}" />
+                    <f:render partial="Product/Price" arguments="{price: '{p:pricing.displayPrice(product: product, quantity: product.lowestPriceTier.minQuantity)}'}" />
                 </p>
             </f:then>
             <f:else>
                 <p class="card-text">
-                    <f:render partial="Product/Price" arguments="{price: product.price}" />
+                    <f:render partial="Product/Price" arguments="{price: '{p:pricing.displayPrice(product: product)}'}" />
                 </p>
             </f:else>
         </f:if>
@@ -24,3 +28,4 @@
         <f:render partial="Product/WishlistToggle" arguments="{_all}" />
     </div>
 </div>
+</html>

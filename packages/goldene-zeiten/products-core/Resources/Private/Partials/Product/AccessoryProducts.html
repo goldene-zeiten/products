@@ -1,3 +1,7 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/Core/ViewHelpers"
+>
 <f:if condition="{accessoryProducts}">
     <f:then>
         <div class="product-accessory-products mt-3">
@@ -6,10 +10,11 @@
                 <f:for each="{accessoryProducts}" as="product">
                     <li class="d-flex justify-content-between align-items-center mb-1">
                         <f:link.action action="show" arguments="{product: product}">{product.title}</f:link.action>
-                        <f:render partial="Product/Price" arguments="{price: product.price}" />
+                        <f:render partial="Product/Price" arguments="{price: '{p:pricing.displayPrice(product: product)}'}" />
                     </li>
                 </f:for>
             </ul>
         </div>
     </f:then>
 </f:if>
+</html>

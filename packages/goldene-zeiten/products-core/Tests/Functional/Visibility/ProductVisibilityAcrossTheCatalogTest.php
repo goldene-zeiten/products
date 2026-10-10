@@ -115,7 +115,7 @@ final class ProductVisibilityAcrossTheCatalogTest extends AbstractFunctionalTest
     {
         $contentObjectRenderer = $this->get(ContentObjectRenderer::class);
         $contentObjectRenderer->setRequest(
-            (new ServerRequest('http://localhost/'))->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_FE)
+            (new ServerRequest('http://localhost/'))->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
         );
 
         $processedData = $this->get(CategoryProductTreeProcessor::class)->process(

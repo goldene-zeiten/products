@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Category\CategoryTreeNode;
 use GoldeneZeiten\Products\Core\Domain\Model\Category;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Pricing\PriceProviderInterface;
 use GoldeneZeiten\Products\Core\Service\Category\CategoryTreeService;
 use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
 use Psr\Http\Message\ServerRequestInterface;
@@ -46,6 +47,7 @@ final class CategoryProductTreeProcessor implements DataProcessorInterface
         private readonly ProductRepository $productRepository,
         private readonly ContentDataProcessor $contentDataProcessor,
         private readonly ProductVisibilityResolver $productVisibilityResolver,
+        private readonly PriceProviderInterface $priceProvider,
     ) {}
 
     /**
@@ -137,7 +139,7 @@ final class CategoryProductTreeProcessor implements DataProcessorInterface
     private function buildProducts(Category $category, ServerRequestInterface $request): array
     {
         return array_map(
-            fn(Product $product): array => $this->buildProductOutput($product),
+            fn(Product $product): array => $this->buildProductOutput($product, $request),
             $this->productVisibilityResolver->filterVisible($this->productRepository->findByCategory($category), $request)
         );
     }
@@ -145,14 +147,14 @@ final class CategoryProductTreeProcessor implements DataProcessorInterface
     /**
      * @return array<string, mixed>
      */
-    private function buildProductOutput(Product $product): array
+    private function buildProductOutput(Product $product, ServerRequestInterface $request): array
     {
         return [
             'uid' => (int)$product->getUid(),
             'title' => $product->getTitle(),
             'subtitle' => $product->getSubtitle(),
             'slug' => $product->getSlug(),
-            'price' => $product->getPrice()->getDecimalString(),
+            'price' => $this->priceProvider->getUnitPrice($product, null, 1, $request)->getDecimalString(),
             'data' => $this->toRawFieldArray($product),
         ];
     }
