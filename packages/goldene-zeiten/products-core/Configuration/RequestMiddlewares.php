@@ -11,6 +11,8 @@ use GoldeneZeiten\Products\Core\Middleware\PaymentWebhookMiddleware;
  * need the site's database context - but before page resolution, since their paths are not pages and must
  * never be routed as one. The gateway appends its own parameters to the return URL, so it cannot survive
  * cHash validation as a plugin action; the express callback is called by a wallet sheet with no session.
+ * The payment return additionally runs after frontend authentication: it clears the customer's basket and
+ * checkout session and leaves a message for the checkout, all of which live in the frontend user session.
  */
 return [
     'frontend' => [
@@ -36,6 +38,7 @@ return [
             'target' => PaymentReturnMiddleware::class,
             'after' => [
                 'typo3/cms-frontend/site',
+                'typo3/cms-frontend/authentication',
             ],
             'before' => [
                 'typo3/cms-frontend/page-resolver',
