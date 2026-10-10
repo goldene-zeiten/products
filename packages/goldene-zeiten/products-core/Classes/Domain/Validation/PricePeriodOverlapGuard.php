@@ -9,6 +9,7 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\MathUtility;
 
 final class PricePeriodOverlapGuard
 {
@@ -42,8 +43,8 @@ final class PricePeriodOverlapGuard
         $parentColumn = (int)($effectiveRow['article'] ?? 0) > 0 ? 'article' : 'product';
         $parentUid = (int)($effectiveRow[$parentColumn] ?? 0);
         $feGroup = (int)($effectiveRow['fe_group'] ?? 0);
-        $newFrom = (int)($effectiveRow['valid_from'] ?? 0);
-        $newUntil = (int)($effectiveRow['valid_until'] ?? 0) ?: PHP_INT_MAX;
+        $newFrom = $this->toTimestamp($effectiveRow['valid_from'] ?? 0);
+        $newUntil = $this->toTimestamp($effectiveRow['valid_until'] ?? 0) ?: PHP_INT_MAX;
 
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
@@ -69,5 +70,25 @@ final class PricePeriodOverlapGuard
         }
 
         return $effectiveRow;
+    }
+
+    /**
+     * Mirrors DataHandler's datetime conversion, which runs only after the preProcess hooks: FormEngine
+     * submits an ISO 8601 string whose "UTC" time is actually the server's local time.
+     */
+    private function toTimestamp(mixed $value): int
+    {
+        if (is_int($value) || MathUtility::canBeInterpretedAsInteger((string)$value)) {
+            return (int)$value;
+        }
+        if (!is_string($value) || trim($value) === '') {
+            return 0;
+        }
+        try {
+            $timestamp = (new \DateTimeImmutable($value))->getTimestamp();
+        } catch (\Exception) {
+            return 0;
+        }
+        return $timestamp - (int)date('Z', $timestamp);
     }
 }
