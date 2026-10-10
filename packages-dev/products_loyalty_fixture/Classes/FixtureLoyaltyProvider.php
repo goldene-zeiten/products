@@ -96,10 +96,14 @@ final class FixtureLoyaltyProvider implements LoyaltyProviderInterface
         self::$balances = [];
     }
 
+    /**
+     * One point is worth one cent, and no more points are spent than the remaining goods are worth.
+     */
     private function requestedPoints(LoyaltyContext $context): int
     {
         $body = $context->getRequest()->getParsedBody();
+        $requested = is_array($body) ? (int)($body['spendPoints'] ?? 0) : 0;
 
-        return is_array($body) ? (int)($body['spendPoints'] ?? 0) : 0;
+        return min($requested, $context->getRemainingGoodsTotal()->getCents());
     }
 }

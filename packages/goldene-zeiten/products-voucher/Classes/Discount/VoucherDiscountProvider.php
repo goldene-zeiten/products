@@ -128,7 +128,7 @@ final class VoucherDiscountProvider implements DiscountProviderInterface
         foreach ($context->getAccumulatedAdjustments()->byType(AdjustmentType::SHIPPING) as $adjustment) {
             if ($adjustment->getProviderIdentifier() === CoreAdjustmentProvider::SHIPPING && $adjustment->getAmount()->getCents() !== 0) {
                 $offsets[] = new CheckoutAdjustment(
-                    AdjustmentType::DISCOUNT,
+                    AdjustmentType::SHIPPING_DISCOUNT,
                     self::FREE_SHIPPING,
                     '',
                     $this->negate($adjustment->getAmount()),

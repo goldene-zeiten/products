@@ -93,6 +93,18 @@ final readonly class AdjustmentCollection
     }
 
     /**
+     * What discounts and redemptions took off the goods, as a positive amount - not what waived a charge.
+     */
+    public function getGoodsReductionTotal(): Money
+    {
+        $reducing = array_filter(
+            $this->adjustments,
+            static fn(CheckoutAdjustment $adjustment): bool => $adjustment->getType()->isGoodsReduction()
+        );
+        return Money::fromCents(abs($this->sum($reducing)->getCents()));
+    }
+
+    /**
      * @param CheckoutAdjustment[] $adjustments
      */
     private function sum(array $adjustments): Money
