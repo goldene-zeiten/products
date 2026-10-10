@@ -19,11 +19,13 @@ The extension is a single **redirect payment method** plugged into the core shop
   `session_id` query parameter Stripe substitutes into `success_url` (Stripe's own
   `{CHECKOUT_SESSION_ID}` placeholder — see `StripePaymentMethod::successUrl()`) and confirms it
   server-to-server by retrieving the session. `handleWebhook()` verifies the event via
-  `\Stripe\Webhook::constructEvent()` and, on `checkout.session.completed`, interprets it the same way.
+  `\Stripe\Webhook::constructEvent()` and, on `checkout.session.completed` and
+  `checkout.session.async_payment_succeeded`, interprets it the same way; `async_payment_failed` fails it.
 - Both callbacks are idempotent: `handleReturn()` short-circuits without calling Stripe at all when the
   order is already `PaymentStatus::PAID`, and `interpretSession()` (shared by both `confirm()` and
-  `handleWebhook()`) is a pure mapping from `payment_status` (`paid`/`unpaid`/anything else) to a
-  `PaymentResult` — safe to run more than once for the same session.
+  `handleWebhook()`) is a pure mapping from the session's `payment_status` and `status` (paid, completed
+  but unpaid = asynchronous payment pending, never completed = failed) to a `PaymentResult` — safe to run
+  more than once for the same session.
 
 ## Session create/confirm and the `api_base` seam
 

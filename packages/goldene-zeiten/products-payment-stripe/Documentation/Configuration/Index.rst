@@ -76,8 +76,9 @@ browser, so the order is still confirmed even if the return never happens.
     order, the callback carries no per-order token, so the shop resolves the order from the signed event
     payload (the session's ``client_reference_id``) instead. The signature is verified before that
     reference is trusted.
-#.  Select at least the :code:`checkout.session.completed` event to listen to; other events are
-    acknowledged but ignored.
+#.  Select the :code:`checkout.session.completed`, :code:`checkout.session.async_payment_succeeded` and
+    :code:`checkout.session.async_payment_failed` events to listen to; the latter two settle asynchronous
+    payment methods such as SEPA debit. Other events are acknowledged but ignored.
 #.  Save the endpoint, then copy its :guilabel:`Signing secret` into
     `products.payment.stripe.webhookSecret`.
 

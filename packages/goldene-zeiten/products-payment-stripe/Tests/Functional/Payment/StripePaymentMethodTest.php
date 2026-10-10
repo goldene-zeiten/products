@@ -74,6 +74,19 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
         $this->assertSame(PaymentResultState::FAILED, $result->getState());
     }
 
+    /**
+     * Asynchronous methods (SEPA debit, bank transfers) complete the checkout before the money arrives; the
+     * order is accepted with the payment pending rather than cancelled as unpaid.
+     */
+    #[Test]
+    public function handleReturnReportsACompletedSessionAwaitingAnAsyncPaymentAsPending(): void
+    {
+        $result = $this->subject()->handleReturn($this->returnRequest('cs_test_async'), $this->order());
+
+        $this->assertSame(PaymentResultState::PENDING, $result->getState());
+        $this->assertSame('pi_test_async', $result->getExternalId());
+    }
+
     #[Test]
     public function handleReturnDoesNotLeakTheStripeErrorMessageToTheCustomer(): void
     {
@@ -143,6 +156,57 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
     }
 
     #[Test]
+    public function handleStaticWebhookReportsACompletedSessionAwaitingAnAsyncPaymentAsPending(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->webhookRequest(true, 'checkout.session.completed', 'unpaid'));
+
+        $this->assertSame(42, $resolution->getOrder()?->getUid());
+        $this->assertSame(PaymentResultState::PENDING, $resolution->getResult()->getState());
+    }
+
+    #[Test]
+    public function handleStaticWebhookMarksPaidOnceAnAsyncPaymentSucceeds(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->webhookRequest(true, 'checkout.session.async_payment_succeeded'));
+
+        $this->assertSame(42, $resolution->getOrder()?->getUid());
+        $this->assertSame(PaymentStatus::PAID, $resolution->getResult()->getPaymentStatus());
+    }
+
+    #[Test]
+    public function handleStaticWebhookFailsWhenAnAsyncPaymentFails(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->webhookRequest(true, 'checkout.session.async_payment_failed', 'unpaid'));
+
+        $this->assertSame(42, $resolution->getOrder()?->getUid());
+        $this->assertSame(PaymentResultState::FAILED, $resolution->getResult()->getState());
+    }
+
+    #[Test]
+    public function handleStaticWebhookAcknowledgesAnEventTypeItDoesNotHandle(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->webhookRequest(true, 'payment_intent.created'));
+
+        $this->assertTrue($resolution->isIgnored());
+    }
+
+    #[Test]
+    public function handleWebhookLeavesThePaymentUnchangedForAnEventTypeItDoesNotHandle(): void
+    {
+        $result = $this->subject()->handleWebhook($this->webhookRequest(true, 'payment_intent.created'), $this->order());
+
+        $this->assertSame(PaymentResultState::UNCHANGED, $result->getState());
+    }
+
+    #[Test]
     public function handleStaticWebhookRejectsAnInvalidSignature(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_for_webhook.csv');
@@ -180,18 +244,19 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
         return (new ServerRequest('https://shop.example/return', 'GET'))->withQueryParams(['session_id' => $sessionId]);
     }
 
-    private function webhookRequest(bool $validSignature): ServerRequestInterface
+    private function webhookRequest(bool $validSignature, string $type = 'checkout.session.completed', string $paymentStatus = 'paid'): ServerRequestInterface
     {
         $payload = json_encode(
             [
                 'id' => 'evt_1',
                 'object' => 'event',
-                'type' => 'checkout.session.completed',
+                'type' => $type,
                 'data' => [
                     'object' => [
                         'id' => 'cs_test_1',
                         'object' => 'checkout.session',
-                        'payment_status' => 'paid',
+                        'status' => 'complete',
+                        'payment_status' => $paymentStatus,
                         'payment_intent' => 'pi_test_1',
                         'client_reference_id' => '42',
                         'amount_total' => 1234,
