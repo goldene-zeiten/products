@@ -318,6 +318,12 @@
 			<trans-unit id="download.no_files" resname="download.no_files">
 				<source>No downloadable files available for this order.</source>
 			</trans-unit>
+			<trans-unit id="download.available_after_payment" resname="download.available_after_payment">
+				<source>Your downloads will be available once your payment has been received.</source>
+			</trans-unit>
+			<trans-unit id="downloads.available_after_purchase" resname="downloads.available_after_purchase">
+				<source>Available for download after purchase.</source>
+			</trans-unit>
 			<trans-unit id="tracking" resname="tracking">
 				<source>Tracking</source>
 			</trans-unit>

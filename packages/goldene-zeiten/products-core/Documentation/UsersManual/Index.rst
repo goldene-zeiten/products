@@ -101,8 +101,19 @@ backend (drag & drop, or the file browser).
 *   An article's own :guilabel:`Images` field is optional. Leave it empty to show the product's
     gallery instead (the same "leave empty to inherit" convention used for the article price) — only
     fill it in when a specific variant (e.g. a colour) needs its own pictures.
-*   Downloads are shown as a plain file list on the product detail page; they carry no access
-    restriction beyond the record's own visibility (hidden/start-end time).
+*   Downloads are what a customer buys with the product. The product detail page only names them;
+    the files themselves are delivered by the :guilabel:`Download` content element to the customer
+    of an order (logged in, or via the order link from the confirmation email), and only once the
+    order's payment has been received - an invoice order after it has been marked as paid. A
+    cancelled or withdrawn order and a refunded payment withdraw the downloads again.
+
+..  important::
+
+    Store download files in a file storage that is **not publicly accessible** (a storage whose
+    :guilabel:`Is publicly available?` option is off, or whose folder lies outside the web root).
+    The download plugin streams the file itself, but a file in a public storage such as
+    :file:`fileadmin/` can also be fetched directly by anyone who knows or guesses its URL,
+    bypassing the order check.
 
 ..  _users-manual-pricing:
 

@@ -5,7 +5,13 @@
 ,"uid","pid","deleted","order_number","frontend_user","email","currency","total_gross","items","status","payment_status"
 ,1,2,0,"ORD-1",1,"user@example.com","EUR",9999,1,"new","open"
 ,2,2,0,"ORD-2",0,"guest@example.com","EUR",9999,1,"new","open"
+,3,2,0,"ORD-3",1,"user@example.com","EUR",9999,1,"confirmed","paid"
+,4,2,0,"ORD-4",1,"user@example.com","EUR",9999,1,"cancelled","paid"
+,5,2,0,"ORD-5",1,"user@example.com","EUR",9999,1,"confirmed","refunded"
 "tx_products_domain_model_orderitem",,,,,,,,
 ,"uid","pid","deleted","parent_order","product","title","quantity","unit_price_gross"
 ,1,2,0,1,10,"Product",1,9999
 ,2,2,0,2,10,"Product",1,9999
+,3,2,0,3,10,"Product",1,9999
+,4,2,0,4,10,"Product",1,9999
+,5,2,0,5,10,"Product",1,9999

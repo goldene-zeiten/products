@@ -1,19 +1,18 @@
 <f:if condition="{downloads}">
     <f:then>
         <div class="product-downloads mt-3">
-            <h6><f:translate key="downloads" /></h6>
+            <h6><f:translate key="downloads" extensionName="ProductsCore" /></h6>
             <ul class="list-unstyled">
                 <f:for each="{downloads}" as="download">
                     <li>
-                        <a href="{download.originalResource.publicUrl}" target="_blank" rel="noopener">
-                            <f:if condition="{download.title}">
-                                <f:then>{download.title}</f:then>
-                                <f:else>{download.originalResource.name}</f:else>
-                            </f:if>
-                        </a>
+                        <f:if condition="{download.title}">
+                            <f:then>{download.title}</f:then>
+                            <f:else>{download.originalResource.name}</f:else>
+                        </f:if>
                     </li>
                 </f:for>
             </ul>
+            <p class="text-muted small"><f:translate key="downloads.available_after_purchase" extensionName="ProductsCore" /></p>
         </div>
     </f:then>
 </f:if>
