@@ -362,7 +362,7 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
             return 0;
         }
         $articleLocalUid = $this->migrationHelper->resolveLocalUid(self::LEGACY_ARTICLE_TABLE, $legacyArticleUid, self::LOCAL_ARTICLE_TABLE);
-        if ($articleLocalUid === null) {
+        if ($articleLocalUid === null || $articleLocalUid === 0) {
             $this->output->writeln(sprintf(
                 '<comment>sys_products_orders_mm_tt_products uid %d referenced missing article uid %d, kept as product-only.</comment>',
                 $legacyItemUid,

@@ -73,6 +73,23 @@ final class TtProductsArticleUpgradeWizardTest extends AbstractFunctionalTestCas
         $this->assertStringContainsString('referenced missing product uid 999', $output->fetch());
     }
 
+    /**
+     * Article 2 is skipped for its missing product and recorded with local uid 0. Its overlay must
+     * be skipped too, instead of becoming a translation of nothing on page 0.
+     */
+    #[Test]
+    public function overlayOfASkippedArticleIsSkipped(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsArticleUpgradeWizardTest/overlay_of_orphan_article.csv');
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
+
+        $this->assertTrue($subject->executeUpdate());
+
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/articles_migrated.csv');
+        $this->assertStringContainsString('Skipped tt_products_articles_language uid 40: parent uid 2 was never migrated', $output->fetch());
+    }
+
     #[Test]
     public function deletedArticleIsNeverMigrated(): void
     {
