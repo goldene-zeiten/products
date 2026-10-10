@@ -108,6 +108,9 @@
 			<trans-unit id="checkout_shipping_option_required" resname="checkout_shipping_option_required">
 				<source>Please choose one of the offered shipping options.</source>
 			</trans-unit>
+			<trans-unit id="checkout_shipping_option_unavailable" resname="checkout_shipping_option_unavailable">
+				<source>Your shipping option is no longer available for your basket and address. Please choose again.</source>
+			</trans-unit>
 			<trans-unit id="checkout_shipping_method" resname="checkout_shipping_method">
 				<source>Checkout: Shipping Method</source>
 			</trans-unit>
