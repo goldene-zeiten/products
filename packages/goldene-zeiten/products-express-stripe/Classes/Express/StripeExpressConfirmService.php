@@ -20,6 +20,7 @@ use GoldeneZeiten\Products\Express\Stripe\Express\Exception\ExpressPaymentDeclin
 use GoldeneZeiten\Products\Express\Stripe\Payment\StripeExpressPaymentClient;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use TYPO3\CMS\Core\Site\Entity\Site;
 
 /**
  * Orchestrates the Stripe express confirm: recompute the amount from the shop's own basket and shipping -
@@ -52,13 +53,13 @@ final readonly class StripeExpressConfirmService
         $productsConfiguration = $this->productsConfigurationFactory->create($request);
         $quotedBasket = $this->priceQuoteService->resolve($request, $liveBasketViewModel, $productsConfiguration);
         $amount = $quotedBasket->getTotalGross()->getCents()
-            + $this->shippingCents($productsConfiguration, $quotedBasket, $address, $shippingOptionKey);
+            + $this->shippingCents($productsConfiguration, $quotedBasket, $address, $shippingOptionKey, $this->site($request));
 
         $paymentResult = $this->paymentClient->settle(
             $amount,
             $quotedBasket->getCurrency(),
             $paymentMethodId,
-            $this->configurationFactory->forCurrentRequest()
+            $this->configurationFactory->forRequest($request)
         );
         if ($paymentResult->getState() !== PaymentResultState::COMPLETED) {
             throw new ExpressPaymentDeclinedException(
@@ -77,12 +78,12 @@ final readonly class StripeExpressConfirmService
         );
     }
 
-    private function shippingCents(ProductsConfiguration $configuration, BasketViewModel $basket, Address $address, string $shippingOptionKey): int
+    private function shippingCents(ProductsConfiguration $configuration, BasketViewModel $basket, Address $address, string $shippingOptionKey, ?Site $site): int
     {
         if ($shippingOptionKey === '') {
             return 0;
         }
-        $context = $this->shippingContextFactory->createFromBasket($basket, $address);
+        $context = $this->shippingContextFactory->createFromBasket($basket, $address, 0, $site);
         foreach ($this->shippingQuoteService->getAvailableOptions($configuration, $context) as $option) {
             if ($option->getKey() === $shippingOptionKey) {
                 return $option->getCost()->getCents();
@@ -90,5 +91,12 @@ final readonly class StripeExpressConfirmService
         }
 
         return 0;
+    }
+
+    private function site(ServerRequestInterface $request): ?Site
+    {
+        $site = $request->getAttribute('site');
+
+        return $site instanceof Site ? $site : null;
     }
 }
