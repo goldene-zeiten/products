@@ -94,7 +94,6 @@ final class ArticleVariantResolverTest extends UnitTestCase
     private function setUid(object $entity, int $uid): void
     {
         $reflection = new \ReflectionProperty($entity, 'uid');
-        $reflection->setAccessible(true);
         $reflection->setValue($entity, $uid);
     }
 }
