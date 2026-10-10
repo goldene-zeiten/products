@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_voucher/Resources/Private/Language/de.locallang_settings.xlf" date="2026-07-15T09:00:00Z" product-name="products_voucher">
+		<header/>
+		<body>
+			<trans-unit id="category.vouchers" resname="category.vouchers">
+				<source>Vouchers</source>
+				<target>Gutscheine</target>
+			</trans-unit>
+			<trans-unit id="setting.products.vouchers.gained.enabled" resname="setting.products.vouchers.gained.enabled">
+				<source>Auto-issue a reward voucher for qualifying orders</source>
+				<target>Prämiengutschein für qualifizierende Bestellungen automatisch ausstellen</target>
+			</trans-unit>
+			<trans-unit id="setting.products.vouchers.gained.minimumOrderValue" resname="setting.products.vouchers.gained.minimumOrderValue">
+				<source>Minimum order total (gross) to trigger a gained voucher</source>
+				<target>Mindestbestellwert (brutto), ab dem ein Prämiengutschein ausgelöst wird</target>
+			</trans-unit>
+			<trans-unit id="setting.products.vouchers.gained.rewardType" resname="setting.products.vouchers.gained.rewardType">
+				<source>Gained voucher discount type (percentage|fixed)</source>
+				<target>Rabattart des Prämiengutscheins (percentage|fixed)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.vouchers.gained.rewardValue" resname="setting.products.vouchers.gained.rewardValue">
+				<source>Gained voucher discount value</source>
+				<target>Rabattwert des Prämiengutscheins</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

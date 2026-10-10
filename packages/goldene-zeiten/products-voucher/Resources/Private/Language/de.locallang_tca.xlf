@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_voucher/Resources/Private/Language/de.locallang_tca.xlf" date="2026-07-15T09:00:00Z" product-name="products_voucher">
+		<header/>
+		<body>
+			<trans-unit id="tx_products_domain_model_voucher" resname="tx_products_domain_model_voucher">
+				<source>Voucher</source>
+				<target>Gutschein</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.code" resname="tx_products_domain_model_voucher.code">
+				<source>Code</source>
+				<target>Code</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.title" resname="tx_products_domain_model_voucher.title">
+				<source>Internal title</source>
+				<target>Interner Titel</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.discount_type" resname="tx_products_domain_model_voucher.discount_type">
+				<source>Discount type</source>
+				<target>Rabattart</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.discount_type.percentage" resname="tx_products_domain_model_voucher.discount_type.percentage">
+				<source>Percentage</source>
+				<target>Prozentual</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.discount_type.fixed" resname="tx_products_domain_model_voucher.discount_type.fixed">
+				<source>Fixed amount</source>
+				<target>Festbetrag</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.discount_value" resname="tx_products_domain_model_voucher.discount_value">
+				<source>Discount value</source>
+				<target>Rabattwert</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.combinable" resname="tx_products_domain_model_voucher.combinable">
+				<source>Combinable with other vouchers</source>
+				<target>Mit anderen Gutscheinen kombinierbar</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.waives_shipping_cost" resname="tx_products_domain_model_voucher.waives_shipping_cost">
+				<source>Waives the shipping cost</source>
+				<target>Versandkosten entfallen</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.usage_limit" resname="tx_products_domain_model_voucher.usage_limit">
+				<source>Usage limit (0 = unlimited)</source>
+				<target>Einlösungslimit (0 = unbegrenzt)</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.redemption_count" resname="tx_products_domain_model_voucher.redemption_count">
+				<source>Redemption Count</source>
+				<target>Anzahl Einlösungen</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.min_basket_value" resname="tx_products_domain_model_voucher.min_basket_value">
+				<source>Minimum basket value</source>
+				<target>Mindestwarenkorbwert</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.bound_frontend_user" resname="tx_products_domain_model_voucher.bound_frontend_user">
+				<source>Bound to customer (empty = anyone)</source>
+				<target>An Kunden gebunden (leer = alle)</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.valid_from" resname="tx_products_domain_model_voucher.valid_from">
+				<source>Valid from</source>
+				<target>Gültig ab</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.valid_until" resname="tx_products_domain_model_voucher.valid_until">
+				<source>Valid until</source>
+				<target>Gültig bis</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucher.generated_from_order" resname="tx_products_domain_model_voucher.generated_from_order">
+				<source>Auto-generated reward for order (empty = manually created)</source>
+				<target>Automatisch erzeugte Prämie für Bestellung (leer = manuell angelegt)</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption" resname="tx_products_domain_model_voucherredemption">
+				<source>Voucher Redemption</source>
+				<target>Gutscheineinlösung</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.voucher_uid" resname="tx_products_domain_model_voucherredemption.voucher_uid">
+				<source>Voucher UID</source>
+				<target>Gutschein-UID</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.voucher_code" resname="tx_products_domain_model_voucherredemption.voucher_code">
+				<source>Voucher Code</source>
+				<target>Gutscheincode</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.order_uid" resname="tx_products_domain_model_voucherredemption.order_uid">
+				<source>Order UID</source>
+				<target>Bestell-UID</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.frontend_user" resname="tx_products_domain_model_voucherredemption.frontend_user">
+				<source>Frontend User</source>
+				<target>Frontend-Benutzer</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.discount_total" resname="tx_products_domain_model_voucherredemption.discount_total">
+				<source>Discount Total</source>
+				<target>Rabatt gesamt</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.redeemed_at" resname="tx_products_domain_model_voucherredemption.redeemed_at">
+				<source>Redeemed At</source>
+				<target>Eingelöst am</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
