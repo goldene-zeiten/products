@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Controller;
 
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Core\Service\Invoice\Exception\InvalidInvoiceTokenException;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoicePdfService;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceRenderer;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceTokenService;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Frontend\Controller\ErrorController;
 
 final class InvoiceController extends ActionController
 {
@@ -18,16 +19,21 @@ final class InvoiceController extends ActionController
         private readonly OrderRepository $orderRepository,
         private readonly InvoiceTokenService $invoiceTokenService,
         private readonly InvoiceRenderer $invoiceRenderer,
-        private readonly InvoicePdfService $invoicePdfService
+        private readonly InvoicePdfService $invoicePdfService,
+        private readonly ErrorController $errorController
     ) {}
 
+    /**
+     * An unknown order and a wrong token look the same to the caller - a "not found" - so the link cannot be
+     * used to probe which orders exist.
+     */
     public function downloadAction(int $order, string $hash): ResponseInterface
     {
         $orderObject = $this->orderRepository->findByUidIgnoringStoragePage($order);
         if ($orderObject === null || !$this->invoiceTokenService->isValid($orderObject, $hash)) {
-            throw new InvalidInvoiceTokenException(
-                sprintf('Invalid or expired invoice download token for order %d.', $order),
-                1752000001
+            throw new PropagateResponseException(
+                $this->errorController->pageNotFoundAction($this->request, 'The invoice does not exist.'),
+                1791666457
             );
         }
 

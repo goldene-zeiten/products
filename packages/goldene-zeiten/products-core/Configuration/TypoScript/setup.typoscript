@@ -81,6 +81,13 @@ plugin.tx_productscore {
     }
 }
 
+# A plugin whose record argument points at nothing (a deleted product, a mistyped order uid) or that is
+# called without its required argument answers with the site's "not found" page instead of an exception.
+plugin.tx_productscore.mvc {
+    showPageNotFoundIfTargetNotFoundException = 1
+    showPageNotFoundIfRequiredArgumentIsMissingException = 1
+}
+
 products_invoice = PAGE
 products_invoice {
     typeNum = {$products.invoice.pageType}

@@ -6,7 +6,6 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
-use GoldeneZeiten\Products\Core\Service\Invoice\Exception\InvalidInvoiceTokenException;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceTokenService;
 use GoldeneZeiten\Products\Testing\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -26,7 +25,7 @@ final class InvoiceControllerTest extends AbstractFrontendTestCase
     {
         $order = $this->fetchOrder();
         $token = $this->get(InvoiceTokenService::class)->generateToken($order);
-        $response = $this->executeFrontendSubRequest($this->requestFor($order, $token));
+        $response = $this->executeFrontendSubRequest($this->requestFor($order->getUid() ?? 0, $token));
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('application/pdf', $response->getHeaderLine('Content-Type'));
@@ -34,12 +33,20 @@ final class InvoiceControllerTest extends AbstractFrontendTestCase
     }
 
     #[Test]
-    public function downloadActionRejectsATamperedToken(): void
+    public function downloadActionAnswersNotFoundForATamperedToken(): void
     {
-        $this->expectException(InvalidInvoiceTokenException::class);
-        $this->expectExceptionCode(1752000001);
+        $response = $this->executeFrontendSubRequest($this->requestFor($this->fetchOrder()->getUid() ?? 0, 'not-a-valid-token'));
 
-        $this->executeFrontendSubRequest($this->requestFor($this->fetchOrder(), 'not-a-valid-token'));
+        $this->assertSame(404, $response->getStatusCode());
+        $this->assertStringNotContainsString('%PDF', (string)$response->getBody());
+    }
+
+    #[Test]
+    public function downloadActionAnswersNotFoundForAnUnknownOrder(): void
+    {
+        $response = $this->executeFrontendSubRequest($this->requestFor(4711, 'not-a-valid-token'));
+
+        $this->assertSame(404, $response->getStatusCode());
     }
 
     private function fetchOrder(): Order
@@ -49,17 +56,17 @@ final class InvoiceControllerTest extends AbstractFrontendTestCase
         return $order;
     }
 
-    private function requestFor(Order $order, string $hash): InternalRequest
+    private function requestFor(int $order, string $hash): InternalRequest
     {
         $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
-            sprintf('&id=2&tx_productscore_invoice[action]=download&tx_productscore_invoice[order]=%d&tx_productscore_invoice[hash]=%s', $order->getUid(), $hash)
+            sprintf('&id=2&tx_productscore_invoice[action]=download&tx_productscore_invoice[order]=%d&tx_productscore_invoice[hash]=%s', $order, $hash)
         );
 
         return (new InternalRequest('http://localhost/shop'))
             ->withQueryParameters([
                 'type' => 1729512001,
                 'tx_productscore_invoice[action]' => 'download',
-                'tx_productscore_invoice[order]' => $order->getUid(),
+                'tx_productscore_invoice[order]' => $order,
                 'tx_productscore_invoice[hash]' => $hash,
                 'cHash' => $cHash,
             ]);

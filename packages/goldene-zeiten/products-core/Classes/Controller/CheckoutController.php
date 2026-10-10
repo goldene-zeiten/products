@@ -44,6 +44,7 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Extbase\Validation\Validator\ConjunctionValidator;
+use TYPO3\CMS\Frontend\Controller\ErrorController;
 
 final class CheckoutController extends ActionController
 {
@@ -62,7 +63,8 @@ final class CheckoutController extends ActionController
         private readonly PriceQuoteService $priceQuoteService,
         private readonly WithdrawalExclusionService $withdrawalExclusionService,
         private readonly AddressCompletenessChecker $addressCompletenessChecker,
-        private readonly OrderCreationService $orderCreationService
+        private readonly OrderCreationService $orderCreationService,
+        private readonly ErrorController $errorController
     ) {}
 
     public function addressAction(): ResponseInterface
@@ -331,13 +333,13 @@ final class CheckoutController extends ActionController
     public function thankYouAction(int $order, ?string $hash = null): ResponseInterface
     {
         $orderObject = $this->checkoutService->getOrder($order);
-        if ($orderObject === null) {
-            return $this->redirect('list', 'Product');
-        }
         $frontendUserUid = $this->frontendUserResolver->getUid($this->request);
-        $isOwner = $frontendUserUid !== 0 && $orderObject->getFrontendUser() === $frontendUserUid;
-        if (!$isOwner && !$this->orderTokenService->isValid($orderObject, $hash)) {
-            return $this->redirect('list', 'Product');
+        $isOwner = $frontendUserUid !== 0 && $orderObject?->getFrontendUser() === $frontendUserUid;
+        if ($orderObject === null || (!$isOwner && !$this->orderTokenService->isValid($orderObject, $hash))) {
+            throw new PropagateResponseException(
+                $this->errorController->pageNotFoundAction($this->request, 'The order does not exist.'),
+                1791666478
+            );
         }
         $this->view->assignMultiple([
             'order' => $orderObject,
