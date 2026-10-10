@@ -18,4 +18,10 @@ $EM_CONF[$_EXTKEY] = [
         'conflicts' => [],
         'suggests' => [],
     ],
+    'autoload' => [
+        'psr-4' => [
+            'GoldeneZeiten\\Products\\Payment\\Stripe\\' => 'Classes/',
+            'Stripe\\' => 'Resources/Private/Php/ComposerVendor/stripe/stripe-php/lib/',
+        ],
+    ],
 ];

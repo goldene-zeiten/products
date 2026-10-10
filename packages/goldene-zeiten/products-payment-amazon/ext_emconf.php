@@ -18,4 +18,12 @@ $EM_CONF[$_EXTKEY] = [
         'conflicts' => [],
         'suggests' => [],
     ],
+    'autoload' => [
+        'psr-4' => [
+            'GoldeneZeiten\\Products\\Payment\\Amazon\\' => 'Classes/',
+            'Amazon\\Pay\\API\\' => 'Resources/Private/Php/ComposerVendor/amzn/amazon-pay-api-sdk-php/Amazon/Pay/API/',
+            'phpseclib3\\' => 'Resources/Private/Php/ComposerVendor/phpseclib/phpseclib/phpseclib/',
+            'ParagonIE\\ConstantTime\\' => 'Resources/Private/Php/ComposerVendor/paragonie/constant_time_encoding/src/',
+        ],
+    ],
 ];
