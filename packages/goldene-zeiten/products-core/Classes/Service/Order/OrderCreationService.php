@@ -86,7 +86,9 @@ final class OrderCreationService
 
         $this->discountRegistry->apply($order, $context->getDiscountContext());
         $this->loyaltyRegistry->applyRedemption($order, $context->getLoyaltyContext());
-        $this->loyaltyRegistry->award($order, $context->getLoyaltyContext());
+        $this->loyaltyRegistry->award($order, $context->getLoyaltyContext()->withRemainingGoodsTotal(
+            $basketViewModel->getTotalGross()->subtract($context->getDetails()->getAdjustments()->getGoodsReductionTotal())
+        ));
         $this->eventDispatcher->dispatch(new AfterOrderPlacedEvent($order, $request));
 
         return $order;
@@ -116,7 +118,7 @@ final class OrderCreationService
         $loyaltyContext = new LoyaltyContext(
             $request,
             $basketViewModel,
-            $basketViewModel->getTotalGross()->subtract($adjustments->getDiscountTotal()),
+            $basketViewModel->getTotalGross()->subtract($adjustments->getGoodsReductionTotal()),
             $frontendUser
         );
         foreach ($this->loyaltyRegistry->collectRedemption($loyaltyContext) as $loyaltyAdjustment) {

@@ -52,7 +52,8 @@ interface LoyaltyProviderInterface
     public function applyRedemption(Order $order, LoyaltyContext $context): void;
 
     /**
-     * Credit what the order earned. Runs once the order exists.
+     * Credit what the order earned. Runs once the order exists. The context's remaining goods total is
+     * what the goods cost the customer after every discount and redemption.
      */
     public function award(Order $order, LoyaltyContext $context): void;
 }

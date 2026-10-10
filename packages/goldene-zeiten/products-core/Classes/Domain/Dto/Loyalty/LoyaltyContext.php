@@ -15,8 +15,10 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
  * how much a point is worth, how points are earned - is the programme's business and not something the
  * core could put in the context for it.
  *
- * The remaining goods total is what is left after discounts, so points are spent against what the
- * customer actually still owes rather than the pre-discount total.
+ * The remaining goods total is what is left of the goods after discounts - and, for a programme redeeming
+ * after another, after that programme's redemption - so points are spent against what the customer still
+ * owes for the goods. A waived shipping cost does not lower it. When awarding, it is what the goods cost
+ * the customer after every discount and redemption.
  */
 #[Exclude]
 final readonly class LoyaltyContext
@@ -41,6 +43,11 @@ final readonly class LoyaltyContext
     public function getRemainingGoodsTotal(): Money
     {
         return $this->remainingGoodsTotal;
+    }
+
+    public function withRemainingGoodsTotal(Money $remainingGoodsTotal): self
+    {
+        return new self($this->request, $this->basketViewModel, $remainingGoodsTotal, $this->frontendUserUid);
     }
 
     public function getFrontendUserUid(): int
