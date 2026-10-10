@@ -9,19 +9,15 @@ use GoldeneZeiten\Products\Core\Domain\Model\PriceTier;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Pricing\CategoryDiscountPriceProvider;
-use GoldeneZeiten\Products\Core\Pricing\CategoryDiscountResolver;
-use GoldeneZeiten\Products\Core\Pricing\GraduatedPriceProvider;
 use GoldeneZeiten\Products\Core\Pricing\PriceProviderInterface;
-use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
-use GoldeneZeiten\Products\Testing\FixtureConfigurationManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
@@ -65,8 +61,9 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
         }
 
         $request = $frontendUserUid !== null ? $this->requestFor($frontendUserUid) : null;
+        $subject = $this->get(CategoryDiscountPriceProvider::class);
 
-        $this->assertSame($expectedCents, $this->subject('maxAcrossTree')->getUnitPrice($product, null, $quantity, $request)->getCents());
+        $this->assertSame($expectedCents, $subject->getUnitPrice($product, null, $quantity, $request)->getCents());
     }
 
     public static function unitPriceDataProvider(): \Generator
@@ -127,7 +124,8 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
-    public function nearestCategoryModeIsHonouredWhenConfigured(): void
+    #[DataProvider('discountFieldModeDataProvider')]
+    public function discountFieldModeIsReadFromTheSiteSettings(?string $discountFieldMode, int $expectedCents): void
     {
         $root = new Category();
         $root->setDiscountPercent(30.0);
@@ -141,8 +139,25 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
         $categories->attach($leaf);
         $product->setCategories($categories);
 
-        // nearestCategory mode: the leaf's own 5% wins over the root's 30%, unlike maxAcrossTree
-        $this->assertSame(9500, $this->subject('nearestCategory')->getUnitPrice($product, null, 1, $this->requestFor(0))->getCents());
+        $subject = $this->get(CategoryDiscountPriceProvider::class);
+
+        $this->assertSame($expectedCents, $subject->getUnitPrice($product, null, 1, $this->requestFor(0, $discountFieldMode))->getCents());
+    }
+
+    public static function discountFieldModeDataProvider(): \Generator
+    {
+        yield 'nearestCategory lets the leaf discount win over its root' => [
+            'discountFieldMode' => 'nearestCategory',
+            'expectedCents' => 9500,
+        ];
+        yield 'maxAcrossTree takes the highest discount of the chain' => [
+            'discountFieldMode' => 'maxAcrossTree',
+            'expectedCents' => 7000,
+        ];
+        yield 'a site without the setting falls back to maxAcrossTree' => [
+            'discountFieldMode' => null,
+            'expectedCents' => 7000,
+        ];
     }
 
     private function productInCategory(float $categoryDiscountPercent): Product
@@ -157,22 +172,7 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
         return $product;
     }
 
-    private function subject(string $discountFieldMode): CategoryDiscountPriceProvider
-    {
-        return new CategoryDiscountPriceProvider(
-            $this->get(GraduatedPriceProvider::class),
-            $this->get(FrontendUserResolver::class),
-            $this->get(CategoryDiscountResolver::class),
-            $this->fakeConfigurationManager($discountFieldMode)
-        );
-    }
-
-    private function fakeConfigurationManager(string $discountFieldMode): ConfigurationManagerInterface
-    {
-        return new FixtureConfigurationManager(['pricing' => ['discountFieldMode' => $discountFieldMode]]);
-    }
-
-    private function requestFor(int $frontendUserUid): ServerRequestInterface
+    private function requestFor(int $frontendUserUid, ?string $discountFieldMode = null): ServerRequestInterface
     {
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
         $frontendUser->initializeUserSessionManager();
@@ -185,6 +185,10 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
                 ->fetchAssociative();
             $frontendUser->user = $row !== false ? $row : ['uid' => $frontendUserUid];
         }
-        return (new ServerRequest('http://localhost/'))->withAttribute('frontend.user', $frontendUser);
+        $pricingSettings = $discountFieldMode !== null ? ['discountFieldMode' => $discountFieldMode] : [];
+        $site = new Site('products', 1, ['settings' => ['products' => ['pricing' => $pricingSettings]]]);
+        return (new ServerRequest('http://localhost/'))
+            ->withAttribute('frontend.user', $frontendUser)
+            ->withAttribute('site', $site);
     }
 }
