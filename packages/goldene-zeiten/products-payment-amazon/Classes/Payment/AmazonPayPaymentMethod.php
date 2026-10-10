@@ -99,11 +99,12 @@ final class AmazonPayPaymentMethod implements RedirectPaymentMethodInterface
         if ($sessionId === '') {
             return PaymentResult::failed('Amazon Pay did not return a checkout session id on the return URL.');
         }
+        $configuration = $this->configurationFactory->forRequest($request);
         if (($queryParams['leg'] ?? '') === 'result') {
-            return $this->completeLeg($sessionId, $order);
+            return $this->completeLeg($sessionId, $order, $configuration);
         }
 
-        return $this->reviewLeg($sessionId, $order, $request);
+        return $this->reviewLeg($sessionId, $order, $request, $configuration);
     }
 
     public function handleWebhook(ServerRequestInterface $request, Order $order): PaymentResult
@@ -116,7 +117,7 @@ final class AmazonPayPaymentMethod implements RedirectPaymentMethodInterface
             return PaymentResult::unchanged();
         }
         try {
-            $session = $this->client->getCheckoutSession($sessionId, $this->configurationFactory->forCurrentRequest());
+            $session = $this->client->getCheckoutSession($sessionId, $this->configurationFactory->forRequest($request));
         } catch (AmazonPayApiException $exception) {
             $this->logger->error('Amazon Pay webhook verification failed.', ['exception' => $exception]);
             return PaymentResult::unchanged($sessionId);
@@ -128,9 +129,8 @@ final class AmazonPayPaymentMethod implements RedirectPaymentMethodInterface
         return PaymentResult::completed(PaymentStatus::PAID, $session->chargeId);
     }
 
-    private function reviewLeg(string $sessionId, Order $order, ServerRequestInterface $request): PaymentResult
+    private function reviewLeg(string $sessionId, Order $order, ServerRequestInterface $request, AmazonPayConfiguration $configuration): PaymentResult
     {
-        $configuration = $this->configurationFactory->forCurrentRequest();
         try {
             $session = $this->client->getCheckoutSession($sessionId, $configuration);
             if (!$session->isOpen()) {
@@ -152,12 +152,11 @@ final class AmazonPayPaymentMethod implements RedirectPaymentMethodInterface
      * The session id on the result URL is caller-controlled; only a session created for this order and
      * still carrying its total is completed - a completed session of a cheaper order must not settle it.
      */
-    private function completeLeg(string $sessionId, Order $order): PaymentResult
+    private function completeLeg(string $sessionId, Order $order, AmazonPayConfiguration $configuration): PaymentResult
     {
         if ($order->getPaymentStatus() === PaymentStatus::PAID) {
             return PaymentResult::completed(PaymentStatus::PAID);
         }
-        $configuration = $this->configurationFactory->forCurrentRequest();
         $payload = ['chargeAmount' => $this->chargeAmount($order->getTotalGross()->getCents(), $order->getCurrency())];
         try {
             $current = $this->client->getCheckoutSession($sessionId, $configuration);

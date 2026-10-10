@@ -108,7 +108,7 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface, Stati
             return PaymentResult::failed('Stripe did not return a session id on the return URL.');
         }
 
-        return $this->confirm($sessionId, $order);
+        return $this->confirm($sessionId, $order, $this->configurationFactory->forRequest($request));
     }
 
     public function handleWebhook(ServerRequestInterface $request, Order $order): PaymentResult
@@ -151,7 +151,7 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface, Stati
 
     private function verifiedEvent(ServerRequestInterface $request): ?Event
     {
-        $configuration = $this->configurationFactory->forCurrentRequest();
+        $configuration = $this->configurationFactory->forRequest($request);
         try {
             return Webhook::constructEvent(
                 (string)$request->getBody(),
@@ -180,9 +180,8 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface, Stati
         return PaymentResult::failed('The Stripe payment failed.', (string)($session->payment_intent ?? $session->id));
     }
 
-    private function confirm(string $sessionId, Order $order): PaymentResult
+    private function confirm(string $sessionId, Order $order, StripeConfiguration $configuration): PaymentResult
     {
-        $configuration = $this->configurationFactory->forCurrentRequest();
         try {
             $session = $this->clientFactory->create($configuration)->checkout->sessions->retrieve($sessionId);
         } catch (ApiErrorException $exception) {

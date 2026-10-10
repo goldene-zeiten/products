@@ -22,6 +22,7 @@ use Psr\Log\NullLogger;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\Stream;
+use TYPO3\CMS\Core\Site\Entity\Site;
 
 final class StripePaymentMethodTest extends AbstractStripeMockTestCase
 {
@@ -214,6 +215,58 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
         $resolution = $this->subject()->handleStaticWebhook($this->webhookRequest(false));
 
         $this->assertNull($resolution->getOrder(), 'An unverified webhook must not resolve an order.');
+    }
+
+    /**
+     * Gateway callbacks run as middlewares before the page is resolved, where core has not published the
+     * request globally yet. Credentials configured only on the site must still be found - from the site of
+     * the callback request itself.
+     */
+    #[Test]
+    public function handleStaticWebhookUsesTheCredentialsOfTheRequestsSite(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_for_webhook.csv');
+        $subject = new StripePaymentMethod(
+            new StripeConfigurationFactory($this->siteOnlyConfiguration(), new CurrentSiteResolver()),
+            new StripeClientFactory(),
+            $this->get(\Psr\EventDispatcher\EventDispatcherInterface::class),
+            $this->get(OrderRepository::class),
+            new NullLogger(),
+        );
+
+        $resolution = $subject->handleStaticWebhook($this->siteOnlyRequest($this->webhookRequest(true)));
+
+        $this->assertSame(42, $resolution->getOrder()?->getUid());
+        $this->assertSame(PaymentStatus::PAID, $resolution->getResult()->getPaymentStatus());
+    }
+
+    private function siteOnlyRequest(ServerRequestInterface $request): ServerRequestInterface
+    {
+        unset($GLOBALS['TYPO3_REQUEST']);
+        $site = new Site('shop', 1, [
+            'base' => 'https://shop.example/',
+            'settings' => [
+                'products' => [
+                    'payment' => [
+                        'stripe' => [
+                            'secretKey' => 'sk_test_x',
+                            'webhookSecret' => 'whsec_test',
+                            'apiBaseUrl' => $this->mockRoot . '/payment/stripe',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        return $request->withAttribute('site', $site);
+    }
+
+    private function siteOnlyConfiguration(): ApiSettingsResolver
+    {
+        $extensionConfiguration = $this->createMock(ExtensionConfiguration::class);
+        $extensionConfiguration->method('get')->willReturn([]);
+
+        return new ApiSettingsResolver($extensionConfiguration);
     }
 
     private function subject(): StripePaymentMethod

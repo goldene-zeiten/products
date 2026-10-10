@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Payment\Amazon\Configuration;
 
 use GoldeneZeiten\Products\ApiClient\Configuration\ApiSettingsResolver;
 use GoldeneZeiten\Products\ApiClient\Configuration\CurrentSiteResolver;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 
 /**
@@ -38,6 +39,15 @@ final readonly class AmazonPayConfigurationFactory
     public function forCurrentRequest(): AmazonPayConfiguration
     {
         return $this->forSite($this->currentSiteResolver->resolve());
+    }
+
+    /**
+     * The configuration for the site of the given request. Use it wherever the request is at hand - a
+     * gateway callback runs before the page is resolved, where {@see forCurrentRequest()} finds no site.
+     */
+    public function forRequest(ServerRequestInterface $request): AmazonPayConfiguration
+    {
+        return $this->forSite($this->currentSiteResolver->fromRequest($request));
     }
 
     public function forSite(?Site $site): AmazonPayConfiguration
