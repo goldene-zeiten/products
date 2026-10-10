@@ -315,7 +315,7 @@ final class CategoryTreeRepository
             return $categoryUids[0] ?? null;
         }
         foreach ($categoryUids as $categoryUid) {
-            if (in_array($categoryUid, $mounts, true) || in_array($this->fetchParentCategoryUid($categoryUid), $mounts, true)) {
+            if (array_intersect([$categoryUid, ...$this->fetchCategoryAncestorChain($categoryUid)], $mounts) !== []) {
                 return $categoryUid;
             }
         }
