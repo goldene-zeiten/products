@@ -6,7 +6,9 @@ namespace GoldeneZeiten\Products\Core\Controller\Backend;
 
 use GoldeneZeiten\Products\Core\Backend\CategoryAccessGuard;
 use GoldeneZeiten\Products\Core\Backend\CategoryMountResolver;
+use GoldeneZeiten\Products\Core\Backend\CategoryTreeReorderService;
 use GoldeneZeiten\Products\Core\Backend\CategoryTreeRepository;
+use GoldeneZeiten\Products\Core\Backend\Exception\CategoryTreeReorderFailedException;
 use GoldeneZeiten\Products\Core\Backend\StorageFolderResolver;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,6 +28,7 @@ final class CategoryTreeController
 {
     public function __construct(
         private readonly CategoryTreeRepository $treeRepository,
+        private readonly CategoryTreeReorderService $reorderService,
         private readonly CategoryMountResolver $mountResolver,
         private readonly CategoryAccessGuard $accessGuard,
         private readonly StorageFolderResolver $storageFolderResolver,
@@ -86,10 +89,14 @@ final class CategoryTreeController
             return new JsonResponse([], 403);
         }
         $beforeUid = $this->resolveBeforeUid((string)($params['beforeIdentifier'] ?? ''), $identifier['type']);
-        if ($identifier['type'] === 'category') {
-            $this->treeRepository->reorderCategorySiblings($identifier['uid'], $beforeUid);
-        } else {
-            $this->treeRepository->reorderProducts($identifier['uid'], $beforeUid);
+        try {
+            if ($identifier['type'] === 'category') {
+                $this->reorderService->reorderCategory($identifier['uid'], $beforeUid, $this->getBackendUser());
+            } else {
+                $this->reorderService->reorderProduct($identifier['uid'], $beforeUid, $this->getBackendUser());
+            }
+        } catch (CategoryTreeReorderFailedException) {
+            return new JsonResponse(['success' => false], 403);
         }
         return new JsonResponse(['success' => true]);
     }

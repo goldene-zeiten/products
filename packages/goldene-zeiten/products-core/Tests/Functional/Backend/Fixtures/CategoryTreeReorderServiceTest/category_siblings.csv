@@ -1,0 +1,20 @@
+"be_groups",,,,,,,
+,"uid","pid","title","db_mountpoints","tables_select","tables_modify","tx_products_category_mounts"
+,1,0,"Category viewers",2,"tx_products_domain_model_category,tx_products_domain_model_product","","10"
+
+"be_users",,,,,
+,"uid","pid","username","admin","usergroup"
+,1,0,"admin",1,""
+,2,0,"viewer",0,"1"
+
+"pages",,,,,,,,,,,,
+,"uid","pid","sorting","deleted","title","slug","doktype","perms_userid","perms_groupid","perms_user","perms_group","perms_everybody"
+,1,0,256,0,"Root","/",1,1,0,31,0,0
+,2,1,256,0,"Shop","/shop",254,1,0,31,0,31
+
+"tx_products_domain_model_category",,,,,,,
+,"uid","pid","title","parent_category","sorting","hidden","deleted"
+,10,2,"Root A",0,128,0,0
+,11,2,"Child One",10,256,0,0
+,12,2,"Child Two",10,512,0,0
+,13,2,"Child Three",10,768,0,0
