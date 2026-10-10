@@ -25,6 +25,7 @@ final class WishlistItemRepository extends Repository
         $query->setOrderings([
             'sorting' => QueryInterface::ORDER_ASCENDING,
             'created' => QueryInterface::ORDER_ASCENDING,
+            'uid' => QueryInterface::ORDER_ASCENDING,
         ]);
         return $query->execute();
     }

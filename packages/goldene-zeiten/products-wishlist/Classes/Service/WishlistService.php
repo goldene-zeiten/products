@@ -142,7 +142,7 @@ final class WishlistService
         $item->setFrontendUser($frontendUser);
         $item->setProduct($product);
         $item->setCreated(new \DateTime());
-        $item->setSorting($this->wishlistItemRepository->findByFrontendUser($frontendUser)->count());
+        $item->setSorting($this->nextSorting($frontendUser));
         $this->wishlistItemRepository->add($item);
         $this->persistenceManager->persistAll();
     }
@@ -157,26 +157,51 @@ final class WishlistService
         $this->persistenceManager->persistAll();
     }
 
+    /**
+     * One past the highest sorting rather than the item count: after a removal, the count is the sorting
+     * of an item that is still there.
+     */
+    private function nextSorting(int $frontendUser): int
+    {
+        $highest = -1;
+        foreach ($this->wishlistItemRepository->findByFrontendUser($frontendUser) as $item) {
+            $highest = max($highest, $item->getSorting());
+        }
+        return $highest + 1;
+    }
+
+    /**
+     * Swaps the item with its neighbour and renumbers the whole list, so the move takes effect even when
+     * items share a sorting value.
+     */
     private function swapPersisted(int $frontendUser, int $productUid, int $direction): void
     {
         $items = array_values(iterator_to_array($this->wishlistItemRepository->findByFrontendUser($frontendUser)));
-        $index = null;
-        foreach ($items as $key => $item) {
-            if ($item->getProduct() instanceof Product && $item->getProduct()->getUid() === $productUid) {
-                $index = $key;
-                break;
-            }
-        }
-        $swapIndex = $index === null ? null : $index + $direction;
-        if ($index === null || $swapIndex === null || !isset($items[$swapIndex])) {
+        $index = $this->indexOfProduct($items, $productUid);
+        if ($index === null || !isset($items[$index + $direction])) {
             return;
         }
-        $sorting = $items[$index]->getSorting();
-        $items[$index]->setSorting($items[$swapIndex]->getSorting());
-        $items[$swapIndex]->setSorting($sorting);
-        $this->wishlistItemRepository->update($items[$index]);
-        $this->wishlistItemRepository->update($items[$swapIndex]);
+        [$items[$index], $items[$index + $direction]] = [$items[$index + $direction], $items[$index]];
+        foreach ($items as $position => $item) {
+            if ($item->getSorting() !== $position) {
+                $item->setSorting($position);
+                $this->wishlistItemRepository->update($item);
+            }
+        }
         $this->persistenceManager->persistAll();
+    }
+
+    /**
+     * @param WishlistItem[] $items
+     */
+    private function indexOfProduct(array $items, int $productUid): ?int
+    {
+        foreach ($items as $index => $item) {
+            if ($item->getProduct() instanceof Product && $item->getProduct()->getUid() === $productUid) {
+                return $index;
+            }
+        }
+        return null;
     }
 
     /**
