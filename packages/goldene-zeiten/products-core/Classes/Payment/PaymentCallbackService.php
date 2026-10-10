@@ -73,11 +73,14 @@ final class PaymentCallbackService
     /**
      * A gateway with a single dashboard-configured webhook (Stripe, PayPal) cannot carry a per-order token,
      * so the method verifies the gateway's signature and resolves the order from the verified payload; only
-     * a resolved order is finalized.
+     * a resolved order is finalized. A verified event the method ignores is acknowledged without any change.
      */
     public function handleStaticWebhook(string $gateway, ServerRequestInterface $request): PaymentResult
     {
         $resolution = $this->staticWebhookMethodFor($gateway)->handleStaticWebhook($request);
+        if ($resolution->isIgnored()) {
+            return $resolution->getResult();
+        }
         $order = $resolution->getOrder();
         if ($order === null) {
             throw new PaymentCallbackException(

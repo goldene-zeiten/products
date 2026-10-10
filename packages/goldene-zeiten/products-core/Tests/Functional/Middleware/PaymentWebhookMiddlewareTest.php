@@ -57,6 +57,27 @@ final class PaymentWebhookMiddlewareTest extends AbstractFunctionalTestCase
         $this->assertSame(PaymentStatus::PAID, $order->getPaymentStatus());
     }
 
+    /**
+     * A gateway sends every event type its dashboard subscription covers. One the method does not act on is
+     * acknowledged, or the gateway keeps retrying it and eventually disables the endpoint.
+     */
+    #[Test]
+    public function aVerifiedStaticWebhookEventTheMethodIgnoresIsAcknowledged(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Payment/Fixtures/pages_for_url_test.csv');
+        $this->importCSVDataSet(__DIR__ . '/../Payment/Fixtures/orders_for_callback_test.csv');
+
+        $response = $this->get(PaymentWebhookMiddleware::class)->process(
+            $this->staticWebhookRequest('fixture-static-webhook', 3)->withQueryParams(['order' => '3', 'event' => 'ignored']),
+            $this->failingHandler()
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $order = $this->get(OrderRepository::class)->findByUid(3);
+        $this->assertInstanceOf(Order::class, $order);
+        $this->assertSame(PaymentStatus::OPEN, $order->getPaymentStatus());
+    }
+
     #[Test]
     public function aStaticWebhookForAnUnregisteredGatewayIsRejected(): void
     {

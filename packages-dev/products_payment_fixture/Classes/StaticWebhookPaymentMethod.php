@@ -18,7 +18,8 @@ use Psr\Http\Message\ServerRequestInterface;
  * A fixture gateway with a static, dashboard-style webhook: the callback carries no per-order token, so the
  * method resolves the order from the payload itself. A plain `order` query parameter stands in for the
  * signed gateway body a real gateway would send, so the test can exercise PaymentWebhookMiddleware's
- * static-webhook routing without real signature crypto.
+ * static-webhook routing without real signature crypto. `event=ignored` stands in for a verified event type
+ * the method does not act on.
  */
 final class StaticWebhookPaymentMethod implements RedirectPaymentMethodInterface, StaticWebhookPaymentMethodInterface
 {
@@ -68,6 +69,9 @@ final class StaticWebhookPaymentMethod implements RedirectPaymentMethodInterface
 
     public function handleStaticWebhook(ServerRequestInterface $request): WebhookResolution
     {
+        if (($request->getQueryParams()['event'] ?? '') === 'ignored') {
+            return WebhookResolution::ignored();
+        }
         $order = $this->orderRepository->findByUid((int)($request->getQueryParams()['order'] ?? 0));
         if ($order === null) {
             return WebhookResolution::unresolved(PaymentResult::failed('The webhook references an unknown order.'));

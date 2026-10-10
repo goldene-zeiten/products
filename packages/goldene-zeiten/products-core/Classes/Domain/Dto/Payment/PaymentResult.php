@@ -39,6 +39,15 @@ final readonly class PaymentResult
         return new self(PaymentResultState::PENDING, PaymentStatus::PENDING, $externalId, rawData: $rawData);
     }
 
+    /**
+     * Nothing to act on yet: the customer is still paying at the gateway, or a notification concerns
+     * something else. The order and its payment stay as they are.
+     */
+    public static function unchanged(string $externalId = ''): self
+    {
+        return new self(PaymentResultState::UNCHANGED, PaymentStatus::OPEN, $externalId);
+    }
+
     public static function redirectRequired(string $redirectUrl, string $externalId = ''): self
     {
         return new self(PaymentResultState::REDIRECT_REQUIRED, PaymentStatus::OPEN, $externalId, redirectUrl: $redirectUrl);

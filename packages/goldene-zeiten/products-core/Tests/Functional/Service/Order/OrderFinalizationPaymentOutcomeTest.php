@@ -143,6 +143,19 @@ final class OrderFinalizationPaymentOutcomeTest extends AbstractFunctionalTestCa
         $this->assertSame(['status' => 'confirmed', 'payment_status' => 'paid'], $this->orderRow(4));
     }
 
+    #[Test]
+    public function anUnchangedResultLeavesTheOrderAndTheBasketAlone(): void
+    {
+        $request = $this->requestWithBasket();
+        $subject = $this->get(OrderFinalizationService::class);
+
+        $subject->finalize($this->fetchOrder(1), PaymentResult::unchanged(), $request);
+
+        $this->assertSame(['status' => 'new', 'payment_status' => 'open'], $this->orderRow(1));
+        $this->assertSame(1, $this->get(BasketStorage::class)->load($request)->count());
+        $this->assertSame([], PaymentLifecycleEventRecorder::$finalizedOrderUids);
+    }
+
     /**
      * The return and the webhook load the same order concurrently; whichever is second still holds the
      * order as it was before the first one accepted it, and must neither accept it nor announce the
