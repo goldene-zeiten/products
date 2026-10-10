@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Service\Order;
 
+use GoldeneZeiten\Products\Core\Configuration\ProductsConfiguration;
 use GoldeneZeiten\Products\Core\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Core\Discount\DiscountContextFactory;
 use GoldeneZeiten\Products\Core\Discount\DiscountRegistry;
@@ -22,6 +23,7 @@ use GoldeneZeiten\Products\Core\Domain\ValueObject\AdjustmentCollection;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\CheckoutAdjustment;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\CoreAdjustmentProvider;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\VatBuckets;
 use GoldeneZeiten\Products\Core\Event\AfterOrderPlacedEvent;
 use GoldeneZeiten\Products\Core\Event\LowStockThresholdReachedEvent;
 use GoldeneZeiten\Products\Core\Loyalty\LoyaltyRegistry;
@@ -29,6 +31,7 @@ use GoldeneZeiten\Products\Core\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Core\Service\Shipping\HandlingFeeService;
+use GoldeneZeiten\Products\Core\Service\TaxService;
 use GoldeneZeiten\Products\Core\Shipping\ShippingContextFactory;
 use GoldeneZeiten\Products\Core\Shipping\ShippingQuoteService;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -54,7 +57,8 @@ final class OrderCreationService
         private readonly ShippingContextFactory $shippingContextFactory,
         private readonly HandlingFeeService $handlingFeeService,
         private readonly ProductsConfigurationFactory $configurationFactory,
-        private readonly TermsSnapshotService $termsSnapshotService
+        private readonly TermsSnapshotService $termsSnapshotService,
+        private readonly TaxService $taxService
     ) {}
 
     /**
@@ -103,7 +107,8 @@ final class OrderCreationService
 
         // Charges first, then discounts that may offset them, then loyalty against what remains, then the
         // payment fee on the final total.
-        $adjustments = $this->baseAdjustments($basketViewModel, $shippingSelection, $handlingFeeCost);
+        $ancillaryTaxRate = fn(): float => $this->ancillaryTaxRate($configuration, $shippingSelection, $address);
+        $adjustments = $this->baseAdjustments($basketViewModel, $shippingSelection, $handlingFeeCost, $ancillaryTaxRate);
         $discountContext = $this->discountContextFactory->createFromBasket($basketViewModel, $frontendUser, $request, $adjustments);
         foreach ($this->discountRegistry->collect($discountContext) as $discountAdjustment) {
             $adjustments = $adjustments->with($discountAdjustment);
@@ -117,7 +122,10 @@ final class OrderCreationService
         foreach ($this->loyaltyRegistry->collectRedemption($loyaltyContext) as $loyaltyAdjustment) {
             $adjustments = $adjustments->with($loyaltyAdjustment);
         }
-        $adjustments = $this->withPaymentFee($adjustments, $paymentMethod, $basketViewModel, $address, $frontendUser);
+        $paymentFee = $this->paymentFee($paymentMethod, $basketViewModel, $address, $frontendUser);
+        if ($paymentFee !== null) {
+            $adjustments = $adjustments->with($paymentFee->withTaxRate($ancillaryTaxRate()));
+        }
 
         $details = new PlacementDetails(
             $adjustments,
@@ -134,35 +142,51 @@ final class OrderCreationService
      * A payment method may charge a surcharge for paying that way. It is the last adjustment, so the fee
      * applies to the total the customer actually owes after discounts.
      */
-    private function withPaymentFee(
-        AdjustmentCollection $adjustments,
+    private function paymentFee(
         PaymentMethodInterface $paymentMethod,
         BasketViewModel $basketViewModel,
         Address $address,
         int $frontendUser
-    ): AdjustmentCollection {
+    ): ?CheckoutAdjustment {
         $paymentContext = $this->paymentContextFactory->createFromBasket($basketViewModel, $address, $frontendUser);
         $fee = $paymentMethod->calculateFee($paymentContext);
         if ($fee === 0) {
-            return $adjustments;
+            return null;
         }
 
-        return $adjustments->with(new CheckoutAdjustment(
+        return new CheckoutAdjustment(
             AdjustmentType::PAYMENT_FEE,
             'core.payment.' . $paymentMethod->getIdentifier(),
             $paymentMethod->getLabel(),
             Money::fromCents($fee)
-        ));
+        );
+    }
+
+    /**
+     * Handling and payment fees are ancillary to the delivery, so they carry the VAT the shipping does -
+     * the chosen option's rate, or the shop's shipping rate when nothing ships.
+     */
+    private function ancillaryTaxRate(ProductsConfiguration $configuration, ShippingSelection $shippingSelection, Address $address): float
+    {
+        if ($shippingSelection->getOption() !== null) {
+            return $shippingSelection->getTaxRate();
+        }
+        return $this->taxService->getShippingTaxRate($configuration, null, $address->getCountry() !== '' ? $address->getCountry() : null);
     }
 
     /**
      * The charges the discounts then run against: what the carrier bills, what the shop adds on top, the
      * handling fee and the deposit. Discounts and the payment fee are layered on afterwards.
+     *
+     * The deposit is part of the price of the goods it is charged on, so it carries their VAT rate.
+     *
+     * @param \Closure(): float $ancillaryTaxRate
      */
     private function baseAdjustments(
         BasketViewModel $basketViewModel,
         ShippingSelection $shippingSelection,
-        Money $handlingFeeCost
+        Money $handlingFeeCost,
+        \Closure $ancillaryTaxRate
     ): AdjustmentCollection {
         $candidates = [
             new CheckoutAdjustment(
@@ -181,14 +205,31 @@ final class OrderCreationService
                 $shippingSelection->getSurcharge(),
                 $shippingSelection->getTaxRate()
             ),
-            new CheckoutAdjustment(AdjustmentType::HANDLING, CoreAdjustmentProvider::HANDLING, '', $handlingFeeCost),
-            new CheckoutAdjustment(AdjustmentType::DEPOSIT, CoreAdjustmentProvider::DEPOSIT, '', $basketViewModel->getDepositTotal()),
+            new CheckoutAdjustment(
+                AdjustmentType::HANDLING,
+                CoreAdjustmentProvider::HANDLING,
+                '',
+                $handlingFeeCost,
+                $handlingFeeCost->getCents() !== 0 ? $ancillaryTaxRate() : 0.0
+            ),
         ];
+        foreach ($this->depositByTaxRate($basketViewModel)->all() as $bucket) {
+            $candidates[] = new CheckoutAdjustment(AdjustmentType::DEPOSIT, CoreAdjustmentProvider::DEPOSIT, '', $bucket['gross'], $bucket['rate']);
+        }
 
         return new AdjustmentCollection(...array_filter(
             $candidates,
             static fn(CheckoutAdjustment $adjustment): bool => $adjustment->getAmount()->getCents() !== 0
         ));
+    }
+
+    private function depositByTaxRate(BasketViewModel $basketViewModel): VatBuckets
+    {
+        $deposits = VatBuckets::empty();
+        foreach ($basketViewModel->getItems() as $item) {
+            $deposits = $deposits->with($item->getTaxRate(), $item->getDepositTotal());
+        }
+        return $deposits;
     }
 
     private function decrementStock(BasketViewModel $basketViewModel, ServerRequestInterface $request): void

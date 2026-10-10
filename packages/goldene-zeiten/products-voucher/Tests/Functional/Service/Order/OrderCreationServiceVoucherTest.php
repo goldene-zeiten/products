@@ -37,7 +37,7 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
-    public function voucherDiscountReducesTotalGrossButNotNetOrTax(): void
+    public function voucherDiscountReducesNetAndTaxAtTheGoodsRate(): void
     {
         $subject = $this->get(OrderCreationService::class);
 
@@ -49,9 +49,11 @@ final class OrderCreationServiceVoucherTest extends AbstractFunctionalTestCase
             $this->paymentMethod()
         );
 
+        // 10.00 off goods taxed at 19% takes 8.40 off the net and 1.60 off the VAT.
         $this->assertSame(1000, $order->getDiscountTotal()->getCents());
         $this->assertSame(9000, $order->getTotalGross()->getCents());
-        $this->assertSame(8403, $order->getTotalNet()->getCents());
+        $this->assertSame(7563, $order->getTotalNet()->getCents());
+        $this->assertSame(1437, $order->getTotalTax()->getCents());
     }
 
     #[Test]

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Domain\Model;
 
+use GoldeneZeiten\Products\Core\Domain\Dto\Order\VatLine;
 use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
@@ -48,6 +49,8 @@ class Order extends AbstractEntity
     protected int $handlingFeeTotal = 0;
     /** @var int */
     protected int $depositTotal = 0;
+    /** @var int */
+    protected int $paymentFeeTotal = 0;
     /**
      * @var ObjectStorage<OrderItem>
      */
@@ -227,7 +230,9 @@ class Order extends AbstractEntity
     }
 
     /**
-     * @return array<string, mixed>
+     * VAT cents per rate percentage, highest rate first, e.g. ["19" => 320, "7" => 70].
+     *
+     * @return array<int|string, mixed>
      */
     public function getTaxBreakdown(): array
     {
@@ -235,11 +240,23 @@ class Order extends AbstractEntity
     }
 
     /**
-     * @param array<string, mixed> $taxBreakdown
+     * @param array<int|string, mixed> $taxBreakdown
      */
     public function setTaxBreakdown(array $taxBreakdown): void
     {
         $this->taxBreakdown = (string)json_encode($taxBreakdown);
+    }
+
+    /**
+     * @return VatLine[]
+     */
+    public function getVatLines(): array
+    {
+        $lines = [];
+        foreach ($this->getTaxBreakdown() as $percent => $cents) {
+            $lines[] = new VatLine((string)$percent, Money::fromCents((int)$cents));
+        }
+        return $lines;
     }
 
     /**
@@ -335,6 +352,43 @@ class Order extends AbstractEntity
     public function setDepositTotal(Money $depositTotal): void
     {
         $this->depositTotal = $depositTotal->getCents();
+    }
+
+    public function getPaymentFeeTotal(): Money
+    {
+        return Money::fromCents($this->paymentFeeTotal);
+    }
+
+    public function setPaymentFeeTotal(Money $paymentFeeTotal): void
+    {
+        $this->paymentFeeTotal = $paymentFeeTotal->getCents();
+    }
+
+    /**
+     * The gross of all order lines, before any charge or reduction on top.
+     */
+    public function getItemsTotalGross(): Money
+    {
+        $total = Money::fromCents(0);
+        foreach ($this->items as $item) {
+            $total = $total->add($item->getLineTotalGross());
+        }
+        return $total;
+    }
+
+    /**
+     * What the shop's rounding mode moved the total by: whatever the lines, charges and reductions do not
+     * account for.
+     */
+    public function getRoundingDifference(): Money
+    {
+        return $this->getTotalGross()
+            ->subtract($this->getItemsTotalGross())
+            ->subtract($this->getShippingTotal())
+            ->subtract($this->getHandlingFeeTotal())
+            ->subtract($this->getDepositTotal())
+            ->subtract($this->getPaymentFeeTotal())
+            ->add($this->getDiscountTotal());
     }
 
     /**

@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Core\Discount;
 use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Core\Domain\Dto\Discount\DiscountContext;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\AdjustmentCollection;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\VatBuckets;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -26,7 +27,8 @@ final class DiscountContextFactory
             $basketViewModel->getTotalGross(),
             $frontendUserUid,
             $request,
-            $accumulatedAdjustments
+            $accumulatedAdjustments,
+            VatBuckets::fromBasket($basketViewModel)
         );
     }
 }

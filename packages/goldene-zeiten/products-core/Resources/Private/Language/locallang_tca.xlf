@@ -522,6 +522,9 @@
 			<trans-unit id="tx_products_domain_model_order.deposit_total" resname="tx_products_domain_model_order.deposit_total">
 				<source>Deposit Total</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.payment_fee_total" resname="tx_products_domain_model_order.payment_fee_total">
+				<source>Payment Fee Total</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_order.tax_country" resname="tx_products_domain_model_order.tax_country">
 				<source>Tax Country</source>
 			</trans-unit>
