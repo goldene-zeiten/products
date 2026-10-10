@@ -15,10 +15,17 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 
+/**
+ * Rates are cached for a few minutes per rate request and account, so the repeated quotes of one checkout
+ * (shipping step, review, placement) cost a single live call.
+ */
 #[AsAlias(DhlExpressRatingClient::class)]
 final class HttpDhlExpressRatingClient implements DhlExpressRatingClient
 {
+    private const RATE_CACHE_LIFETIME = 300;
+
     private const RATES_PATH = '/rates';
 
     /**
@@ -31,6 +38,7 @@ final class HttpDhlExpressRatingClient implements DhlExpressRatingClient
         private readonly ApiHttpClient $httpClient,
         private readonly DhlExpressRateRequestBuilder $requestBuilder,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly FrontendInterface $rateCache,
         private readonly LoggerInterface $logger,
     ) {}
 
@@ -41,13 +49,42 @@ final class HttpDhlExpressRatingClient implements DhlExpressRatingClient
     {
         $parameters = $this->buildParameters($context, $configuration);
         $url = $configuration->baseUrl() . self::RATES_PATH . '?' . http_build_query($parameters);
+        $cacheIdentifier = $this->cacheIdentifier($url, $configuration);
+        $cached = $this->rateCache->get($cacheIdentifier);
+        if (is_array($cached)) {
+            return array_map(static fn(array $rate): DhlExpressRate => new DhlExpressRate(...$rate), $cached);
+        }
+
+        $rates = $this->extractRates($this->send($url, $configuration));
+        $this->rateCache->set(
+            $cacheIdentifier,
+            array_map(static fn(DhlExpressRate $rate): array => get_object_vars($rate), $rates),
+            [],
+            self::RATE_CACHE_LIFETIME
+        );
+
+        return $rates;
+    }
+
+    private function send(string $url, DhlExpressConfiguration $configuration): ResponseInterface
+    {
         try {
-            $response = $this->httpClient->get($url, ['Authorization' => $configuration->authorizationHeader()]);
+            return $this->httpClient->get($url, ['Authorization' => $configuration->authorizationHeader()]);
         } catch (ApiTransportException $exception) {
             throw new DhlExpressRatingException('DHL rate request failed at transport level.', 1752600800, $exception);
         }
+    }
 
-        return $this->extractRates($response);
+    /**
+     * The full rate request plus the account it is rated for: a different shipment or other credentials
+     * never share an answer. The identifier is a hash, so no credential is stored in clear.
+     */
+    private function cacheIdentifier(string $url, DhlExpressConfiguration $configuration): string
+    {
+        return hash('sha256', (string)json_encode([
+            $url,
+            $configuration->authorizationHeader(),
+        ]));
     }
 
     /**
