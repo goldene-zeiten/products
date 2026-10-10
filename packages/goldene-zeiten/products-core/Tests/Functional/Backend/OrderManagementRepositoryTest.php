@@ -24,7 +24,7 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $subject = $this->get(OrderManagementRepository::class);
 
-        $orders = $subject->fetchFiltered($filter);
+        $orders = $subject->fetchFiltered($filter, $this->setUpBackendUser(1));
 
         $this->assertCount($expectedCount, $orders);
         if ($expectedFirstOrderNumber !== null) {
@@ -58,7 +58,7 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $subject = $this->get(OrderManagementRepository::class);
 
-        $row = $subject->fetchRow(1);
+        $row = $subject->fetchRow(1, $this->setUpBackendUser(1));
 
         $this->assertNotNull($row);
         $this->assertSame('ORD-1', $row['orderNumber']);
@@ -71,7 +71,7 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $subject = $this->get(OrderManagementRepository::class);
 
-        $this->assertNull($subject->fetchRow(3));
+        $this->assertNull($subject->fetchRow(3, $this->setUpBackendUser(1)));
     }
 
     #[Test]
@@ -80,7 +80,7 @@ final class OrderManagementRepositoryTest extends AbstractFunctionalTestCase
     {
         $subject = $this->get(OrderManagementRepository::class);
 
-        $row = $subject->fetchRow($orderUid);
+        $row = $subject->fetchRow($orderUid, $this->setUpBackendUser(1));
 
         $this->assertNotNull($row);
         $this->assertSame($expectedShippingLabel, $row['shippingLabel']);

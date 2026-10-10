@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Backend;
 
 use Doctrine\DBAL\ParameterType;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -19,14 +21,17 @@ final class OrderManagementRepository
 
     public function __construct(
         private readonly ConnectionPool $connectionPool,
+        private readonly OrderAccessGuard $accessGuard,
     ) {}
 
     /**
+     * Only orders on pages the backend user may read; all of them for an admin.
+     *
      * @return array<int, array<string, mixed>>
      */
-    public function fetchFiltered(OrderListFilter $filter): array
+    public function fetchFiltered(OrderListFilter $filter, BackendUserAuthentication $backendUser): array
     {
-        $queryBuilder = $this->baseQueryBuilder();
+        $queryBuilder = $this->baseQueryBuilder($backendUser);
         $this->applyFilter($queryBuilder, $filter);
         $result = $queryBuilder->orderBy('order_date', 'DESC')->setMaxResults(100)->executeQuery();
         $orders = [];
@@ -39,9 +44,9 @@ final class OrderManagementRepository
     /**
      * @return array<string, mixed>|null
      */
-    public function fetchRow(int $uid): ?array
+    public function fetchRow(int $uid, BackendUserAuthentication $backendUser): ?array
     {
-        $queryBuilder = $this->baseQueryBuilder();
+        $queryBuilder = $this->baseQueryBuilder($backendUser);
         $row = $queryBuilder->andWhere($queryBuilder->expr()->eq(
             'uid',
             $queryBuilder->createNamedParameter($uid, ParameterType::INTEGER)
@@ -88,9 +93,37 @@ final class OrderManagementRepository
         }
     }
 
-    private function baseQueryBuilder(): QueryBuilder
+    private function baseQueryBuilder(BackendUserAuthentication $backendUser): QueryBuilder
     {
-        return $this->queryBuilderFor(self::TABLE)->select('*')->from(self::TABLE);
+        $queryBuilder = $this->queryBuilderFor(self::TABLE)->select('*')->from(self::TABLE);
+        if ($backendUser->isAdmin()) {
+            return $queryBuilder;
+        }
+        $readablePids = $this->readablePids($backendUser);
+        $queryBuilder->andWhere($readablePids === [] ? '1 = 0' : $queryBuilder->expr()->in(
+            'pid',
+            $queryBuilder->createNamedParameter($readablePids, Connection::PARAM_INT_ARRAY)
+        ));
+        return $queryBuilder;
+    }
+
+    /**
+     * The storage pages holding orders that the user may read. Orders live on a handful of storage
+     * folders, so checking each distinct pid is cheap.
+     *
+     * @return int[]
+     */
+    private function readablePids(BackendUserAuthentication $backendUser): array
+    {
+        $queryBuilder = $this->queryBuilderFor(self::TABLE);
+        $result = $queryBuilder->select('pid')->distinct()->from(self::TABLE)->executeQuery();
+        $readablePids = [];
+        while ($row = $result->fetchAssociative()) {
+            if ($this->accessGuard->mayRead((int)$row['pid'], $backendUser)) {
+                $readablePids[] = (int)$row['pid'];
+            }
+        }
+        return $readablePids;
     }
 
     /**

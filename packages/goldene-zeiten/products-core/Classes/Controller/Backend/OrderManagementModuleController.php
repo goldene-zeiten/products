@@ -83,7 +83,8 @@ final class OrderManagementModuleController
         ModuleTemplate $moduleTemplate
     ): ?ResponseInterface {
         $identifier = $this->stringOrNull($request->getQueryParams()['export'] ?? null);
-        $order = $identifier !== null && $orderUid > 0 ? $this->orderDataFactory->build($orderUid) : null;
+        $mayRead = $orderUid > 0 && $this->orderRepository->fetchRow($orderUid, $this->getBackendUser()) !== null;
+        $order = $identifier !== null && $mayRead ? $this->orderDataFactory->build($orderUid) : null;
         if ($identifier === null || $order === null) {
             return null;
         }
@@ -123,7 +124,7 @@ final class OrderManagementModuleController
         return [
             'mode' => 'list',
             'filter' => $filter,
-            'orders' => $this->orderRepository->fetchFiltered($filter),
+            'orders' => $this->orderRepository->fetchFiltered($filter, $this->getBackendUser()),
             'statusOptions' => OrderStatus::cases(),
             'detailUrl' => (string)$this->uriBuilder->buildUriFromRequest($request, []),
         ];
@@ -134,7 +135,7 @@ final class OrderManagementModuleController
      */
     private function buildDetailView(int $orderUid, ServerRequestInterface $request): array
     {
-        $order = $this->orderRepository->fetchRow($orderUid);
+        $order = $this->orderRepository->fetchRow($orderUid, $this->getBackendUser());
         return [
             'mode' => 'detail',
             'order' => $order,
@@ -143,7 +144,7 @@ final class OrderManagementModuleController
             'canRefund' => $order !== null && $this->canRefund($order['paymentMethod'], $order['paymentStatus']),
             'listUrl' => (string)$this->uriBuilder->buildUriFromRequest($request, ['order']),
             'orderDetailPanels' => $order !== null ? $this->orderDetailPanelRegistry->renderPanels($orderUid) : [],
-            'exporters' => $this->availableExporters($orderUid),
+            'exporters' => $order !== null ? $this->availableExporters($orderUid) : [],
         ];
     }
 
@@ -222,7 +223,7 @@ final class OrderManagementModuleController
     {
         $body = (array)$request->getParsedBody();
         $orderUid = (int)($body['orderUid'] ?? 0);
-        if ($orderUid <= 0 || $this->orderRepository->fetchRow($orderUid) === null) {
+        if ($orderUid <= 0 || $this->orderRepository->fetchRow($orderUid, $this->getBackendUser()) === null) {
             return;
         }
         try {
