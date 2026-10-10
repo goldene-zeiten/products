@@ -8,13 +8,11 @@ websiteTitle: 'Products Acceptance'
 # classic TypoScript constants already included via the sys_template row in shop-demo.csv) can
 # actually resolve - see CreditPointsConfigurationFactoryEarningTiersTest for the same pattern.
 #
-# products.shipping.enabled is required here, not just as the legacy
-# `plugin.tx_productscore.settings.shipping.enabled = 1` TypoScript constant already set in
-# shop-demo.csv's sys_template row: since 56d53db, ProductsConfigurationFactory reads
-# shipping/handling/rounding straight from Site Settings (ConfigurationManagerInterface can never
-# see them - no TypoScript bridges them into plugin.tx_productscore.settings). Without this, every
-# checkout spec silently skipped the shipping-method step (isShippingEnabled() fell back to
-# false) and hung waiting for a shippingMethod radio that was never rendered.
+# products.shipping.enabled is required here, not just in shop-demo.csv's sys_template row:
+# ProductsConfigurationFactory reads shipping/handling/rounding straight from Site Settings.
+# Without this, every checkout spec silently skipped the shipping-method step
+# (isShippingEnabled() fell back to false) and hung waiting for a shippingMethod radio that was
+# never rendered.
 #
 # The payment/shipping add-on Site Sets are deliberately NOT listed here: which add-on is active is
 # decided per test combination by setupInstance.sh (env PRODUCTS_COMBO), which installs and configures

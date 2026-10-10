@@ -95,7 +95,7 @@ Product detail URLs
 ===================
 
 The indexed ``url`` field is built from the products-core detail page constant
-``{$plugin.tx_productscore.settings.pids.detailPage}``, using the same ``ProductDetail`` plugin arguments
+``{$products.pids.detailPage}``, using the same ``ProductDetail`` plugin arguments
 the shop's own catalog uses for its product links. Indexed result links therefore point at the shop's real
 product detail pages, and the site's route enhancers rewrite them to the real product slug. Make sure that
 constant resolves to the shop's detail page on the indexing rootline, or indexed links will be wrong.

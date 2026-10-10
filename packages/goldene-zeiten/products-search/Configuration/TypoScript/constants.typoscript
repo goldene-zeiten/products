@@ -1,0 +1,7 @@
+# Defaults for the classic static template, named like the site settings of the search site set.
+products {
+    search {
+        # cat=products/search; type=int; label=Number of search results per page
+        resultsPerPage = 20
+    }
+}

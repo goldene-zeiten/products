@@ -1,0 +1,12 @@
+# Renders the settings every products_core Extbase plugin receives as plain JSON, so a test can compare
+# them with the site settings definitions.
+page = PAGE
+page {
+    config.disableAllHeaderCode = 1
+    10 = FLUIDTEMPLATE
+    10 {
+        template = TEXT
+        template.value = {settings -> f:format.json() -> f:format.raw()}
+        settings < plugin.tx_productscore.settings
+    }
+}

@@ -1,47 +1,89 @@
+# Every shop setting, named like its site setting, so a site set's site settings and the classic static
+# template's constants both end up in the settings each products_core plugin receives.
 plugin.tx_productscore {
     settings {
         pids {
-            storageFolder = {$plugin.tx_productscore.settings.pids.storageFolder}
-            detailPage = {$plugin.tx_productscore.settings.pids.detailPage}
-            basketPage = {$plugin.tx_productscore.settings.pids.basketPage}
-            checkoutPage = {$plugin.tx_productscore.settings.pids.checkoutPage}
-            orderHistoryPage = {$plugin.tx_productscore.settings.pids.orderHistoryPage}
-            categoryPage = {$plugin.tx_productscore.settings.pids.categoryPage}
-            withdrawalPage = {$plugin.tx_productscore.settings.pids.withdrawalPage}
-            wishlistPage = {$plugin.tx_productscore.settings.pids.wishlistPage}
+            storageFolder = {$products.pids.storageFolder}
+            detailPage = {$products.pids.detailPage}
+            basketPage = {$products.pids.basketPage}
+            checkoutPage = {$products.pids.checkoutPage}
+            orderHistoryPage = {$products.pids.orderHistoryPage}
+            categoryPage = {$products.pids.categoryPage}
+            withdrawalPage = {$products.pids.withdrawalPage}
         }
         pricing {
-            mode = {$plugin.tx_productscore.settings.pricing.mode}
-            currency = {$plugin.tx_productscore.settings.pricing.currency}
+            mode = {$products.pricing.mode}
+            currency = {$products.pricing.currency}
+            discountFieldMode = {$products.pricing.discountFieldMode}
+            roundingMode = {$products.pricing.roundingMode}
+            resellerPeriodPrecedence = {$products.pricing.resellerPeriodPrecedence}
+            priceReductionLookbackDays = {$products.pricing.priceReductionLookbackDays}
         }
         tax {
-            defaultCountry = {$plugin.tx_productscore.settings.tax.defaultCountry}
-            rounding = {$plugin.tx_productscore.settings.tax.rounding}
+            defaultCountry = {$products.tax.defaultCountry}
+            rounding = {$products.tax.rounding}
         }
         order {
-            numberPrefix = {$plugin.tx_productscore.settings.order.numberPrefix}
-            storeClientIp = {$plugin.tx_productscore.settings.order.storeClientIp}
+            numberPrefix = {$products.order.numberPrefix}
+            storeClientIp = {$products.order.storeClientIp}
         }
-        email {
-            senderEmail = {$plugin.tx_productscore.settings.email.senderEmail}
-            senderName = {$plugin.tx_productscore.settings.email.senderName}
-            merchantRecipient = {$plugin.tx_productscore.settings.email.merchantRecipient}
-        }
-        invoice {
-            pageType = {$plugin.tx_productscore.settings.invoice.pageType}
-        }
-        catalog {
-            articleSwitchMode = {$plugin.tx_productscore.settings.catalog.articleSwitchMode}
+        checkout {
+            withdrawalPeriodDays = {$products.checkout.withdrawalPeriodDays}
+            priceQuoteValiditySeconds = {$products.checkout.priceQuoteValiditySeconds}
         }
         stock {
-            lowStockThreshold = {$plugin.tx_productscore.settings.stock.lowStockThreshold}
+            lowStockThreshold = {$products.stock.lowStockThreshold}
+        }
+        catalog {
+            articleSwitchMode = {$products.catalog.articleSwitchMode}
+        }
+        payment {
+            invoice {
+                enabled = {$products.payment.invoice.enabled}
+            }
+        }
+        shipping {
+            enabled = {$products.shipping.enabled}
+            preselect = {$products.shipping.preselect}
+            bulkySurcharge = {$products.shipping.bulkySurcharge}
+            bulkyNoticeText = {$products.shipping.bulkyNoticeText}
+            weightNoticeThreshold = {$products.shipping.weightNoticeThreshold}
+            weightNoticeText = {$products.shipping.weightNoticeText}
+        }
+        handling {
+            enabled = {$products.handling.enabled}
+        }
+        list {
+            newItemDays = {$products.list.newItemDays}
+        }
+        email {
+            senderEmail = {$products.email.senderEmail}
+            senderName = {$products.email.senderName}
+            merchantRecipient = {$products.email.merchantRecipient}
+            agbAttachment = {$products.email.agbAttachment}
+            orderBccRecipient = {$products.email.orderBccRecipient}
+            orderStatusChanged {
+                enabled = {$products.email.orderStatusChanged.enabled}
+            }
+        }
+        invoice {
+            pageType = {$products.invoice.pageType}
+        }
+        seo {
+            pageTitleMode = {$products.seo.pageTitleMode}
+        }
+        session {
+            requireCookieConsent = {$products.session.requireCookieConsent}
+        }
+        gdpr {
+            invoiceRetentionDays = {$products.gdpr.invoiceRetentionDays}
         }
     }
 }
 
 products_invoice = PAGE
 products_invoice {
-    typeNum = {$plugin.tx_productscore.settings.invoice.pageType}
+    typeNum = {$products.invoice.pageType}
     config {
         disableAllHeaderCode = 1
         xhtml_cleaning = 0
@@ -66,4 +108,4 @@ products_invoice {
 }
 
 # Cache lifetime configuration for price periods
-config.cache.all = tx_products_domain_model_priceperiod:{$plugin.tx_productscore.settings.pids.storageFolder}
+config.cache.all = tx_products_domain_model_priceperiod:{$products.pids.storageFolder}
