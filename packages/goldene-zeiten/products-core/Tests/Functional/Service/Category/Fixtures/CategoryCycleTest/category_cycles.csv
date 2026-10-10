@@ -1,0 +1,5 @@
+"tx_products_domain_model_category",,,,,,,
+,"uid","pid","deleted","hidden","title","parent_category","discount_percent"
+,10,2,0,0,"Self parent",10,"5.00"
+,20,2,0,0,"Cycle A",21,"10.00"
+,21,2,0,0,"Cycle B",20,"20.00"
