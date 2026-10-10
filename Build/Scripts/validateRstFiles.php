@@ -48,28 +48,33 @@ class validateRstFiles
     protected $isError;
 
     /**
-     * @var string
+     * Changelog directories to validate. By default every package of the monorepo that ships one.
+     *
+     * @var list<string>
      */
-    protected $baseDir = 'Documentation/Changelog';
+    protected array $baseDirs = [];
 
     public function __construct(string $dir = '')
     {
-        if ($dir) {
-            $this->baseDir = $dir;
-        }
+        $this->baseDirs = $dir !== ''
+            ? [$dir]
+            : (glob('packages/*/*/Documentation/Changelog', GLOB_ONLYDIR) ?: []);
     }
 
     public function validate()
     {
         // This validator checks TYPO3-core-style Changelog entries (Feature/Breaking/Deprecation
         // with an issue number and index tags), not the extension's general documentation pages -
-        // nothing to check until this extension actually has a Documentation/Changelog directory.
-        if (!is_dir($this->baseDir)) {
-            printf('No ' . $this->baseDir . ' directory, nothing to check.' . chr(10));
+        // nothing to check until a package actually has a Documentation/Changelog directory.
+        $this->baseDirs = array_values(array_filter($this->baseDirs, 'is_dir'));
+        if ($this->baseDirs === []) {
+            printf('No Documentation/Changelog directory in any package, nothing to check.' . chr(10));
             exit(0);
         }
 
-        printf('Searching for rst snippets in ' . $this->baseDir . chr(10));
+        foreach ($this->baseDirs as $baseDir) {
+            printf('Searching for rst snippets in ' . $baseDir . chr(10));
+        }
 
         $count = 0;
         $finder = $this->findFiles();
@@ -84,8 +89,7 @@ class validateRstFiles
             $this->validateLastLineByFilename($filename, $lastLine);
 
             if ($this->isError) {
-                $shortPath = substr($filename, strlen($this->baseDir));
-                $shortPath = ltrim($shortPath, '/\\');
+                $shortPath = $filename;
                 $count++;
                 printf(
                     '%-10s | %-12s | %-17s | %s ' . chr(10),
@@ -102,6 +106,7 @@ class validateRstFiles
             }
         }
 
+        printf('Checked ' . $finder->count() . ' changelog entries.' . chr(10));
         if ($count > 0) {
             fwrite(STDERR, 'Found ' . $count . ' rst files with errors, check full log for details.' . chr(10));
             exit(1);
@@ -114,7 +119,7 @@ class validateRstFiles
         $finder = new Finder();
         $finder
             ->files()
-            ->in($this->baseDir)
+            ->in($this->baseDirs)
             ->name('/\.rst$/')
             ->notName('Index.rst')
             ->notName('Howto.rst');
