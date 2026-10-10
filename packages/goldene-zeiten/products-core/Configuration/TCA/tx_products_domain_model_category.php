@@ -164,6 +164,7 @@ return [
             ],
         ],
         'perms_userid' => [
+            'exclude' => true,
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_userid',
             'config' => [
                 'type' => 'select',
@@ -173,6 +174,7 @@ return [
             ],
         ],
         'perms_groupid' => [
+            'exclude' => true,
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_groupid',
             'config' => [
                 'type' => 'select',
@@ -182,6 +184,7 @@ return [
             ],
         ],
         'perms_user' => [
+            'exclude' => true,
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_user',
             'config' => [
                 'type' => 'check',
@@ -191,9 +194,11 @@ return [
                     ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.delete'],
                     ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.new'],
                 ],
+                'default' => 15,
             ],
         ],
         'perms_group' => [
+            'exclude' => true,
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_group',
             'config' => [
                 'type' => 'check',
@@ -203,9 +208,11 @@ return [
                     ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.delete'],
                     ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.new'],
                 ],
+                'default' => 11,
             ],
         ],
         'perms_everybody' => [
+            'exclude' => true,
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_category.perms_everybody',
             'config' => [
                 'type' => 'check',
@@ -215,6 +222,7 @@ return [
                     ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.delete'],
                     ['label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:permission.new'],
                 ],
+                'default' => 0,
             ],
         ],
     ],
