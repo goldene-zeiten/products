@@ -89,6 +89,31 @@ final class CheckoutStepValidationTest extends AbstractFrontendTestCase
     }
 
     #[Test]
+    #[DataProvider('unresolvableShippingOptionProvider')]
+    public function reviewSendsTheCustomerBackToTheShippingStepForAnUnresolvableOption(string $shippingOption): void
+    {
+        $this->startCheckoutSession([
+            'tx_products_checkout_payment' => 'invoice',
+            'tx_products_checkout_shipping_option' => $shippingOption,
+        ]);
+
+        $response = $this->executeFrontendSubRequest($this->checkoutRequest(['action' => 'review']));
+
+        $this->assertSame(303, $response->getStatusCode());
+        $this->assertStringContainsString('tx_productscore_checkout[action]=shippingMethod', urldecode($response->getHeaderLine('location')));
+    }
+
+    public static function unresolvableShippingOptionProvider(): \Generator
+    {
+        yield 'option no longer offered for the basket' => [
+            'shippingOption' => 'tablerate:999',
+        ];
+        yield 'shipping step skipped' => [
+            'shippingOption' => '',
+        ];
+    }
+
+    #[Test]
     public function finalizeSendsTheCustomerBackToTheShippingStepWithoutAChosenOption(): void
     {
         $this->startCheckoutSession(['tx_products_checkout_payment' => 'invoice']);

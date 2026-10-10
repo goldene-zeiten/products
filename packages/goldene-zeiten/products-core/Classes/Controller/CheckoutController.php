@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
+use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingSelection;
 use GoldeneZeiten\Products\Core\Event\EnrichCheckoutReviewEvent;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotAvailableException;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException;
@@ -182,11 +183,11 @@ final class CheckoutController extends ActionController
 
     public function reviewAction(): ResponseInterface
     {
+        $shippingSelection = $this->resolveShippingSelectionForReview();
         $basket = $this->checkoutService->getBasketViewModel($this->request);
         $this->priceQuoteService->freeze($this->request, $basket);
         $address = $this->checkoutService->getAddress($this->request);
         $paymentMethodIdentifier = $this->checkoutService->getPaymentMethod($this->request);
-        $shippingOptionKey = $this->checkoutService->getShippingOption($this->request);
 
         $enrichEvent = new EnrichCheckoutReviewEvent($this->request);
         $this->eventDispatcher->dispatch($enrichEvent);
@@ -195,13 +196,30 @@ final class CheckoutController extends ActionController
             'basket' => $basket,
             'address' => $address,
             'paymentMethod' => $this->findPaymentMethod($paymentMethodIdentifier),
-            'shippingSelection' => $this->shippingQuoteService->resolveSelection($this->configurationFactory->create($this->request), $this->shippingContext(), $shippingOptionKey, $this->request),
+            'shippingSelection' => $shippingSelection,
             'deliveryAddress' => $this->checkoutService->getDeliveryAddress($this->request),
             'giftMessage' => $this->checkoutService->getGiftMessage($this->request),
             'withdrawalWaiverRequired' => $this->withdrawalExclusionService->basketRequiresWaiver($basket),
             'withdrawalExemptPersonalizedItems' => $this->withdrawalExclusionService->basketContainsPersonalized($basket),
         ] + $enrichEvent->getVariables());
         return $this->htmlResponse();
+    }
+
+    /**
+     * The basket or address may have changed since the shipping step, so the stored choice can be gone.
+     */
+    private function resolveShippingSelectionForReview(): ShippingSelection
+    {
+        try {
+            return $this->shippingQuoteService->resolveSelection(
+                $this->configurationFactory->create($this->request),
+                $this->shippingContext(),
+                $this->checkoutService->getShippingOption($this->request),
+                $this->request
+            );
+        } catch (MissingShippingOptionException|NoShippingOptionAvailableException) {
+            $this->backToStep('shippingMethod', $this->translate('checkout_shipping_option_unavailable'));
+        }
     }
 
     private function findPaymentMethod(string $identifier): ?PaymentMethodInterface
