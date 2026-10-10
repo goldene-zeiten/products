@@ -22,4 +22,13 @@ final readonly class KlarnaHppStatus
     {
         return $this->status === 'COMPLETED';
     }
+
+    /**
+     * A final state in which the shopper did not pay. Any other non-completed state means the shopper is
+     * still on the payment page.
+     */
+    public function hasFailed(): bool
+    {
+        return in_array($this->status, ['CANCELLED', 'FAILED', 'ERROR', 'DISABLED'], true);
+    }
 }

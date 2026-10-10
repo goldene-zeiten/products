@@ -65,8 +65,11 @@ Basic credentials. A forged callback body cannot make that authenticated call re
 session with a valid authorization token — this is the same "verify with the gateway, never trust the
 caller" rule the core Payment Methods API requires of every redirect method. Only once the re-read
 session reports :code:`status: COMPLETED` with a non-empty authorization token does the webhook go on
-to place the order; anything else (still :code:`WAITING`, or a failed re-read) resolves to
-:php:`PaymentResult::pending()` or :php:`PaymentResult::failed()` respectively, never to a paid order.
+to place the order. A session the shopper is still on (:code:`WAITING`, :code:`IN_PROGRESS`, ...)
+resolves to :php:`PaymentResult::unchanged()`, leaving the order as it is; a final failure state
+(:code:`CANCELLED`, :code:`FAILED`, :code:`ERROR`, :code:`DISABLED`) or a failed re-read resolves to
+:php:`PaymentResult::failed()`, never to a paid order. An order the customer's return has already placed
+is not placed a second time.
 
 Availability at checkout
 ==========================

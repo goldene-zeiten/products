@@ -90,12 +90,41 @@ final class KlarnaPaymentMethodTest extends AbstractKlarnaMockTestCase
         $this->assertSame(PaymentStatus::PAID, $result->getPaymentStatus());
     }
 
+    /**
+     * Klarna calls the status_update URL on every step of the hosted payment page. Until the session is
+     * completed the customer is still paying: the order must neither be placed at Klarna nor accepted.
+     */
     #[Test]
-    public function handleWebhookStaysPendingForAWaitingSession(): void
+    public function handleWebhookLeavesThePaymentUnchangedForASessionStillInProgress(): void
     {
         $result = $this->subject()->handleWebhook($this->webhookRequest('hpp_session_waiting'), $this->order());
 
-        $this->assertSame(PaymentResultState::PENDING, $result->getState());
+        $this->assertSame(PaymentResultState::UNCHANGED, $result->getState());
+        $this->assertSame(0, $this->recordedRequests(self::PLACE_ORDER_PATH));
+    }
+
+    #[Test]
+    public function handleWebhookFailsForASessionTheShopperCancelled(): void
+    {
+        $result = $this->subject()->handleWebhook($this->webhookRequest('hpp_session_cancelled'), $this->order());
+
+        $this->assertSame(PaymentResultState::FAILED, $result->getState());
+    }
+
+    /**
+     * The return already placed the order and Klarna holds it for a fraud review; the completed session's
+     * status_update must not place it a second time, which Klarna would refuse - failing a placed order.
+     */
+    #[Test]
+    public function handleWebhookDoesNotPlaceAnOrderAgainThatIsAlreadyPendingReview(): void
+    {
+        $order = $this->order();
+        $order->setPaymentStatus(PaymentStatus::PENDING);
+
+        $result = $this->subject()->handleWebhook($this->webhookRequest('hpp_session_1'), $order);
+
+        $this->assertSame(PaymentResultState::UNCHANGED, $result->getState());
+        $this->assertSame(0, $this->recordedRequests(self::PLACE_ORDER_PATH));
     }
 
     #[Test]

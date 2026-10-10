@@ -127,8 +127,17 @@ final class KlarnaPaymentMethod implements RedirectPaymentMethodInterface
             $this->logger->error('Klarna session verification failed.', ['exception' => $exception]);
             return PaymentResult::failed('Klarna webhook could not be verified: ' . $exception->getMessage());
         }
+        // Klarna calls the status_update URL on every step of the hosted payment page; only a final state
+        // settles anything.
+        if ($status->hasFailed()) {
+            return PaymentResult::failed(sprintf('The Klarna payment ended as "%s".', $status->status), $sessionId);
+        }
         if (!$status->isCompleted() || $status->authorizationToken === '') {
-            return PaymentResult::pending();
+            return PaymentResult::unchanged($sessionId);
+        }
+        if ($order->getPaymentStatus() !== PaymentStatus::OPEN) {
+            // The customer's return placed the order already; Klarna refuses a second placement.
+            return PaymentResult::unchanged($sessionId);
         }
 
         return $this->placeOrder($status->authorizationToken, $order);
