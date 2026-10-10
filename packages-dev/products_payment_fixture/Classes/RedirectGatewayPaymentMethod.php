@@ -12,7 +12,8 @@ use GoldeneZeiten\Products\Core\Payment\RedirectPaymentMethodInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Fixture redirect payment method for testing callback handlers.
+ * Fixture redirect payment method for testing callback handlers. A callback reports a paid payment unless
+ * it carries `outcome=failed` or `outcome=pending`, standing in for what a real gateway would report.
  */
 final class RedirectGatewayPaymentMethod implements RedirectPaymentMethodInterface
 {
@@ -60,12 +61,21 @@ final class RedirectGatewayPaymentMethod implements RedirectPaymentMethodInterfa
 
     public function handleReturn(ServerRequestInterface $request, Order $order): PaymentResult
     {
-        return PaymentResult::completed(PaymentStatus::PAID, 'FIXTURE-RETURN');
+        return $this->outcome($request, 'FIXTURE-RETURN');
     }
 
     public function handleWebhook(ServerRequestInterface $request, Order $order): PaymentResult
     {
-        return PaymentResult::completed(PaymentStatus::PAID, 'FIXTURE-WEBHOOK');
+        return $this->outcome($request, 'FIXTURE-WEBHOOK');
+    }
+
+    private function outcome(ServerRequestInterface $request, string $externalId): PaymentResult
+    {
+        return match ($request->getQueryParams()['outcome'] ?? '') {
+            'failed' => PaymentResult::failed('The fixture gateway declined the payment.', $externalId),
+            'pending' => PaymentResult::pending($externalId),
+            default => PaymentResult::completed(PaymentStatus::PAID, $externalId),
+        };
     }
 
     public static function reset(): void

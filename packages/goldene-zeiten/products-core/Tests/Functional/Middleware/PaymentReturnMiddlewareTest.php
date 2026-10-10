@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Middleware;
 
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
@@ -19,6 +20,8 @@ use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
  * The payment return runs as a middleware, not a plugin action, because a gateway appends its own query
@@ -94,8 +97,12 @@ final class PaymentReturnMiddlewareTest extends AbstractFunctionalTestCase
         $this->assertSame(PaymentStatus::PAID, $this->fetchOrder(2)->getPaymentStatus());
     }
 
+    /**
+     * Abandoning the payment at the gateway ends this order - it is cancelled and its stock returned - while
+     * the customer's basket survives for a new attempt.
+     */
     #[Test]
-    public function cancelLeavesTheOrderOpenAndRedirectsToPayment(): void
+    public function cancelCancelsTheOrderAndRedirectsToPayment(): void
     {
         $response = $this->get(PaymentReturnMiddleware::class)->process(
             $this->request(PaymentUrlFactory::CANCEL_PATH, $this->validToken()),
@@ -104,7 +111,52 @@ final class PaymentReturnMiddlewareTest extends AbstractFunctionalTestCase
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertStringContainsString('payment', urldecode($response->getHeaderLine('location')));
+        $order = $this->fetchOrder(1);
+        $this->assertSame(PaymentStatus::FAILED, $order->getPaymentStatus());
+        $this->assertSame(OrderStatus::CANCELLED, $order->getStatus());
+    }
+
+    #[Test]
+    public function cancelWithAForgedTokenLeavesTheOrderOpen(): void
+    {
+        $response = $this->get(PaymentReturnMiddleware::class)->process(
+            $this->request(PaymentUrlFactory::CANCEL_PATH, 'forged-token'),
+            $this->failingHandler()
+        );
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame(PaymentStatus::OPEN, $this->fetchOrder(1)->getPaymentStatus());
+    }
+
+    #[Test]
+    public function aDeclinedPaymentSendsTheCustomerBackToThePaymentStepWithAMessage(): void
+    {
+        $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
+        $frontendUser->initializeUserSessionManager();
+
+        $response = $this->get(PaymentReturnMiddleware::class)->process(
+            $this->request(PaymentUrlFactory::RETURN_PATH, $this->validToken(), ['outcome' => 'failed'])
+                ->withAttribute('frontend.user', $frontendUser),
+            $this->failingHandler()
+        );
+
+        $location = urldecode($response->getHeaderLine('location'));
+        $this->assertStringContainsString('[action]=payment', $location);
+        $this->assertStringNotContainsString('thankYou', $location);
+        $this->assertNotEmpty($frontendUser->getSessionData('extbase.flashmessages.tx_productscore_checkout'));
+    }
+
+    #[Test]
+    public function aDeclinedPaymentCancelsTheOrder(): void
+    {
+        $this->get(PaymentReturnMiddleware::class)->process(
+            $this->request(PaymentUrlFactory::RETURN_PATH, $this->validToken(), ['outcome' => 'failed']),
+            $this->failingHandler()
+        );
+
+        $order = $this->fetchOrder(1);
+        $this->assertSame(PaymentStatus::FAILED, $order->getPaymentStatus());
+        $this->assertSame(OrderStatus::CANCELLED, $order->getStatus());
     }
 
     #[Test]
