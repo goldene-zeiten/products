@@ -23,7 +23,9 @@ waitFor() {
     "
     ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name wait-for-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_ALPINE} /bin/sh -c "${TESTCOMMAND}"
     if [[ $? -gt 0 ]]; then
-        kill -SIGINT -$$
+        echo "Service ${HOST}:${PORT} did not come up, aborting." >&2
+        cleanUp
+        exit 1
     fi
 }
 
@@ -48,7 +50,9 @@ waitForHttp() {
     "
     ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name wait-for-http-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_ALPINE} /bin/sh -c "${TESTCOMMAND}"
     if [[ $? -gt 0 ]]; then
-        kill -SIGINT -$$
+        echo "Service ${HOST}:${PORT} did not come up, aborting." >&2
+        cleanUp
+        exit 1
     fi
 }
 

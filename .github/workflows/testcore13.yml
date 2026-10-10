@@ -111,8 +111,8 @@ jobs:
         php-version: [ '8.2', '8.5' ]
         db:
           - { name: 'SQLite', options: '-d sqlite' }
-          - { name: 'MariaDB 10.5 mysqli', options: '-d mariadb -a mysqli' }
-          - { name: 'MariaDB 10.5 pdo_mysql', options: '-d mariadb -a pdo_mysql' }
+          - { name: 'MariaDB 10.4 mysqli', options: '-d mariadb -a mysqli' }
+          - { name: 'MariaDB 10.4 pdo_mysql', options: '-d mariadb -a pdo_mysql' }
           - { name: 'MySQL 8.0 mysqli', options: '-d mysql -a mysqli' }
           - { name: 'MySQL 8.0 pdo_mysql', options: '-d mysql -a pdo_mysql' }
           - { name: 'PostgreSQL 10', options: '-d postgres' }
