@@ -150,6 +150,9 @@
 			<trans-unit id="message.no_records" resname="message.no_records">
 				<source>No records found.</source>
 			</trans-unit>
+			<trans-unit id="message.no_storage_folder" resname="message.no_storage_folder">
+				<source>No storage folder found. Records cannot be created until one is configured.</source>
+			</trans-unit>
 			<trans-unit id="tree.tree_label" resname="tree.tree_label">
 				<source>Categories and products</source>
 			</trans-unit>
