@@ -73,6 +73,9 @@ final class ProductController extends ActionController
                 1783800100
             );
         }
+        if ($selectedArticle?->getProduct()?->getUid() !== $product->getUid()) {
+            $selectedArticle = null;
+        }
         if ($category instanceof Category) {
             $this->assertRequestPathMatchesProduct($product, $category, $selectedArticle);
         }

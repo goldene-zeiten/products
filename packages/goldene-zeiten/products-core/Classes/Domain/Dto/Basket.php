@@ -34,9 +34,16 @@ final class Basket
         $this->items[$identifier] = new BasketItem($item->getProductUid(), $item->getArticleUid(), $quantity);
     }
 
+    /**
+     * Changes a line already in the basket; a line that was never added is left out, so it cannot skip
+     * the checks adding performs.
+     */
     public function updateQuantity(int $productUid, ?int $articleUid, int $quantity): void
     {
         $identifier = $this->calculateIdentifier($productUid, $articleUid);
+        if (!isset($this->items[$identifier])) {
+            return;
+        }
         if ($quantity <= 0) {
             unset($this->items[$identifier]);
             return;
