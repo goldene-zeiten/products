@@ -3,7 +3,8 @@
         <f:form.hidden name="product" value="{product.uid}" />
         <f:form.hidden name="article" value="{article.uid}" />
         <div class="mb-3">
-            <f:form.textfield name="quantity" value="1" type="number" class="form-control" additionalAttributes="{min: 1}" />
+            <label for="products-quantity-{product.uid}-{article.uid}" class="form-label"><f:translate key="quantity" extensionName="ProductsCore" /></label>
+            <f:form.textfield name="quantity" value="1" type="number" id="products-quantity-{product.uid}-{article.uid}" class="form-control" additionalAttributes="{min: 1}" />
         </div>
         <f:form.submit value="{f:translate(key: 'add_to_basket')}" class="btn btn-primary" />
     </f:form>
