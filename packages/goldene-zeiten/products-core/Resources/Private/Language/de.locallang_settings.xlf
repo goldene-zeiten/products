@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_core/Resources/Private/Language/de.locallang_settings.xlf" date="2026-07-13T00:00:00Z" product-name="products">
+		<header/>
+		<body>
+			<trans-unit id="category.products" resname="category.products">
+				<source>Products</source>
+				<target>Produkte</target>
+			</trans-unit>
+			<trans-unit id="category.storage" resname="category.storage">
+				<source>Storage &amp; Pages</source>
+				<target>Speicher &amp; Seiten</target>
+			</trans-unit>
+			<trans-unit id="category.pricing" resname="category.pricing">
+				<source>Pricing &amp; Tax</source>
+				<target>Preise &amp; Steuern</target>
+			</trans-unit>
+			<trans-unit id="category.order" resname="category.order">
+				<source>Orders &amp; Checkout</source>
+				<target>Bestellungen &amp; Kasse</target>
+			</trans-unit>
+			<trans-unit id="category.catalog" resname="category.catalog">
+				<source>Catalog &amp; Stock</source>
+				<target>Katalog &amp; Lager</target>
+			</trans-unit>
+			<trans-unit id="category.payment" resname="category.payment">
+				<source>Payment</source>
+				<target>Zahlung</target>
+			</trans-unit>
+			<trans-unit id="category.shipping" resname="category.shipping">
+				<source>Shipping &amp; Handling</source>
+				<target>Versand &amp; Bearbeitung</target>
+			</trans-unit>
+			<trans-unit id="category.discovery" resname="category.discovery">
+				<source>Wishlist &amp; Discovery</source>
+				<target>Merkliste &amp; Entdecken</target>
+			</trans-unit>
+			<trans-unit id="category.email" resname="category.email">
+				<source>Email &amp; Notifications</source>
+				<target>E-Mail &amp; Benachrichtigungen</target>
+			</trans-unit>
+			<trans-unit id="category.invoice" resname="category.invoice">
+				<source>Invoices &amp; Documents</source>
+				<target>Rechnungen &amp; Dokumente</target>
+			</trans-unit>
+			<trans-unit id="category.seo" resname="category.seo">
+				<source>SEO</source>
+				<target>SEO</target>
+			</trans-unit>
+			<trans-unit id="category.privacy" resname="category.privacy">
+				<source>Privacy &amp; GDPR</source>
+				<target>Datenschutz &amp; DSGVO</target>
+			</trans-unit>
+			<trans-unit id="category.technical" resname="category.technical">
+				<source>Technical</source>
+				<target>Technik</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pids.storageFolder" resname="setting.products.pids.storageFolder">
+				<source>Storage folder UID</source>
+				<target>UID des Speicherordners</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pids.detailPage" resname="setting.products.pids.detailPage">
+				<source>Detail page UID</source>
+				<target>UID der Detailseite</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pids.basketPage" resname="setting.products.pids.basketPage">
+				<source>Basket page UID</source>
+				<target>UID der Warenkorbseite</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pids.checkoutPage" resname="setting.products.pids.checkoutPage">
+				<source>Checkout page UID</source>
+				<target>UID der Kassenseite</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pids.orderHistoryPage" resname="setting.products.pids.orderHistoryPage">
+				<source>Order history page UID</source>
+				<target>UID der Bestellhistorie-Seite</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pids.categoryPage" resname="setting.products.pids.categoryPage">
+				<source>Category navigation/listing page UID</source>
+				<target>UID der Seite für Kategorienavigation/-liste</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pids.withdrawalPage" resname="setting.products.pids.withdrawalPage">
+				<source>Order withdrawal/cancellation page UID</source>
+				<target>UID der Seite für Bestellwiderruf/-stornierung</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pricing.mode" resname="setting.products.pricing.mode">
+				<source>Pricing mode (gross|net)</source>
+				<target>Preismodus (gross|net)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pricing.currency" resname="setting.products.pricing.currency">
+				<source>Currency</source>
+				<target>Währung</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pricing.discountFieldMode" resname="setting.products.pricing.discountFieldMode">
+				<source>Category-cascading discount resolution mode (maxAcrossTree|nearestCategory)</source>
+				<target>Auflösungsmodus für kaskadierende Kategorierabatte (maxAcrossTree|nearestCategory)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pricing.roundingMode" resname="setting.products.pricing.roundingMode">
+				<source>Basket/order gross total rounding, applied only to the final total (none|nearestInteger|psychological99)</source>
+				<target>Rundung der Bruttosumme von Warenkorb/Bestellung, nur auf die Endsumme angewendet (none|nearestInteger|psychological99)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pricing.resellerPeriodPrecedence" resname="setting.products.pricing.resellerPeriodPrecedence">
+				<source>Reseller pricing vs. concurrent public discount precedence (lowestWins|resellerFixed) - lowestWins: reseller also benefits from a lower running public promo; resellerFixed: resellers always get their fixed tier price, ignoring public promotions</source>
+				<target>Vorrang bei Händlerpreisen gegenüber gleichzeitigen öffentlichen Rabatten (lowestWins|resellerFixed) – lowestWins: Der Händler profitiert auch von einer niedrigeren laufenden öffentlichen Aktion; resellerFixed: Händler erhalten immer ihren festen Staffelpreis, öffentliche Aktionen werden ignoriert</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pricing.priceReductionLookbackDays" resname="setting.products.pricing.priceReductionLookbackDays">
+				<source>Lookback window (days) for the EU Art. 6a "prior price" reference-price calculation</source>
+				<target>Rückblickzeitraum (Tage) für die Berechnung des Referenzpreises „vorheriger Preis“ nach EU-Art. 6a</target>
+			</trans-unit>
+			<trans-unit id="setting.products.tax.defaultCountry" resname="setting.products.tax.defaultCountry">
+				<source>Default tax country (alpha-2)</source>
+				<target>Standard-Steuerland (alpha-2)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.tax.rounding" resname="setting.products.tax.rounding">
+				<source>Tax rounding (perLine|perTotal)</source>
+				<target>MwSt.-Rundung (perLine|perTotal)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.order.numberPrefix" resname="setting.products.order.numberPrefix">
+				<source>Order number prefix</source>
+				<target>Präfix der Bestellnummer</target>
+			</trans-unit>
+			<trans-unit id="setting.products.order.storeClientIp" resname="setting.products.order.storeClientIp">
+				<source>Store client IP address</source>
+				<target>IP-Adresse des Kunden speichern</target>
+			</trans-unit>
+			<trans-unit id="setting.products.checkout.withdrawalPeriodDays" resname="setting.products.checkout.withdrawalPeriodDays">
+				<source>Days after order placement a customer may self-service withdraw/cancel (0 disables it)</source>
+				<target>Tage nach der Bestellung, in denen Kunden selbst widerrufen bzw. stornieren können (0 deaktiviert dies)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.checkout.priceQuoteValiditySeconds" resname="setting.products.checkout.priceQuoteValiditySeconds">
+				<source>How long a reviewed price quote remains valid before checkout forces a fresh review (seconds) - default 15 minutes</source>
+				<target>Wie lange ein geprüftes Preisangebot gültig bleibt, bevor die Kasse eine erneute Prüfung erzwingt (Sekunden) – Standard 15 Minuten</target>
+			</trans-unit>
+			<trans-unit id="setting.products.stock.lowStockThreshold" resname="setting.products.stock.lowStockThreshold">
+				<source>Stock level at/below which a low-stock warning email is sent to the merchant</source>
+				<target>Lagerbestand, ab dem bzw. unterhalb dessen dem Händler eine Warnung per E-Mail gesendet wird</target>
+			</trans-unit>
+			<trans-unit id="setting.products.catalog.articleSwitchMode" resname="setting.products.catalog.articleSwitchMode">
+				<source>Article variant switch mode (reload|ajax)</source>
+				<target>Umschaltmodus für Artikelvarianten (reload|ajax)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.payment.invoice.enabled" resname="setting.products.payment.invoice.enabled">
+				<source>Invoice payment enabled</source>
+				<target>Zahlung auf Rechnung aktiviert</target>
+			</trans-unit>
+			<trans-unit id="setting.products.shipping.enabled" resname="setting.products.shipping.enabled">
+				<source>Shipping cost calculation enabled</source>
+				<target>Berechnung der Versandkosten aktiviert</target>
+			</trans-unit>
+			<trans-unit id="setting.products.shipping.preselect" resname="setting.products.shipping.preselect">
+				<source>Which shipping option is preselected: "none", "cheapest", or a specific option key such as "tablerate:1"</source>
+				<target>Welche Versandoption vorausgewählt wird: „none“, „cheapest“ oder ein bestimmter Optionsschlüssel wie „tablerate:1“</target>
+			</trans-unit>
+			<trans-unit id="setting.products.shipping.bulkySurcharge" resname="setting.products.shipping.bulkySurcharge">
+				<source>Flat surcharge added once per bulky-flagged item unit (0.00 disables it)</source>
+				<target>Pauschaler Aufschlag, der einmal pro als sperrig markierter Artikeleinheit berechnet wird (0.00 deaktiviert ihn)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.shipping.bulkyNoticeText" resname="setting.products.shipping.bulkyNoticeText">
+				<source>Notice shown in the basket/checkout when it contains a bulky-flagged item (empty disables it)</source>
+				<target>Hinweis, der im Warenkorb bzw. an der Kasse angezeigt wird, wenn ein als sperrig markierter Artikel enthalten ist (leer deaktiviert ihn)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.shipping.weightNoticeThreshold" resname="setting.products.shipping.weightNoticeThreshold">
+				<source>Basket weight in grams above which a weight-tier shipping notice is shown (0 disables it)</source>
+				<target>Warenkorbgewicht in Gramm, ab dem ein Hinweis zur Versandstaffel angezeigt wird (0 deaktiviert ihn)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.shipping.weightNoticeText" resname="setting.products.shipping.weightNoticeText">
+				<source>Notice shown in the basket/checkout when the weight threshold above is exceeded (empty disables it)</source>
+				<target>Hinweis, der im Warenkorb bzw. an der Kasse angezeigt wird, wenn der oben genannte Gewichtsschwellenwert überschritten wird (leer deaktiviert ihn)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.handling.enabled" resname="setting.products.handling.enabled">
+				<source>Handling fee calculation enabled</source>
+				<target>Berechnung der Bearbeitungsgebühr aktiviert</target>
+			</trans-unit>
+			<trans-unit id="setting.products.list.newItemDays" resname="setting.products.list.newItemDays">
+				<source>Number of days a product counts as "new" in the new-items listing</source>
+				<target>Anzahl der Tage, in denen ein Produkt in der Neuheiten-Liste als „neu“ gilt</target>
+			</trans-unit>
+			<trans-unit id="setting.products.email.senderEmail" resname="setting.products.email.senderEmail">
+				<source>Sender email</source>
+				<target>Absender-E-Mail</target>
+			</trans-unit>
+			<trans-unit id="setting.products.email.senderName" resname="setting.products.email.senderName">
+				<source>Sender name</source>
+				<target>Absendername</target>
+			</trans-unit>
+			<trans-unit id="setting.products.email.templateRootPaths" resname="setting.products.email.templateRootPaths">
+				<source>Template root paths</source>
+				<target>Template-Root-Pfade</target>
+			</trans-unit>
+			<trans-unit id="setting.products.email.partialRootPaths" resname="setting.products.email.partialRootPaths">
+				<source>Partial root paths</source>
+				<target>Partial-Root-Pfade</target>
+			</trans-unit>
+			<trans-unit id="setting.products.email.layoutRootPaths" resname="setting.products.email.layoutRootPaths">
+				<source>Layout root paths</source>
+				<target>Layout-Root-Pfade</target>
+			</trans-unit>
+			<trans-unit id="setting.products.email.merchantRecipient" resname="setting.products.email.merchantRecipient">
+				<source>Merchant notification recipient (empty disables the notification)</source>
+				<target>Empfänger der Händler-Benachrichtigung (leer deaktiviert die Benachrichtigung)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.email.agbAttachment" resname="setting.products.email.agbAttachment">
+				<source>AGB/terms PDF to attach to order confirmations - FAL combined file identifier (e.g. "1:/legal/agb.pdf"), empty disables the attachment</source>
+				<target>PDF der AGB, das den Bestellbestätigungen beigefügt wird – FAL-Dateikennung (z. B. „1:/legal/agb.pdf“), leer deaktiviert den Anhang</target>
+			</trans-unit>
+			<trans-unit id="setting.products.email.orderBccRecipient" resname="setting.products.email.orderBccRecipient">
+				<source>Standing blind-copy recipient for order confirmation and merchant notification emails (empty disables it)</source>
+				<target>Dauerhafter Empfänger für Blindkopien der Bestellbestätigungen und Händler-Benachrichtigungen (leer deaktiviert dies)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.email.orderStatusChanged.enabled" resname="setting.products.email.orderStatusChanged.enabled">
+				<source>Send an email to the customer when an order's status changes</source>
+				<target>Dem Kunden eine E-Mail senden, wenn sich der Status einer Bestellung ändert</target>
+			</trans-unit>
+			<trans-unit id="setting.products.invoice.templateRootPaths" resname="setting.products.invoice.templateRootPaths">
+				<source>Invoice template root paths</source>
+				<target>Template-Root-Pfade der Rechnung</target>
+			</trans-unit>
+			<trans-unit id="setting.products.invoice.partialRootPaths" resname="setting.products.invoice.partialRootPaths">
+				<source>Invoice partial root paths</source>
+				<target>Partial-Root-Pfade der Rechnung</target>
+			</trans-unit>
+			<trans-unit id="setting.products.invoice.layoutRootPaths" resname="setting.products.invoice.layoutRootPaths">
+				<source>Invoice layout root paths</source>
+				<target>Layout-Root-Pfade der Rechnung</target>
+			</trans-unit>
+			<trans-unit id="setting.products.invoice.pageType" resname="setting.products.invoice.pageType">
+				<source>Invoice download page typeNum</source>
+				<target>typeNum der Rechnungs-Download-Seite</target>
+			</trans-unit>
+			<trans-unit id="setting.products.seo.pageTitleMode" resname="setting.products.seo.pageTitleMode">
+				<source>Product single-view page-title substitution (none|title|subtitleOrTitle|titleAndSubtitle|subtitleAndTitle)</source>
+				<target>Ersetzung des Seitentitels in der Produktdetailansicht (none|title|subtitleOrTitle|titleAndSubtitle|subtitleAndTitle)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.session.requireCookieConsent" resname="setting.products.session.requireCookieConsent">
+				<source>Require an already-confirmed FE-session cookie before writing wishlist/recently-viewed session data</source>
+				<target>Vor dem Speichern von Merkliste- bzw. Zuletzt-angesehen-Sitzungsdaten ein bereits bestätigtes FE-Sitzungs-Cookie voraussetzen</target>
+			</trans-unit>
+			<trans-unit id="setting.products.gdpr.invoiceRetentionDays" resname="setting.products.gdpr.invoiceRetentionDays">
+				<source>Days to retain order/invoice data before automatic deletion (GDPR data minimization) - set per your jurisdiction's statutory bookkeeping retention period, e.g. 10 years in Germany</source>
+				<target>Tage, für die Bestell- und Rechnungsdaten vor der automatischen Löschung aufbewahrt werden (DSGVO-Datenminimierung) – entsprechend der gesetzlichen Aufbewahrungsfrist Ihres Landes festlegen, z. B. 10 Jahre in Deutschland</target>
+			</trans-unit>
+			<trans-unit id="setting.products.ajax.pageType" resname="setting.products.ajax.pageType">
+				<source>AJAX page typeNum</source>
+				<target>typeNum der AJAX-Seite</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

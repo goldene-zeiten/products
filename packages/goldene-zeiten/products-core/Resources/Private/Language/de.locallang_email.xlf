@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_core/Resources/Private/Language/de.locallang_email.xlf" date="2026-07-05T22:08:00Z" product-name="products">
+		<header/>
+		<body>
+			<trans-unit id="order_confirmation_subject" resname="order_confirmation_subject">
+				<source>Order Confirmation: %s</source>
+				<target>Bestellbestätigung: %s</target>
+			</trans-unit>
+			<trans-unit id="order_confirmation" resname="order_confirmation">
+				<source>Order Confirmation</source>
+				<target>Bestellbestätigung</target>
+			</trans-unit>
+			<trans-unit id="hello" resname="hello">
+				<source>Hello,</source>
+				<target>Guten Tag,</target>
+			</trans-unit>
+			<trans-unit id="thank_you_for_order" resname="thank_you_for_order">
+				<source>thank you for your order %s.</source>
+				<target>vielen Dank für Ihre Bestellung %s.</target>
+			</trans-unit>
+			<trans-unit id="order_total" resname="order_total">
+				<source>Total</source>
+				<target>Summe</target>
+			</trans-unit>
+			<trans-unit id="best_regards" resname="best_regards">
+				<source>Best regards,</source>
+				<target>Mit freundlichen Grüßen,</target>
+			</trans-unit>
+			<trans-unit id="shop_team" resname="shop_team">
+				<source>Shop Team</source>
+				<target>Ihr Shop-Team</target>
+			</trans-unit>
+			<trans-unit id="merchant_notification_subject" resname="merchant_notification_subject">
+				<source>New Order: %s</source>
+				<target>Neue Bestellung: %s</target>
+			</trans-unit>
+			<trans-unit id="merchant_notification_intro" resname="merchant_notification_intro">
+				<source>A new order has been placed.</source>
+				<target>Es wurde eine neue Bestellung aufgegeben.</target>
+			</trans-unit>
+			<trans-unit id="order_number" resname="order_number">
+				<source>Order Number</source>
+				<target>Bestellnummer</target>
+			</trans-unit>
+			<trans-unit id="customer_email" resname="customer_email">
+				<source>Customer Email</source>
+				<target>E-Mail des Kunden</target>
+			</trans-unit>
+			<trans-unit id="order_status_changed_subject" resname="order_status_changed_subject">
+				<source>Order Status Updated: %s</source>
+				<target>Bestellstatus aktualisiert: %s</target>
+			</trans-unit>
+			<trans-unit id="order_status_changed" resname="order_status_changed">
+				<source>Order Status Updated</source>
+				<target>Bestellstatus aktualisiert</target>
+			</trans-unit>
+			<trans-unit id="status_changed_from_to" resname="status_changed_from_to">
+				<source>The status of your order %s changed from "%s" to "%s".</source>
+				<target>Der Status Ihrer Bestellung %s wurde von „%s“ auf „%s“ geändert.</target>
+			</trans-unit>
+			<trans-unit id="low_stock_warning_subject" resname="low_stock_warning_subject">
+				<source>Low Stock Warning: %s</source>
+				<target>Warnung: Geringer Lagerbestand: %s</target>
+			</trans-unit>
+			<trans-unit id="low_stock_warning_intro" resname="low_stock_warning_intro">
+				<source>A product/article has reached the low-stock threshold.</source>
+				<target>Ein Produkt bzw. Artikel hat den Schwellenwert für den geringen Lagerbestand erreicht.</target>
+			</trans-unit>
+			<trans-unit id="remaining_stock" resname="remaining_stock">
+				<source>Remaining stock: %d</source>
+				<target>Verbleibender Lagerbestand: %d</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_subject" resname="withdrawal_subject">
+				<source>Order Cancelled by Customer: %s</source>
+				<target>Bestellung vom Kunden widerrufen: %s</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_intro" resname="withdrawal_intro">
+				<source>The customer has withdrawn from (cancelled) this order.</source>
+				<target>Der Kunde hat von diesem Vertrag (Bestellung) widerrufen bzw. die Bestellung storniert.</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_reason" resname="withdrawal_reason">
+				<source>Reason given</source>
+				<target>Angegebene Begründung</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_notice_intro" resname="withdrawal_notice_intro">
+				<source>You have the right to withdraw from this contract within %d days without giving any reason.</source>
+				<target>Sie haben das Recht, binnen %d Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_notice_deadline" resname="withdrawal_notice_deadline">
+				<source>The withdrawal period expires on %s.</source>
+				<target>Die Widerrufsfrist endet am %s.</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_button_label" resname="withdrawal_button_label">
+				<source>Withdraw from contract here</source>
+				<target>Vertrag hier widerrufen</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_notice_fully_excluded" resname="withdrawal_notice_fully_excluded">
+				<source>All items of this order are exempt from the statutory right of withdrawal (personalized items, or digital content supplied immediately with your express consent), so the order cannot be withdrawn.</source>
+				<target>Alle Artikel dieser Bestellung sind vom gesetzlichen Widerrufsrecht ausgenommen (personalisierte Artikel oder digitale Inhalte, die mit Ihrer ausdrücklichen Zustimmung sofort bereitgestellt wurden). Die Bestellung kann daher nicht widerrufen werden.</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_notice_excluded_items" resname="withdrawal_notice_excluded_items">
+				<source>The following items are exempt from the right of withdrawal and cannot be returned:</source>
+				<target>Die folgenden Artikel sind vom Widerrufsrecht ausgenommen und können nicht zurückgegeben werden:</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_merchant_excluded_items" resname="withdrawal_merchant_excluded_items">
+				<source>Note: this order contains items exempt from the right of withdrawal:</source>
+				<target>Hinweis: Diese Bestellung enthält Artikel, die vom Widerrufsrecht ausgenommen sind:</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
