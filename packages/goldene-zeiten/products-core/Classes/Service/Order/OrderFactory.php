@@ -8,7 +8,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Address;
 use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\PlacementDetails;
-use GoldeneZeiten\Products\Core\Domain\Enum\AdjustmentType;
+use GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderTotals;
 use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
@@ -27,7 +27,7 @@ final class OrderFactory
     public function __construct(
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly NumberRangeService $numberRangeService,
-        private readonly PriceRoundingService $priceRoundingService,
+        private readonly OrderTotalsCalculator $orderTotalsCalculator,
         private readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
@@ -50,9 +50,8 @@ final class OrderFactory
         $order->setPaymentStatus(PaymentStatus::OPEN);
         $order->setStatus(OrderStatus::PENDING);
         $order->setCurrency($basketViewModel->getCurrency());
-        $order->setTotalNet($basketViewModel->getTotalNet());
-        $order->setTotalTax($basketViewModel->getTotalTax());
-        $this->applyAdjustments($order, $basketViewModel, $details, $site);
+        $this->applyTotals($order, $this->orderTotalsCalculator->calculate($basketViewModel, $details->getAdjustments(), $this->roundingMode($site)));
+        $this->applyShipping($order, $details);
         $order->setTaxCountry($address->getCountry());
         $billingAddress = $this->buildBillingAddress($address);
         $order->setBillingAddress($billingAddress);
@@ -85,26 +84,28 @@ final class OrderFactory
     }
 
     /**
-     * Folds the adjustment collection into the order totals: the signed sum moves the gross total, and
-     * adjustments carrying a tax rate additionally split into a net and a tax share. The per-type totals
-     * written afterwards are derived values for invoices and the backend - the collection stays the
-     * source of truth.
+     * The per-type totals are derived values for invoices and the backend - the adjustment collection
+     * stays the source of truth.
      */
-    private function applyAdjustments(Order $order, BasketViewModel $basketViewModel, PlacementDetails $details, ?Site $site): void
+    private function applyTotals(Order $order, OrderTotals $totals): void
     {
-        $adjustments = $details->getAdjustments();
-        $adjustedTotalGross = $basketViewModel->getTotalGross()->add($adjustments->getTotal());
-        $order->setTotalGross($this->priceRoundingService->round($adjustedTotalGross, $this->roundingMode($site)));
-        $order->setTotalNet($order->getTotalNet()->add($adjustments->getNetTotal()));
-        $order->setTotalTax($order->getTotalTax()->add($adjustments->getTaxTotal()));
-        $order->setDiscountTotal($adjustments->getDiscountTotal());
+        $order->setTotalGross($totals->getTotalGross());
+        $order->setTotalNet($totals->getTotalNet());
+        $order->setTotalTax($totals->getTotalTax());
+        $order->setTaxBreakdown($totals->getTaxBreakdown());
+        $order->setDiscountTotal($totals->getDiscountTotal());
+        $order->setShippingTotal($totals->getShippingTotal());
+        $order->setHandlingFeeTotal($totals->getHandlingFeeTotal());
+        $order->setDepositTotal($totals->getDepositTotal());
+        $order->setPaymentFeeTotal($totals->getPaymentFeeTotal());
+    }
+
+    private function applyShipping(Order $order, PlacementDetails $details): void
+    {
         $shippingSelection = $details->getShippingSelection();
         $order->setShippingProvider($shippingSelection->getOption()?->getProviderIdentifier() ?? '');
         $order->setShippingOption($shippingSelection->getOption()?->getOptionIdentifier() ?? '');
         $order->setShippingLabel($shippingSelection->getLabel());
-        $order->setShippingTotal($adjustments->getTotalByType(AdjustmentType::SHIPPING));
-        $order->setHandlingFeeTotal($adjustments->getTotalByType(AdjustmentType::HANDLING));
-        $order->setDepositTotal($adjustments->getTotalByType(AdjustmentType::DEPOSIT));
     }
 
     private function applyGiftOrderDetails(Order $order, PlacementDetails $details): void

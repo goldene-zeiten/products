@@ -12,8 +12,10 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
  * loyalty redemption, a deposit. This is the only way a feature may change what the customer pays, so
  * an addon never has to reach into the order or into another addon's domain to do it.
  *
- * The amount is signed: a negative amount reduces the total. The label is denormalized on purpose, so an
- * order still renders correctly once the addon that produced the adjustment is uninstalled.
+ * The amount is signed: a negative amount reduces the total. It is a gross amount that carries the VAT of
+ * its tax rate, so a reduction lowers net and VAT alike; a rate of 0 moves the net alone. The label is
+ * denormalized on purpose, so an order still renders correctly once the addon that produced the adjustment
+ * is uninstalled.
  */
 #[Exclude]
 final readonly class CheckoutAdjustment
@@ -56,6 +58,14 @@ final readonly class CheckoutAdjustment
     }
 
     /**
+     * The same adjustment, taxed at another rate.
+     */
+    public function withTaxRate(float $taxRate): self
+    {
+        return new self($this->type, $this->providerIdentifier, $this->label, $this->amount, $taxRate, $this->metadata);
+    }
+
+    /**
      * @return array<string, string>
      */
     public function getMetadata(): array
@@ -63,22 +73,21 @@ final readonly class CheckoutAdjustment
         return $this->metadata;
     }
 
-    /**
-     * Only adjustments carrying a tax rate split into a net and a tax share; the others move the gross
-     * total alone.
-     */
     public function isTaxable(): bool
     {
         return $this->taxRate > 0.0;
     }
 
+    /**
+     * The amount without its VAT; net and VAT always add up to the amount.
+     */
     public function getNetAmount(): Money
     {
-        return $this->isTaxable() ? $this->amount->netFromGross($this->taxRate) : Money::fromCents(0);
+        return $this->amount->subtract($this->getTaxAmount());
     }
 
     public function getTaxAmount(): Money
     {
-        return $this->isTaxable() ? $this->amount->subtract($this->getNetAmount()) : Money::fromCents(0);
+        return $this->isTaxable() ? $this->amount->subtract($this->amount->netFromGross($this->taxRate)) : Money::fromCents(0);
     }
 }

@@ -6,6 +6,8 @@ namespace GoldeneZeiten\Products\Core\Domain\Dto\Discount;
 
 use GoldeneZeiten\Products\Core\Domain\ValueObject\AdjustmentCollection;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\VatBuckets;
+use GoldeneZeiten\Products\Core\Pricing\VatSplitter;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
@@ -25,7 +27,8 @@ final readonly class DiscountContext
         private Money $goodsTotal,
         private int $frontendUserUid,
         private ServerRequestInterface $request,
-        private AdjustmentCollection $accumulatedAdjustments
+        private AdjustmentCollection $accumulatedAdjustments,
+        private VatBuckets $goodsVatBuckets
     ) {}
 
     public function getGoodsTotal(): Money
@@ -46,5 +49,14 @@ final readonly class DiscountContext
     public function getAccumulatedAdjustments(): AdjustmentCollection
     {
         return $this->accumulatedAdjustments;
+    }
+
+    /**
+     * The goods' gross per VAT rate. A discount on the whole basket is split across these with
+     * {@see VatSplitter::splitAdjustment()}, so it lowers the VAT of every rate it reduces.
+     */
+    public function getGoodsVatBuckets(): VatBuckets
+    {
+        return $this->goodsVatBuckets;
     }
 }

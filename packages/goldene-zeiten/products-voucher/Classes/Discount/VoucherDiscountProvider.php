@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\CheckoutAdjustment;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\CoreAdjustmentProvider;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Pricing\VatSplitter;
 use GoldeneZeiten\Products\Voucher\Domain\Dto\BasketDiscountSummary;
 use GoldeneZeiten\Products\Voucher\Domain\Model\Voucher;
 use GoldeneZeiten\Products\Voucher\Domain\Model\VoucherRedemption;
@@ -27,8 +28,9 @@ use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
  * vouchers out of the box, but the checkout reaches it only as a discount provider, which is what lets
  * it move into its own extension later without the core changing.
  *
- * A free-shipping voucher is expressed here, not in shipping: it offsets the carrier's cost by negating
- * the adjustment shipping already produced, so shipping never has to know vouchers exist.
+ * A voucher is a price reduction: its discount is split across the goods' VAT rates, so it lowers net and
+ * VAT of each rate. A free-shipping voucher is expressed here, not in shipping: it offsets the carrier's
+ * cost by negating the adjustment shipping already produced, so shipping never has to know vouchers exist.
  */
 final class VoucherDiscountProvider implements DiscountProviderInterface
 {
@@ -44,7 +46,8 @@ final class VoucherDiscountProvider implements DiscountProviderInterface
         private readonly VoucherRedemptionRepository $voucherRedemptionRepository,
         private readonly VoucherCheckoutState $voucherCheckoutState,
         private readonly PersistenceManagerInterface $persistenceManager,
-        private readonly EventDispatcherInterface $eventDispatcher
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly VatSplitter $vatSplitter
     ) {}
 
     public function getIdentifier(): string
@@ -68,28 +71,19 @@ final class VoucherDiscountProvider implements DiscountProviderInterface
             return [];
         }
 
-        $adjustments = [
-            new CheckoutAdjustment(
-                AdjustmentType::DISCOUNT,
-                self::IDENTIFIER,
-                '',
-                $this->negate($summary->getDiscountTotal()),
-                0.0,
-                ['codes' => implode(',', $this->codes($vouchers))]
-            ),
+        $discount = new CheckoutAdjustment(
+            AdjustmentType::DISCOUNT,
+            self::IDENTIFIER,
+            '',
+            $this->negate($summary->getDiscountTotal()),
+            0.0,
+            ['codes' => implode(',', $this->codes($vouchers))]
+        );
+
+        return [
+            ...$this->vatSplitter->splitAdjustment($discount, $context->getGoodsVatBuckets()),
+            ...$this->freeShippingOffsets($vouchers, $context),
         ];
-
-        $freeShippingOffset = $this->freeShippingOffset($vouchers, $context);
-        if ($freeShippingOffset->getCents() !== 0) {
-            $adjustments[] = new CheckoutAdjustment(
-                AdjustmentType::DISCOUNT,
-                self::FREE_SHIPPING,
-                '',
-                $freeShippingOffset
-            );
-        }
-
-        return $adjustments;
     }
 
     public function apply(Order $order, DiscountContext $context): void
@@ -119,23 +113,31 @@ final class VoucherDiscountProvider implements DiscountProviderInterface
 
     /**
      * A free-shipping voucher negates the carrier's cost - the adjustment shipping produced - but never
-     * the shop's bulky surcharge, which is a separate adjustment it does not touch.
+     * the shop's bulky surcharge, which is a separate adjustment it does not touch. The offset takes back
+     * the VAT of the cost it waives, so it carries the shipping's own rate.
      *
      * @param Voucher[] $vouchers
+     * @return CheckoutAdjustment[]
      */
-    private function freeShippingOffset(array $vouchers, DiscountContext $context): Money
+    private function freeShippingOffsets(array $vouchers, DiscountContext $context): array
     {
         if (!$this->anyWaivesShipping($vouchers)) {
-            return Money::fromCents(0);
+            return [];
         }
-        $carrierCost = Money::fromCents(0);
+        $offsets = [];
         foreach ($context->getAccumulatedAdjustments()->byType(AdjustmentType::SHIPPING) as $adjustment) {
-            if ($adjustment->getProviderIdentifier() === CoreAdjustmentProvider::SHIPPING) {
-                $carrierCost = $carrierCost->add($adjustment->getAmount());
+            if ($adjustment->getProviderIdentifier() === CoreAdjustmentProvider::SHIPPING && $adjustment->getAmount()->getCents() !== 0) {
+                $offsets[] = new CheckoutAdjustment(
+                    AdjustmentType::DISCOUNT,
+                    self::FREE_SHIPPING,
+                    '',
+                    $this->negate($adjustment->getAmount()),
+                    $adjustment->getTaxRate()
+                );
             }
         }
 
-        return $this->negate($carrierCost);
+        return $offsets;
     }
 
     /**

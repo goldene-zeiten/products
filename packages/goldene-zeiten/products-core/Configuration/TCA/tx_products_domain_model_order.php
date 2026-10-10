@@ -26,7 +26,7 @@ return [
             'showitem' => 'payment_method, currency',
         ],
         'costs' => [
-            'showitem' => 'shipping_total, handling_fee_total, deposit_total',
+            'showitem' => 'shipping_total, handling_fee_total, deposit_total, payment_fee_total',
         ],
         'totals' => [
             'showitem' => 'total_net, total_tax, total_gross',
@@ -197,6 +197,13 @@ return [
         ],
         'deposit_total' => [
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.deposit_total',
+            'config' => [
+                'type' => 'number',
+                'readOnly' => true,
+            ],
+        ],
+        'payment_fee_total' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.payment_fee_total',
             'config' => [
                 'type' => 'number',
                 'readOnly' => true,

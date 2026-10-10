@@ -109,7 +109,7 @@ final class AdjustmentCollectionTest extends UnitTestCase
     }
 
     #[Test]
-    public function netTotalIncludesOnlyTaxableAdjustments(): void
+    public function netTotalIncludesTheNetOfEveryAdjustment(): void
     {
         // Shipping: 595 cents gross at 0.19 => net 500, tax 95
         $shipping = new CheckoutAdjustment(
@@ -128,8 +128,8 @@ final class AdjustmentCollectionTest extends UnitTestCase
         );
         $collection = new AdjustmentCollection($shipping, $discount);
 
-        // Only shipping contributes to net: 595 / 1.19 ≈ 500
-        $this->assertSame(500, $collection->getNetTotal()->getCents());
+        // Shipping contributes 595 / 1.19 ≈ 500, the untaxed discount its whole amount
+        $this->assertSame(300, $collection->getNetTotal()->getCents());
     }
 
     #[Test]
@@ -272,7 +272,7 @@ final class AdjustmentCollectionTest extends UnitTestCase
     }
 
     #[Test]
-    public function negativeNonTaxableAdjustmentDoesNotContributeToNetAndTax(): void
+    public function negativeUntaxedAdjustmentReducesTheNetButNotTheTax(): void
     {
         // Discount that reduces the gross, but no tax
         $discount = new CheckoutAdjustment(
@@ -286,8 +286,8 @@ final class AdjustmentCollectionTest extends UnitTestCase
 
         // Gross reduced by 500
         $this->assertSame(-500, $collection->getTotal()->getCents());
-        // But net and tax are zero because taxRate is 0.0
-        $this->assertSame(0, $collection->getNetTotal()->getCents());
+        // At a rate of 0 the whole amount is net, so net and tax still add up to the gross
+        $this->assertSame(-500, $collection->getNetTotal()->getCents());
         $this->assertSame(0, $collection->getTaxTotal()->getCents());
     }
 }
