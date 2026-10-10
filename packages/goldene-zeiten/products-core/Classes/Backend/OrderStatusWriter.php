@@ -123,8 +123,7 @@ final class OrderStatusWriter
     private function writeDatamap(int $orderUid, array $fields, BackendUserAuthentication $beUser): void
     {
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->start([self::TABLE => [$orderUid => $fields]], []);
-        $dataHandler->BE_USER = $beUser;
+        $dataHandler->start([self::TABLE => [$orderUid => $fields]], [], $beUser);
         $dataHandler->process_datamap();
         if ($dataHandler->errorLog !== []) {
             throw new OrderStatusWriteFailedException(implode(' ', $dataHandler->errorLog), 1752710400);
