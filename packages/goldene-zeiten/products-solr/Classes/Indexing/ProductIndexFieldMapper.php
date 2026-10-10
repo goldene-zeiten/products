@@ -8,6 +8,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Attribute\AsAllowedCallable;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
@@ -105,17 +107,29 @@ final class ProductIndexFieldMapper
      */
     private function attributeValueLabels(int $articleUid): array
     {
+        // The visibility of both joined tables is spelled out, so a deleted or hidden value - or a value of a
+        // deleted or hidden attribute - never becomes a facet, whatever restrictions the context would apply.
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_products_article_attributevalue_mm');
         $queryBuilder->getRestrictions()->removeAll();
+        $expr = $queryBuilder->expr();
         $result = $queryBuilder
             ->select('value.value AS value', 'attribute.title AS attribute')
             ->from('tx_products_article_attributevalue_mm', 'mm')
-            ->join('mm', 'tx_products_domain_model_attributevalue', 'value', 'value.uid = mm.uid_foreign')
-            ->leftJoin('value', 'tx_products_domain_model_attribute', 'attribute', 'attribute.uid = value.attribute')
+            ->join('mm', 'tx_products_domain_model_attributevalue', 'value', (string)$expr->and(
+                $expr->eq('value.uid', $queryBuilder->quoteIdentifier('mm.uid_foreign')),
+                $expr->eq('value.deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
+                $expr->eq('value.hidden', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
+            ))
+            ->leftJoin('value', 'tx_products_domain_model_attribute', 'attribute', (string)$expr->and(
+                $expr->eq('attribute.uid', $queryBuilder->quoteIdentifier('value.attribute')),
+                $expr->eq('attribute.deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
+                $expr->eq('attribute.hidden', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
+            ))
             ->where(
-                $queryBuilder->expr()->eq(
-                    'mm.uid_local',
-                    $queryBuilder->createNamedParameter($articleUid, Connection::PARAM_INT)
+                $expr->eq('mm.uid_local', $queryBuilder->createNamedParameter($articleUid, Connection::PARAM_INT)),
+                $expr->or(
+                    $expr->eq('value.attribute', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
+                    $expr->isNotNull('attribute.uid')
                 )
             )
             ->orderBy('mm.sorting')
@@ -189,7 +203,10 @@ final class ProductIndexFieldMapper
     }
 
     /**
-     * Category titles from the root down to the given category.
+     * Category titles from the root down to the given category, or none at all when the category or one of
+     * its ancestors is hidden or deleted. A hidden category is not shown in the shop, so neither it nor the
+     * subtree beneath it is offered as a facet path; skipping just the hidden level instead would invent a
+     * path the shop's category tree does not have.
      *
      * @return string[]
      */
@@ -199,8 +216,8 @@ final class ProductIndexFieldMapper
         $guard = 0;
         while ($categoryUid > 0 && $guard < 100) {
             $row = $this->categoryRow($categoryUid);
-            if ($row === null) {
-                break;
+            if ($row === null || (int)$row['hidden'] !== 0) {
+                return [];
             }
             array_unshift($titles, str_replace('/', ' ', trim((string)$row['title'])));
             $categoryUid = (int)$row['parent_category'];
@@ -211,13 +228,17 @@ final class ProductIndexFieldMapper
     }
 
     /**
+     * The category row whether hidden or not, so a hidden ancestor is recognised as such rather than
+     * mistaken for the root; deleted categories are not found.
+     *
      * @return array<string, mixed>|null
      */
     private function categoryRow(int $categoryUid): ?array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_products_domain_model_category');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $row = $queryBuilder
-            ->select('title', 'parent_category')
+            ->select('title', 'parent_category', 'hidden')
             ->from('tx_products_domain_model_category')
             ->where(
                 $queryBuilder->expr()->eq(

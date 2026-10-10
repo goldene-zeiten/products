@@ -46,6 +46,26 @@ final class ProductIndexFieldMapperTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function attributeValuesSkipDeletedAndHiddenValuesAndAttributes(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/products_visibility.csv');
+
+        $result = $this->subjectFor(2)->attributeValues('', []);
+
+        $this->assertSame('Color: Wood|Handmade', $result);
+    }
+
+    #[Test]
+    public function categoryPathsOnlyContainCategoriesWhoseWholeChainIsVisible(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/products_visibility.csv');
+
+        $result = $this->subjectFor(2)->categoryPaths('', []);
+
+        $this->assertSame('0-/Books|1-/Books/Cooking', $result);
+    }
+
+    #[Test]
     public function unknownProductYieldsEmptyValues(): void
     {
         $subject = $this->subjectFor(9999);
