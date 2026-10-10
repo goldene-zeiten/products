@@ -14,6 +14,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Country\Country;
 use TYPO3\CMS\Core\Country\CountryProvider;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Site\SiteFinder;
 // TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
 use TYPO3\CMS\Install\Updates\ChattyInterface;
@@ -52,6 +54,7 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
         private readonly LegacyMigrationHelper $migrationHelper,
         private readonly StorageFolderResolver $storageFolderResolver,
         private readonly CountryProvider $countryProvider,
+        private readonly SiteFinder $siteFinder,
         private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
         private readonly ArticleMigrationPrerequisite $articleMigrationPrerequisite,
     ) {}
@@ -174,12 +177,30 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
             'total_tax' => 0,
             'total_gross' => $amountCents,
             'tax_country' => $country[0],
+            'site_identifier' => $this->resolveSiteIdentifier($legacyUid, (int)$legacyRow['pid']),
             'customer_note' => (string)($legacyRow['note'] ?? ''),
             // 0, not null: Extbase's DataMapper reads a 0 timestamp back as a null DateTime.
             'terms_accepted_at' => (int)$legacyRow['agb'] === 1 ? $crdate : 0,
             'legacy_order_data' => $this->buildLegacyOrderData($legacyUid, $legacyRow),
             'legacy_country_name' => $country[1],
         ];
+    }
+
+    /**
+     * The retention cleanup only ever deletes orders of a known site.
+     */
+    private function resolveSiteIdentifier(int $legacyUid, int $legacyPid): string
+    {
+        try {
+            return $this->siteFinder->getSiteByPageId($legacyPid)->getIdentifier();
+        } catch (SiteNotFoundException) {
+            $this->output->writeln(sprintf(
+                '<comment>sys_products_orders uid %d: page %d belongs to no site, so the invoice retention cleanup will not cover this order.</comment>',
+                $legacyUid,
+                $legacyPid
+            ));
+            return '';
+        }
     }
 
     private function resolveOrderNumber(int $legacyUid, string $trackingCode): string
