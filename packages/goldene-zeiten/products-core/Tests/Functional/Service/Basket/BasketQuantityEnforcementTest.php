@@ -47,6 +47,18 @@ final class BasketQuantityEnforcementTest extends AbstractFrontendTestCase
     }
 
     #[Test]
+    public function repeatedAddsCannotExceedTheMaximumOfTheLine(): void
+    {
+        $basketService = $this->get(BasketService::class);
+        $request = $this->anonymousSessionRequest();
+        $basketService->add($request, 1, null, 5);
+
+        $basketService->add($request, 1, null, 5);
+
+        $this->assertSame(5, $this->get(BasketStorage::class)->load($request)->getItems()[0]->getQuantity());
+    }
+
+    #[Test]
     public function negativeQuantityCannotReduceAnExistingLineOnAdd(): void
     {
         $basketService = $this->get(BasketService::class);

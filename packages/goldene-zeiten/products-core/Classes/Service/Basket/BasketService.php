@@ -53,10 +53,10 @@ final class BasketService
             return;
         }
 
-        $quantity = $this->basketQuantityResolver->clamp($product, $article, $quantity);
-
         $basket = $this->basketStorage->load($request);
-        $basket->addItem(new BasketItem($productUid, $articleUid, $quantity));
+        $lineQuantity = $basket->getQuantity($productUid, $articleUid) + max(1, $quantity);
+        $lineQuantity = $this->basketQuantityResolver->clamp($product, $article, $lineQuantity);
+        $basket->replaceItem(new BasketItem($productUid, $articleUid, $lineQuantity));
         $basket = $this->dispatchBasketUpdated($request, $basket);
         $this->basketStorage->save($request, $basket);
     }
