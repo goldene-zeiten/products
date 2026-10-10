@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Shipping\DhlExpress\Rating;
 
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
 use GoldeneZeiten\Products\Shipping\DhlExpress\Configuration\DhlExpressConfiguration;
+use TYPO3\CMS\Core\Context\Context;
 
 /**
  * Builds the DHL Express "GET /rates" query parameters from the basket context and the resolved
@@ -21,6 +22,10 @@ final class DhlExpressRateRequestBuilder
     private const DEFAULT_HEIGHT = 10;
     private const GRAMS_PER_KILOGRAM = 1000.0;
     private const GRAMS_PER_POUND = 453.59237;
+
+    public function __construct(
+        private readonly Context $context,
+    ) {}
 
     /**
      * @return array<string, string>
@@ -55,9 +60,20 @@ final class DhlExpressRateRequestBuilder
         return number_format(max(0.1, $grams / $divisor), 3, '.', '');
     }
 
+    /**
+     * The next business day (Monday to Friday): DHL prices a shipment for the day it is handed over, and a
+     * weekend date can yield no products or different ones.
+     */
     private function plannedShippingDate(): string
     {
-        return (new \DateTimeImmutable('now'))->modify('+1 day')->format('Y-m-d');
+        $date = $this->context->getPropertyFromAspect('date', 'full', new \DateTimeImmutable());
+        \assert($date instanceof \DateTimeImmutable);
+        $date = $date->modify('+1 day');
+        while ((int)$date->format('N') > 5) {
+            $date = $date->modify('+1 day');
+        }
+
+        return $date->format('Y-m-d');
     }
 
     private function isCustomsDeclarable(ShippingContext $context, DhlExpressConfiguration $configuration): bool

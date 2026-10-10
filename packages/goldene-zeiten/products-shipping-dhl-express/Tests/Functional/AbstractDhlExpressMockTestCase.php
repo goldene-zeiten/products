@@ -12,6 +12,7 @@ use GoldeneZeiten\Products\Shipping\DhlExpress\Rating\HttpDhlExpressRatingClient
 use GoldeneZeiten\Products\Testing\AbstractApiMockTestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\NullLogger;
+use TYPO3\CMS\Core\Context\Context;
 
 /**
  * Base for the DHL tests that exercise the real HTTP path against the shared WireMock mock. DHL Express
@@ -48,7 +49,7 @@ abstract class AbstractDhlExpressMockTestCase extends AbstractApiMockTestCase
     {
         return new HttpDhlExpressRatingClient(
             new ApiHttpClient($this->requestFactory()),
-            new DhlExpressRateRequestBuilder(),
+            new DhlExpressRateRequestBuilder($this->get(Context::class)),
             $this->get(EventDispatcherInterface::class),
             new NullLogger(),
         );
