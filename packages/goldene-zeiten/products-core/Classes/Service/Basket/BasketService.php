@@ -46,11 +46,11 @@ final class BasketService
             return;
         }
 
-        if ($articleUid === null && $product->getArticles()->count() > 0) {
+        $article = $this->resolveArticle($articleUid);
+        if (!$this->isArticleOfProduct($product, $articleUid, $article)) {
             return;
         }
 
-        $article = $this->resolveArticle($articleUid);
         $quantity = $this->basketQuantityResolver->clamp($product, $article, $quantity);
 
         $basket = $this->basketStorage->load($request);
@@ -79,6 +79,19 @@ final class BasketService
         $event = new BasketUpdatedEvent($basket, $request);
         $this->eventDispatcher->dispatch($event);
         return $event->getBasket();
+    }
+
+    /**
+     * A line is priced from its article but titled from its product, so the article must be one of the
+     * product's own; a product with variants cannot be bought without one.
+     */
+    private function isArticleOfProduct(Product $product, ?int $articleUid, ?Article $article): bool
+    {
+        if ($articleUid === null) {
+            return $product->getArticles()->count() === 0;
+        }
+
+        return $article instanceof Article && $article->getProduct()?->getUid() === $product->getUid();
     }
 
     private function resolveArticle(?int $articleUid): ?Article
@@ -161,9 +174,9 @@ final class BasketService
             return null;
         }
 
-        $article = null;
-        if ($item->getArticleUid() !== null) {
-            $article = $this->articleRepository->findByUid($item->getArticleUid());
+        $article = $this->resolveArticle($item->getArticleUid());
+        if (!$this->isArticleOfProduct($product, $item->getArticleUid(), $article)) {
+            return null;
         }
 
         $basePrice = $this->priceProvider->getUnitPrice($product, $article, $item->getQuantity(), $request);

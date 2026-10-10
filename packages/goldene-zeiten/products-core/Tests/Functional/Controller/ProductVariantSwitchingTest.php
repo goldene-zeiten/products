@@ -64,6 +64,24 @@ final class ProductVariantSwitchingTest extends AbstractFrontendTestCase
         ];
     }
 
+    #[Test]
+    public function aSelectedArticleOfAnotherProductIsIgnored(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/ProductVariantSwitchingTest/foreign_article.csv');
+        $hashString = '&id=2&tx_productscore_productdetail[product]=1&tx_productscore_productdetail[selectedArticle]=3';
+        $request = (new InternalRequest('http://localhost/shop'))->withQueryParameters([
+            'tx_productscore_productdetail[product]' => 1,
+            'tx_productscore_productdetail[selectedArticle]' => 3,
+            'cHash' => $this->get(CacheHashCalculator::class)->generateForParameters($hashString),
+        ]);
+
+        $body = (string)$this->executeFrontendSubRequest($request)->getBody();
+
+        $this->assertStringContainsString('T-Shirt', $body);
+        $this->assertStringNotContainsString('99.00', $body);
+        $this->assertStringContainsString('Please choose a variant', $body);
+    }
+
     /**
      * @param int[] $attributeValueUids
      */
