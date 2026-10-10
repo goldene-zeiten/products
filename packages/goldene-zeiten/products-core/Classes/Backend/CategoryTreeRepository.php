@@ -349,37 +349,19 @@ final class CategoryTreeRepository
         return $this->fetchItems($this->productQueryBuilder());
     }
 
-    /**
-     * Reorders category siblings within their parent (using parent_category scope, not pid).
-     */
-    public function reorderCategorySiblings(int $uid, ?int $beforeUid): void
+    public function fetchPidOfRecord(string $table, int $uid): int
     {
-        $parentUid = $this->fetchParentCategoryUid($uid) ?? 0;
-        $siblingUids = array_map(static fn(array $c): int => $c['uid'], $this->fetchChildCategories($parentUid));
-        $this->applyReorder(self::TABLE_CATEGORY, $siblingUids, $uid, $beforeUid);
-    }
-
-    public function reorderProducts(int $uid, ?int $beforeUid): void
-    {
-        $siblingUids = array_map(static fn(array $p): int => $p['uid'], $this->fetchAllProductsOrdered());
-        $this->applyReorder(self::TABLE_PRODUCT, $siblingUids, $uid, $beforeUid);
-    }
-
-    /**
-     * @param int[] $siblingUids current order, ascending
-     */
-    private function applyReorder(string $table, array $siblingUids, int $uid, ?int $beforeUid): void
-    {
-        $withoutMoved = array_values(array_filter($siblingUids, static fn(int $u): bool => $u !== $uid));
-        $insertAt = $beforeUid === null ? false : array_search($beforeUid, $withoutMoved, true);
-        array_splice($withoutMoved, $insertAt === false ? count($withoutMoved) : $insertAt, 0, [$uid]);
-        foreach ($withoutMoved as $index => $siblingUid) {
-            $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
-            $queryBuilder->update($table)
-                ->set('sorting', ($index + 1) * 2)
-                ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($siblingUid, ParameterType::INTEGER)))
-                ->executeStatement();
-        }
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
+        $this->applyRestrictions($queryBuilder);
+        $pid = $queryBuilder->select('pid')
+            ->from($table)
+            ->where($queryBuilder->expr()->eq(
+                'uid',
+                $queryBuilder->createNamedParameter($uid, ParameterType::INTEGER)
+            ))
+            ->executeQuery()
+            ->fetchOne();
+        return (int)$pid;
     }
 
     /**
