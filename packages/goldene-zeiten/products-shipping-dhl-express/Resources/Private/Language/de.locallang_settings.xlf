@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_shipping_dhl_express/Resources/Private/Language/de.locallang_settings.xlf" date="2026-07-16T12:00:00Z" product-name="products_shipping_dhl_express">
+		<header/>
+		<body>
+			<trans-unit id="category.shippingDhlExpress" resname="category.shippingDhlExpress">
+				<source>DHL Express</source>
+				<target>DHL Express</target>
+			</trans-unit>
+			<trans-unit id="setting.inherit.description" resname="setting.inherit.description">
+				<source>Leave empty to inherit the value from the extension configuration. Set it to override that default for this site.</source>
+				<target>Leer lassen, um den Wert aus der Extension-Konfiguration zu übernehmen. Ein gesetzter Wert überschreibt diesen Standard für diese Website.</target>
+			</trans-unit>
+			<trans-unit id="setting.environment" resname="setting.environment">
+				<source>Environment (sandbox / production)</source>
+				<target>Umgebung (sandbox / production)</target>
+			</trans-unit>
+			<trans-unit id="setting.environment.description" resname="setting.environment.description">
+				<source>Either "sandbox" (DHL's test environment) or "production". Leave empty to inherit the extension configuration.</source>
+				<target>Entweder „sandbox“ (Testumgebung von DHL) oder „production“. Leer lassen, um die Extension-Konfiguration zu übernehmen.</target>
+			</trans-unit>
+			<trans-unit id="setting.accountNumber" resname="setting.accountNumber">
+				<source>Account number</source>
+				<target>Kontonummer</target>
+			</trans-unit>
+			<trans-unit id="setting.username" resname="setting.username">
+				<source>API username</source>
+				<target>API-Benutzername</target>
+			</trans-unit>
+			<trans-unit id="setting.password" resname="setting.password">
+				<source>API password</source>
+				<target>API-Passwort</target>
+			</trans-unit>
+			<trans-unit id="setting.password.description" resname="setting.password.description">
+				<source>The MyDHL API secret. Prefer referencing an environment variable so the secret stays out of version control. Leave empty to inherit the extension configuration.</source>
+				<target>Das MyDHL-API-Secret. Am besten eine Umgebungsvariable referenzieren, damit das Secret nicht in der Versionsverwaltung landet. Leer lassen, um die Extension-Konfiguration zu übernehmen.</target>
+			</trans-unit>
+			<trans-unit id="setting.originCountryCode" resname="setting.originCountryCode">
+				<source>Origin country code</source>
+				<target>Ländercode des Versandorts</target>
+			</trans-unit>
+			<trans-unit id="setting.originPostCode" resname="setting.originPostCode">
+				<source>Origin postal code</source>
+				<target>Postleitzahl des Versandorts</target>
+			</trans-unit>
+			<trans-unit id="setting.originCityName" resname="setting.originCityName">
+				<source>Origin city</source>
+				<target>Ort des Versandorts</target>
+			</trans-unit>
+			<trans-unit id="setting.usedProducts" resname="setting.usedProducts">
+				<source>Used product codes</source>
+				<target>Verwendete Produktcodes</target>
+			</trans-unit>
+			<trans-unit id="setting.usedProducts.description" resname="setting.usedProducts.description">
+				<source>Comma-separated DHL product codes to offer, e.g. "P,U,K". Leave empty to offer every product DHL returns.</source>
+				<target>Kommagetrennte DHL-Produktcodes, die angeboten werden sollen, z. B. „P,U,K“. Leer lassen, um alle von DHL gelieferten Produkte anzubieten.</target>
+			</trans-unit>
+			<trans-unit id="setting.weightUnit" resname="setting.weightUnit">
+				<source>Unit of measurement (metric / imperial)</source>
+				<target>Maßeinheit (metric / imperial)</target>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl" resname="setting.apiBaseUrl">
+				<source>API base URL override</source>
+				<target>Abweichende API-Basis-URL</target>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl.description" resname="setting.apiBaseUrl.description">
+				<source>Send the DHL calls to this host instead of the real DHL host, e.g. a proxy or a local mock server. Leave empty to use the environment's real host.</source>
+				<target>Die DHL-Aufrufe an diesen Host statt an den echten DHL-Host senden, z. B. über einen Proxy oder einen lokalen Mock-Server. Leer lassen, um den echten Host der Umgebung zu verwenden.</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
