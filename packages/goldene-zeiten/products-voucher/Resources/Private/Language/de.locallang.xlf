@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_voucher/Resources/Private/Language/de.locallang.xlf" date="2026-07-15T09:00:00Z" product-name="products_voucher">
+		<header/>
+		<body>
+			<trans-unit id="voucher_code" resname="voucher_code">
+				<source>Voucher code</source>
+				<target>Gutscheincode</target>
+			</trans-unit>
+			<trans-unit id="voucher.rate_limited" resname="voucher.rate_limited">
+				<source>Too many voucher attempts. Please wait a moment and try again.</source>
+				<target>Zu viele Gutscheinversuche. Bitte warten Sie einen Moment und versuchen Sie es erneut.</target>
+			</trans-unit>
+			<trans-unit id="apply_voucher" resname="apply_voucher">
+				<source>Apply</source>
+				<target>Einlösen</target>
+			</trans-unit>
+			<trans-unit id="voucher_applied" resname="voucher_applied">
+				<source>Voucher applied: %s</source>
+				<target>Gutschein angewendet: %s</target>
+			</trans-unit>
+			<trans-unit id="voucher_discount" resname="voucher_discount">
+				<source>Voucher discount</source>
+				<target>Gutscheinrabatt</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
