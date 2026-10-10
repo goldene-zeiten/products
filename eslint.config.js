@@ -39,6 +39,7 @@ export default tseslint.config(
       '**/.Build/**',
       '**/original/**',
       '**/Resources/Public/JavaScript/backend/**',
+      '**/Resources/Public/JavaScript/frontend/**',
       '**/dist/**',
       '**/var/**',
       '**/Documentation-GENERATED-temp/**',
