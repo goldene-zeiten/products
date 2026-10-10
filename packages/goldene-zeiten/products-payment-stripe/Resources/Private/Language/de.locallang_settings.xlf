@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_payment_stripe/Resources/Private/Language/de.locallang_settings.xlf" date="2026-07-16T12:00:00Z" product-name="products_payment_stripe">
+		<header/>
+		<body>
+			<trans-unit id="category.paymentStripe" resname="category.paymentStripe">
+				<source>Stripe</source>
+				<target>Stripe</target>
+			</trans-unit>
+			<trans-unit id="setting.inherit.description" resname="setting.inherit.description">
+				<source>Leave empty to inherit the value from the extension configuration. Set it to override that default for this site.</source>
+				<target>Leer lassen, um den Wert aus der Extension-Konfiguration zu übernehmen. Ein gesetzter Wert überschreibt diesen Standard für diese Website.</target>
+			</trans-unit>
+			<trans-unit id="setting.secretKey" resname="setting.secretKey">
+				<source>Secret key</source>
+				<target>Geheimer Schlüssel</target>
+			</trans-unit>
+			<trans-unit id="setting.secretKey.description" resname="setting.secretKey.description">
+				<source>Stripe secret API key (sk_test_... in test mode, sk_live_... in live mode). Prefer referencing an environment variable so the key stays out of version control. Leave empty to inherit the extension configuration.</source>
+				<target>Geheimer Stripe-API-Schlüssel (sk_test_... im Testmodus, sk_live_... im Livemodus). Am besten eine Umgebungsvariable referenzieren, damit der Schlüssel nicht in der Versionsverwaltung landet. Leer lassen, um die Extension-Konfiguration zu übernehmen.</target>
+			</trans-unit>
+			<trans-unit id="setting.webhookSecret" resname="setting.webhookSecret">
+				<source>Webhook signing secret</source>
+				<target>Signaturgeheimnis des Webhooks</target>
+			</trans-unit>
+			<trans-unit id="setting.webhookSecret.description" resname="setting.webhookSecret.description">
+				<source>The signing secret (whsec_...) of the Stripe webhook endpoint, used to verify incoming events. Required for webhook confirmation; leave empty to rely on the browser return only.</source>
+				<target>Das Signaturgeheimnis (whsec_...) des Stripe-Webhook-Endpunkts, mit dem eingehende Ereignisse geprüft werden. Für die Bestätigung per Webhook erforderlich; leer lassen, um sich nur auf die Rückkehr im Browser zu verlassen.</target>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl" resname="setting.apiBaseUrl">
+				<source>API base URL override</source>
+				<target>Abweichende API-Basis-URL</target>
+			</trans-unit>
+			<trans-unit id="setting.apiBaseUrl.description" resname="setting.apiBaseUrl.description">
+				<source>Send the Stripe calls to this host instead of the real Stripe host, e.g. a proxy or a local mock server. Leave empty to use Stripe's default (https://api.stripe.com).</source>
+				<target>Die Stripe-Aufrufe an diesen Host statt an den echten Stripe-Host senden, z. B. über einen Proxy oder einen lokalen Mock-Server. Leer lassen, um den Standard von Stripe (https://api.stripe.com) zu verwenden.</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
