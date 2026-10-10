@@ -7,6 +7,8 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\DataProcessing;
 use GoldeneZeiten\Products\Core\DataProcessing\CategoryProductTreeProcessor;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
+use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 final class CategoryProductTreeProcessorTest extends AbstractFunctionalTestCase
@@ -15,6 +17,10 @@ final class CategoryProductTreeProcessorTest extends AbstractFunctionalTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/CategoryProductTreeProcessorTest/category_tree.csv');
+        // The processor asks the visibility checkers about each product, which need a request. It is not
+        // flagged as a frontend request, as Extbase would then expect the frontend TypoScript of a page.
+        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('http://localhost/'))
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
     }
 
     #[Test]

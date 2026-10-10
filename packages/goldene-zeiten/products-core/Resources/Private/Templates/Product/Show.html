@@ -24,12 +24,12 @@
 
                 <f:render partial="Product/WishlistToggle" arguments="{product: product, wishlistEnabled: wishlistEnabled, wishlistProductUids: wishlistProductUids}" />
 
-                <f:render partial="Product/AccessoryProducts" arguments="{accessoryProducts: product.accessoryProducts}" />
+                <f:render partial="Product/AccessoryProducts" arguments="{accessoryProducts: accessoryProducts, settings: settings}" />
             </div>
         </div>
     </div>
 
     <f:render partial="Product/Downloads" arguments="{downloads: product.downloads}" />
 
-    <f:render partial="Product/RelatedProducts" arguments="{relatedProducts: product.relatedProducts}" />
+    <f:render partial="Product/RelatedProducts" arguments="{relatedProducts: relatedProducts, settings: settings}" />
 </div>
