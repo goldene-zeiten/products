@@ -1,5 +1,7 @@
 paths:
-  - Configuration
+  - packages/*/*/Configuration
+  - packages-dev/*/Configuration
+  - packages/*/*/ext_conf_template.txt
 
 filePatterns:
   - "*.tsconfig"
