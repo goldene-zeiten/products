@@ -53,7 +53,10 @@ return [
                 'type' => 'number',
                 'format' => 'decimal',
                 'size' => 10,
-                'eval' => 'trim',
+                'required' => true,
+                'range' => [
+                    'lower' => 0.01,
+                ],
             ],
         ],
     ],
