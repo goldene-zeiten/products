@@ -1,60 +1,122 @@
-plugin.tx_productscore {
-    settings {
-        pids {
-            # cat=plugin.tx_productscore.pids; type=int; label=Storage folder UID
-            storageFolder = 0
-            # cat=plugin.tx_productscore.pids; type=int; label=Detail page UID
-            detailPage = 0
-            # cat=plugin.tx_productscore.pids; type=int; label=Basket page UID
-            basketPage = 0
-            # cat=plugin.tx_productscore.pids; type=int; label=Checkout page UID
-            checkoutPage = 0
-            # cat=plugin.tx_productscore.pids; type=int; label=Order history page UID
-            orderHistoryPage = 0
-            # cat=plugin.tx_productscore.pids; type=int; label=Category navigation/listing page UID
-            categoryPage = 0
-            # cat=plugin.tx_productscore.pids; type=int; label=Order withdrawal/cancellation page UID
-            withdrawalPage = 0
-            # cat=plugin.tx_productscore.pids; type=int; label=Wishlist page UID
-            wishlistPage = 0
-        }
-        pricing {
-            # cat=plugin.tx_productscore.pricing; type=string; label=Pricing mode (gross|net)
-            mode = gross
-            # cat=plugin.tx_productscore.pricing; type=string; label=Currency
-            currency = EUR
-        }
-        tax {
-            # cat=plugin.tx_productscore.tax; type=string; label=Default tax country (alpha-2)
-            defaultCountry = DE
-            # cat=plugin.tx_productscore.tax; type=string; label=Tax rounding (perLine|perTotal)
-            rounding = perLine
-        }
-        order {
-            # cat=plugin.tx_productscore.order; type=string; label=Order number prefix
-            numberPrefix = ORD-
-            # cat=plugin.tx_productscore.order; type=boolean; label=Store client IP address
-            storeClientIp = 0
-        }
-        email {
-            # cat=plugin.tx_productscore.email; type=string; label=Sender email
-            senderEmail =
-            # cat=plugin.tx_productscore.email; type=string; label=Sender name
-            senderName =
-            # cat=plugin.tx_productscore.email; type=string; label=Merchant notification recipient (empty disables the notification)
-            merchantRecipient =
-        }
+# Defaults for the classic static template. They mirror Configuration/Sets/Products/settings.definitions.yaml
+# under the same names, so a site using the site set configures the shop through its site settings and a
+# site using this static template through these constants - and both reach the plugins the same way.
+
+products {
+    pids {
+        # cat=products/storage; type=int; label=Storage folder UID
+        storageFolder = 0
+        # cat=products/storage; type=int; label=Detail page UID
+        detailPage = 0
+        # cat=products/storage; type=int; label=Basket page UID
+        basketPage = 0
+        # cat=products/storage; type=int; label=Checkout page UID
+        checkoutPage = 0
+        # cat=products/storage; type=int; label=Order history page UID
+        orderHistoryPage = 0
+        # cat=products/storage; type=int; label=Category navigation/listing page UID
+        categoryPage = 0
+        # cat=products/storage; type=int; label=Order withdrawal/cancellation page UID
+        withdrawalPage = 0
+    }
+    pricing {
+        # cat=products/pricing; type=string; label=Pricing mode (gross|net)
+        mode = gross
+        # cat=products/pricing; type=string; label=Currency
+        currency = EUR
+        # cat=products/pricing; type=string; label=Category-cascading discount resolution mode (maxAcrossTree|nearestCategory)
+        discountFieldMode = maxAcrossTree
+        # cat=products/pricing; type=string; label=Basket/order gross total rounding, applied only to the final total (none|nearestInteger|psychological99)
+        roundingMode = none
+        # cat=products/pricing; type=string; label=Reseller pricing vs. concurrent public discount precedence (lowestWins|resellerFixed) - lowestWins: reseller also benefits from a lower running public promo; resellerFixed: resellers always get their fixed tier price, ignoring public promotions
+        resellerPeriodPrecedence = lowestWins
+        # cat=products/pricing; type=int; label=Lookback window (days) for the EU Art. 6a "prior price" reference-price calculation
+        priceReductionLookbackDays = 30
+    }
+    tax {
+        # cat=products/pricing; type=string; label=Default tax country (alpha-2)
+        defaultCountry = DE
+        # cat=products/pricing; type=string; label=Tax rounding (perLine|perTotal)
+        rounding = perLine
+    }
+    order {
+        # cat=products/order; type=string; label=Order number prefix
+        numberPrefix = ORD-
+        # cat=products/order; type=boolean; label=Store client IP address
+        storeClientIp = 0
+    }
+    checkout {
+        # cat=products/order; type=int; label=Days after order placement a customer may self-service withdraw/cancel (0 disables it)
+        withdrawalPeriodDays = 14
+        # cat=products/order; type=int; label=How long a reviewed price quote remains valid before checkout forces a fresh review (seconds) - default 15 minutes
+        priceQuoteValiditySeconds = 900
+    }
+    stock {
+        # cat=products/catalog; type=int; label=Stock level at/below which a low-stock warning email is sent to the merchant
+        lowStockThreshold = 5
+    }
+    catalog {
+        # cat=products/catalog; type=string; label=Article variant switch mode (reload|ajax)
+        articleSwitchMode = reload
+    }
+    payment {
         invoice {
-            # cat=plugin.tx_productscore.invoice; type=int; label=Invoice download page typeNum
-            pageType = 1729512001
+            # cat=products/payment; type=boolean; label=Invoice payment enabled
+            enabled = 1
         }
-        catalog {
-            # cat=plugin.tx_productscore.catalog; type=string; label=Article variant switch mode (reload|ajax)
-            articleSwitchMode = reload
+    }
+    shipping {
+        # cat=products/shipping; type=boolean; label=Shipping cost calculation enabled
+        enabled = 0
+        # cat=products/shipping; type=string; label=Which shipping option is preselected: "none", "cheapest", or a specific option key such as "tablerate:1"
+        preselect = none
+        # cat=products/shipping; type=string; label=Flat surcharge added once per bulky-flagged item unit (0.00 disables it)
+        bulkySurcharge = 0.00
+        # cat=products/shipping; type=string; label=Notice shown in the basket/checkout when it contains a bulky-flagged item (empty disables it)
+        bulkyNoticeText =
+        # cat=products/shipping; type=int; label=Basket weight in grams above which a weight-tier shipping notice is shown (0 disables it)
+        weightNoticeThreshold = 0
+        # cat=products/shipping; type=string; label=Notice shown in the basket/checkout when the weight threshold above is exceeded (empty disables it)
+        weightNoticeText =
+    }
+    handling {
+        # cat=products/shipping; type=boolean; label=Handling fee calculation enabled
+        enabled = 0
+    }
+    list {
+        # cat=products/discovery; type=int; label=Number of days a product counts as "new" in the new-items listing
+        newItemDays = 7
+    }
+    email {
+        # cat=products/email; type=string; label=Sender email
+        senderEmail =
+        # cat=products/email; type=string; label=Sender name
+        senderName =
+        # cat=products/email; type=string; label=Merchant notification recipient (empty disables the notification)
+        merchantRecipient =
+        # cat=products/email; type=string; label=AGB/terms PDF to attach to order confirmations - FAL combined file identifier (e.g. "1:/legal/agb.pdf"), empty disables the attachment
+        agbAttachment =
+        # cat=products/email; type=string; label=Standing blind-copy recipient for order confirmation and merchant notification emails (empty disables it)
+        orderBccRecipient =
+        orderStatusChanged {
+            # cat=products/email; type=boolean; label=Send an email to the customer when an order's status changes
+            enabled = 1
         }
-        stock {
-            # cat=plugin.tx_productscore.stock; type=int; label=Stock level at/below which a low-stock warning email is sent
-            lowStockThreshold = 5
-        }
+    }
+    invoice {
+        # cat=products/invoice; type=int; label=Invoice download page typeNum
+        pageType = 1729512001
+    }
+    seo {
+        # cat=products/seo; type=string; label=Product single-view page-title substitution (none|title|subtitleOrTitle|titleAndSubtitle|subtitleAndTitle)
+        pageTitleMode = title
+    }
+    session {
+        # cat=products/privacy; type=boolean; label=Require an already-confirmed FE-session cookie before writing wishlist/recently-viewed session data
+        requireCookieConsent = 0
+    }
+    gdpr {
+        # cat=products/privacy; type=int; label=Days to retain order/invoice data before automatic deletion (GDPR data minimization) - set per your jurisdiction's statutory bookkeeping retention period, e.g. 10 years in Germany
+        invoiceRetentionDays = 3650
     }
 }

@@ -18,6 +18,22 @@ Site set
 Activate the :guilabel:`Products` site set (``goldene-zeiten/products-core``) on every site that should
 show the shop, then adjust its settings under :guilabel:`Site Management > Sites > Edit settings`.
 
+Every setting listed below reaches the plugins' TypoScript settings under the same path without the
+``products.`` prefix (`products.pids.detailPage` becomes ``plugin.tx_productscore.settings.pids.detailPage``),
+so templates and Extbase controllers see the values from the settings editor.
+
+..  _configuration-static-template:
+
+Classic static template
+-----------------------
+
+A site that is not built from site sets includes the :guilabel:`ProductsCore` static template instead.
+It defines one TypoScript constant per setting, named exactly like the setting
+(``products.pids.detailPage = 42``). Configure such a site through those constants only: the static
+template's constants are applied after a site's own settings, so a value entered in the settings editor
+of a site without the site set is overridden by the template default. List settings (the email and
+invoice template paths) have no constant and are read from the site settings only.
+
 ..  _configuration-storage-folder:
 
 Storage folder

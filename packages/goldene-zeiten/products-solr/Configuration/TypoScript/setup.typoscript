@@ -105,7 +105,7 @@ plugin.tx_solr {
                 url = TEXT
                 url {
                     typolink {
-                        parameter = {$plugin.tx_productscore.settings.pids.detailPage}
+                        parameter = {$products.pids.detailPage}
                         additionalParams = &tx_productscore_productdetail[controller]=Product&tx_productscore_productdetail[action]=show&tx_productscore_productdetail[product]={field:uid}
                         additionalParams {
                             insertData = 1

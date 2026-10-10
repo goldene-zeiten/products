@@ -1,3 +1,6 @@
+# The page size joins the core catalog settings, which the plugin below inherits.
+plugin.tx_productscore.settings.search.resultsPerPage = {$products.search.resultsPerPage}
+
 plugin.tx_productssearch {
     view {
         templateRootPaths {

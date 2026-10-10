@@ -37,7 +37,7 @@ value should reach for an existing default field first, and a matching dynamic-f
 (`_stringS`/`_boolS`/`_stringM`/…) only when there is genuinely no default field — never a new static schema
 field.
 
-The detail `url` is built from `{$plugin.tx_productscore.settings.pids.detailPage}` and the same
+The detail `url` is built from `{$products.pids.detailPage}` and the same
 `ProductDetail` plugin arguments the core catalog uses, so indexed links resolve to the shop's real product
 slugs via the site's route enhancers (EXT:solr runs the typolink inside its own indexing request, so
 enhancers apply on both v13 and v14).

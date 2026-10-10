@@ -1,4 +1,11 @@
 plugin {
+    # The wishlist settings join the core catalog settings, which the wishlist plugin inherits below and the
+    # core catalog plugins - rendering this extension's toggle - read directly.
+    tx_productscore.settings {
+        pids.wishlistPage = {$products.pids.wishlistPage}
+        wishlist.enabled = {$products.wishlist.enabled}
+    }
+
     tx_productswishlist {
         view {
             templateRootPaths {

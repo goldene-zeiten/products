@@ -4,3 +4,8 @@ settings:
     default: false
     label: 'LLL:EXT:products_wishlist/Resources/Private/Language/locallang_settings.xlf:setting.products.wishlist.enabled'
     category: discovery
+  products.pids.wishlistPage:
+    type: int
+    default: 0
+    label: 'LLL:EXT:products_wishlist/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.wishlistPage'
+    category: storage

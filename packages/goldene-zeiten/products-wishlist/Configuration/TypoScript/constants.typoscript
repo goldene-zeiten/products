@@ -1,0 +1,11 @@
+# Defaults for the classic static template, named like the site settings of the wishlist site set.
+products {
+    pids {
+        # cat=products/storage; type=int; label=Wishlist page UID
+        wishlistPage = 0
+    }
+    wishlist {
+        # cat=products/discovery; type=boolean; label=Show the add-to-wishlist affordance on product listings
+        enabled = 0
+    }
+}

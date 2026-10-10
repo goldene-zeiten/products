@@ -1,0 +1,10 @@
+name: goldene-zeiten/settings-dump
+label: Products Settings Dump
+dependencies:
+  - goldene-zeiten/products-core
+# Ordered after every add-on that maps its own settings into plugin.tx_productscore.settings, so the dump
+# below copies the complete settings tree.
+optionalDependencies:
+  - goldene-zeiten/products-recently-viewed
+  - goldene-zeiten/products-search
+  - goldene-zeiten/products-wishlist

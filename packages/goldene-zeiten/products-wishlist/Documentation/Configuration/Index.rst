@@ -42,17 +42,15 @@ active on the site.
 Wishlist page
 --------------
 
-Unlike the other catalog page settings (:file:`products-core`'s `products.pids.detailPage`,
-`products.pids.basketPage`, ...), the wishlist page is not exposed as a Site Settings field in the
-core extension — it ships only as a TypoScript constant, `plugin.tx_productscore.settings.pids.
-wishlistPage` (default ``0``), set by ``products-core``'s own TypoScript. Set it directly in the
-site's TypoScript template (e.g. in a site package's ``constants.typoscript``, or via the classic
-constant editor) to the uid of the page carrying the :rst:dir:`Wishlist` content element:
+Set `products.pids.wishlistPage` (default ``0``) to the uid of the page carrying the
+:rst:dir:`Wishlist` content element. The add-to-wishlist and remove-from-wishlist forms post there.
+It is a site setting of this extension's site set; a site still using the classic static template sets
+the TypoScript constant of the same name instead:
 
 ..  code-block:: typoscript
     :caption: TypoScript constants
 
-    plugin.tx_productscore.settings.pids.wishlistPage = 42
+    products.pids.wishlistPage = 42
 
 ..  _configuration-content-element:
 
