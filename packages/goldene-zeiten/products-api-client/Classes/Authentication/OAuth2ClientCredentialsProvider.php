@@ -31,6 +31,9 @@ final class OAuth2ClientCredentialsProvider
         private readonly FrontendInterface $tokenCache,
     ) {}
 
+    /**
+     * @phpstan-impure
+     */
     public function getToken(OAuth2Credentials $credentials, bool $forceRefresh = false): string
     {
         $cacheIdentifier = $credentials->cacheIdentifier();
