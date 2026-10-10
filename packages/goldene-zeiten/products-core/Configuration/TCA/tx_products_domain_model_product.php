@@ -167,6 +167,10 @@ return [
                 'type' => 'number',
                 'format' => 'decimal',
                 'size' => 10,
+                'range' => [
+                    'lower' => 0,
+                    'upper' => 100,
+                ],
                 'default' => 0,
             ],
         ],
