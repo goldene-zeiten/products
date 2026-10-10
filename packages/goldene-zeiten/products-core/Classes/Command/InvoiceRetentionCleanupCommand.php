@@ -114,6 +114,13 @@ final class InvoiceRetentionCleanupCommand extends Command
         try {
             // Delete order items first
             $connection->delete('tx_products_domain_model_orderitem', ['parent_order' => $orderUid]);
+            // Payment transactions keep the gateway's raw payload, which is personal data as well
+            $connection->delete('tx_products_domain_model_paymenttransaction', ['order_uid' => $orderUid]);
+            // File references (e.g. the accepted terms document); the shared file itself stays
+            $connection->delete('sys_file_reference', [
+                'tablenames' => 'tx_products_domain_model_order',
+                'uid_foreign' => $orderUid,
+            ]);
 
             // Fetch the order to get the address uids
             $queryBuilder = $connection->createQueryBuilder();

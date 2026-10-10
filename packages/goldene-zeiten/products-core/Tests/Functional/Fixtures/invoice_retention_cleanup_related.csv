@@ -1,0 +1,11 @@
+"tx_products_domain_model_paymenttransaction",,,,,,,
+,"uid","pid","order_uid","payment_method","external_id","state","raw_data"
+,1,2,1,"invoice","EXT-OLD","completed","{""iban"":""DE00""}"
+,2,2,2,"invoice","EXT-RECENT","completed","{}"
+"sys_file",,,,,
+,"uid","storage","identifier","name","missing"
+,700,1,"/terms.pdf","terms.pdf",0
+"sys_file_reference",,,,,,,,
+,"uid","pid","deleted","uid_local","uid_foreign","tablenames","fieldname","sorting_foreign"
+,950,2,0,700,1,"tx_products_domain_model_order","terms_document",1
+,951,2,0,700,2,"tx_products_domain_model_order","terms_document",1

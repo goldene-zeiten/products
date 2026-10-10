@@ -108,6 +108,32 @@ final class InvoiceRetentionCleanupCommandTest extends AbstractFunctionalTestCas
     }
 
     /**
+     * A payment transaction keeps the gateway's raw payload, and the order's terms document is a
+     * file reference. Neither may outlive the order it belongs to.
+     */
+    #[Test]
+    public function deletesPaymentTransactionsAndFileReferencesOfDeletedOrders(): void
+    {
+        $this->setUpProductsSite();
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/invoice_retention_cleanup.csv');
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/invoice_retention_cleanup_related.csv');
+        $command = $this->get(InvoiceRetentionCleanupCommand::class);
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute([]);
+
+        $connectionPool = $this->get(ConnectionPool::class);
+        $transactions = $connectionPool->getConnectionForTable('tx_products_domain_model_paymenttransaction')
+            ->select(['order_uid'], 'tx_products_domain_model_paymenttransaction')
+            ->fetchFirstColumn();
+        $this->assertSame([2], array_map('intval', $transactions));
+        $references = $connectionPool->getConnectionForTable('sys_file_reference')
+            ->select(['uid_foreign'], 'sys_file_reference', ['tablenames' => 'tx_products_domain_model_order'])
+            ->fetchFirstColumn();
+        $this->assertSame([2], array_map('intval', $references));
+    }
+
+    /**
      * The command iterates SiteFinder::getAllSites() and filters orders by site_identifier -
      * without an actual configured site, that loop runs zero times regardless of fixture
      * content. The fixture's site_identifier column uses "products" to match this.
