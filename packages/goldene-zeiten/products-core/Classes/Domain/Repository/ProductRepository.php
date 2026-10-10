@@ -6,6 +6,10 @@ namespace GoldeneZeiten\Products\Core\Domain\Repository;
 
 use GoldeneZeiten\Products\Core\Domain\Model\Category;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Qom\ConstraintInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
@@ -18,7 +22,7 @@ final class ProductRepository extends AbstractReadOnlyRepository
     /**
      * @var string[]
      */
-    private const SEARCHABLE_PROPERTIES = ['title', 'subtitle', 'itemNumber', 'description', 'ean'];
+    private const SEARCHABLE_COLUMNS = ['title', 'subtitle', 'item_number', 'description', 'ean'];
 
     /**
      * "uid" breaks ties for rows sharing the same "sorting" value.
@@ -29,6 +33,12 @@ final class ProductRepository extends AbstractReadOnlyRepository
         'sorting' => QueryInterface::ORDER_ASCENDING,
         'uid' => QueryInterface::ORDER_ASCENDING,
     ];
+
+    public function __construct(
+        private readonly ConnectionPool $connectionPool,
+    ) {
+        parent::__construct();
+    }
 
     /**
      * All products across all storage pages.
@@ -98,21 +108,48 @@ final class ProductRepository extends AbstractReadOnlyRepository
     }
 
     /**
+     * Matches the term through a plain query, because Extbase's like() declares no ESCAPE character and SQLite
+     * has no default one - the escaped wildcards would never match there. The query states the escape
+     * character itself, so "_" and "%" in a term match literally on every DBMS. Visibility and language are
+     * left to the Extbase query this constraint is part of.
+     *
      * @param QueryInterface<Product> $query
      */
     private function termConstraint(QueryInterface $query, string $term): ConstraintInterface
     {
-        $pattern = '%' . $this->escapeLikeWildcards($term) . '%';
+        $productUids = $this->uidsMatchingTerm($term);
+
+        return $productUids === [] ? $query->equals('uid', 0) : $query->in('uid', $productUids);
+    }
+
+    /**
+     * @return int[]
+     */
+    private function uidsMatchingTerm(string $term): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_products_domain_model_product');
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $pattern = $queryBuilder->createNamedParameter('%' . $this->escapeLikeWildcards($term) . '%', Connection::PARAM_STR);
         $likeConstraints = array_map(
-            static fn(string $property): ConstraintInterface => $query->like($property, $pattern),
-            self::SEARCHABLE_PROPERTIES
+            static fn(string $column): string => $queryBuilder->expr()->like($column, $pattern, '\\'),
+            self::SEARCHABLE_COLUMNS
         );
-        return $query->logicalOr(...$likeConstraints);
+        $result = $queryBuilder
+            ->select('uid')
+            ->from('tx_products_domain_model_product')
+            ->where($queryBuilder->expr()->or(...$likeConstraints))
+            ->executeQuery();
+        $productUids = [];
+        while ($row = $result->fetchAssociative()) {
+            $productUids[] = (int)$row['uid'];
+        }
+
+        return $productUids;
     }
 
     private function escapeLikeWildcards(string $term): string
     {
-        return str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $term);
+        return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $term);
     }
 
     /**
