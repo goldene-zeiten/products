@@ -12,6 +12,7 @@ use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Payment\Paypal\Amount\PaypalAmountFormatter;
 use GoldeneZeiten\Products\Payment\Paypal\Configuration\PaypalConfigurationFactory;
 use GoldeneZeiten\Products\Payment\Paypal\Payment\PaypalPaymentMethod;
 use GoldeneZeiten\Products\Payment\Paypal\Tests\Functional\AbstractPaypalMockTestCase;
@@ -214,6 +215,7 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
             $this->orderClient(),
             $this->webhookVerifier(),
             $this->get(OrderRepository::class),
+            new PaypalAmountFormatter(),
             new NullLogger(),
         );
 
@@ -260,6 +262,7 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
             $this->orderClient(),
             $this->webhookVerifier(),
             $this->get(OrderRepository::class),
+            new PaypalAmountFormatter(),
             new NullLogger(),
         );
     }
@@ -294,6 +297,21 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
 
         $this->assertInstanceOf(Order::class, $resolution->getOrder());
         $this->assertSame(42, $resolution->getOrder()->getUid());
+        $this->assertSame(PaymentStatus::PAID, $resolution->getResult()->getPaymentStatus());
+    }
+
+    /**
+     * A yen total with a fraction from tax rounding is sent to PayPal in whole yen; the capture of exactly
+     * that amount belongs to the order.
+     */
+    #[Test]
+    public function handleStaticWebhookMatchesAYenCaptureInWholeUnits(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_in_yen_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->staticWebhookRequest('43', '1000', 'JPY'));
+
+        $this->assertSame(43, $resolution->getOrder()?->getUid());
         $this->assertSame(PaymentStatus::PAID, $resolution->getResult()->getPaymentStatus());
     }
 
