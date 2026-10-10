@@ -1,0 +1,21 @@
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,5,1,0,"Unrelated Local Product"
+,80,1,0,"Migrated Product"
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",5,"tx_products_domain_model_product",80
+"tt_products",,,,,
+,"uid","pid","deleted","hidden","title","image"
+,5,1,0,0,"Legacy Product",""
+"tt_products_products_mm_downloads",,,,
+,"uid","pid","deleted","uid_local","uid_foreign"
+,1,1,0,5,999
+"sys_file",,,,,
+,"uid","storage","identifier","name","missing"
+,504,1,"/manual.pdf","manual.pdf",0
+,505,1,"/unrelated.pdf","unrelated.pdf",0
+"sys_file_reference",,,,,,,,
+,"uid","pid","deleted","uid_local","uid_foreign","tablenames","fieldname","sorting_foreign"
+,800,1,0,504,999,"tt_products_downloads","file_uid",1
+,801,1,0,505,5,"tx_products_domain_model_product","downloads",0

@@ -1,0 +1,12 @@
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,80,1,0,"First Product"
+,81,1,0,"Second Product"
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",1,"tx_products_domain_model_product",80
+,"tt_products",2,"tx_products_domain_model_product",81
+"tt_products",,,,,
+,"uid","pid","deleted","hidden","title","image"
+,1,1,0,0,"First Product","shared.jpg"
+,2,1,0,0,"Second Product","shared.jpg"

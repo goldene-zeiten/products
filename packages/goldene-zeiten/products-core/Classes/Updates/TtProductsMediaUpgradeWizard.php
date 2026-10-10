@@ -9,7 +9,6 @@ use GoldeneZeiten\Products\Core\Updates\Prerequisites\CategoryMigrationPrerequis
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 // TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
 use TYPO3\CMS\Install\Updates\ChattyInterface;
@@ -31,12 +30,10 @@ final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, Chat
     private const PRODUCT_TABLE = 'tt_products';
     private const CATEGORY_TABLE = 'tt_products_cat';
     private const ARTICLE_TABLE = 'tt_products_articles';
-    private const DOWNLOADS_MM_TABLE = 'tt_products_products_mm_downloads';
 
     private OutputInterface $output;
 
     public function __construct(
-        private readonly ConnectionPool $connectionPool,
         private readonly LegacyMigrationHelper $migrationHelper,
         private readonly LegacyMediaMigrator $mediaMigrator,
         private readonly DownloadsCatalogMigrator $downloadsCatalogMigrator,
@@ -71,20 +68,7 @@ final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, Chat
                 return true;
             }
         }
-        if ($this->hasPendingDownloads()) {
-            return true;
-        }
-        return false;
-    }
-
-    private function hasPendingDownloads(): bool
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::DOWNLOADS_MM_TABLE);
-        $queryBuilder->getRestrictions()->removeAll();
-        $count = $queryBuilder->count('uid')->from(self::DOWNLOADS_MM_TABLE)
-            ->andWhere($queryBuilder->expr()->eq('deleted', 0))
-            ->executeQuery()->fetchOne();
-        return (int)$count > 0;
+        return $this->downloadsCatalogMigrator->hasPending();
     }
 
     public function executeUpdate(): bool
@@ -156,22 +140,15 @@ final class TtProductsMediaUpgradeWizard implements UpgradeWizardInterface, Chat
     }
 
     /**
-     * A permanently-missing file never clears "pending", so the loop terminates on progress
-     * (new legacy uids seen), not on the pending set becoming empty.
+     * A permanently-missing file never clears "pending", so the loop pages through with a uid
+     * cursor instead of waiting for the pending set to become empty.
      */
     private function migrateMapping(LegacyMediaFieldMapping $mapping): void
     {
-        $attemptedLegacyUids = [];
-        while (($rows = $this->mediaMigrator->fetchPendingRows($mapping)) !== []) {
-            $newRows = array_filter(
-                $rows,
-                fn(array $row): bool => !in_array((int)$row['uid'], $attemptedLegacyUids, true)
-            );
-            if ($newRows === []) {
-                break;
-            }
-            foreach ($newRows as $row) {
-                $attemptedLegacyUids[] = (int)$row['uid'];
+        $lastLegacyUid = 0;
+        while (($rows = $this->mediaMigrator->fetchPendingRows($mapping, $lastLegacyUid)) !== []) {
+            foreach ($rows as $row) {
+                $lastLegacyUid = (int)$row['uid'];
                 $this->migrateRow($mapping, $row);
             }
         }
