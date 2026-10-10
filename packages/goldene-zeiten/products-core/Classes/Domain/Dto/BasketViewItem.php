@@ -69,15 +69,35 @@ final readonly class BasketViewItem
         return $this->lineTotalTax;
     }
 
-    public function getDepositTotal(): Money
+    /**
+     * An article without a deposit of its own (0) carries the product's.
+     */
+    public function getUnitDeposit(): Money
     {
-        $deposit = $this->article?->getDeposit() ?? $this->product->getDeposit();
-        return $deposit->multiply($this->quantity);
+        $articleDeposit = $this->article?->getDeposit();
+        return $articleDeposit !== null && $articleDeposit->getCents() > 0 ? $articleDeposit : $this->product->getDeposit();
     }
 
+    public function getDepositTotal(): Money
+    {
+        return $this->getUnitDeposit()->multiply($this->quantity);
+    }
+
+    /**
+     * Weight of one unit in grams; an article without a weight of its own (0) weighs what the product does.
+     */
+    public function getUnitWeight(): int
+    {
+        $articleWeight = $this->article?->getWeight() ?? 0;
+        return $articleWeight > 0 ? $articleWeight : $this->product->getWeight();
+    }
+
+    /**
+     * Weight of the whole line in grams.
+     */
     public function getWeight(): int
     {
-        return $this->product->getWeight() * $this->quantity;
+        return $this->getUnitWeight() * $this->quantity;
     }
 
     public function isBulky(): bool

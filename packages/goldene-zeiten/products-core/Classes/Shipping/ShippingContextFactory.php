@@ -39,7 +39,7 @@ final class ShippingContextFactory
     {
         return new ShippingContextItem(
             $viewItem->getQuantity(),
-            $viewItem->getWeight(),
+            $viewItem->getUnitWeight(),
             $viewItem->isBulky(),
             $viewItem->getProduct()->getShippingClass()
         );
