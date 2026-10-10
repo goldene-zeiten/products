@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Middleware;
 
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentResultState;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentCallbackException;
 use GoldeneZeiten\Products\Core\Payment\PaymentCallbackService;
 use GoldeneZeiten\Products\Core\Payment\PaymentUrlFactory;
@@ -60,6 +61,10 @@ final readonly class PaymentWebhookMiddleware implements MiddlewareInterface
             // order uids exist by echoing the resolution failure back.
             $this->logger->warning('Rejected a payment webhook.', ['exception' => $exception]);
             return new JsonResponse(['error' => 'Invalid payment callback.'], 404);
+        }
+
+        if ($paymentResult->getState() === PaymentResultState::UNCHANGED) {
+            return new JsonResponse(['status' => PaymentResultState::UNCHANGED->value]);
         }
 
         return new JsonResponse(['status' => $paymentResult->getPaymentStatus()->value]);

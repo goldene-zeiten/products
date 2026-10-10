@@ -96,6 +96,9 @@
 			<trans-unit id="checkout_payment_failed" resname="checkout_payment_failed">
 				<source>Your payment could not be completed and your order was cancelled. Please choose a payment method and try again.</source>
 			</trans-unit>
+			<trans-unit id="checkout_payment_unconfirmed" resname="checkout_payment_unconfirmed">
+				<source>Your payment has not been confirmed by the payment provider yet. Please complete it there or choose another payment method.</source>
+			</trans-unit>
 			<trans-unit id="checkout_payment_cancelled" resname="checkout_payment_cancelled">
 				<source>You cancelled the payment, so your order was cancelled. Your basket is unchanged - please choose a payment method to try again.</source>
 			</trans-unit>

@@ -83,6 +83,9 @@ final readonly class PaymentReturnMiddleware implements MiddlewareInterface
         if ($result->getState() === PaymentResultState::FAILED || $order->getStatus() === OrderStatus::CANCELLED) {
             return $this->backToPayment($site, $request, 'checkout_payment_failed');
         }
+        if ($result->getState() === PaymentResultState::UNCHANGED) {
+            return $this->backToPayment($site, $request, 'checkout_payment_unconfirmed');
+        }
 
         return new RedirectResponse(
             $this->paymentUrlFactory->checkoutStepUrl($site, 'thankYou', [

@@ -48,7 +48,7 @@ final class OrderFinalizationService
         match ($paymentResult->getState()) {
             PaymentResultState::COMPLETED, PaymentResultState::PENDING => $this->accept($order, $paymentResult, $request),
             PaymentResultState::FAILED => $this->reject($order, $paymentResult->getFailureReason()),
-            PaymentResultState::REDIRECT_REQUIRED => null,
+            PaymentResultState::REDIRECT_REQUIRED, PaymentResultState::UNCHANGED => null,
         };
     }
 
