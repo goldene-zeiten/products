@@ -19,13 +19,21 @@ ProductVisibilityInterface
 **Purpose:**
 
 The :php:`ProductVisibilityInterface` contract enables extensions to control whether products appear
-in both the product list and product detail views. Common use cases include:
+anywhere in the catalogue: the product list and detail views, the category listing, related and
+accessory products, the category navigation's product counts, the category tree data processor and the
+basket. Common use cases include:
 
 - Hiding products from specific frontend user groups
-- Restricting products by geographic region or location
-- Enforcing feature flags or A/B tests
-- Implementing per-customer or per-account catalogues
-- Hiding products during seasonal blackouts or inventory-based availability windows
+- Per-site assortments
+- Hiding products during seasonal blackouts or other time windows
+
+**Caching:**
+
+The product list and category views are page-cached, and the page cache only varies by the visitor's
+frontend user groups (and the site and language). A checker must therefore decide on the frontend user
+groups, the site and the time alone. A verdict depending on session data, cookies, the individual
+frontend user, the visitor's location or an A/B bucket would be cached for the first visitor and served
+to everyone sharing their user groups. Model such catalogues as frontend user groups instead.
 
 **Aggregation Rule (Fail-Closed):**
 

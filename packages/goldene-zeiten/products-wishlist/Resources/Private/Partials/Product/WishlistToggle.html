@@ -1,18 +1,11 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
+<f:comment>
+    The catalogue views around this partial may come from the page cache, so the visitor's wishlist state is
+    not rendered here but by the uncached toggle plugin.
+</f:comment>
 <f:if condition="{wishlistEnabled}">
-    <f:then>
-        <f:contains value="{product.uid}" subject="{wishlistProductUids}">
-            <f:then>
-                <f:form action="remove" controller="Wishlist" extensionName="ProductsWishlist" pluginName="Wishlist" pageUid="{settings.pids.wishlistPage}" requestToken="products/wishlist" class="d-inline">
-                    <f:form.hidden name="product" value="{product.uid}" />
-                    <f:form.submit value="{f:translate(key: 'remove_from_wishlist', extensionName: 'products_wishlist')}" class="btn btn-outline-secondary btn-sm" />
-                </f:form>
-            </f:then>
-            <f:else>
-                <f:form action="add" controller="Wishlist" extensionName="ProductsWishlist" pluginName="Wishlist" pageUid="{settings.pids.wishlistPage}" requestToken="products/wishlist" class="d-inline">
-                    <f:form.hidden name="product" value="{product.uid}" />
-                    <f:form.submit value="{f:translate(key: 'add_to_wishlist', extensionName: 'products_wishlist')}" class="btn btn-outline-secondary btn-sm" />
-                </f:form>
-            </f:else>
-        </f:contains>
-    </f:then>
+    <f:cObject typoscriptObjectPath="lib.productsWishlistToggle" data="{productUid: product.uid}" />
 </f:if>
+</html>

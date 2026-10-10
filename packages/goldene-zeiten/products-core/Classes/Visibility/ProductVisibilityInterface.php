@@ -19,6 +19,11 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
  * product - deny wins over allow, so a checker can never be silently bypassed the way a forgotten
  * event listener could.
  *
+ * The product list and category views are page-cached, and the page cache only varies by the visitor's
+ * frontend user groups. A checker must therefore decide on the frontend user groups, the site and the time
+ * alone - never on session state, cookies or the individual user - or the first visitor's verdict is
+ * served to everyone sharing those groups.
+ *
  * @see ProductVisibilityResolver::isVisible()
  */
 #[AutoconfigureTag('products.product_visibility')]
