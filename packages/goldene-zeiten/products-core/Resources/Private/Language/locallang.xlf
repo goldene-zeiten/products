@@ -30,6 +30,9 @@
 			<trans-unit id="quantity" resname="quantity">
 				<source>Quantity</source>
 			</trans-unit>
+			<trans-unit id="quantity_of" resname="quantity_of">
+				<source>Quantity of %s</source>
+			</trans-unit>
 			<trans-unit id="price" resname="price">
 				<source>Price</source>
 			</trans-unit>

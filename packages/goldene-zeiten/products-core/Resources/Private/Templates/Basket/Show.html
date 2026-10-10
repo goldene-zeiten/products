@@ -18,7 +18,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <f:for each="{basket.items}" as="item">
+                    <f:for each="{basket.items}" as="item" iteration="itemIteration">
                         <tr>
                             <td>
                                 {item.product.title}
@@ -36,7 +36,8 @@
                                             <f:form.hidden name="article" value="{item.article.uid}" />
                                         </f:then>
                                     </f:if>
-                                    <f:form.textfield name="quantity" value="{item.quantity}" size="3" />
+                                    <label for="products-basket-quantity-{itemIteration.index}" class="visually-hidden"><f:translate key="quantity_of" arguments="{0: item.product.title}" /></label>
+                                    <f:form.textfield name="quantity" value="{item.quantity}" size="3" id="products-basket-quantity-{itemIteration.index}" />
                                     <f:form.submit value="{f:translate(key: 'update')}" />
                                 </f:form>
                             </td>

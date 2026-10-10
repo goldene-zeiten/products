@@ -11,9 +11,10 @@
             <f:then>
                 <f:for each="{variantAttributes}" as="attribute">
                     <div class="mb-2">
-                        <label>{attribute.title}</label>
+                        <label for="products-attribute-{product.uid}-{attribute.uid}" class="form-label">{attribute.title}</label>
                         <f:form.select
                             name="attributeValues[]"
+                            id="products-attribute-{product.uid}-{attribute.uid}"
                             options="{attribute.values}"
                             optionValueField="uid"
                             optionLabelField="value"
@@ -25,7 +26,8 @@
             </f:then>
             <f:else>
                 <div class="mb-3">
-                    <f:form.select name="selectedArticle" options="{product.articles}" optionLabelField="title" class="form-select variant-article-select" />
+                    <label for="products-article-{product.uid}" class="visually-hidden"><f:translate key="choose_variant" /></label>
+                    <f:form.select name="selectedArticle" id="products-article-{product.uid}" options="{product.articles}" optionLabelField="title" class="form-select variant-article-select" />
                 </div>
             </f:else>
         </f:if>
