@@ -95,6 +95,38 @@ final class ProductRepositorySearchTest extends AbstractFunctionalTestCase
     }
 
     /**
+     * SQLite has no default LIKE escape character, so the escaping only holds where the query declares one.
+     *
+     * @param string[] $expectedTitles
+     */
+    #[Test]
+    #[DataProvider('wildcardCharacterProvider')]
+    public function wildcardCharactersInTheTermMatchLiterally(string $term, array $expectedTitles): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/search_wildcards.csv');
+        $subject = $this->get(ProductRepository::class);
+
+        $this->assertSame($expectedTitles, $this->titles($subject->search($term, null, 0, 10)));
+        $this->assertSame(count($expectedTitles), $subject->countSearchResults($term, null));
+    }
+
+    public static function wildcardCharacterProvider(): \Generator
+    {
+        yield 'an underscore matches only an underscore' => [
+            'term' => 'item_1',
+            'expectedTitles' => ['Underscore Item'],
+        ];
+        yield 'a percent sign matches only a percent sign' => [
+            'term' => '50%',
+            'expectedTitles' => ['Percent Item'],
+        ];
+        yield 'a backslash matches only a backslash' => [
+            'term' => 'path\\to',
+            'expectedTitles' => ['Backslash Item'],
+        ];
+    }
+
+    /**
      * @param iterable<Product> $products
      * @return string[]
      */

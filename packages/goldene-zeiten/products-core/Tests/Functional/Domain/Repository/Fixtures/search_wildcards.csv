@@ -1,0 +1,6 @@
+"tx_products_domain_model_product",,,,,,,,
+,"uid","pid","title","subtitle","item_number","description","ean","tax_class"
+,11,2,"Underscore Item","","ITEM_1","","5555555555555",1
+,12,2,"Lookalike Item","","ITEMX1","","6666666666666",1
+,13,2,"Percent Item","","","Now 50% off","7777777777777",1
+,14,2,"Backslash Item","","PATH\TO","","8888888888888",1
