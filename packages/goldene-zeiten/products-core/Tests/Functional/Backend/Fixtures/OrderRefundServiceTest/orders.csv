@@ -1,0 +1,20 @@
+"be_groups",,,,,,
+,"uid","pid","title","db_mountpoints","tables_select","tables_modify"
+,1,0,"Order readers",2,"tx_products_domain_model_order",""
+,2,0,"Order editors",2,"tx_products_domain_model_order","tx_products_domain_model_order"
+
+"be_users",,,,,
+,"uid","pid","username","admin","usergroup"
+,1,0,"admin",1,""
+,2,0,"reader",0,"1"
+,3,0,"editor",0,"2"
+
+"pages",,,,,,,,,,,,
+,"uid","pid","sorting","deleted","title","slug","doktype","perms_userid","perms_groupid","perms_user","perms_group","perms_everybody"
+,1,0,256,0,"Root","/",1,1,0,31,0,0
+,2,1,256,0,"Orders","/orders",254,1,0,31,0,19
+
+"tx_products_domain_model_order",,,,,,,,,,,
+,"uid","pid","deleted","order_number","email","currency","total_gross","status","payment_status","payment_method","status_log"
+,1,2,0,"ORD-PAID","paid@example.com","EUR",1999,"confirmed","paid","recording-refund","[]"
+,2,2,0,"ORD-OPEN","open@example.com","EUR",2999,"new","open","recording-refund","[]"

@@ -1,0 +1,63 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Fixtures;
+
+use GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderData;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
+use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
+use GoldeneZeiten\Products\Core\Payment\RefundablePaymentMethodInterface;
+
+/**
+ * Refundable test double counting how often the gateway was asked to refund.
+ */
+final class RecordingRefundPaymentMethod implements PaymentMethodInterface, RefundablePaymentMethodInterface
+{
+    public int $refundCalls = 0;
+
+    public function getIdentifier(): string
+    {
+        return 'recording-refund';
+    }
+
+    public function getLabel(): string
+    {
+        return 'Recording Refund Fixture';
+    }
+
+    public function isAvailable(PaymentContext $context): bool
+    {
+        return true;
+    }
+
+    public function getPriority(): int
+    {
+        return 0;
+    }
+
+    public function calculateFee(PaymentContext $context): int
+    {
+        return 0;
+    }
+
+    public function initiate(Order $order, PaymentContext $context): PaymentResult
+    {
+        return PaymentResult::completed(PaymentStatus::PAID, 'RECORDING');
+    }
+
+    public function cancel(OrderData $order): PaymentResult
+    {
+        return PaymentResult::completed(PaymentStatus::FAILED, 'RECORDING');
+    }
+
+    public function refund(OrderData $order, Money $amount): PaymentResult
+    {
+        $this->refundCalls++;
+        return PaymentResult::completed(PaymentStatus::REFUNDED, 'RECORDING');
+    }
+}
