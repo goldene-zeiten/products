@@ -10,7 +10,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /**
  * Migrates overlay rows: dedupe, resolve parent, insert l10n_parent link. Orphans recorded with
- * sentinel uid 0 to avoid re-processing.
+ * sentinel uid 0 to avoid re-processing; a parent recorded with that sentinel counts as missing.
  */
 final class LegacyOverlayMigrator
 {
@@ -95,7 +95,7 @@ final class LegacyOverlayMigrator
             (int)$winner[$config->parentField],
             $config->localTable
         );
-        if ($parentLocalUid === null) {
+        if ($parentLocalUid === null || $parentLocalUid === 0) {
             $output->writeln(sprintf(
                 '<comment>Skipped %s uid %d: parent uid %d was never migrated.</comment>',
                 $config->legacyLanguageTable,

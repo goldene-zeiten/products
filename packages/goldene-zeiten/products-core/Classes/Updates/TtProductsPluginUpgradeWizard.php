@@ -322,7 +322,7 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         foreach (array_filter(array_map('trim', explode(',', $legacyValue))) as $legacyUid) {
             $uid = (int)str_replace($legacyTable . '_', '', $legacyUid);
             $localUid = $this->migrationHelper->resolveLocalUid($legacyTable, $uid, $localTable);
-            if ($localUid !== null) {
+            if ($localUid !== null && $localUid !== 0) {
                 $localUids[] = (string)$localUid;
             }
         }
