@@ -9,8 +9,6 @@ jobs:
     name: Ensure GitHub Release with extension TER artifact and publishing to TER
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
-    env:
-      TYPO3_API_TOKEN: ${{ secrets.TYPO3_API_TOKEN }}
     permissions:
       contents: write
     steps:
@@ -89,7 +87,11 @@ jobs:
             LICENSE
           fail_on_unmatched_files: true
 
+      # The TER token is handed to this one step only, so no other step - in particular no third-party
+      # action - can read it.
       - name: Publish to TER
+        env:
+          TYPO3_API_TOKEN: ${{ secrets.TYPO3_API_TOKEN }}
         run: |
           php ~/.composer/vendor/bin/tailor ter:publish --comment "${{ env.terReleaseNotes }}" ${{ env.version }} \
             --artefact=tailor-version-artefact/${{ env.DETECTED_EXTENSION_KEY }}_${{ env.version }}.zip
