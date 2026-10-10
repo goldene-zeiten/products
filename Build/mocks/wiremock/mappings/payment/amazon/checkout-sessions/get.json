@@ -8,7 +8,9 @@
       "checkoutSessionId": "amzn_session_1",
       "buyer": { "buyerId": "buyer_1", "name": "Combo Tester", "email": "amazon@example.com" },
       "shippingAddress": { "name": "Combo Tester", "addressLine1": "Test Street 1", "city": "Bonn", "postalCode": "53113", "countryCode": "DE" },
-      "statusDetails": { "state": "Open" }
+      "statusDetails": { "state": "Open" },
+      "merchantMetadata": { "merchantReferenceId": "ORD-1", "merchantStoreName": "Test Shop" },
+      "paymentDetails": { "paymentIntent": "AuthorizeWithCapture", "chargeAmount": { "amount": "54.90", "currencyCode": "EUR" } }
     }
   }
 }

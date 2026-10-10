@@ -17,6 +17,9 @@ final readonly class AmazonCheckoutSession
         public string $amazonPayRedirectUrl,
         public string $chargeId,
         public string $chargePermissionId,
+        public string $merchantReferenceId = '',
+        public string $chargeAmount = '',
+        public string $chargeCurrency = '',
     ) {}
 
     /**
@@ -26,6 +29,9 @@ final readonly class AmazonCheckoutSession
     {
         $statusDetails = is_array($data['statusDetails'] ?? null) ? $data['statusDetails'] : [];
         $webCheckoutDetails = is_array($data['webCheckoutDetails'] ?? null) ? $data['webCheckoutDetails'] : [];
+        $merchantMetadata = is_array($data['merchantMetadata'] ?? null) ? $data['merchantMetadata'] : [];
+        $paymentDetails = is_array($data['paymentDetails'] ?? null) ? $data['paymentDetails'] : [];
+        $chargeAmount = is_array($paymentDetails['chargeAmount'] ?? null) ? $paymentDetails['chargeAmount'] : [];
 
         return new self(
             (string)($data['checkoutSessionId'] ?? ''),
@@ -34,6 +40,9 @@ final readonly class AmazonCheckoutSession
             (string)($webCheckoutDetails['amazonPayRedirectUrl'] ?? ''),
             (string)($data['chargeId'] ?? ''),
             (string)($data['chargePermissionId'] ?? ''),
+            (string)($merchantMetadata['merchantReferenceId'] ?? ''),
+            (string)($chargeAmount['amount'] ?? ''),
+            (string)($chargeAmount['currencyCode'] ?? ''),
         );
     }
 
