@@ -39,9 +39,6 @@
 			<trans-unit id="category.privacy" resname="category.privacy">
 				<source>Privacy &amp; GDPR</source>
 			</trans-unit>
-			<trans-unit id="category.technical" resname="category.technical">
-				<source>Technical</source>
-			</trans-unit>
 			<trans-unit id="setting.products.pids.storageFolder" resname="setting.products.pids.storageFolder">
 				<source>Storage folder UID</source>
 			</trans-unit>
@@ -179,9 +176,6 @@
 			</trans-unit>
 			<trans-unit id="setting.products.gdpr.invoiceRetentionDays" resname="setting.products.gdpr.invoiceRetentionDays">
 				<source>Days to retain order/invoice data before automatic deletion (GDPR data minimization) - set per your jurisdiction's statutory bookkeeping retention period, e.g. 10 years in Germany</source>
-			</trans-unit>
-			<trans-unit id="setting.products.ajax.pageType" resname="setting.products.ajax.pageType">
-				<source>AJAX page typeNum</source>
 			</trans-unit>
 		</body>
 	</file>

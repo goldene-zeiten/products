@@ -223,13 +223,7 @@ from. Set it before creating any content.
         :Default: 1729512001
 
         The page type used to render the invoice PDF download outside the page's normal HTML
-        shell, the same trick `products.ajax.pageType` uses for AJAX responses.
-
-    ..  confval:: products.ajax.pageType
-        :type: int
-        :Default: 1729512000
-
-        The AJAX page type used by the :rst:dir:`ProductList` plugin's cached AJAX loading mode.
+        shell.
 
     ..  confval:: products.catalog.articleSwitchMode
         :type: string

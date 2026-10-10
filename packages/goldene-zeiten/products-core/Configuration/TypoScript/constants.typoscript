@@ -44,10 +44,6 @@ plugin.tx_productscore {
             # cat=plugin.tx_productscore.email; type=string; label=Merchant notification recipient (empty disables the notification)
             merchantRecipient =
         }
-        ajax {
-            # cat=plugin.tx_productscore.ajax; type=int; label=AJAX page typeNum
-            pageType = 1729512000
-        }
         invoice {
             # cat=plugin.tx_productscore.invoice; type=int; label=Invoice download page typeNum
             pageType = 1729512001

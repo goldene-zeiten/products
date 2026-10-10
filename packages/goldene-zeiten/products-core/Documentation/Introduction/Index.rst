@@ -21,7 +21,7 @@ The extension registers ten content element plugins:
 
 ..  confval:: ProductList
 
-    Renders a list of products for a category, optionally loaded via a cached AJAX request.
+    Renders a list of products for a category.
 
 ..  confval:: ProductDetail
 
