@@ -12,9 +12,12 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 /**
- * Quantity-based pricing: picks the highest `min_quantity` tier at or below the requested
- * quantity, preferring the article's own tiers over the product's; falls back to
- * {@see ProductPriceProvider} if none match.
+ * Quantity-based pricing: picks the highest `min_quantity` tier at or below the requested quantity, or an
+ * active price period, whichever is lower; falls back to {@see ProductPriceProvider} if neither applies.
+ *
+ * An article's own tiers and periods always apply to it. The product's tiers and periods apply only to an
+ * article that takes its price from the product - one without an own price, or one in surcharge mode, which
+ * then adds its surcharge on top. A tier without a price is not a price and is ignored.
  */
 final class GraduatedPriceProvider implements PriceProviderInterface
 {
@@ -25,17 +28,36 @@ final class GraduatedPriceProvider implements PriceProviderInterface
 
     public function getUnitPrice(Product $product, ?Article $article, int $quantity, ?ServerRequestInterface $request = null): Money
     {
-        $tiers = $article !== null && $article->getPriceTiers()->count() > 0
-            ? $article->getPriceTiers()
-            : $product->getPriceTiers();
-        $bestTier = $this->findBestTier($tiers, $quantity);
-        $periodPrice = $this->pricePeriodPriceProvider->findActivePeriodPrice($product, $article, $request);
-
-        $candidates = array_filter([$bestTier?->getPrice(), $periodPrice]);
+        $ownTiers = $article !== null && $article->getPriceTiers()->count() > 0;
+        $ownPeriods = $article !== null && $article->getPricePeriods()->count() > 0;
+        $inheritsProductPricing = $this->inheritsProductPricing($article);
+        $candidates = [];
+        if ($ownTiers || $inheritsProductPricing) {
+            $tierPrice = $this->findBestTier($ownTiers ? $article->getPriceTiers() : $product->getPriceTiers(), $quantity)?->getPrice();
+            $candidates[] = $tierPrice !== null ? $this->withSurcharge($tierPrice, $article, !$ownTiers) : null;
+        }
+        if ($ownPeriods || $inheritsProductPricing) {
+            $periodPrice = $this->pricePeriodPriceProvider->findActivePeriodPrice($product, $article, $request);
+            $candidates[] = $periodPrice !== null ? $this->withSurcharge($periodPrice, $article, !$ownPeriods) : null;
+        }
+        $candidates = array_filter($candidates);
         if ($candidates === []) {
             return $this->fallbackPriceProvider->getUnitPrice($product, $article, $quantity, $request);
         }
         return Money::fromCents(min(array_map(static fn(Money $m): int => $m->getCents(), $candidates)));
+    }
+
+    /**
+     * A surcharge article adds its surcharge to a price the product sets, not to one of its own.
+     */
+    private function withSurcharge(Money $price, ?Article $article, bool $priceIsFromProduct): Money
+    {
+        return $priceIsFromProduct && $article?->getPriceMode() === 'surcharge' ? $price->add($article->getPrice()) : $price;
+    }
+
+    private function inheritsProductPricing(?Article $article): bool
+    {
+        return $article === null || $article->getPrice()->getCents() === 0 || $article->getPriceMode() === 'surcharge';
     }
 
     /**
@@ -45,7 +67,7 @@ final class GraduatedPriceProvider implements PriceProviderInterface
     {
         $best = null;
         foreach ($tiers as $tier) {
-            if ($tier->getMinQuantity() > $quantity) {
+            if ($tier->getMinQuantity() > $quantity || $tier->getPrice()->getCents() <= 0) {
                 continue;
             }
             if ($best === null || $tier->getMinQuantity() > $best->getMinQuantity()) {
