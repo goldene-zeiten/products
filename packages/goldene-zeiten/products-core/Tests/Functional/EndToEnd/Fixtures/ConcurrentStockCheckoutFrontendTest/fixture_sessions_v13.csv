@@ -2,12 +2,13 @@
 ,"ses_id","ses_userid","ses_iplock","ses_tstamp","ses_data"
 # Customer A's pre-finalize state: basket has 1x product uid=1 (matches fixture.csv's
 # in_stock=1), payment method chosen is "invoice". ses_data is
-# serialize(['tx_products_basket' => '{"items":[{"productUid":1,"articleUid":null,"quantity":1}]}', 'tx_products_checkout_payment' => 'invoice']),
+# serialize(['tx_products_basket' => '{"items":[{"productUid":1,"articleUid":null,"quantity":1}]}', 'tx_products_checkout_payment' => 'invoice',
+# 'tx_products_checkout_address' => serialize(new Address(email: 'race@example.com', firstName: 'Race', lastName: 'Buyer', street: 'Race Street 1', zip: '10115', city: 'Berlin', country: 'DE'))]),
 # ses_id is TYPO3 <14's DatabaseSessionBackend::hash():
 # hash_hmac('sha256', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', sha1(encryptionKey . 'core-session-backend'))
 # with this instance's fixed test encryptionKey - see ConcurrentStockCheckoutFrontendTest::SESSION_ID_A.
-,"97765448616582e2882c2fac398abe7e58203e1226977f5491f85ad728086c9d",0,"[DISABLED]",2000000000,"a:2:{s:18:""tx_products_basket"";s:59:""{""items"":[{""productUid"":1,""articleUid"":null,""quantity"":1}]}"";s:28:""tx_products_checkout_payment"";s:7:""invoice"";}"
+,"97765448616582e2882c2fac398abe7e58203e1226977f5491f85ad728086c9d",0,"[DISABLED]",2000000000,"a:3:{s:18:""tx_products_basket"";s:59:""{""items"":[{""productUid"":1,""articleUid"":null,""quantity"":1}]}"";s:28:""tx_products_checkout_payment"";s:7:""invoice"";s:28:""tx_products_checkout_address"";s:317:""O:46:""GoldeneZeiten\Products\Core\Domain\Dto\Address"":10:{s:5:""email"";s:16:""race@example.com"";s:10:""salutation"";s:0:"""";s:9:""firstName"";s:4:""Race"";s:8:""lastName"";s:5:""Buyer"";s:7:""company"";s:0:"""";s:6:""street"";s:13:""Race Street 1"";s:3:""zip"";s:5:""10115"";s:4:""city"";s:6:""Berlin"";s:7:""country"";s:2:""DE"";s:5:""state"";s:0:"""";}"";}"
 # Customer B's pre-finalize state: identical to A's - same product, same payment method -
 # both racing the same single unit of stock. ses_id derived the same way from
 # 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' - see ConcurrentStockCheckoutFrontendTest::SESSION_ID_B.
-,"b3d12390098c1732f2ce7f27507163243a124bc06a6159fbbd5edc3204a4d7f1",0,"[DISABLED]",2000000000,"a:2:{s:18:""tx_products_basket"";s:59:""{""items"":[{""productUid"":1,""articleUid"":null,""quantity"":1}]}"";s:28:""tx_products_checkout_payment"";s:7:""invoice"";}"
+,"b3d12390098c1732f2ce7f27507163243a124bc06a6159fbbd5edc3204a4d7f1",0,"[DISABLED]",2000000000,"a:3:{s:18:""tx_products_basket"";s:59:""{""items"":[{""productUid"":1,""articleUid"":null,""quantity"":1}]}"";s:28:""tx_products_checkout_payment"";s:7:""invoice"";s:28:""tx_products_checkout_address"";s:317:""O:46:""GoldeneZeiten\Products\Core\Domain\Dto\Address"":10:{s:5:""email"";s:16:""race@example.com"";s:10:""salutation"";s:0:"""";s:9:""firstName"";s:4:""Race"";s:8:""lastName"";s:5:""Buyer"";s:7:""company"";s:0:"""";s:6:""street"";s:13:""Race Street 1"";s:3:""zip"";s:5:""10115"";s:4:""city"";s:6:""Berlin"";s:7:""country"";s:2:""DE"";s:5:""state"";s:0:"""";}"";}"

@@ -5,9 +5,9 @@
 # CheckoutService::clearCheckoutSession(). ses_id is TYPO3 <14's DatabaseSessionBackend::hash()
 # of SESSION_ID_A - see fixture_sessions_v13.csv for the derivation.
 ,"97765448616582e2882c2fac398abe7e58203e1226977f5491f85ad728086c9d","[DISABLED]",0,"a:1:{s:18:""tx_products_basket"";s:12:""{""items"":[]}"";}",0
-# Customer B's post-finalize state (the loser): basket/payment untouched, since
+# Customer B's post-finalize state (the loser): basket/payment/address untouched, since
 # InsufficientStockException is thrown and the transaction rolled back before
 # OrderFinalizationService::finalize() is ever reached. Extbase's addFlashMessage() call in
 # CheckoutController::finalizeAction()'s catch block adds one new session key of its own
 # (extbase.flashmessages.tx_productscore_checkout) holding the exact rejection message.
-,"b3d12390098c1732f2ce7f27507163243a124bc06a6159fbbd5edc3204a4d7f1","[DISABLED]",0,"a:3:{s:18:""tx_products_basket"";s:59:""{""items"":[{""productUid"":1,""articleUid"":null,""quantity"":1}]}"";s:28:""tx_products_checkout_payment"";s:7:""invoice"";s:46:""extbase.flashmessages.tx_productscore_checkout"";a:1:{i:0;s:131:""{""severity"":2,""title"":"""",""message"":""Insufficient stock for uid 1 in table tx_products_domain_model_product."",""storeInSession"":true}"";}}",0
+,"b3d12390098c1732f2ce7f27507163243a124bc06a6159fbbd5edc3204a4d7f1","[DISABLED]",0,"a:4:{s:18:""tx_products_basket"";s:59:""{""items"":[{""productUid"":1,""articleUid"":null,""quantity"":1}]}"";s:28:""tx_products_checkout_payment"";s:7:""invoice"";s:28:""tx_products_checkout_address"";s:317:""O:46:""GoldeneZeiten\Products\Core\Domain\Dto\Address"":10:{s:5:""email"";s:16:""race@example.com"";s:10:""salutation"";s:0:"""";s:9:""firstName"";s:4:""Race"";s:8:""lastName"";s:5:""Buyer"";s:7:""company"";s:0:"""";s:6:""street"";s:13:""Race Street 1"";s:3:""zip"";s:5:""10115"";s:4:""city"";s:6:""Berlin"";s:7:""country"";s:2:""DE"";s:5:""state"";s:0:"""";}"";s:46:""extbase.flashmessages.tx_productscore_checkout"";a:1:{i:0;s:131:""{""severity"":2,""title"":"""",""message"":""Insufficient stock for uid 1 in table tx_products_domain_model_product."",""storeInSession"":true}"";}}",0

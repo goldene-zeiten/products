@@ -102,6 +102,30 @@
 			<trans-unit id="checkout_payment_cancelled" resname="checkout_payment_cancelled">
 				<source>You cancelled the payment, so your order was cancelled. Your basket is unchanged - please choose a payment method to try again.</source>
 			</trans-unit>
+			<trans-unit id="checkout_address_error_email" resname="checkout_address_error_email">
+				<source>Please enter a valid email address.</source>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_firstName" resname="checkout_address_error_firstName">
+				<source>Please enter your first name.</source>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_lastName" resname="checkout_address_error_lastName">
+				<source>Please enter your last name.</source>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_street" resname="checkout_address_error_street">
+				<source>Please enter your street and house number.</source>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_zip" resname="checkout_address_error_zip">
+				<source>Please enter your postal code.</source>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_city" resname="checkout_address_error_city">
+				<source>Please enter your city.</source>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_country" resname="checkout_address_error_country">
+				<source>Please choose your country.</source>
+			</trans-unit>
+			<trans-unit id="checkout_delivery_address_incomplete" resname="checkout_delivery_address_incomplete">
+				<source>Please complete the delivery address: name, street, postal code, city and country are required.</source>
+			</trans-unit>
 			<trans-unit id="checkout_no_shipping_available" resname="checkout_no_shipping_available">
 				<source>We cannot ship this order to your address. Please change your address or the items in your basket.</source>
 			</trans-unit>

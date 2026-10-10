@@ -21,9 +21,11 @@ use GoldeneZeiten\Products\Core\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Service\Checkout\AddressCompletenessChecker;
 use GoldeneZeiten\Products\Core\Service\Checkout\PriceQuoteService;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\EmptyBasketException;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\IncompleteAddressException;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\OrderPlacementVetoedException;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\TermsNotAcceptedException;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\WithdrawalWaiverNotAcceptedException;
@@ -44,7 +46,8 @@ final class OrderPlacementService
         private readonly PriceQuoteService $priceQuoteService,
         private readonly ProductsConfigurationFactory $configurationFactory,
         private readonly WithdrawalExclusionService $withdrawalExclusionService,
-        private readonly PaymentContextFactory $paymentContextFactory
+        private readonly PaymentContextFactory $paymentContextFactory,
+        private readonly AddressCompletenessChecker $addressCompletenessChecker
     ) {}
 
     public function place(
@@ -57,6 +60,7 @@ final class OrderPlacementService
         $configuration = $this->configurationFactory->create($request);
         $basketViewModel = $this->priceQuoteService->resolve($request, $liveBasketViewModel, $configuration);
         $this->assertBasketNotEmpty($basketViewModel);
+        $this->assertAddressesComplete($address, $choices->getDeliveryAddress());
         if (!$choices->isTermsAccepted()) {
             throw new TermsNotAcceptedException('Please accept the terms and conditions before placing your order.', 1752422400);
         }
@@ -95,6 +99,14 @@ final class OrderPlacementService
     {
         if ($basketViewModel->isEmpty()) {
             throw new EmptyBasketException('Basket is empty.', 1751751040);
+        }
+    }
+
+    private function assertAddressesComplete(Address $address, ?Address $deliveryAddress): void
+    {
+        $deliveryComplete = $deliveryAddress === null || $this->addressCompletenessChecker->isComplete($deliveryAddress, emailRequired: false);
+        if (!$deliveryComplete || !$this->addressCompletenessChecker->isComplete($address)) {
+            throw new IncompleteAddressException('Please complete your address before placing your order.', 1791663303);
         }
     }
 

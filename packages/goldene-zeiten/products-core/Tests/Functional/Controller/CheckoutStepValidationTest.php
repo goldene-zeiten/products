@@ -179,6 +179,117 @@ final class CheckoutStepValidationTest extends AbstractFrontendTestCase
         $this->assertSame(0, $this->getConnectionPool()->getConnectionForTable('tx_products_domain_model_order')->count('*', 'tx_products_domain_model_order', []));
     }
 
+    #[Test]
+    public function finalizeSendsTheCustomerBackToTheAddressStepForAnIncompleteAddress(): void
+    {
+        $this->startCheckoutSession([
+            'tx_products_checkout_address' => serialize(new Address(country: 'DE')),
+            'tx_products_checkout_payment' => 'invoice',
+            'tx_products_checkout_shipping_option' => 'tablerate:1',
+        ]);
+
+        $response = $this->executeFrontendSubRequest($this->finalizeRequest());
+
+        $this->assertSame(303, $response->getStatusCode());
+        $this->assertStringContainsString('tx_productscore_checkout[action]=address', urldecode($response->getHeaderLine('location')));
+        $this->assertSame(0, $this->getConnectionPool()->getConnectionForTable('tx_products_domain_model_order')->count('*', 'tx_products_domain_model_order', []));
+    }
+
+    #[Test]
+    public function submitAddressShowsTheInvalidFieldsAndStoresNothing(): void
+    {
+        $this->startCheckoutSession(['tx_products_checkout_address' => '']);
+
+        $response = $this->executeFrontendSubRequest($this->submitAddressRequest(
+            ['email' => 'not-an-email', 'firstName' => 'Jane', 'lastName' => '', 'street' => '', 'zip' => '10115', 'city' => 'Berlin', 'country' => 'DE'],
+            shipToDifferentAddress: false
+        ));
+
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('Please enter a valid email address.', $body);
+        $this->assertStringContainsString('Please enter your last name.', $body);
+        $this->assertStringContainsString('Please enter your street and house number.', $body);
+        $this->assertStringNotContainsString('Please enter your city.', $body);
+        $this->assertSame('', $this->checkoutSessionValue('tx_products_checkout_address'));
+    }
+
+    #[Test]
+    public function submitAddressSendsTheCustomerBackForAnIncompleteDeliveryAddress(): void
+    {
+        $this->startCheckoutSession(['tx_products_checkout_address' => '']);
+
+        $response = $this->executeFrontendSubRequest($this->submitAddressRequest(
+            ['email' => 'buyer@example.com', 'firstName' => 'Jane', 'lastName' => 'Doe', 'street' => 'Main Street 1', 'zip' => '10115', 'city' => 'Berlin', 'country' => 'DE'],
+            shipToDifferentAddress: true
+        ));
+
+        $this->assertSame(303, $response->getStatusCode());
+        $this->assertStringContainsString('tx_productscore_checkout[action]=address', urldecode($response->getHeaderLine('location')));
+        $this->assertSame('', $this->checkoutSessionValue('tx_products_checkout_address'));
+    }
+
+    #[Test]
+    public function submitAddressStoresACompleteAddress(): void
+    {
+        $this->startCheckoutSession(['tx_products_checkout_address' => '']);
+
+        $this->executeFrontendSubRequest($this->submitAddressRequest(
+            ['email' => 'buyer@example.com', 'firstName' => 'Jane', 'lastName' => 'Doe', 'street' => 'Main Street 1', 'zip' => '10115', 'city' => 'Berlin', 'country' => 'DE'],
+            shipToDifferentAddress: false
+        ));
+
+        $this->assertStringContainsString('Main Street 1', $this->checkoutSessionValue('tx_products_checkout_address'));
+    }
+
+    /**
+     * The address step's form, signed with the fixed functional-test encryption key and scraped per core
+     * major from a real render of the address action. The delivery address is always left empty.
+     *
+     * @param array<string, string> $address
+     */
+    private function submitAddressRequest(array $address, bool $shipToDifferentAddress): InternalRequest
+    {
+        $tokens = (new Typo3Version())->getMajorVersion() < 14
+            ? [
+                'referrerArguments' => 'YToxOntzOjY6ImFjdGlvbiI7czo3OiJhZGRyZXNzIjt95b4783fa5f24e7e3ffbc717edb7eb9e7ae1a34b8',
+                'referrerRequest' => '{"@extension":"ProductsCore","@controller":"Checkout","@action":"address"}c42b909efea2805fe6c44e014dfe4323f04f5e23',
+                'trustedProperties' => '{"address":{"email":1,"firstName":1,"lastName":1,"street":1,"zip":1,"city":1,"country":1},"shipToDifferentAddress":1,"deliveryAddress":{"firstName":1,"lastName":1,"street":1,"zip":1,"city":1,"country":1},"giftMessage":1}77a0115d5a2c585a6717cc2b68b4d41e06177ad5',
+            ]
+            : [
+                'referrerArguments' => 'YToxOntzOjY6ImFjdGlvbiI7czo3OiJhZGRyZXNzIjt962f37f58913fb200cffaf3201d8cd6dc6dc963579316c325d5b8db7fed113a36',
+                'referrerRequest' => '{"@extension":"ProductsCore","@controller":"Checkout","@action":"address"}97a118abff410647ad9fdaf286d12b9fe008fba2cc4fc5fec3f791711aa7bad4',
+                'trustedProperties' => '{"address":{"email":1,"firstName":1,"lastName":1,"street":1,"zip":1,"city":1,"country":1},"shipToDifferentAddress":1,"deliveryAddress":{"firstName":1,"lastName":1,"street":1,"zip":1,"city":1,"country":1},"giftMessage":1}9cb4a0fb95e3e9243e5603078ded8e051cba8953afefb08c181546935bf78f2d',
+            ];
+        $parsedBody = [
+            'tx_productscore_checkout' => [
+                '__referrer' => [
+                    '@extension' => 'ProductsCore',
+                    '@controller' => 'Checkout',
+                    '@action' => 'address',
+                    'arguments' => $tokens['referrerArguments'],
+                    '@request' => $tokens['referrerRequest'],
+                ],
+                '__trustedProperties' => $tokens['trustedProperties'],
+                'address' => $address,
+                'shipToDifferentAddress' => $shipToDifferentAddress ? '1' : '',
+                'deliveryAddress' => [
+                    'firstName' => '',
+                    'lastName' => '',
+                    'street' => '',
+                    'zip' => '',
+                    'city' => '',
+                    'country' => 'DE',
+                ],
+                'giftMessage' => '',
+            ],
+        ];
+
+        return $this->checkoutRequest(['action' => 'submitAddress', 'controller' => 'Checkout'])
+            ->withMethod('POST')
+            ->withParsedBody($parsedBody)
+            ->withBody($this->get(StreamFactoryInterface::class)->createStream(http_build_query($parsedBody)));
+    }
+
     /**
      * The review page's finalize form, signed with the fixed functional-test encryption key - the same
      * tokens {@see \GoldeneZeiten\Products\Core\Tests\Functional\EndToEnd\ConcurrentStockCheckoutFrontendTest}

@@ -1,36 +1,44 @@
 <div class="checkout-address">
     <h2><f:translate key="checkout_address" /></h2>
+    <f:flashMessages />
     <f:form action="submitAddress" name="address" object="{address}">
         <div class="mb-3">
             <label for="email" class="form-label"><f:translate key="email" /></label>
-            <f:form.textfield property="email" class="form-control" type="email" id="email" />
+            <f:form.textfield property="email" class="form-control" errorClass="is-invalid" type="email" id="email" />
+            <f:render partial="Checkout/Address/FieldErrors" arguments="{property: 'address.email'}" />
         </div>
         <div class="mb-3">
             <label for="firstName" class="form-label"><f:translate key="first_name" /></label>
-            <f:form.textfield property="firstName" class="form-control" id="firstName" />
+            <f:form.textfield property="firstName" class="form-control" errorClass="is-invalid" id="firstName" />
+            <f:render partial="Checkout/Address/FieldErrors" arguments="{property: 'address.firstName'}" />
         </div>
         <div class="mb-3">
             <label for="lastName" class="form-label"><f:translate key="last_name" /></label>
-            <f:form.textfield property="lastName" class="form-control" id="lastName" />
+            <f:form.textfield property="lastName" class="form-control" errorClass="is-invalid" id="lastName" />
+            <f:render partial="Checkout/Address/FieldErrors" arguments="{property: 'address.lastName'}" />
         </div>
         <div class="mb-3">
             <label for="street" class="form-label"><f:translate key="street" /></label>
-            <f:form.textfield property="street" class="form-control" id="street" />
+            <f:form.textfield property="street" class="form-control" errorClass="is-invalid" id="street" />
+            <f:render partial="Checkout/Address/FieldErrors" arguments="{property: 'address.street'}" />
         </div>
         <div class="row">
             <div class="col-md-4 mb-3">
                 <label for="zip" class="form-label"><f:translate key="zip" /></label>
-                <f:form.textfield property="zip" class="form-control" id="zip" />
+                <f:form.textfield property="zip" class="form-control" errorClass="is-invalid" id="zip" />
+                <f:render partial="Checkout/Address/FieldErrors" arguments="{property: 'address.zip'}" />
             </div>
             <div class="col-md-8 mb-3">
                 <label for="city" class="form-label"><f:translate key="city" /></label>
-                <f:form.textfield property="city" class="form-control" id="city" />
+                <f:form.textfield property="city" class="form-control" errorClass="is-invalid" id="city" />
+                <f:render partial="Checkout/Address/FieldErrors" arguments="{property: 'address.city'}" />
             </div>
         </div>
         <div class="mb-3">
             <label for="country" class="form-label"><f:translate key="country" /></label>
             <f:variable name="countries" value="{DE: '{f:translate(key: \'germany\')}', AT: '{f:translate(key: \'austria\')}', CH: '{f:translate(key: \'switzerland\')}'}" />
-            <f:form.select property="country" options="{countries}" class="form-select" id="country" />
+            <f:form.select property="country" options="{countries}" class="form-select" errorClass="is-invalid" id="country" />
+            <f:render partial="Checkout/Address/FieldErrors" arguments="{property: 'address.country'}" />
         </div>
 
         <div class="form-check mb-3">

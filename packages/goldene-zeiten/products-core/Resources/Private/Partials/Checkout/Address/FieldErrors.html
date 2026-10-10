@@ -1,0 +1,12 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
+<f:comment>
+    The validation messages of one submitted address field, e.g. property="address.email".
+</f:comment>
+<f:form.validationResults for="{property}">
+    <f:for each="{validationResults.errors}" as="error">
+        <div class="invalid-feedback d-block">{error.message}</div>
+    </f:for>
+</f:form.validationResults>
+</html>
