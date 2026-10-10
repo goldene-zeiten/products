@@ -73,30 +73,12 @@ routeEnhancers:
     plugin: CategoryList
     routes:
       -
-        routePath: '/{category1}'
+        routePath: '/{categoryPath}'
         _controller: 'Category::list'
         _arguments:
-          category1: category
-      -
-        routePath: '/{category1}/{category2}'
-        _controller: 'Category::list'
-        _arguments:
-          category2: category
-      -
-        routePath: '/{category1}/{category2}/{category3}'
-        _controller: 'Category::list'
-        _arguments:
-          category3: category
+          categoryPath: category
+    requirements:
+      categoryPath: '.+'
     aspects:
-      category1:
-        type: PersistedAliasMapper
-        tableName: tx_products_domain_model_category
-        routeFieldName: slug
-      category2:
-        type: PersistedAliasMapper
-        tableName: tx_products_domain_model_category
-        routeFieldName: slug
-      category3:
-        type: PersistedAliasMapper
-        tableName: tx_products_domain_model_category
-        routeFieldName: slug
+      categoryPath:
+        type: ProductsCategoryPath

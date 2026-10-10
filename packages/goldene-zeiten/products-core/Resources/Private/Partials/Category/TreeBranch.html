@@ -1,8 +1,11 @@
-{namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/Core/ViewHelpers"
+>
 <ul>
     <f:for each="{nodes}" as="node">
         <li>
-            <a href="{f:uri.page(pageUid: '{settings.pids.categoryPage}')}/{node.slugPath}">{node.category.title}</a>
+            <f:link.action action="list" controller="Category" pluginName="CategoryList" extensionName="ProductsCore" pageUid="{settings.pids.categoryPage}" arguments="{category: node.category.uid}">{node.category.title}</f:link.action>
             <span class="badge">(<p:category.productCount category="{node.category}" />)</span>
             <f:if condition="{node.children}">
                 <f:then>
@@ -12,3 +15,4 @@
         </li>
     </f:for>
 </ul>
+</html>

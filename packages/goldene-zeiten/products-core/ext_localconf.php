@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Core\Hooks\CategoryParentCycleHook;
 use GoldeneZeiten\Products\Core\Hooks\PriceAuditHook;
 use GoldeneZeiten\Products\Core\Hooks\WithdrawalPageContentHook;
 use GoldeneZeiten\Products\Core\PageTitle\ProductPageTitleProvider;
+use GoldeneZeiten\Products\Core\Routing\Aspect\CategoryPathMapper;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
@@ -28,6 +29,8 @@ defined('TYPO3') or die();
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = CategoryParentCycleHook::class;
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = PriceAuditHook::class;
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = WithdrawalPageContentHook::class;
+
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['routing']['aspects']['ProductsCategoryPath'] = CategoryPathMapper::class;
 
     ExtensionManagementUtility::addTypoScriptSetup(
         'config.pageTitleProviders.products.provider = ' . ProductPageTitleProvider::class . '
