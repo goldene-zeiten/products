@@ -12,8 +12,8 @@ use GoldeneZeiten\Products\Payment\Paypal\Domain\Dto\PaypalOrder;
 use GoldeneZeiten\Products\Payment\Paypal\Exception\PaypalApiException;
 
 /**
- * Talks to the PayPal Orders v2 API: create the order the customer approves, and capture the money once
- * they have. Split behind an interface so the payment method can be tested against a fake without HTTP.
+ * Talks to the PayPal Orders v2 API: create the order the customer approves, capture the money once they
+ * have, and read an order back. Split behind an interface so the payment method can be tested against a fake without HTTP.
  */
 interface PaypalOrderClient
 {
@@ -26,4 +26,12 @@ interface PaypalOrderClient
      * @throws PaypalApiException
      */
     public function capture(string $paypalOrderId, PaypalConfiguration $configuration): PaypalCapture;
+
+    /**
+     * Reads an order back, with its capture if there is one - to learn the outcome of a capture whose
+     * response was lost.
+     *
+     * @throws PaypalApiException
+     */
+    public function show(string $paypalOrderId, PaypalConfiguration $configuration): PaypalCapture;
 }

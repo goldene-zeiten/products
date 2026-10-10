@@ -59,6 +59,9 @@ the PayPal order id in the capture URL:
 | `PAYPAL-ORDER-DECLINE` | 422 `INSTRUMENT_DECLINED`                          |
 | `PAYPAL-ORDER-CAPTURED`| 422 `ORDER_ALREADY_CAPTURED` → treated as success |
 | `PAYPAL-ORDER-RETRY`   | 401 then 201 (WireMock Scenario — token retry)    |
+| `PAYPAL-ORDER-PENDING` | 201 with the capture held as `PENDING`             |
+| `PAYPAL-ORDER-TIMEOUT` | connection reset; order read back as captured      |
+| `PAYPAL-ORDER-TIMEOUT-UNKNOWN` | connection reset; read-back fails too      |
 
 Create-order returns 422 when the amount is `0.00`; the webhook verify endpoint returns `SUCCESS` for the
 designated webhook id `WEBHOOK-OK` and `FAILURE` otherwise. The generic OAuth flow of the shared

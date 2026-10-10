@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Payment\Paypal\Payment;
 
+use GoldeneZeiten\Products\ApiClient\Exception\ApiTransportException;
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\WebhookResolution;
@@ -38,6 +39,17 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
     private const SUPPORTED_CURRENCIES = [
         'AUD', 'BRL', 'CAD', 'CHF', 'CNY', 'CZK', 'DKK', 'EUR', 'GBP', 'HKD', 'HUF', 'ILS', 'JPY',
         'MXN', 'MYR', 'NOK', 'NZD', 'PHP', 'PLN', 'RUB', 'SEK', 'SGD', 'THB', 'TWD', 'USD',
+    ];
+
+    /**
+     * The webhook events that settle a capture. Any other event the dashboard subscription delivers is
+     * acknowledged and ignored.
+     */
+    private const HANDLED_CAPTURE_EVENTS = [
+        'PAYMENT.CAPTURE.COMPLETED',
+        'PAYMENT.CAPTURE.PENDING',
+        'PAYMENT.CAPTURE.DENIED',
+        'PAYMENT.CAPTURE.DECLINED',
     ];
 
     public function __construct(
@@ -136,11 +148,11 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
         if ($event === null) {
             return WebhookResolution::unresolved(PaymentResult::failed('PayPal webhook could not be verified.'));
         }
-        if ((string)($event['event_type'] ?? '') !== 'PAYMENT.CAPTURE.COMPLETED') {
-            return WebhookResolution::unresolved(PaymentResult::pending());
+        if (!in_array((string)($event['event_type'] ?? ''), self::HANDLED_CAPTURE_EVENTS, true)) {
+            return WebhookResolution::ignored();
         }
 
-        return $this->resolveCompletedCapture((array)($event['resource'] ?? []), $event);
+        return $this->resolveCapture((array)($event['resource'] ?? []), $event);
     }
 
     /**
@@ -162,7 +174,7 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
      * @param array<string, mixed> $resource
      * @param array<string, mixed> $event
      */
-    private function resolveCompletedCapture(array $resource, array $event): WebhookResolution
+    private function resolveCapture(array $resource, array $event): WebhookResolution
     {
         $order = $this->orderRepository->findByUid((int)($resource['custom_id'] ?? 0));
         if ($order === null) {
@@ -173,7 +185,7 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
             return WebhookResolution::unresolved(PaymentResult::failed('The PayPal payment did not match the order.'));
         }
 
-        return WebhookResolution::resolved($order, PaymentResult::completed(PaymentStatus::PAID, (string)($resource['id'] ?? ''), $event));
+        return WebhookResolution::resolved($order, $this->interpretEvent($event));
     }
 
     /**
@@ -196,10 +208,48 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
         try {
             $capture = $this->orderClient->capture($paypalOrderId, $configuration);
         } catch (PaypalApiException $exception) {
+            if ($exception->getPrevious() instanceof ApiTransportException) {
+                return $this->recoverLostCapture($paypalOrderId, $order);
+            }
             $this->logger->error('PayPal capture failed.', ['exception' => $exception]);
             return PaymentResult::failed('The PayPal payment could not be completed.', $paypalOrderId);
         }
-        if (!$capture->isCompleted()) {
+
+        return $this->interpretCapture($capture, $order, $paypalOrderId);
+    }
+
+    /**
+     * The capture request may have reached PayPal even though its response did not reach the shop, so the
+     * order is read back rather than failed. An order PayPal still reports as merely approved was not
+     * captured and stays as it is; one whose state cannot be learned is accepted with its payment pending,
+     * for PayPal's capture webhook to settle.
+     */
+    private function recoverLostCapture(string $paypalOrderId, Order $order): PaymentResult
+    {
+        try {
+            $capture = $this->orderClient->show($paypalOrderId, $this->configurationFactory->forCurrentRequest());
+        } catch (PaypalApiException $exception) {
+            $this->logger->error('PayPal capture outcome unknown; check the order in PayPal.', [
+                'order' => $order->getUid(),
+                'paypalOrder' => $paypalOrderId,
+                'exception' => $exception,
+            ]);
+            return PaymentResult::pending($paypalOrderId);
+        }
+        if ($capture->status === 'APPROVED') {
+            return PaymentResult::unchanged($paypalOrderId);
+        }
+
+        return $this->interpretCapture($capture, $order, $paypalOrderId);
+    }
+
+    /**
+     * A completed capture pays the order; one PayPal holds for review (PENDING) settles later through the
+     * webhook. Either must belong to the order first.
+     */
+    private function interpretCapture(PaypalCapture $capture, Order $order, string $paypalOrderId): PaymentResult
+    {
+        if (!$capture->isCompleted() && !$capture->isPending()) {
             return PaymentResult::failed(sprintf('PayPal capture returned status "%s".', $capture->status), $paypalOrderId);
         }
         if (!$this->belongsToOrder($capture, $order)) {
@@ -209,8 +259,11 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
             ]);
             return PaymentResult::failed('The PayPal payment did not match the order.', $this->externalId($capture, $paypalOrderId));
         }
+        $externalId = $this->externalId($capture, $paypalOrderId);
 
-        return PaymentResult::completed(PaymentStatus::PAID, $this->externalId($capture, $paypalOrderId));
+        return $capture->isCompleted()
+            ? PaymentResult::completed(PaymentStatus::PAID, $externalId)
+            : PaymentResult::pending($externalId);
     }
 
     /**
@@ -237,8 +290,10 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
 
         return match ($type) {
             'PAYMENT.CAPTURE.COMPLETED' => PaymentResult::completed(PaymentStatus::PAID, $resourceId, $event),
-            'CHECKOUT.ORDER.APPROVED' => PaymentResult::pending($resourceId),
-            default => PaymentResult::pending(),
+            'PAYMENT.CAPTURE.PENDING' => PaymentResult::pending($resourceId, $event),
+            'PAYMENT.CAPTURE.DENIED', 'PAYMENT.CAPTURE.DECLINED' => PaymentResult::failed('PayPal denied the payment.', $resourceId),
+            // An approved order is not paid until it is captured on the customer's return.
+            default => PaymentResult::unchanged($resourceId),
         };
     }
 

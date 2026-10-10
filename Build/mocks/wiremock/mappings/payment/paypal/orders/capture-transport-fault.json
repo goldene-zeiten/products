@@ -1,0 +1,10 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPathPattern": "/payment/paypal/v2/checkout/orders/PAYPAL-ORDER-TIMEOUT(-UNKNOWN)?/capture"
+  },
+  "response": {
+    "fault": "CONNECTION_RESET_BY_PEER"
+  }
+}
