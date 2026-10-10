@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_watermark/Resources/Private/Language/de.locallang_settings.xlf" date="2026-07-15T09:00:00Z" product-name="products_watermark">
+		<header/>
+		<body>
+			<trans-unit id="category.watermark" resname="category.watermark">
+				<source>Watermark</source>
+				<target>Wasserzeichen</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.file" resname="setting.products.watermark.file">
+				<source>Watermark image</source>
+				<target>Wasserzeichen-Bild</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.file.description" resname="setting.products.watermark.file.description">
+				<source>Path to the watermark image (a PNG with transparency is recommended), e.g. EXT:my_sitepackage/Resources/Public/Images/watermark.png or a fileadmin path. Leave empty to disable watermarking.</source>
+				<target>Pfad zum Wasserzeichen-Bild (ein PNG mit Transparenz wird empfohlen), z. B. EXT:my_sitepackage/Resources/Public/Images/watermark.png oder ein Pfad im fileadmin. Leer lassen, um das Wasserzeichen zu deaktivieren.</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position" resname="setting.products.watermark.position">
+				<source>Position</source>
+				<target>Position</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position.top-left" resname="setting.products.watermark.position.top-left">
+				<source>Top left</source>
+				<target>Oben links</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position.top-right" resname="setting.products.watermark.position.top-right">
+				<source>Top right</source>
+				<target>Oben rechts</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position.bottom-left" resname="setting.products.watermark.position.bottom-left">
+				<source>Bottom left</source>
+				<target>Unten links</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position.bottom-right" resname="setting.products.watermark.position.bottom-right">
+				<source>Bottom right</source>
+				<target>Unten rechts</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position.center" resname="setting.products.watermark.position.center">
+				<source>Center</source>
+				<target>Mitte</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.position.tile" resname="setting.products.watermark.position.tile">
+				<source>Tiled across the whole image</source>
+				<target>Über das gesamte Bild gekachelt</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.opacity" resname="setting.products.watermark.opacity">
+				<source>Opacity (%)</source>
+				<target>Deckkraft (%)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.opacity.description" resname="setting.products.watermark.opacity.description">
+				<source>Opacity of the watermark in percent (0 = fully transparent, 100 = fully opaque). Multiplied with any transparency already present in the watermark image.</source>
+				<target>Deckkraft des Wasserzeichens in Prozent (0 = vollständig transparent, 100 = vollständig deckend). Wird mit einer bereits im Wasserzeichen-Bild vorhandenen Transparenz multipliziert.</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.scale" resname="setting.products.watermark.scale">
+				<source>Scale (% of image width)</source>
+				<target>Skalierung (% der Bildbreite)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.scale.description" resname="setting.products.watermark.scale.description">
+				<source>Width of the watermark relative to the image width, in percent. Set to 0 to keep the watermark's native pixel size. For the tiled position this is the size of a single tile.</source>
+				<target>Breite des Wasserzeichens relativ zur Bildbreite in Prozent. 0 behält die ursprüngliche Pixelgröße des Wasserzeichens bei. Bei der gekachelten Position ist dies die Größe einer einzelnen Kachel.</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.minWidth" resname="setting.products.watermark.minWidth">
+				<source>Minimum image width (px)</source>
+				<target>Mindestbildbreite (px)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.minWidth.description" resname="setting.products.watermark.minWidth.description">
+				<source>Images narrower than this many pixels are left untouched, so small thumbnails do not get watermarked.</source>
+				<target>Bilder, die schmaler als diese Pixelzahl sind, bleiben unverändert, damit kleine Vorschaubilder nicht mit einem Wasserzeichen versehen werden.</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.margin" resname="setting.products.watermark.margin">
+				<source>Margin (% of image width)</source>
+				<target>Abstand (% der Bildbreite)</target>
+			</trans-unit>
+			<trans-unit id="setting.products.watermark.margin.description" resname="setting.products.watermark.margin.description">
+				<source>Distance of the watermark from the image edge for the corner positions, in percent of the image width. Ignored for the centered and tiled positions.</source>
+				<target>Abstand des Wasserzeichens zum Bildrand bei den Eckpositionen in Prozent der Bildbreite. Bei der mittigen und der gekachelten Position ohne Wirkung.</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
