@@ -7,6 +7,15 @@ if [ "${CI}" != "true" ]; then
     trap 'echo "runTests.sh SIGINT signal emitted";cleanUp;exit 2' SIGINT
 fi
 
+restoreComposerJson() {
+    # composerUpdate temporarily rewrites composer.json; an interrupted run must not leave that
+    # temporary core pin behind for the next commit. Runs on every exit, including the SIGINT trap.
+    if [ -n "${ROOT_DIR}" ] && [ -f "${ROOT_DIR}/composer.json.orig" ]; then
+        mv "${ROOT_DIR}/composer.json.orig" "${ROOT_DIR}/composer.json"
+    fi
+}
+trap restoreComposerJson EXIT
+
 waitFor() {
     local HOST=${1}
     local PORT=${2}
@@ -421,6 +430,15 @@ fi
 
 handleDbmsOptions
 
+# The acceptance suite only knows how to provision sqlite and mariadb. Any other DBMS would leave the
+# instance unset up and run Playwright against nothing, so reject it before starting any container.
+if [ "${TEST_SUITE}" == "acceptance" ] && ! [[ ${DBMS} =~ ^(sqlite|mariadb)$ ]]; then
+    echo "Invalid combination -s acceptance -d ${DBMS}, only sqlite and mariadb are supported" >&2
+    echo >&2
+    echo "Use \".Build/Scripts/runTests.sh -h\" to display help and valid options" >&2
+    exit 1
+fi
+
 COMPOSER_ROOT_VERSION="4.1.x-dev"
 CONTAINER_INTERACTIVE="-it --init"
 HOST_UID=$(id -u)
@@ -525,6 +543,7 @@ case ${TEST_SUITE} in
         ACCEPTANCE_COMBO="${PRODUCTS_COMBO:-baseline}"
         NPM_COMMAND=(npm ci)
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-npm-${SUFFIX} -e npm_config_cache=.Build/.cache/npm ${IMAGE_NODEJS} "${NPM_COMMAND[@]}"
+        SETUP_EXIT_CODE=$?
         # WireMock serves every third-party API the configured methods call, so the checkout flow runs
         # end to end without credentials or live infrastructure (same image/mount as the functional suite).
         ${CONTAINER_BIN} run --name mock-${SUFFIX} --network ${NETWORK} -d -v ${ROOT_DIR}/Build/mocks/wiremock:/home/wiremock:ro ${IMAGE_WIREMOCK} >/dev/null
@@ -547,23 +566,34 @@ case ${TEST_SUITE} in
             ACCEPTANCE_RUN_ENV="${SOLR_ENV}"
         fi
         echo "Acceptance combination: ${ACCEPTANCE_COMBO}"
-        case ${DBMS} in
-            mariadb)
-                echo "Using driver: ${DATABASE_DRIVER}"
-                ${CONTAINER_BIN} run --name mariadb-acceptance-${SUFFIX} --network ${NETWORK} -d -e MYSQL_ROOT_PASSWORD=funcp --tmpfs /var/lib/mysql/:rw,noexec,nosuid ${IMAGE_MARIADB} >/dev/null
-                waitFor mariadb-acceptance-${SUFFIX} 3306
-                # Unlike the functional suite (whose testing-framework bootstrap creates its own
-                # scratch database), `typo3 setup --dbname=...` expects the target database to
-                # already exist - it does not create one itself.
-                ${CONTAINER_BIN} run --rm --network ${NETWORK} ${IMAGE_MARIADB} mysql -h mariadb-acceptance-${SUFFIX} -uroot -pfuncp -e "CREATE DATABASE IF NOT EXISTS func_test;"
-                ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-setup-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${ACCEPTANCE_SETUP_ENV} ${IMAGE_PHP} sh Tests/Acceptance/setupInstance.sh ${CORE_VERSION} ${DATABASE_DRIVER} mariadb-acceptance-${SUFFIX} func_test root funcp
-                SETUP_EXIT_CODE=$?
-                ;;
-            sqlite)
-                ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-setup-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${ACCEPTANCE_SETUP_ENV} ${IMAGE_PHP} sh Tests/Acceptance/setupInstance.sh ${CORE_VERSION} sqlite
-                SETUP_EXIT_CODE=$?
-                ;;
-        esac
+        if [ "${SETUP_EXIT_CODE}" -ne 0 ]; then
+            echo "npm ci failed, the acceptance instance is not set up." >&2
+        else
+            case ${DBMS} in
+                mariadb)
+                    echo "Using driver: ${DATABASE_DRIVER}"
+                    ${CONTAINER_BIN} run --name mariadb-acceptance-${SUFFIX} --network ${NETWORK} -d -e MYSQL_ROOT_PASSWORD=funcp --tmpfs /var/lib/mysql/:rw,noexec,nosuid ${IMAGE_MARIADB} >/dev/null
+                    waitFor mariadb-acceptance-${SUFFIX} 3306
+                    # Unlike the functional suite (whose testing-framework bootstrap creates its own
+                    # scratch database), `typo3 setup --dbname=...` expects the target database to
+                    # already exist - it does not create one itself.
+                    # The "mariadb" client binary exists in every supported image; 11.x images no longer
+                    # ship the "mysql" alias.
+                    ${CONTAINER_BIN} run --rm --network ${NETWORK} ${IMAGE_MARIADB} mariadb -h mariadb-acceptance-${SUFFIX} -uroot -pfuncp -e "CREATE DATABASE IF NOT EXISTS func_test;"
+                    SETUP_EXIT_CODE=$?
+                    if [ "${SETUP_EXIT_CODE}" -ne 0 ]; then
+                        echo "Creating the acceptance database failed." >&2
+                    else
+                        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-setup-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${ACCEPTANCE_SETUP_ENV} ${IMAGE_PHP} sh Tests/Acceptance/setupInstance.sh ${CORE_VERSION} ${DATABASE_DRIVER} mariadb-acceptance-${SUFFIX} func_test root funcp
+                        SETUP_EXIT_CODE=$?
+                    fi
+                    ;;
+                sqlite)
+                    ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name acceptance-setup-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${ACCEPTANCE_SETUP_ENV} ${IMAGE_PHP} sh Tests/Acceptance/setupInstance.sh ${CORE_VERSION} sqlite
+                    SETUP_EXIT_CODE=$?
+                    ;;
+            esac
+        fi
         if [ "${SETUP_EXIT_CODE}" -ne 0 ]; then
             echo "Acceptance instance setup failed, aborting before starting the web server/Playwright." >&2
             SUITE_EXIT_CODE=${SETUP_EXIT_CODE}
