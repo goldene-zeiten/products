@@ -49,6 +49,8 @@ final readonly class Money
     }
 
     /**
+     * A percentage outside 0-100 is clamped, so a discount can make an amount free but never negative.
+     *
      * @param float $percent a whole percentage (e.g. 10.0 for 10%), not a fraction
      */
     public function discountByPercent(float $percent): self
@@ -56,7 +58,7 @@ final readonly class Money
         if ($percent <= 0.0) {
             return $this;
         }
-        return $this->multiply(1 - $percent / 100);
+        return $this->multiply(1 - min($percent, 100.0) / 100);
     }
 
     /**

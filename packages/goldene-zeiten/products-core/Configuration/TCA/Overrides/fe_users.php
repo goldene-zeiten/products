@@ -12,6 +12,10 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
                 'type' => 'number',
                 'format' => 'decimal',
                 'size' => 10,
+                'range' => [
+                    'lower' => 0,
+                    'upper' => 100,
+                ],
                 'default' => '0.00',
             ],
         ],

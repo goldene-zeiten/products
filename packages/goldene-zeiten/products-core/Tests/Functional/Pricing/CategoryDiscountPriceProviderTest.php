@@ -105,6 +105,13 @@ final class CategoryDiscountPriceProviderTest extends AbstractFunctionalTestCase
             'frontendUserUid' => 0,
             'expectedCents' => 8000,
         ];
+        yield 'a discount above 100 percent makes the price free, never negative' => [
+            'categoryDiscountPercent' => 150.0,
+            'priceTier' => null,
+            'quantity' => 1,
+            'frontendUserUid' => 0,
+            'expectedCents' => 0,
+        ];
         // user 2's group discount (10%) is smaller than the category discount (30%) - not stacked
         yield 'the bigger category discount wins over a smaller user group discount' => [
             'categoryDiscountPercent' => 30.0,
