@@ -17,6 +17,7 @@ use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class WishlistServiceTest extends AbstractFunctionalTestCase
@@ -123,6 +124,42 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
 
         $subject->moveDown($request, 2);
         $this->assertSame(['Product 1', 'Product 2'], $this->titlesOf($subject->getItems($request)));
+    }
+
+    #[Test]
+    public function reorderingStillWorksAfterAnItemWasRemovedAndAnotherAdded(): void
+    {
+        $subject = $this->get(WishlistService::class);
+        $request = $this->requestFor(5);
+        $subject->add($request, 1);
+        $subject->add($request, 2);
+        $subject->add($request, 3);
+        $subject->remove($request, 1);
+        $subject->add($request, 1);
+        $this->assertSame(['Product 2', 'Product 3', 'Product 1'], $this->titlesOf($subject->getItems($request)));
+
+        $subject->moveUp($request, 1);
+
+        $this->assertSame(['Product 2', 'Product 1', 'Product 3'], $this->titlesOf($subject->getItems($request)));
+    }
+
+    #[Test]
+    public function reorderingSeparatesItemsThatShareASortingValue(): void
+    {
+        $subject = $this->get(WishlistService::class);
+        $request = $this->requestFor(5);
+        $subject->add($request, 1);
+        $subject->add($request, 2);
+        $subject->add($request, 3);
+        $this->getConnectionPool()->getConnectionForTable('tx_products_domain_model_wishlistitem')
+            ->update('tx_products_domain_model_wishlistitem', ['sorting' => 7], ['frontend_user' => 5]);
+        // A later request: the items are read from the database, not from this request's persistence session.
+        $this->get(PersistenceManagerInterface::class)->clearState();
+        $before = $this->titlesOf($subject->getItems($request));
+
+        $subject->moveDown($request, $this->productUidByTitle($before[0]));
+
+        $this->assertSame([$before[1], $before[0], $before[2]], $this->titlesOf($subject->getItems($request)));
     }
 
     #[Test]
@@ -266,6 +303,15 @@ final class WishlistServiceTest extends AbstractFunctionalTestCase
     private function titlesOf(array $products): array
     {
         return array_map(static fn(Product $product): string => $product->getTitle(), $products);
+    }
+
+    private function productUidByTitle(string $title): int
+    {
+        return [
+            'Product 1' => 1,
+            'Product 2' => 2,
+            'Product 3' => 3,
+        ][$title];
     }
 
     private function requestFor(int $frontendUserUid): ServerRequestInterface
