@@ -132,6 +132,25 @@ class Category extends AbstractEntity
     }
 
     /**
+     * This category and its ancestors, root first. A parent chain that loops back onto itself ends at the
+     * first category met twice, so a cycle in the stored data cannot hang a caller.
+     *
+     * @return Category[]
+     */
+    public function getAncestorChain(): array
+    {
+        $chain = [];
+        $visited = [];
+        $category = $this;
+        while ($category instanceof Category && !isset($visited[spl_object_id($category)])) {
+            $visited[spl_object_id($category)] = true;
+            array_unshift($chain, $category);
+            $category = $category->getParentCategory();
+        }
+        return $chain;
+    }
+
+    /**
      * @return ObjectStorage<Category>
      */
     public function getSubCategories(): ObjectStorage

@@ -23,7 +23,7 @@ final class CategoryTreeService
      */
     public function getTree(): array
     {
-        $tree = $this->buildLevel(0, $this->groupByParentUid(), 0, '', null);
+        $tree = $this->buildLevel(0, $this->groupByParentUid(), '', null, []);
         $event = new ModifyCategoryTreeEvent($tree);
         $this->eventDispatcher->dispatch($event);
         return $event->getTree();
@@ -45,7 +45,7 @@ final class CategoryTreeService
         $remainingLevels = $maxLevels === PHP_INT_MAX ? null : $maxLevels;
         return [new CategoryTreeNode(
             $entryPointCategory,
-            $this->buildLevel($entryPointCategoryUid, $this->groupByParentUid(), 1, $slugPath, $remainingLevels),
+            $this->buildLevel($entryPointCategoryUid, $this->groupByParentUid(), $slugPath, $remainingLevels, [$entryPointCategoryUid => true]),
             0,
             $slugPath
         )];
@@ -88,13 +88,7 @@ final class CategoryTreeService
      */
     public function getAncestorChain(Category $category): array
     {
-        $chain = [$category];
-        $parent = $category->getParentCategory();
-        while ($parent instanceof Category) {
-            array_unshift($chain, $parent);
-            $parent = $parent->getParentCategory();
-        }
-        return $chain;
+        return $category->getAncestorChain();
     }
 
     /**
@@ -129,10 +123,14 @@ final class CategoryTreeService
     }
 
     /**
+     * A category already on the path from the entry point is not descended into again, so a parent cycle
+     * in the stored data ends the branch instead of recursing forever.
+     *
      * @param array<int, Category[]> $groupedByParentUid
+     * @param array<int, true> $path uids of the categories above this level; its size is the level's depth
      * @return CategoryTreeNode[]
      */
-    private function buildLevel(int $parentUid, array $groupedByParentUid, int $depth, string $parentSlugPath, ?int $remainingLevels): array
+    private function buildLevel(int $parentUid, array $groupedByParentUid, string $parentSlugPath, ?int $remainingLevels, array $path): array
     {
         if ($remainingLevels !== null && $remainingLevels <= 0) {
             return [];
@@ -140,13 +138,17 @@ final class CategoryTreeService
         $nextRemainingLevels = $remainingLevels === null ? null : $remainingLevels - 1;
         $nodes = [];
         foreach ($groupedByParentUid[$parentUid] ?? [] as $category) {
+            $uid = (int)$category->getUid();
+            if (isset($path[$uid])) {
+                continue;
+            }
             $slugPath = $category->isHideInSlugPath()
                 ? $parentSlugPath
                 : $this->appendSegment($parentSlugPath, $this->ownSlugSegment($category->getSlug()));
             $nodes[] = new CategoryTreeNode(
                 $category,
-                $this->buildLevel((int)$category->getUid(), $groupedByParentUid, $depth + 1, $slugPath, $nextRemainingLevels),
-                $depth,
+                $this->buildLevel($uid, $groupedByParentUid, $slugPath, $nextRemainingLevels, $path + [$uid => true]),
+                count($path),
                 $slugPath
             );
         }

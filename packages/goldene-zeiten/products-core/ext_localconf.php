@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Core\Controller\ProductController;
 use GoldeneZeiten\Products\Core\Controller\WithdrawalController;
 use GoldeneZeiten\Products\Core\Hooks\CategoryMountAccessHook;
 use GoldeneZeiten\Products\Core\Hooks\CategoryOwnershipHook;
+use GoldeneZeiten\Products\Core\Hooks\CategoryParentCycleHook;
 use GoldeneZeiten\Products\Core\Hooks\PriceAuditHook;
 use GoldeneZeiten\Products\Core\Hooks\WithdrawalPageContentHook;
 use GoldeneZeiten\Products\Core\PageTitle\ProductPageTitleProvider;
@@ -24,6 +25,7 @@ defined('TYPO3') or die();
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = CategoryMountAccessHook::class;
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = CategoryOwnershipHook::class;
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = PriceAuditHook::class;
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = CategoryParentCycleHook::class;
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = PriceAuditHook::class;
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = WithdrawalPageContentHook::class;
 

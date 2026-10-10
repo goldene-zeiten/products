@@ -28,7 +28,7 @@ final class CategoryDiscountResolver
     {
         $max = $product->getDiscountPercent();
         foreach ($product->getCategories() as $category) {
-            foreach ($this->ancestorChain($category) as $ancestor) {
+            foreach ($category->getAncestorChain() as $ancestor) {
                 $max = max($max, $ancestor->getDiscountPercent());
             }
         }
@@ -43,7 +43,7 @@ final class CategoryDiscountResolver
 
         $best = 0.0;
         foreach ($product->getCategories() as $category) {
-            $nearestFirst = array_reverse($this->ancestorChain($category));
+            $nearestFirst = array_reverse($category->getAncestorChain());
             $best = max($best, $this->walkNearest($nearestFirst));
         }
         return $best;
@@ -63,21 +63,5 @@ final class CategoryDiscountResolver
             }
         }
         return 0.0;
-    }
-
-    /**
-     * Root-first, including $category itself.
-     *
-     * @return Category[]
-     */
-    private function ancestorChain(Category $category): array
-    {
-        $chain = [$category];
-        $parent = $category->getParentCategory();
-        while ($parent instanceof Category) {
-            array_unshift($chain, $parent);
-            $parent = $parent->getParentCategory();
-        }
-        return $chain;
     }
 }
