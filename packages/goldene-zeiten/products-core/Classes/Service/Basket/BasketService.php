@@ -21,6 +21,7 @@ use GoldeneZeiten\Products\Core\Pricing\GraduatedPriceProvider;
 use GoldeneZeiten\Products\Core\Pricing\PriceProviderInterface;
 use GoldeneZeiten\Products\Core\Service\PriceRoundingService;
 use GoldeneZeiten\Products\Core\Service\TaxService;
+use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -36,13 +37,14 @@ final class BasketService
         private readonly PriceRoundingService $priceRoundingService,
         private readonly BasketQuantityResolver $basketQuantityResolver,
         private readonly GraduatedPriceProvider $graduatedPriceProvider,
-        private readonly EventDispatcherInterface $eventDispatcher
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly ProductVisibilityResolver $productVisibilityResolver
     ) {}
 
     public function add(ServerRequestInterface $request, int $productUid, ?int $articleUid, int $quantity): void
     {
-        $product = $this->productRepository->findByUid($productUid);
-        if (!$product instanceof Product) {
+        $product = $this->findVisibleProduct($productUid, $request);
+        if ($product === null) {
             return;
         }
 
@@ -167,10 +169,20 @@ final class BasketService
         );
     }
 
+    private function findVisibleProduct(int $productUid, ServerRequestInterface $request): ?Product
+    {
+        $product = $this->productRepository->findByUid($productUid);
+        if (!$product instanceof Product || !$this->productVisibilityResolver->isVisible($product, $request)) {
+            return null;
+        }
+
+        return $product;
+    }
+
     private function resolveItem(BasketItem $item, ProductsConfiguration $configuration, ServerRequestInterface $request): ?BasketViewItem
     {
-        $product = $this->productRepository->findByUid($item->getProductUid());
-        if (!$product instanceof Product) {
+        $product = $this->findVisibleProduct($item->getProductUid(), $request);
+        if ($product === null) {
             return null;
         }
 
