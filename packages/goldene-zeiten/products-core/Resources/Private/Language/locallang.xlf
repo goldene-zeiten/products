@@ -105,11 +105,17 @@
 			<trans-unit id="checkout_no_shipping_available" resname="checkout_no_shipping_available">
 				<source>We cannot ship this order to your address. Please change your address or the items in your basket.</source>
 			</trans-unit>
+			<trans-unit id="checkout_shipping_option_required" resname="checkout_shipping_option_required">
+				<source>Please choose one of the offered shipping options.</source>
+			</trans-unit>
 			<trans-unit id="checkout_shipping_method" resname="checkout_shipping_method">
 				<source>Checkout: Shipping Method</source>
 			</trans-unit>
 			<trans-unit id="checkout_payment" resname="checkout_payment">
 				<source>Checkout: Payment Method</source>
+			</trans-unit>
+			<trans-unit id="checkout_payment_method_required" resname="checkout_payment_method_required">
+				<source>Please choose one of the offered payment methods.</source>
 			</trans-unit>
 			<trans-unit id="continue_to_review" resname="continue_to_review">
 				<source>Continue to Review</source>

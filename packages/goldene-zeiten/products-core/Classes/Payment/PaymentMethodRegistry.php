@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Core\Payment;
 
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Core\Event\PaymentMethodsCollectedEvent;
+use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotAvailableException;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
@@ -51,6 +52,26 @@ final class PaymentMethodRegistry
         $this->eventDispatcher->dispatch($event);
 
         return $event->getPaymentMethods();
+    }
+
+    /**
+     * Execution phase: the chosen method, but only if {@see PaymentMethodRegistry::getAvailable()} would offer
+     * it for this context - a stored or submitted identifier is never trusted on its own.
+     *
+     * @throws PaymentMethodNotAvailableException
+     */
+    public function getAvailableMethod(string $identifier, PaymentContext $context): PaymentMethodInterface
+    {
+        foreach ($this->getAvailable($context) as $paymentMethod) {
+            if ($paymentMethod->getIdentifier() === $identifier) {
+                return $paymentMethod;
+            }
+        }
+
+        throw new PaymentMethodNotAvailableException(
+            sprintf('Payment method "%s" is not available for this basket.', $identifier),
+            1791662739
+        );
     }
 
     public function get(string $identifier): PaymentMethodInterface

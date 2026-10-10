@@ -46,6 +46,34 @@ final class FallbackShippingProviderTest extends AbstractFunctionalTestCase
         $this->assertContains('tablerate:1', $keys, 'The manual fallback must fill in where no real carrier can serve the basket.');
     }
 
+    #[Test]
+    public function theManualFallbackCannotBeResolvedWhereARealCarrierServesTheBasket(): void
+    {
+        $option = $this->get(ShippingProviderRegistry::class)->resolveOption('tablerate:1', $this->contextForCountry('DE'));
+
+        $this->assertNull($option, 'A stored fallback key must not bypass the real carrier the fallback steps aside for.');
+    }
+
+    #[Test]
+    public function theManualFallbackIsResolvedWhereNoRealCarrierServesTheBasket(): void
+    {
+        $option = $this->get(ShippingProviderRegistry::class)->resolveOption('tablerate:1', $this->contextForCountry('FR'));
+
+        $this->assertNotNull($option);
+        $this->assertSame('tablerate:1', $option->getKey());
+    }
+
+    private function contextForCountry(string $countryCode): ShippingContext
+    {
+        return new ShippingContext(
+            [new ShippingContextItem(quantity: 1, weight: 500)],
+            500,
+            Money::fromCents(10000),
+            'EUR',
+            $countryCode
+        );
+    }
+
     /**
      * @return string[]
      */

@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingSelection;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Core\Service\TaxService;
+use GoldeneZeiten\Products\Core\Shipping\Exception\MissingShippingOptionException;
 use GoldeneZeiten\Products\Core\Shipping\Exception\NoShippingOptionAvailableException;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -40,9 +41,20 @@ final class ShippingQuoteService
     }
 
     /**
-     * An empty key means the customer has not chosen yet, which is not an error - shipping may be
-     * disabled, or the basket may not have reached the shipping step. A key that no longer resolves is an
-     * error: the basket changed under the customer and the option they picked cannot be honoured.
+     * Whether the customer may choose this option for the basket right now.
+     */
+    public function isOffered(ProductsConfiguration $configuration, ShippingContext $context, string $optionKey): bool
+    {
+        return $configuration->isShippingEnabled() && $optionKey !== '' && $this->registry->isOffered($optionKey, $context);
+    }
+
+    /**
+     * While shipping is disabled, nothing is charged. While it is enabled, a choice is required: an empty
+     * key means the customer skipped the shipping step, and a key that no longer resolves means the basket
+     * or address changed under the customer - both must not ship for free.
+     *
+     * @throws MissingShippingOptionException
+     * @throws NoShippingOptionAvailableException
      */
     public function resolveSelection(
         ProductsConfiguration $configuration,
@@ -50,8 +62,11 @@ final class ShippingQuoteService
         string $optionKey,
         ?ServerRequestInterface $request = null
     ): ShippingSelection {
-        if (!$configuration->isShippingEnabled() || $optionKey === '') {
+        if (!$configuration->isShippingEnabled()) {
             return ShippingSelection::none();
+        }
+        if ($optionKey === '') {
+            throw new MissingShippingOptionException('No shipping option was chosen for this basket.', 1791662975);
         }
 
         $option = $this->registry->resolveOption($optionKey, $context);

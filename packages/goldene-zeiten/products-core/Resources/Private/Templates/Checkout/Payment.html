@@ -4,7 +4,7 @@
     <f:form action="submitPayment">
         <f:for each="{paymentMethods}" as="method">
             <div class="form-check">
-                <f:form.radio name="paymentMethod" value="{method.identifier}" checked="{f:if(condition: '{paymentMethod} == {method.identifier}', then: '1')}" class="form-check-input" id="method-{method.identifier}" />
+                <f:form.radio name="paymentMethod" value="{method.identifier}" checked="{f:if(condition: '{paymentMethod} == {method.identifier}', then: '1')}" class="form-check-input" id="method-{method.identifier}" required="required" />
                 <label class="form-check-label" for="method-{method.identifier}">
                     {method.label}
                 </label>
