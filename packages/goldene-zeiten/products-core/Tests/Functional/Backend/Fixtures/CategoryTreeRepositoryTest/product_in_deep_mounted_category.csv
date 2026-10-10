@@ -1,0 +1,12 @@
+"tx_products_domain_model_category",,,,,,
+,"uid","pid","title","parent_category","hidden","deleted"
+,15,2,"Grandchild A1a","11","0","0"
+
+"tx_products_domain_model_product",,,,
+,"uid","pid","title","tax_class"
+,21,2,"Product Y",1
+
+"tx_products_product_category_mm",,,
+,"uid_local","uid_foreign","sorting"
+,21,13,1
+,21,15,2

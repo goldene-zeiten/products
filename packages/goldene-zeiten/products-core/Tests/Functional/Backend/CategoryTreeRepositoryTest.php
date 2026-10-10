@@ -124,6 +124,19 @@ final class CategoryTreeRepositoryTest extends AbstractFunctionalTestCase
         $this->assertTrue($accessGuard->isProductAccessible(20, $mounts));
     }
 
+    /**
+     * Product 21 sits in category 13 (outside the mount) and in 15, a grandchild of the mounted
+     * category 10. The primary category within the mount is 15, however deep below the mount it is.
+     */
+    #[Test]
+    public function primaryCategoryIsFoundBelowTheMountAtAnyDepth(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/CategoryTreeRepositoryTest/product_in_deep_mounted_category.csv');
+        $treeRepository = $this->get(CategoryTreeRepository::class);
+
+        $this->assertSame(15, $treeRepository->fetchPrimaryCategoryUidOfProduct(21, [10]));
+    }
+
     #[Test]
     public function groupMountIsMergedIntoEffectiveMounts(): void
     {
