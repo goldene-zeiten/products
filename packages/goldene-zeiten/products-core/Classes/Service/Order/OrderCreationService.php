@@ -60,8 +60,8 @@ final class OrderCreationService
     /**
      * Stock decrements, voucher redemptions and credit-point bookings must not survive a failed
      * placement. They are made atomic by the transaction {@see OrderPlacementTransaction::run()} opens
-     * around this service and the payment initiation that follows it - this service deliberately opens
-     * none of its own, so that payment failures roll back the bookings too.
+     * around this service - this service deliberately opens none of its own. A payment that cannot be
+     * started afterwards cancels the committed order instead.
      */
     public function create(
         ServerRequestInterface $request,
