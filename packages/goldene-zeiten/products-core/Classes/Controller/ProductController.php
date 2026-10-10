@@ -92,6 +92,8 @@ final class ProductController extends ActionController
         $this->view->assignMultiple([
             'product' => $product,
             'variantAttributes' => $product->getVariantAttributes(),
+            'relatedProducts' => $this->productVisibilityResolver->filterVisible($product->getRelatedProducts()->toArray(), $this->request),
+            'accessoryProducts' => $this->productVisibilityResolver->filterVisible($product->getAccessoryProducts()->toArray(), $this->request),
             'selectedArticle' => $selectedArticle ?? $this->articleVariantResolver->resolve($product, array_map('intval', $attributeValues)),
         ] + $this->enrichViewVariables());
         return $this->htmlResponse();

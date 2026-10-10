@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Core\Domain\Repository\CategoryRepository;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Service\Category\CategoryTreeService;
 use GoldeneZeiten\Products\Core\Service\ContentElement\SelectedCategoriesResolver;
+use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
@@ -19,7 +20,8 @@ final class CategoryController extends ActionController
         private readonly CategoryTreeService $categoryTreeService,
         private readonly ProductRepository $productRepository,
         private readonly CategoryRepository $categoryRepository,
-        private readonly SelectedCategoriesResolver $selectedCategoriesResolver
+        private readonly SelectedCategoriesResolver $selectedCategoriesResolver,
+        private readonly ProductVisibilityResolver $productVisibilityResolver
     ) {}
 
     /**
@@ -53,7 +55,9 @@ final class CategoryController extends ActionController
         $this->view->assignMultiple([
             'category' => $category,
             'ancestorChain' => $category instanceof Category ? $this->categoryTreeService->getAncestorChain($category) : [],
-            'products' => $category instanceof Category ? $this->productRepository->findByCategory($category) : [],
+            'products' => $category instanceof Category
+                ? $this->productVisibilityResolver->filterVisible($this->productRepository->findByCategory($category), $this->request)
+                : [],
         ]);
         return $this->htmlResponse();
     }
