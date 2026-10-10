@@ -190,9 +190,13 @@ final class CheckoutService
         return '';
     }
 
+    /**
+     * The basket as the checkout will charge it: taxed in the country of the customer's billing address,
+     * which is the country the order records as its tax country.
+     */
     public function getBasketViewModel(ServerRequestInterface $request): BasketViewModel
     {
-        return $this->basketService->getBasketViewModel($request);
+        return $this->basketService->getBasketViewModel($request, $this->getAddress($request)->getCountry());
     }
 
     public function getOrder(int $orderUid): ?Order
