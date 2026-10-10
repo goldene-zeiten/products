@@ -76,8 +76,12 @@ plugin.tx_solr {
                 # the parent chain in PHP - a flat MM cannot express it.
                 categoryPath_stringM = SOLR_MULTIVALUE
                 categoryPath_stringM {
-                    stdWrap.cObject = USER
-                    stdWrap.cObject.userFunc = GoldeneZeiten\Products\Solr\Indexing\ProductIndexFieldMapper->categoryPaths
+                    stdWrap {
+                        cObject = USER
+                        cObject {
+                            userFunc = GoldeneZeiten\Products\Solr\Indexing\ProductIndexFieldMapper->categoryPaths
+                        }
+                    }
                     separator = |
                 }
 
@@ -85,8 +89,12 @@ plugin.tx_solr {
                 # for the attribute facet - a multi-hop traversal, also resolved in PHP.
                 attribute_stringM = SOLR_MULTIVALUE
                 attribute_stringM {
-                    stdWrap.cObject = USER
-                    stdWrap.cObject.userFunc = GoldeneZeiten\Products\Solr\Indexing\ProductIndexFieldMapper->attributeValues
+                    stdWrap {
+                        cObject = USER
+                        cObject {
+                            userFunc = GoldeneZeiten\Products\Solr\Indexing\ProductIndexFieldMapper->attributeValues
+                        }
+                    }
                     separator = |
                 }
 
@@ -96,11 +104,15 @@ plugin.tx_solr {
                 # typolink inside its own indexing request, so route enhancers apply on v13 and v14.
                 url = TEXT
                 url {
-                    typolink.parameter = {$plugin.tx_productscore.settings.pids.detailPage}
-                    typolink.additionalParams = &tx_productscore_productdetail[controller]=Product&tx_productscore_productdetail[action]=show&tx_productscore_productdetail[product]={field:uid}
-                    typolink.additionalParams.insertData = 1
-                    typolink.returnLast = url
-                    typolink.forceAbsoluteUrl = 1
+                    typolink {
+                        parameter = {$plugin.tx_productscore.settings.pids.detailPage}
+                        additionalParams = &tx_productscore_productdetail[controller]=Product&tx_productscore_productdetail[action]=show&tx_productscore_productdetail[product]={field:uid}
+                        additionalParams {
+                            insertData = 1
+                        }
+                        returnLast = url
+                        forceAbsoluteUrl = 1
+                    }
                 }
             }
         }
