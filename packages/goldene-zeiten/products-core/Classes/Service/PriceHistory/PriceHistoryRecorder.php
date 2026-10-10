@@ -17,38 +17,26 @@ final class PriceHistoryRecorder
     ) {}
 
     /**
-     * @param array<string, mixed> $incomingFieldArray
+     * Records the price a product or article had before a direct price edit was written.
      */
-    public function captureDirectPriceEdit(string $table, int|string $id, array $incomingFieldArray): void
+    public function captureDirectPriceEdit(string $table, int $uid, string $previousPrice): void
     {
-        if (!is_int($id) && !ctype_digit((string)$id)) {
-            return; // NEW... placeholder: no prior price exists yet, nothing to record
-        }
-        $uid = (int)$id;
-        $connection = $this->connectionPool->getConnectionForTable($table);
-        $oldPrice = $connection->select(['price'], $table, ['uid' => $uid])->fetchOne();
-        if ($oldPrice === false) {
-            return; // record doesn't exist (defensive - shouldn't happen for an update)
-        }
-        $newPrice = (string)($incomingFieldArray['price'] ?? '');
-        if ((string)$oldPrice === $newPrice) {
-            return; // no actual change - don't pollute the ledger
-        }
-
         $parentColumn = $table === 'tx_products_domain_model_article' ? 'article' : 'product';
-        $this->insertHistoryRow($parentColumn, $uid, (string)$oldPrice, null, time());
+        $this->insertHistoryRow($parentColumn, $uid, $previousPrice, null, time());
     }
 
     /**
-     * @param array<string, mixed> $effectiveRow
+     * Records a saved public price period, given its row as stored in the database.
+     *
+     * @param array<string, mixed> $periodRow
      */
-    public function capturePeriodSave(array $effectiveRow): void
+    public function capturePeriodSave(array $periodRow): void
     {
-        $parentColumn = (int)($effectiveRow['article'] ?? 0) > 0 ? 'article' : 'product';
-        $parentUid = (int)($effectiveRow[$parentColumn] ?? 0);
-        $price = (string)($effectiveRow['price'] ?? '0.00');
-        $validFrom = (int)($effectiveRow['valid_from'] ?? 0) ?: null;
-        $validUntil = (int)($effectiveRow['valid_until'] ?? 0) ?: null;
+        $parentColumn = (int)($periodRow['article'] ?? 0) > 0 ? 'article' : 'product';
+        $parentUid = (int)($periodRow[$parentColumn] ?? 0);
+        $price = (string)($periodRow['price'] ?? '0.00');
+        $validFrom = (int)($periodRow['valid_from'] ?? 0) ?: null;
+        $validUntil = (int)($periodRow['valid_until'] ?? 0) ?: null;
         $this->insertHistoryRow($parentColumn, $parentUid, $price, $validFrom, $validUntil);
     }
 

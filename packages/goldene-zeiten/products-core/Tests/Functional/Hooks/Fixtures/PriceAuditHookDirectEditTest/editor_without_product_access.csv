@@ -1,0 +1,7 @@
+"be_groups",,,,,
+,"uid","pid","title","tables_select","tables_modify"
+,1,0,"Product editors without page access","tx_products_domain_model_product","tx_products_domain_model_product"
+
+"be_users",,,,,
+,"uid","pid","username","admin","usergroup"
+,2,0,"editor",0,"1"

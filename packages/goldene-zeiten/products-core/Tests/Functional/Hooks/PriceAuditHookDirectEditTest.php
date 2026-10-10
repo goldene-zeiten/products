@@ -33,16 +33,8 @@ final class PriceAuditHookDirectEditTest extends AbstractFunctionalTestCase
         $backendUser = $this->setUpBackendUser(1);
         $GLOBALS['LANG'] = $this->get(LanguageServiceFactory::class)->createFromUserPreferences($backendUser);
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->start([], []);
-        $dataHandler->BE_USER = $backendUser;
-
-        $incomingFieldArray = ['price' => '24.99'];
-        $this->get(PriceAuditHook::class)->processDatamap_preProcessFieldArray(
-            $incomingFieldArray,
-            self::TABLE_PRODUCT,
-            1,
-            $dataHandler
-        );
+        $dataHandler->start([self::TABLE_PRODUCT => [1 => ['price' => '24.99']]], []);
+        $dataHandler->process_datamap();
 
         $rows = $this->getAllRecords(self::TABLE_PRICEHISTORYENTRY);
         $this->assertCount(1, $rows);
@@ -56,16 +48,8 @@ final class PriceAuditHookDirectEditTest extends AbstractFunctionalTestCase
         $backendUser = $this->setUpBackendUser(1);
         $GLOBALS['LANG'] = $this->get(LanguageServiceFactory::class)->createFromUserPreferences($backendUser);
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->start([], []);
-        $dataHandler->BE_USER = $backendUser;
-
-        $incomingFieldArray = ['price' => '19.99'];
-        $this->get(PriceAuditHook::class)->processDatamap_preProcessFieldArray(
-            $incomingFieldArray,
-            self::TABLE_PRODUCT,
-            1,
-            $dataHandler
-        );
+        $dataHandler->start([self::TABLE_PRODUCT => [1 => ['price' => '19.99']]], []);
+        $dataHandler->process_datamap();
 
         $rows = $this->getAllRecords(self::TABLE_PRICEHISTORYENTRY);
         $this->assertCount(0, $rows);
@@ -77,19 +61,30 @@ final class PriceAuditHookDirectEditTest extends AbstractFunctionalTestCase
         $backendUser = $this->setUpBackendUser(1);
         $GLOBALS['LANG'] = $this->get(LanguageServiceFactory::class)->createFromUserPreferences($backendUser);
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->start([], []);
-        $dataHandler->BE_USER = $backendUser;
+        $dataHandler->start([self::TABLE_PRODUCT => ['NEW1a2b3c4d' => ['pid' => 2, 'title' => 'New Product', 'price' => '9.99']]], []);
+        $dataHandler->process_datamap();
 
-        $incomingFieldArray = ['price' => '9.99'];
-        $this->get(PriceAuditHook::class)->processDatamap_preProcessFieldArray(
-            $incomingFieldArray,
-            self::TABLE_PRODUCT,
-            'NEW1a2b3c4d',
-            $dataHandler
-        );
-
+        $this->assertArrayHasKey('NEW1a2b3c4d', $dataHandler->substNEWwithIDs);
         $rows = $this->getAllRecords(self::TABLE_PRICEHISTORYENTRY);
         $this->assertCount(0, $rows);
+    }
+
+    /**
+     * A price edit DataHandler refuses never reached the product, so it must not reach the legal
+     * price history either.
+     */
+    #[Test]
+    public function aDeniedPriceEditLeavesNoHistoryRow(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/PriceAuditHookDirectEditTest/editor_without_product_access.csv');
+        $backendUser = $this->setUpBackendUser(2);
+        $GLOBALS['LANG'] = $this->get(LanguageServiceFactory::class)->createFromUserPreferences($backendUser);
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start([self::TABLE_PRODUCT => [1 => ['price' => '24.99']]], []);
+        $dataHandler->process_datamap();
+
+        $this->assertNotSame([], $dataHandler->errorLog);
+        $this->assertCount(0, $this->getAllRecords(self::TABLE_PRICEHISTORYENTRY));
     }
 
     #[Test]
