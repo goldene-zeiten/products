@@ -6,10 +6,13 @@
 # Core13/Routing/SiteSetRouteEnhancerListener.php, so this file is the single source of
 # truth for both supported core versions.
 #
-# Category listing: /{category1}, /{category1}/{category2}, /{category1}/{category2}/{category3}
-# (max depth 3). A category's own segment is only present when it does not have
-# "hide_in_slug_path" set - PersistedAliasMapper matches by slug value only, so hidden
-# categories simply never contribute a segment; no special routing config is needed for that.
+# Category listing: /{categoryPath}, the category's full nested slug path at any depth, mapped
+# by the ProductsCategoryPath aspect (Classes/Routing/Aspect/CategoryPathMapper.php). A
+# category's own segment is only present when it does not have "hide_in_slug_path" set.
+#
+# Product detail: /{category1}/{category2}/{category3}/{product}, at most three category
+# segments in front of the product. A category's own segment is only present when it does not
+# have "hide_in_slug_path" set - PersistedAliasMapper matches by slug value only.
 #
 # Product detail ships in "replace" mode by default: the product's own slug is always
 # reachable, and an article's own slug can additionally sit in that *same* position
@@ -29,33 +32,15 @@ routeEnhancers:
     plugin: CategoryList
     routes:
       -
-        routePath: '/{category1}'
+        routePath: '/{categoryPath}'
         _controller: 'Category::list'
         _arguments:
-          category1: category
-      -
-        routePath: '/{category1}/{category2}'
-        _controller: 'Category::list'
-        _arguments:
-          category2: category
-      -
-        routePath: '/{category1}/{category2}/{category3}'
-        _controller: 'Category::list'
-        _arguments:
-          category3: category
+          categoryPath: category
+    requirements:
+      categoryPath: '.+'
     aspects:
-      category1:
-        type: PersistedAliasMapper
-        tableName: tx_products_domain_model_category
-        routeFieldName: slug
-      category2:
-        type: PersistedAliasMapper
-        tableName: tx_products_domain_model_category
-        routeFieldName: slug
-      category3:
-        type: PersistedAliasMapper
-        tableName: tx_products_domain_model_category
-        routeFieldName: slug
+      categoryPath:
+        type: ProductsCategoryPath
 
   ProductsDetail:
     type: Extbase

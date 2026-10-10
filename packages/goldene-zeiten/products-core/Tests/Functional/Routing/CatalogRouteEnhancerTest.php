@@ -31,6 +31,19 @@ final class CatalogRouteEnhancerTest extends AbstractFunctionalTestCase
         ],
     ];
 
+    private const PAGE_TYPE_SUFFIX_SITE_CONFIGURATION = [
+        'dependencies' => ['goldene-zeiten/products-core'],
+        'routeEnhancers' => [
+            'PageTypeSuffix' => [
+                'type' => 'PageType',
+                'default' => '.html',
+                'map' => [
+                    '.html' => 0,
+                ],
+            ],
+        ],
+    ];
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -77,6 +90,84 @@ final class CatalogRouteEnhancerTest extends AbstractFunctionalTestCase
         yield 'a hidden-from-slug category is skipped, shortening the visible path' => [
             'path' => '/shop/main-category-1/under-hidden',
             'expectedContent' => 'Under Hidden',
+        ];
+        yield 'depth 4, below the former three-level limit' => [
+            'path' => '/shop/main-category-1/sub-category-5/last-category-3/deep-category-4',
+            'expectedContent' => 'Product E',
+        ];
+    }
+
+    #[Test]
+    public function aCategoryPathTakingTheWrongBranchDoesNotResolve(): void
+    {
+        $this->configurePlugin('CategoryList');
+
+        $response = $this->executeFrontendSubRequest(
+            new InternalRequest('http://localhost/shop/main-category-1/sub-category-x/last-category-3')
+        );
+
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
+    #[Test]
+    public function aCategoryPathResolvesBehindAPageTypeSuffix(): void
+    {
+        $this->writeSiteConfiguration(
+            'products',
+            $this->buildSiteConfiguration(1, '/', 'Home', self::PAGE_TYPE_SUFFIX_SITE_CONFIGURATION),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+        $this->configurePlugin('CategoryList');
+
+        $response = $this->executeFrontendSubRequest(
+            new InternalRequest('http://localhost/shop/main-category-1/sub-category-5/last-category-3/deep-category-4.html')
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('Product E', (string)$response->getBody());
+    }
+
+    /**
+     * @param array<non-empty-string, mixed> $siteConfiguration
+     */
+    #[Test]
+    #[DataProvider('navigationLinksProvider')]
+    public function categoryNavigationLinksAreTheRoutedCategoryListUrls(
+        array $siteConfiguration,
+        string $navigationUrl,
+        string $expectedDepth1Href,
+        string $expectedDepth4Href
+    ): void {
+        $this->writeSiteConfiguration(
+            'products',
+            $this->buildSiteConfiguration(1, '/', 'Home', $siteConfiguration),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+        $this->configurePlugin('CategoryNavigation');
+
+        $response = $this->executeFrontendSubRequest(new InternalRequest($navigationUrl));
+
+        $this->assertSame(200, $response->getStatusCode());
+        $hrefs = $this->extractLinkTargetsByText((string)$response->getBody());
+        $this->assertSame($expectedDepth1Href, $hrefs['Main Category 1'] ?? null);
+        $this->assertSame($expectedDepth4Href, $hrefs['Deep Category 4'] ?? null);
+    }
+
+    public static function navigationLinksProvider(): \Generator
+    {
+        yield 'site without a page type suffix' => [
+            'siteConfiguration' => [
+                'dependencies' => ['goldene-zeiten/products-core'],
+            ],
+            'navigationUrl' => 'http://localhost/',
+            'expectedDepth1Href' => '/shop/main-category-1',
+            'expectedDepth4Href' => '/shop/main-category-1/sub-category-5/last-category-3/deep-category-4',
+        ];
+        yield 'site with a ".html" page type suffix' => [
+            'siteConfiguration' => self::PAGE_TYPE_SUFFIX_SITE_CONFIGURATION,
+            'navigationUrl' => 'http://localhost/',
+            'expectedDepth1Href' => '/shop/main-category-1.html',
+            'expectedDepth4Href' => '/shop/main-category-1/sub-category-5/last-category-3/deep-category-4.html',
         ];
     }
 
@@ -139,10 +230,25 @@ final class CatalogRouteEnhancerTest extends AbstractFunctionalTestCase
         ];
     }
 
+    /**
+     * @return array<string, string>
+     */
+    private function extractLinkTargetsByText(string $html): array
+    {
+        $document = new \DOMDocument();
+        $document->loadHTML($html, LIBXML_NOERROR);
+        $hrefs = [];
+        foreach ($document->getElementsByTagName('a') as $anchor) {
+            $hrefs[trim($anchor->textContent)] = $anchor->getAttribute('href');
+        }
+        return $hrefs;
+    }
+
     private function configurePlugin(string $pluginName): void
     {
         $this->addTypoScriptToTemplateRecord(1, sprintf('
             plugin.tx_productscore.persistence.storagePid = 2
+            plugin.tx_productscore.settings.pids.categoryPage = 2
             page = PAGE
             page.10 = USER
             page.10 {

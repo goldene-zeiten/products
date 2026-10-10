@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Controller;
 
-use GoldeneZeiten\Products\Core\Controller\Exception\CategoryPathMismatchException;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
@@ -30,9 +29,11 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
     public function navigationActionRendersTheFullCategoryTreeWithNestedLinks(): void
     {
         $this->importCSVDataSet(__DIR__ . '/Fixtures/CategoryControllerTest/category_routing.csv');
-        $this->writeSiteConfiguration('products', $this->buildSiteConfiguration(1), [
-            $this->buildDefaultLanguageConfiguration('en', '/'),
-        ]);
+        $this->writeSiteConfiguration(
+            'products',
+            $this->buildSiteConfiguration(1, '/', 'Home', $this->productsSiteSetDependency()),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
         $this->setUpFrontendRootPage(1, [
             'constants' => [
                 'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
@@ -68,7 +69,7 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/Fixtures/CategoryControllerTest/category_routing.csv');
         $this->writeSiteConfiguration(
             'products',
-            $this->buildSiteConfiguration(1, '/', 'Home', $this->categoryRouteEnhancers()),
+            $this->buildSiteConfiguration(1, '/', 'Home', $this->productsSiteSetDependency()),
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
         $this->setUpFrontendRootPage(1, [
@@ -104,7 +105,7 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/Fixtures/CategoryControllerTest/category_routing.csv');
         $this->writeSiteConfiguration(
             'products',
-            $this->buildSiteConfiguration(1, '/', 'Home', $this->categoryRouteEnhancers()),
+            $this->buildSiteConfiguration(1, '/', 'Home', $this->productsSiteSetDependency()),
             [$this->buildDefaultLanguageConfiguration('en', '/')]
         );
         $this->setUpFrontendRootPage(1, [
@@ -125,12 +126,12 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
                 vendorName = GoldeneZeiten
             }
         ');
-        $this->expectException(CategoryPathMismatchException::class);
-        $this->expectExceptionCode(1783800000);
 
-        $this->executeFrontendSubRequest(
+        $response = $this->executeFrontendSubRequest(
             new InternalRequest('http://localhost/shop/main-category-1/sub-category-x/last-category-3')
         );
+
+        $this->assertSame(404, $response->getStatusCode());
     }
 
     #[Test]
@@ -178,43 +179,10 @@ final class CategoryControllerTest extends AbstractFunctionalTestCase
     /**
      * @return array<non-empty-string, mixed>
      */
-    private function categoryRouteEnhancers(): array
+    private function productsSiteSetDependency(): array
     {
-        $aspect = static fn(): array => [
-            'type' => 'PersistedAliasMapper',
-            'tableName' => 'tx_products_domain_model_category',
-            'routeFieldName' => 'slug',
-        ];
         return [
-            'routeEnhancers' => [
-                'ProductsCategoryList' => [
-                    'type' => 'Extbase',
-                    'extension' => 'ProductsCore',
-                    'plugin' => 'CategoryList',
-                    'routes' => [
-                        [
-                            'routePath' => '/{category1}',
-                            '_controller' => 'Category::list',
-                            '_arguments' => ['category1' => 'category'],
-                        ],
-                        [
-                            'routePath' => '/{category1}/{category2}',
-                            '_controller' => 'Category::list',
-                            '_arguments' => ['category2' => 'category'],
-                        ],
-                        [
-                            'routePath' => '/{category1}/{category2}/{category3}',
-                            '_controller' => 'Category::list',
-                            '_arguments' => ['category3' => 'category'],
-                        ],
-                    ],
-                    'aspects' => [
-                        'category1' => $aspect(),
-                        'category2' => $aspect(),
-                        'category3' => $aspect(),
-                    ],
-                ],
-            ],
+            'dependencies' => ['goldene-zeiten/products-core'],
         ];
     }
 }
