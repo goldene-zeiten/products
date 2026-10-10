@@ -64,7 +64,8 @@ the query with `Rating/DhlExpressRateRequestBuilder`, dispatches `ModifyDhlExpre
   the configured unit) is sent for every request; again, an integrator overrides this via the event.
 - `isCustomsDeclarable` is derived, not configured: `true` whenever the resolved origin country differs
   from the basket's destination country.
-- `plannedShippingDate` is always "tomorrow" (`now + 1 day`), formatted `Y-m-d`.
+- `plannedShippingDate` is the next business day (Monday to Friday) after the date of the request
+  (core's `date` context aspect), formatted `Y-m-d`.
 - Weight is converted from the basket's grams to the configured unit (kg or lb), with a `0.1` floor — DHL
   rejects a literal zero weight.
 - HTTP 400 ("no products available for the requested lane") is a **business empty result**, returned as
