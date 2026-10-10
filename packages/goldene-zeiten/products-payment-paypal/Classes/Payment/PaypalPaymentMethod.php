@@ -135,8 +135,27 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
         if (!$this->webhookVerifier->isSignatureValid($request, $body, $configuration)) {
             return PaymentResult::failed('PayPal webhook signature could not be verified.');
         }
+        if (in_array((string)($event['event_type'] ?? ''), self::HANDLED_CAPTURE_EVENTS, true)
+            && !$this->webhookCaptureBelongsToOrder((array)($event['resource'] ?? []), $order)
+        ) {
+            $this->logger->warning('PayPal webhook capture does not match the order.', ['order' => $order->getUid()]);
+            return PaymentResult::failed('The PayPal payment did not match the order.');
+        }
 
         return $this->interpretEvent($event);
+    }
+
+    /**
+     * The per-order callback token only proves the caller owns *some* order of this shop. The capture in
+     * the verified body must name this order by its `custom_id` and settle its total, as on the static
+     * webhook.
+     *
+     * @param array<string, mixed> $resource
+     */
+    private function webhookCaptureBelongsToOrder(array $resource, Order $order): bool
+    {
+        return (string)($resource['custom_id'] ?? '') === (string)($order->getUid() ?? 0)
+            && $this->webhookAmountMatches($resource, $order);
     }
 
     /**

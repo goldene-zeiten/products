@@ -184,6 +184,34 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
         $this->assertSame('CAPTURE-9', $result->getExternalId());
     }
 
+    /**
+     * The per-order callback token only proves the caller owns some order; the capture in the signed body
+     * must belong to this one, exactly as on the static webhook.
+     */
+    #[Test]
+    public function handleWebhookRejectsACaptureBoundToADifferentOrder(): void
+    {
+        $result = $this->subject()->handleWebhook($this->webhookRequest('PAYMENT.CAPTURE.COMPLETED', 'CAPTURE-9', customId: '999'), $this->order());
+
+        $this->assertSame(PaymentResultState::FAILED, $result->getState());
+    }
+
+    #[Test]
+    public function handleWebhookRejectsACaptureWithATamperedAmount(): void
+    {
+        $result = $this->subject()->handleWebhook($this->webhookRequest('PAYMENT.CAPTURE.COMPLETED', 'CAPTURE-9', amountValue: '1.00'), $this->order());
+
+        $this->assertSame(PaymentResultState::FAILED, $result->getState());
+    }
+
+    #[Test]
+    public function handleWebhookRejectsACaptureInAnotherCurrency(): void
+    {
+        $result = $this->subject()->handleWebhook($this->webhookRequest('PAYMENT.CAPTURE.COMPLETED', 'CAPTURE-9', currency: 'USD'), $this->order());
+
+        $this->assertSame(PaymentResultState::FAILED, $result->getState());
+    }
+
     #[Test]
     public function handleWebhookRejectsAnUnverifiedSignature(): void
     {
@@ -393,13 +421,23 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
         ]);
     }
 
-    private function webhookRequest(string $eventType, string $resourceId): ServerRequestInterface
-    {
+    private function webhookRequest(
+        string $eventType,
+        string $resourceId,
+        string $customId = '42',
+        string $amountValue = '12.34',
+        string $currency = 'EUR'
+    ): ServerRequestInterface {
         $body = json_encode(
             [
                 'event_type' => $eventType,
                 'resource' => [
                     'id' => $resourceId,
+                    'custom_id' => $customId,
+                    'amount' => [
+                        'value' => $amountValue,
+                        'currency_code' => $currency,
+                    ],
                 ],
             ],
             JSON_THROW_ON_ERROR,
