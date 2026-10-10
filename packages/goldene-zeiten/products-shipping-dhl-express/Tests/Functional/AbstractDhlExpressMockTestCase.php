@@ -12,6 +12,7 @@ use GoldeneZeiten\Products\Shipping\DhlExpress\Rating\HttpDhlExpressRatingClient
 use GoldeneZeiten\Products\Testing\AbstractApiMockTestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\NullLogger;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Context\Context;
 
 /**
@@ -26,16 +27,22 @@ abstract class AbstractDhlExpressMockTestCase extends AbstractApiMockTestCase
         'goldene-zeiten/products-shipping-dhl-express',
     ];
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->get(CacheManager::class)->getCache('products_shipping_dhl_express_rates')->flush();
+    }
+
     /**
      * @param string[] $usedProducts
      */
-    protected function configuration(array $usedProducts = []): DhlExpressConfiguration
+    protected function configuration(array $usedProducts = [], string $password = 'mock-pass'): DhlExpressConfiguration
     {
         return new DhlExpressConfiguration(
             DhlExpressEnvironment::Sandbox,
             'ACC123',
             'mock-user',
-            'mock-pass',
+            $password,
             'DE',
             '53113',
             'Bonn',
@@ -51,6 +58,7 @@ abstract class AbstractDhlExpressMockTestCase extends AbstractApiMockTestCase
             new ApiHttpClient($this->requestFactory()),
             new DhlExpressRateRequestBuilder($this->get(Context::class)),
             $this->get(EventDispatcherInterface::class),
+            $this->get(CacheManager::class)->getCache('products_shipping_dhl_express_rates'),
             new NullLogger(),
         );
     }

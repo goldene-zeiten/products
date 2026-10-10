@@ -52,6 +52,38 @@ final class HttpDhlExpressRatingClientTest extends AbstractDhlExpressMockTestCas
         $this->assertStringContainsString('unitOfMeasurement=metric', $url);
     }
 
+    /**
+     * Shipping is re-quoted at review and again at placement; an identical rate request within a few
+     * minutes is answered from the cache instead of another live call.
+     */
+    #[Test]
+    public function anIdenticalRateRequestIsAnsweredFromTheCache(): void
+    {
+        $first = $this->client()->rate($this->context('BE'), $this->configuration());
+        $second = $this->client()->rate($this->context('BE'), $this->configuration());
+
+        $this->assertEquals($first, $second);
+        $this->assertSame(1, $this->recordedRequests(self::RATES_PATH, 'GET'));
+    }
+
+    #[Test]
+    public function aDifferentShipmentIsRatedAgain(): void
+    {
+        $this->client()->rate($this->context('BE'), $this->configuration());
+        $this->client()->rate($this->context('NL'), $this->configuration());
+
+        $this->assertSame(2, $this->recordedRequests(self::RATES_PATH, 'GET'));
+    }
+
+    #[Test]
+    public function otherCredentialsAreRatedAgain(): void
+    {
+        $this->client()->rate($this->context('BE'), $this->configuration());
+        $this->client()->rate($this->context('BE'), $this->configuration(password: 'other-pass'));
+
+        $this->assertSame(2, $this->recordedRequests(self::RATES_PATH, 'GET'));
+    }
+
     private function context(string $countryCode): ShippingContext
     {
         return new ShippingContext([], 2500, Money::fromCents(5000), 'EUR', $countryCode, '1000');

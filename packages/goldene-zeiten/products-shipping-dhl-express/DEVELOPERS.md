@@ -68,6 +68,10 @@ the query with `Rating/DhlExpressRateRequestBuilder`, dispatches `ModifyDhlExpre
   (core's `date` context aspect), formatted `Y-m-d`.
 - Weight is converted from the basket's grams to the configured unit (kg or lb), with a `0.1` floor — DHL
   rejects a literal zero weight.
+- Successful answers (including the empty "no products" result) are cached for five minutes in the
+  `products_shipping_dhl_express_rates` cache, keyed by a hash of the full rate request URL and the
+  credentials. Checkout quotes shipping at the shipping step, at review and at placement; the cache keeps
+  that to one live call. Failures are never cached.
 - HTTP 400 ("no products available for the requested lane") is a **business empty result**, returned as
   `[]`, not an error. Only transport failures (wrapped from the shared package's `ApiTransportException`)
   and any other non-200 status raise `DhlExpressRatingException`.
