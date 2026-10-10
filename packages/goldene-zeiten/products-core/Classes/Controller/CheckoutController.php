@@ -11,16 +11,19 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingSelection;
+use GoldeneZeiten\Products\Core\Domain\Validator\AddressValidator;
 use GoldeneZeiten\Products\Core\Event\EnrichCheckoutReviewEvent;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotAvailableException;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException;
 use GoldeneZeiten\Products\Core\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
+use GoldeneZeiten\Products\Core\Service\Checkout\AddressCompletenessChecker;
 use GoldeneZeiten\Products\Core\Service\Checkout\CheckoutService;
 use GoldeneZeiten\Products\Core\Service\Checkout\PriceQuoteService;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceTokenService;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\IncompleteAddressException;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\OrderPlacementExceptionInterface;
 use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementService;
 use GoldeneZeiten\Products\Core\Service\Order\OrderTokenService;
@@ -36,6 +39,7 @@ use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Extbase\Validation\Validator\ConjunctionValidator;
 
 final class CheckoutController extends ActionController
 {
@@ -52,7 +56,8 @@ final class CheckoutController extends ActionController
         private readonly OrderTokenService $orderTokenService,
         private readonly ProductsConfigurationFactory $configurationFactory,
         private readonly PriceQuoteService $priceQuoteService,
-        private readonly WithdrawalExclusionService $withdrawalExclusionService
+        private readonly WithdrawalExclusionService $withdrawalExclusionService,
+        private readonly AddressCompletenessChecker $addressCompletenessChecker
     ) {}
 
     public function addressAction(): ResponseInterface
@@ -67,8 +72,24 @@ final class CheckoutController extends ActionController
         return $this->htmlResponse();
     }
 
+    /**
+     * Adds the billing address rules to the argument's validation, so an incomplete address re-renders the
+     * address form with a message at each invalid field.
+     */
+    protected function initializeSubmitAddressAction(): void
+    {
+        $validator = $this->arguments->getArgument('address')->getValidator();
+        $addressValidator = $this->validatorResolver->createValidator(AddressValidator::class, [], $this->request);
+        if ($validator instanceof ConjunctionValidator && $addressValidator !== null) {
+            $validator->addValidator($addressValidator);
+        }
+    }
+
     public function submitAddressAction(Address $address, bool $shipToDifferentAddress = false, ?Address $deliveryAddress = null, string $giftMessage = ''): ResponseInterface
     {
+        if ($shipToDifferentAddress && !$this->addressCompletenessChecker->isComplete($deliveryAddress ?? new Address(), emailRequired: false)) {
+            $this->backToStep('address', $this->translate('checkout_delivery_address_incomplete'));
+        }
         $this->checkoutService->setAddress($this->request, $address);
         $this->checkoutService->setDeliveryAddress($this->request, $shipToDifferentAddress ? $deliveryAddress : null);
         $this->checkoutService->setGiftMessage($this->request, $giftMessage);
@@ -269,6 +290,7 @@ final class CheckoutController extends ActionController
     private function stepToCorrect(OrderPlacementExceptionInterface $exception): string
     {
         return match (true) {
+            $exception instanceof IncompleteAddressException => 'address',
             $exception instanceof PaymentMethodNotAvailableException => 'payment',
             $exception instanceof MissingShippingOptionException, $exception instanceof NoShippingOptionAvailableException => 'shippingMethod',
             default => 'review',

@@ -22,6 +22,45 @@ final readonly class Address
         private string $state = ''
     ) {}
 
+    /**
+     * The checkout keeps the address serialized in the frontend session; plain field names keep that
+     * value readable and free of the NUL bytes private property names would add.
+     *
+     * @return array<string, string>
+     */
+    public function __serialize(): array
+    {
+        return [
+            'email' => $this->email,
+            'salutation' => $this->salutation,
+            'firstName' => $this->firstName,
+            'lastName' => $this->lastName,
+            'company' => $this->company,
+            'street' => $this->street,
+            'zip' => $this->zip,
+            'city' => $this->city,
+            'country' => $this->country,
+            'state' => $this->state,
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->email = (string)($data['email'] ?? '');
+        $this->salutation = (string)($data['salutation'] ?? '');
+        $this->firstName = (string)($data['firstName'] ?? '');
+        $this->lastName = (string)($data['lastName'] ?? '');
+        $this->company = (string)($data['company'] ?? '');
+        $this->street = (string)($data['street'] ?? '');
+        $this->zip = (string)($data['zip'] ?? '');
+        $this->city = (string)($data['city'] ?? '');
+        $this->country = (string)($data['country'] ?? '');
+        $this->state = (string)($data['state'] ?? '');
+    }
+
     public function getEmail(): string
     {
         return $this->email;

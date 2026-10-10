@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutChoices;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotAvailableException;
 use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Service\Order\Exception\IncompleteAddressException;
 use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementService;
 use GoldeneZeiten\Products\Core\Shipping\Exception\MissingShippingOptionException;
 use GoldeneZeiten\Products\Core\Shipping\Exception\NoShippingOptionAvailableException;
@@ -112,6 +113,64 @@ final class OrderPlacementValidationTest extends AbstractFunctionalTestCase
         $order = $this->get(OrderPlacementService::class)->place($request, $this->address(), 'invoice', new CheckoutChoices(shippingOptionKey: 'tablerate:1', termsAccepted: true))->getOrder();
 
         $this->assertSame(500, $order->getShippingTotal()->getCents());
+    }
+
+    #[Test]
+    #[DataProvider('incompleteAddressProvider')]
+    public function placeRejectsAnIncompleteAddress(Address $address, ?Address $deliveryAddress): void
+    {
+        $request = $this->requestWithBasket();
+
+        try {
+            $this->get(OrderPlacementService::class)->place($request, $address, 'invoice', new CheckoutChoices(deliveryAddress: $deliveryAddress, termsAccepted: true));
+            $this->fail('Expected IncompleteAddressException was not thrown.');
+        } catch (IncompleteAddressException $exception) {
+            $this->assertSame(1791663303, $exception->getCode());
+        }
+
+        $this->assertSame(0, $this->get(OrderRepository::class)->findAll()->count());
+    }
+
+    public static function incompleteAddressProvider(): \Generator
+    {
+        $complete = [
+            'email' => 'buyer@example.com',
+            'firstName' => 'Jane',
+            'lastName' => 'Doe',
+            'street' => 'Main Street 1',
+            'zip' => '10115',
+            'city' => 'Berlin',
+            'country' => 'DE',
+        ];
+        yield 'checkout session without an address' => [
+            'address' => new Address(),
+            'deliveryAddress' => null,
+        ];
+        yield 'invalid email' => [
+            'address' => new Address(...['email' => 'not-an-email'] + $complete),
+            'deliveryAddress' => null,
+        ];
+        foreach (['firstName', 'lastName', 'street', 'zip', 'city', 'country'] as $field) {
+            yield 'missing ' . $field => [
+                'address' => new Address(...[$field => ' '] + $complete),
+                'deliveryAddress' => null,
+            ];
+        }
+        yield 'incomplete delivery address' => [
+            'address' => new Address(...$complete),
+            'deliveryAddress' => new Address(firstName: 'Jane', lastName: 'Doe', country: 'DE'),
+        ];
+    }
+
+    #[Test]
+    public function placeAcceptsADeliveryAddressWithoutAnEmail(): void
+    {
+        $request = $this->requestWithBasket();
+        $deliveryAddress = new Address(firstName: 'John', lastName: 'Doe', street: 'Gift Lane 1', zip: '54321', city: 'Giftville', country: 'DE');
+
+        $order = $this->get(OrderPlacementService::class)->place($request, $this->address(), 'invoice', new CheckoutChoices(deliveryAddress: $deliveryAddress, termsAccepted: true))->getOrder();
+
+        $this->assertNotSame('', $order->getOrderNumber());
     }
 
     private function requestWithBasket(bool $shippingEnabled = false): ServerRequestInterface

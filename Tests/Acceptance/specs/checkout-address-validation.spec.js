@@ -1,23 +1,19 @@
 import { test, expect } from '@playwright/test';
+import { fillAddressAndReachShipping } from '../helper/checkout.js';
 
-// No address validators are wired up today; this pins that current behavior.
-test('checkout places the order even when every address field is left blank', async ({ page }) => {
+test('checkout keeps the customer on the address step until the address is complete', async ({ page }) => {
   await page.goto('/product/blue-denim-jeans');
   await page.getByRole('button', { name: 'Add to Basket' }).click();
 
   await page.goto('/checkout');
   await page.getByRole('button', { name: 'Continue to payment' }).click();
 
-  await page.locator('input[name="tx_productscore_checkout[shippingOption]"]').first().check();
-  await page.getByRole('button', { name: 'Continue to payment' }).click();
+  await expect(page.getByText('Please enter a valid email address.')).toBeVisible();
+  await expect(page.getByText('Please enter your last name.')).toBeVisible();
+  await expect(page.getByText('Please enter your street and house number.')).toBeVisible();
+  await expect(page.locator('input[name="tx_productscore_checkout[shippingOption]"]')).toHaveCount(0);
 
-  await page.locator('input[name="tx_productscore_checkout[paymentMethod]"][value="invoice"]').check();
-  await page.getByRole('button', { name: 'Continue to review' }).click();
+  await fillAddressAndReachShipping(page);
 
-  await page.locator('#termsAccepted').check();
-  await page.getByRole('button', { name: 'Order with obligation to pay' }).click();
-  await expect(page.getByText('Your order number is', { exact: false })).toBeVisible();
-
-  await page.getByRole('link', { name: 'View Order' }).click();
-  await expect(page.getByRole('heading', { name: /Order Details/ })).toBeVisible();
+  await expect(page.locator('input[name="tx_productscore_checkout[shippingOption]"]').first()).toBeVisible();
 });
