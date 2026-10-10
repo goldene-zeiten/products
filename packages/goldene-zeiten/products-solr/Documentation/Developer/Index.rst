@@ -26,11 +26,14 @@ on the object's :php:`$cObj`, and each returns a ``|``-separated list split into
 
 *   :php:`attributeValues()` (field ``attribute_stringM``) resolves the **multi-hop** attribute values
     ``Product -> Article -> AttributeValue -> Attribute``, emitting ``"Attribute: Value"`` labels for the
-    attribute facet. A flat MM relation cannot walk that many hops.
+    attribute facet. A flat MM relation cannot walk that many hops. Deleted or hidden attribute values,
+    and values of a deleted or hidden attribute, are left out.
 *   :php:`categoryPaths()` (field ``categoryPath_stringM``) resolves the **depth-prefixed category
     hierarchy paths** Solr's hierarchy facet expects — a leaf under ``Root/Child`` yields
     ``0-/Root``, ``1-/Root/Child``, ``2-/Root/Child/Leaf`` — by walking each category's parent chain in
-    PHP. A flat MM relation cannot express the tree.
+    PHP. A flat MM relation cannot express the tree. A category contributes no path at all when it or any
+    of its ancestors is hidden or deleted: the shop does not show that branch, so the facet does not offer
+    it either, and a shortened path that skips the hidden level would not exist in the shop's tree.
 
 The flat category facet, by contrast, is a plain ``SOLR_RELATION`` in TypoScript (``category_stringM``); only
 the tree and the multi-hop attributes need PHP.
