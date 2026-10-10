@@ -18,7 +18,8 @@
 # rule already removes them all.
 #
 # Usage: setupInstance.sh <core-version:13|14> <db-driver:sqlite|mysqli> [db-host] [db-name] [db-user] [db-password]
-#        env PRODUCTS_COMBO=<baseline|paypal|stripe|klarna|ups|dhl|dhl-stripe|ups-paypal|all>
+#        env PRODUCTS_COMBO=<baseline|paypal|stripe|klarna|amazon|solr|ups|dhl|dhl-stripe|ups-paypal|
+#                            express-stripe|express-paypal|all>
 #        env MOCK_BASE_URL=http://mock-<suffix>:8080
 #
 set -e
@@ -45,6 +46,9 @@ case "${COMBO}" in
     stripe) COMBO_PACKAGES="goldene-zeiten/products-payment-stripe" ;;
     klarna) COMBO_PACKAGES="goldene-zeiten/products-payment-klarna" ;;
     amazon) COMBO_PACKAGES="goldene-zeiten/products-payment-amazon" ;;
+    # An express wallet add-on requires its payment package, which also supplies the account it settles on.
+    express-stripe) COMBO_PACKAGES="goldene-zeiten/products-payment-stripe goldene-zeiten/products-express-stripe" ;;
+    express-paypal) COMBO_PACKAGES="goldene-zeiten/products-payment-paypal goldene-zeiten/products-express-paypal" ;;
     solr) COMBO_PACKAGES="goldene-zeiten/products-solr goldene-zeiten/products-solr-index-test" ;;
     ups) COMBO_PACKAGES="goldene-zeiten/products-shipping-ups" ;;
     dhl) COMBO_PACKAGES="goldene-zeiten/products-shipping-dhl-express" ;;
@@ -74,7 +78,7 @@ cat > "${INSTANCE_PATH}/composer.json" <<EOF
     "description": "Disposable TYPO3 instance for EXT:products Playwright acceptance tests. Rebuilt by Tests/Acceptance/setupInstance.sh on every run - never committed.",
     "license": "GPL-2.0-or-later",
     "repositories": [
-        {"type": "path", "url": "${ROOT_DIR}/packages/*/*", "options": {"symlink": true, "versions": {"goldene-zeiten/products-api-client": "1.0.0", "goldene-zeiten/products-core": "1.0.0", "goldene-zeiten/products-search": "1.0.0", "goldene-zeiten/products-solr": "1.0.0", "goldene-zeiten/products-recently-viewed": "1.0.0", "goldene-zeiten/products-wishlist": "1.0.0", "goldene-zeiten/products-credit-points": "1.0.0", "goldene-zeiten/products-voucher": "1.0.0", "goldene-zeiten/products-watermark": "1.0.0", "goldene-zeiten/products-shipping-ups": "1.0.0", "goldene-zeiten/products-shipping-dhl-express": "1.0.0", "goldene-zeiten/products-payment-paypal": "1.0.0", "goldene-zeiten/products-payment-stripe": "1.0.0", "goldene-zeiten/products-payment-klarna": "1.0.0", "goldene-zeiten/products-payment-amazon": "1.0.0"}}},
+        {"type": "path", "url": "${ROOT_DIR}/packages/*/*", "options": {"symlink": true, "versions": {"goldene-zeiten/products-api-client": "1.0.0", "goldene-zeiten/products-core": "1.0.0", "goldene-zeiten/products-search": "1.0.0", "goldene-zeiten/products-solr": "1.0.0", "goldene-zeiten/products-recently-viewed": "1.0.0", "goldene-zeiten/products-wishlist": "1.0.0", "goldene-zeiten/products-credit-points": "1.0.0", "goldene-zeiten/products-voucher": "1.0.0", "goldene-zeiten/products-watermark": "1.0.0", "goldene-zeiten/products-shipping-ups": "1.0.0", "goldene-zeiten/products-shipping-dhl-express": "1.0.0", "goldene-zeiten/products-payment-paypal": "1.0.0", "goldene-zeiten/products-payment-stripe": "1.0.0", "goldene-zeiten/products-payment-klarna": "1.0.0", "goldene-zeiten/products-payment-amazon": "1.0.0", "goldene-zeiten/products-express-stripe": "1.0.0", "goldene-zeiten/products-express-paypal": "1.0.0"}}},
         {"type": "path", "url": "${ROOT_DIR}/Tests/Acceptance/Packages/dataset_import", "options": {"symlink": true}},
         {"type": "path", "url": "${ROOT_DIR}/Tests/Acceptance/Packages/solr_index", "options": {"symlink": true}}
     ],
@@ -145,6 +149,15 @@ case " ${COMBO_PACKAGES} " in
 EOF
     ;;
 esac
+case " ${COMBO_PACKAGES} " in
+    *" goldene-zeiten/products-express-stripe "*) append_config <<EOF
+\$GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['products_express_stripe'] = [
+    'publishableKey' => 'pk_test_mock', 'secretKey' => 'sk_test_mock', 'apiBaseUrl' => '${MOCK}/express/stripe',
+];
+EOF
+    ;;
+esac
+# products-express-paypal has no configuration of its own: it reuses the products_payment_paypal block above.
 case " ${COMBO_PACKAGES} " in
     *" goldene-zeiten/products-payment-klarna "*) append_config <<EOF
 \$GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['products_payment_klarna'] = [
@@ -221,6 +234,13 @@ else
 fi
 
 vendor/bin/typo3 dataset:import "${ROOT_DIR}/Tests/Acceptance/Fixtures/shop-demo.csv"
+
+case "${COMBO}" in
+    express-stripe|express-paypal)
+        # Place the wallet's express checkout plugin on the basket page, with its TypoScript included there.
+        vendor/bin/typo3 dataset:import "${ROOT_DIR}/Tests/Acceptance/Fixtures/shop-demo-${COMBO}.csv"
+        ;;
+esac
 
 if [ "${COMBO}" = "solr" ]; then
     # Add the Solr search results plugin to the Shop page, then fill EXT:solr's index queue and index
