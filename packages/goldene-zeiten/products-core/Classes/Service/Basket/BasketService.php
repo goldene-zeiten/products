@@ -15,10 +15,12 @@ use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\Repository\ArticleRepository;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\VatBuckets;
 use GoldeneZeiten\Products\Core\Event\BasketUpdatedEvent;
 use GoldeneZeiten\Products\Core\Event\ModifyBasketItemEvent;
 use GoldeneZeiten\Products\Core\Pricing\GraduatedPriceProvider;
 use GoldeneZeiten\Products\Core\Pricing\PriceProviderInterface;
+use GoldeneZeiten\Products\Core\Pricing\VatSplitter;
 use GoldeneZeiten\Products\Core\Service\PriceRoundingService;
 use GoldeneZeiten\Products\Core\Service\TaxService;
 use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
@@ -38,7 +40,8 @@ final class BasketService
         private readonly BasketQuantityResolver $basketQuantityResolver,
         private readonly GraduatedPriceProvider $graduatedPriceProvider,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly ProductVisibilityResolver $productVisibilityResolver
+        private readonly ProductVisibilityResolver $productVisibilityResolver,
+        private readonly VatSplitter $vatSplitter
     ) {}
 
     public function add(ServerRequestInterface $request, int $productUid, ?int $articleUid, int $quantity): void
@@ -139,34 +142,49 @@ final class BasketService
         return false;
     }
 
-    public function getBasketViewModel(ServerRequestInterface $request): BasketViewModel
+    /**
+     * The tax country decides the VAT rate of every line; without one the shop's default country applies.
+     * Pass the country the order will be taxed in, so items and shipping use the same country's rates.
+     */
+    public function getBasketViewModel(ServerRequestInterface $request, ?string $taxCountry = null): BasketViewModel
     {
         $basket = $this->basketStorage->load($request);
-        $viewItems = [];
-        $totalNetCents = 0;
-        $totalGrossCents = 0;
-        $totalTaxCents = 0;
-
         $configuration = $this->configurationFactory->create($request);
+        $taxCountry = $taxCountry !== '' ? $taxCountry : null;
 
+        $viewItems = [];
         foreach ($basket->getItems() as $item) {
-            $viewItem = $this->resolveItem($item, $configuration, $request);
-            if ($viewItem === null) {
-                continue;
+            $viewItem = $this->resolveItem($item, $configuration, $request, $taxCountry);
+            if ($viewItem !== null) {
+                $viewItems[] = $viewItem;
             }
-            $viewItems[] = $viewItem;
-            $totalNetCents += $viewItem->getLineTotalNet()->getCents();
-            $totalGrossCents += $viewItem->getLineTotalGross()->getCents();
-            $totalTaxCents += $viewItem->getLineTotalTax()->getCents();
         }
 
-        return new BasketViewModel(
-            $viewItems,
-            Money::fromCents($totalNetCents),
-            $this->priceRoundingService->round(Money::fromCents($totalGrossCents), $configuration->getRoundingMode()),
-            Money::fromCents($totalTaxCents),
-            $configuration->getCurrency()
-        );
+        return $this->buildViewModel($viewItems, $configuration);
+    }
+
+    /**
+     * The rounding mode moves the gross total; the difference is split across the lines' VAT rates, so
+     * net and VAT move with it and still add up to the gross.
+     *
+     * @param BasketViewItem[] $viewItems
+     */
+    private function buildViewModel(array $viewItems, ProductsConfiguration $configuration): BasketViewModel
+    {
+        $totalNet = Money::fromCents(0);
+        $totalGross = Money::fromCents(0);
+        $buckets = VatBuckets::empty();
+        foreach ($viewItems as $viewItem) {
+            $totalNet = $totalNet->add($viewItem->getLineTotalNet());
+            $totalGross = $totalGross->add($viewItem->getLineTotalGross());
+            $buckets = $buckets->with($viewItem->getTaxRate(), $viewItem->getLineTotalGross());
+        }
+        $roundedGross = $this->priceRoundingService->round($totalGross, $configuration->getRoundingMode());
+        foreach ($this->vatSplitter->split($roundedGross->subtract($totalGross), $buckets) as $part) {
+            $totalNet = $totalNet->add($part['amount']->netFromGross($part['rate']));
+        }
+
+        return new BasketViewModel($viewItems, $totalNet, $roundedGross, $roundedGross->subtract($totalNet), $configuration->getCurrency());
     }
 
     private function findVisibleProduct(int $productUid, ServerRequestInterface $request): ?Product
@@ -179,7 +197,7 @@ final class BasketService
         return $product;
     }
 
-    private function resolveItem(BasketItem $item, ProductsConfiguration $configuration, ServerRequestInterface $request): ?BasketViewItem
+    private function resolveItem(BasketItem $item, ProductsConfiguration $configuration, ServerRequestInterface $request, ?string $taxCountry): ?BasketViewItem
     {
         $product = $this->findVisibleProduct($item->getProductUid(), $request);
         if ($product === null) {
@@ -192,30 +210,23 @@ final class BasketService
         }
 
         $basePrice = $this->priceProvider->getUnitPrice($product, $article, $item->getQuantity(), $request);
-        $taxRate = $this->taxService->getTaxRate($configuration, $product->getTaxClass());
+        $taxRate = $this->taxService->getTaxRate($configuration, $product->getTaxClass(), $taxCountry);
+        $unitPriceGross = $configuration->getPricingMode() === 'gross' ? $basePrice : $basePrice->multiply(1 + $taxRate);
 
-        if ($configuration->getPricingMode() === 'gross') {
-            $unitPriceGross = $basePrice;
-            $unitPriceNet = $unitPriceGross->netFromGross($taxRate);
-        } else {
-            $unitPriceNet = $basePrice;
-            $unitPriceGross = Money::fromCents((int)round($unitPriceNet->getCents() * (1 + $taxRate)));
-        }
-
-        $lineTotalNet = $unitPriceNet->multiply($item->getQuantity());
+        // Net and VAT of the line derive from its gross, so rounding a unit's net never multiplies by the quantity.
         $lineTotalGross = $unitPriceGross->multiply($item->getQuantity());
-        $lineTotalTax = $lineTotalGross->subtract($lineTotalNet);
+        $lineTotalNet = $lineTotalGross->netFromGross($taxRate);
 
         $viewItem = new BasketViewItem(
             $product,
             $article,
             $item->getQuantity(),
-            $unitPriceNet,
+            $unitPriceGross->netFromGross($taxRate),
             $unitPriceGross,
             $taxRate,
             $lineTotalNet,
             $lineTotalGross,
-            $lineTotalTax
+            $lineTotalGross->subtract($lineTotalNet)
         );
 
         $event = new ModifyBasketItemEvent($viewItem, $request);

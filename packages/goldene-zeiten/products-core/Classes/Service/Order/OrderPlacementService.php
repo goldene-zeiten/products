@@ -56,7 +56,7 @@ final class OrderPlacementService
         string $paymentMethodIdentifier,
         CheckoutChoices $choices = new CheckoutChoices()
     ): OrderPlacementResult {
-        $liveBasketViewModel = $this->basketService->getBasketViewModel($request);
+        $liveBasketViewModel = $this->basketService->getBasketViewModel($request, $address->getCountry());
         $configuration = $this->configurationFactory->create($request);
         $basketViewModel = $this->priceQuoteService->resolve($request, $liveBasketViewModel, $configuration);
         $this->assertBasketNotEmpty($basketViewModel);
@@ -70,7 +70,7 @@ final class OrderPlacementService
                 1784937600
             );
         }
-        $liveBasket = $this->basketService->getBasketViewModel($request);
+        $liveBasket = $this->basketService->getBasketViewModel($request, $address->getCountry());
         $this->loyaltyRegistry->assertRedeemable(new LoyaltyContext(
             $request,
             $liveBasket,
