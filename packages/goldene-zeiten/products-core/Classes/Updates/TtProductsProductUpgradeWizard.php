@@ -215,6 +215,11 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
             'uid_foreign' => $categoryLocalUid,
             'sorting' => 1,
         ])->executeStatement();
+        $this->connectionPool->getConnectionForTable(self::LOCAL_TABLE)->update(
+            self::LOCAL_TABLE,
+            ['categories' => 1],
+            ['uid' => $productLocalUid]
+        );
     }
 
     /**
