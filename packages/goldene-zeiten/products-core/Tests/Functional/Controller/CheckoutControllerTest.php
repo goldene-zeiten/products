@@ -49,6 +49,27 @@ final class CheckoutControllerTest extends AbstractFrontendTestCase
     }
 
     #[Test]
+    public function thankYouActionAnswersNotFoundForAnOrderTheCallerCannotProve(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/checkout_content.csv');
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/orders_with_frontend_user.csv');
+
+        $response = $this->executeFrontendSubRequest($this->thankYouRequest(1, 'not-a-valid-hash'));
+
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
+    #[Test]
+    public function thankYouActionAnswersNotFoundForAnUnknownOrder(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/checkout_content.csv');
+
+        $response = $this->executeFrontendSubRequest($this->thankYouRequest(4711, 'not-a-valid-hash'));
+
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
+    #[Test]
     public function thankYouActionRendersTheOrderForAValidHash(): void
     {
         $this->importCSVDataSet(__DIR__ . '/Fixtures/checkout_content.csv');

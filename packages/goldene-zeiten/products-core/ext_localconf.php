@@ -75,10 +75,10 @@ defined('TYPO3') or die();
         'ProductsCore',
         'Checkout',
         [
-            CheckoutController::class => 'address, submitAddress, shippingMethod, submitShippingMethod, payment, submitPayment, review, finalize, paymentReturn, paymentCancel, thankYou',
+            CheckoutController::class => 'address, submitAddress, shippingMethod, submitShippingMethod, payment, submitPayment, review, finalize, thankYou',
         ],
         [
-            CheckoutController::class => 'address, submitAddress, shippingMethod, submitShippingMethod, payment, submitPayment, review, finalize, paymentReturn, paymentCancel, thankYou',
+            CheckoutController::class => 'address, submitAddress, shippingMethod, submitShippingMethod, payment, submitPayment, review, finalize, thankYou',
         ],
         ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
     );

@@ -58,6 +58,7 @@ final class DownloadControllerTest extends AbstractFunctionalTestCase
         ]);
         $this->addTypoScriptToTemplateRecord(1, '
             plugin.tx_productscore.persistence.storagePid = 2
+            plugin.tx_productscore.settings.pids.orderHistoryPage = 1
             page = PAGE
             page.10 = CONTENT
             page.10 {
@@ -97,15 +98,37 @@ final class DownloadControllerTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
-    public function guestWithoutAValidHashIsRedirectedAndSeesNoDownloads(): void
+    public function guestWithoutAValidHashIsRedirectedToTheOrderHistoryAndSeesNoDownloads(): void
     {
-        // The redirect() only affects the embedded plugin content, not the outer page's HTTP
-        // status (the page around it still renders normally) - so the only reliable signal
-        // here is that the download listing itself never leaks into the response body.
         $request = $this->downloadRequest(2, 'not-a-valid-hash');
         $response = $this->executeFrontendSubRequest($request);
 
+        $this->assertSame(303, $response->getStatusCode());
+        $this->assertSame('http://localhost/', $response->getHeaderLine('location'));
         $this->assertStringNotContainsString('example.pdf', (string)$response->getBody());
+    }
+
+    #[Test]
+    public function aRequestWithoutAnOrderAnswersNotFound(): void
+    {
+        $cHash = $this->get(CacheHashCalculator::class)->generateForParameters('&id=2&tx_productscore_download[action]=list');
+        $request = (new InternalRequest('http://localhost/shop'))
+            ->withQueryParameters([
+                'tx_productscore_download[action]' => 'list',
+                'cHash' => $cHash,
+            ]);
+
+        $response = $this->executeFrontendSubRequest($request);
+
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
+    #[Test]
+    public function aRequestForAnUnknownOrderAnswersNotFound(): void
+    {
+        $response = $this->executeFrontendSubRequest($this->downloadRequest(4711, 'not-a-valid-hash'));
+
+        $this->assertSame(404, $response->getStatusCode());
     }
 
     #[Test]
