@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Backend;
 
+use GoldeneZeiten\Products\Core\Backend\Exception\OrderStatusWriteFailedException;
 use GoldeneZeiten\Products\Core\Backend\OrderStatusWriter;
 use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
@@ -118,6 +119,24 @@ final class OrderStatusWriterTest extends AbstractFunctionalTestCase
         $this->assertSame(1, $captured->getOrderUid());
         $this->assertSame(PaymentStatus::OPEN, $captured->getPreviousStatus());
         $this->assertSame(PaymentStatus::PAID, $captured->getNewStatus());
+    }
+
+    /**
+     * The write must run with the permissions of the user handed in, even when a different (here: an
+     * admin) user is logged in globally.
+     */
+    #[Test]
+    public function changeStatusIsDeniedForAUserWithoutWriteAccessWhileAnAdminIsLoggedIn(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/OrderStatusWriterTest/editor_without_order_access.csv');
+        $editor = $this->setUpBackendUser(2);
+        $this->backendUser();
+        $subject = $this->get(OrderStatusWriter::class);
+
+        $this->expectException(OrderStatusWriteFailedException::class);
+        $this->expectExceptionCode(1752710400);
+
+        $subject->changeStatus(1, OrderStatus::CONFIRMED, null, $editor);
     }
 
     private function backendUser(): BackendUserAuthentication
