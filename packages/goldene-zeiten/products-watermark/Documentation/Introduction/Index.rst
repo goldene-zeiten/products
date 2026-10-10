@@ -51,7 +51,22 @@ processed file's original is used as a product, article or category image, by ch
 
 A product's or article's downloadable-file field uses a different field name and is therefore never
 matched, so downloads are never watermarked. Images unrelated to the catalog (regular content-element
-images, RTE images) are left untouched for the same reason.
+images, RTE images) are left untouched for the same reason, as long as they do not use a file that is
+also a catalog image — see :ref:`introduction-shared-files`.
+
+..  _introduction-shared-files:
+
+Files used outside the catalog
+------------------------------
+
+The decision is made per FAL file, not per usage. TYPO3 keeps one processed variant per original file
+and processing configuration (size, crop, format) and serves it to every record that asks for that
+variant; the processing event does not reveal which record asked. A file that is a product image is
+therefore watermarked wherever it is shown — also in a content element, a news record or an RTE image
+that uses the very same file.
+
+Upload a separate copy of the image for any use that must stay unwatermarked. A file that is not
+referenced as a product, article or category image is never watermarked.
 
 Only the JPEG, PNG, GIF, WEBP and AVIF processed-image extensions are considered; every other
 processing task type (e.g. text rendering) is ignored outright. Images narrower than

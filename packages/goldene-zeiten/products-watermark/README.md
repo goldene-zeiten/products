@@ -22,6 +22,12 @@ install (ImageMagick / GraphicsMagick / GD) is respected. Only images that are
 actually referenced by a product, article or category record are affected;
 everything else on the site is left alone.
 
+The decision is made per FAL file, not per usage: TYPO3 shares one processed
+variant per original file and size among all records using it. A file that is
+a product image is therefore watermarked everywhere it appears, including
+content elements or RTE images using the very same file. Upload a separate copy
+for any use that must stay unwatermarked.
+
 ## Installation
 
 ```shell
