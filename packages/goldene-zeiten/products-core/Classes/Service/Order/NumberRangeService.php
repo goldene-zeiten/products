@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Service\Order;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /**
  * Race-safe sequence generator: atomic UPDATE instead of SELECT FOR UPDATE for sqlite compatibility.
+ * Safe to call inside a surrounding transaction.
  */
 final class NumberRangeService
 {
@@ -31,7 +33,24 @@ final class NumberRangeService
         }
     }
 
+    /**
+     * A scope's first number has no row to increment. Two requests drawing it at once both insert one; the
+     * loser increments the winner's row instead.
+     */
     private function incrementOrCreate(string $scope): int
+    {
+        if ($this->increment($scope)) {
+            return $this->fetchCurrentValue($scope);
+        }
+        if ($this->seed($scope)) {
+            return 1;
+        }
+        $this->increment($scope);
+
+        return $this->fetchCurrentValue($scope);
+    }
+
+    private function increment(string $scope): bool
     {
         $updateQueryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
         $affectedRows = $updateQueryBuilder
@@ -40,15 +59,30 @@ final class NumberRangeService
             ->where($updateQueryBuilder->expr()->eq('scope', $updateQueryBuilder->createNamedParameter($scope)))
             ->executeStatement();
 
-        if ($affectedRows === 0) {
+        return $affectedRows > 0;
+    }
+
+    /**
+     * Runs in a nested transaction - a savepoint - so a losing insert does not abort the surrounding
+     * transaction, as PostgreSQL does on any failed statement.
+     *
+     * @return bool false when another request seeded the scope first
+     */
+    private function seed(string $scope): bool
+    {
+        $connection = $this->connectionPool->getConnectionForTable(self::TABLE);
+        $connection->beginTransaction();
+        try {
             $insertQueryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE);
             $insertQueryBuilder->insert(self::TABLE)
                 ->values(['scope' => $scope, 'current_value' => 1])
                 ->executeStatement();
-            return 1;
+            $connection->commit();
+            return true;
+        } catch (UniqueConstraintViolationException) {
+            $connection->rollBack();
+            return false;
         }
-
-        return $this->fetchCurrentValue($scope);
     }
 
     private function fetchCurrentValue(string $scope): int
