@@ -22,6 +22,7 @@ use Psr\Log\NullLogger;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\Stream;
+use TYPO3\CMS\Core\Site\Entity\Site;
 
 final class KlarnaPaymentMethodTest extends AbstractKlarnaMockTestCase
 {
@@ -135,6 +136,57 @@ final class KlarnaPaymentMethodTest extends AbstractKlarnaMockTestCase
         $result = $this->subject()->handleWebhook($request, $this->order());
 
         $this->assertSame(PaymentResultState::FAILED, $result->getState());
+    }
+
+    /**
+     * Gateway callbacks run as middlewares before the page is resolved, where core has not published the
+     * request globally yet. Credentials configured only on the site must still be found - from the site of
+     * the callback request itself.
+     */
+    #[Test]
+    public function handleWebhookUsesTheCredentialsOfTheRequestsSite(): void
+    {
+        $subject = new KlarnaPaymentMethod(
+            new KlarnaConfigurationFactory($this->siteOnlyConfiguration(), new CurrentSiteResolver()),
+            $this->client(),
+            new KlarnaOrderPayloadBuilder(),
+            $this->get(EventDispatcherInterface::class),
+            new NullLogger(),
+        );
+
+        $result = $subject->handleWebhook($this->siteOnlyRequest($this->webhookRequest('hpp_session_1')), $this->order());
+
+        $this->assertSame(PaymentStatus::PAID, $result->getPaymentStatus());
+    }
+
+    private function siteOnlyRequest(ServerRequestInterface $request): ServerRequestInterface
+    {
+        unset($GLOBALS['TYPO3_REQUEST']);
+        $site = new Site('shop', 1, [
+            'base' => 'https://shop.example/',
+            'settings' => [
+                'products' => [
+                    'payment' => [
+                        'klarna' => [
+                            'environment' => 'playground',
+                            'username' => 'mock-user',
+                            'password' => 'mock-pass',
+                            'apiBaseUrl' => $this->mockRoot . '/payment/klarna',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        return $request->withAttribute('site', $site);
+    }
+
+    private function siteOnlyConfiguration(): ApiSettingsResolver
+    {
+        $extensionConfiguration = $this->createMock(ExtensionConfiguration::class);
+        $extensionConfiguration->method('get')->willReturn([]);
+
+        return new ApiSettingsResolver($extensionConfiguration);
     }
 
     private function subject(): KlarnaPaymentMethod

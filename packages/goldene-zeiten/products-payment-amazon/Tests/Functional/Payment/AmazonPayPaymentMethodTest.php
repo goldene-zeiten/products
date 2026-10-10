@@ -21,6 +21,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\NullLogger;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Site\Entity\Site;
 
 final class AmazonPayPaymentMethodTest extends AbstractAmazonPayMockTestCase
 {
@@ -130,6 +131,59 @@ final class AmazonPayPaymentMethodTest extends AbstractAmazonPayMockTestCase
         yield 'a session of this order at another amount' => [
             'sessionId' => 'amzn_session_cheap',
         ];
+    }
+
+    /**
+     * Gateway callbacks run as middlewares before the page is resolved, where core has not published the
+     * request globally yet. Credentials configured only on the site must still be found - from the site of
+     * the callback request itself.
+     */
+    #[Test]
+    public function theResultLegUsesTheCredentialsOfTheRequestsSite(): void
+    {
+        $subject = new AmazonPayPaymentMethod(
+            new AmazonPayConfigurationFactory($this->siteOnlyConfiguration(), new CurrentSiteResolver()),
+            $this->client(),
+            $this->get(EventDispatcherInterface::class),
+            new NullLogger(),
+        );
+
+        $result = $subject->handleReturn($this->siteOnlyRequest($this->returnRequest('result')), $this->order());
+
+        $this->assertSame(PaymentStatus::PAID, $result->getPaymentStatus());
+    }
+
+    private function siteOnlyRequest(ServerRequestInterface $request): ServerRequestInterface
+    {
+        unset($GLOBALS['TYPO3_REQUEST']);
+        $site = new Site('shop', 1, [
+            'base' => 'https://shop.example/',
+            'settings' => [
+                'products' => [
+                    'payment' => [
+                        'amazon' => [
+                            'region' => 'eu',
+                            'environment' => 'sandbox',
+                            'publicKeyId' => 'SANDBOX-AMZN-TEST-KEY',
+                            'privateKey' => (string)file_get_contents(__DIR__ . '/../Fixtures/test_private_key.pem'),
+                            'storeId' => 'amzn1.application-oa2-client.test',
+                            'merchantStoreName' => 'Test Shop',
+                            'apiBaseUrl' => $this->mockRoot . '/payment/amazon',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        return $request->withAttribute('site', $site);
+    }
+
+    private function siteOnlyConfiguration(): ApiSettingsResolver
+    {
+        $extensionConfiguration = $this->createMock(ExtensionConfiguration::class);
+        $extensionConfiguration->method('get')->willReturn([]);
+
+        return new ApiSettingsResolver($extensionConfiguration);
     }
 
     private function subject(): AmazonPayPaymentMethod

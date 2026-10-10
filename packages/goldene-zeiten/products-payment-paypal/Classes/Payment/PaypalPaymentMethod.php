@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Payment\RedirectPaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\StaticWebhookPaymentMethodInterface;
+use GoldeneZeiten\Products\Payment\Paypal\Configuration\PaypalConfiguration;
 use GoldeneZeiten\Products\Payment\Paypal\Configuration\PaypalConfigurationFactory;
 use GoldeneZeiten\Products\Payment\Paypal\Domain\Dto\PaypalCapture;
 use GoldeneZeiten\Products\Payment\Paypal\Exception\PaypalApiException;
@@ -118,7 +119,7 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
             return PaymentResult::failed('PayPal did not return an order token on the return URL.');
         }
 
-        return $this->capture($paypalOrderId, $order);
+        return $this->capture($paypalOrderId, $order, $this->configurationFactory->forRequest($request));
     }
 
     public function handleWebhook(ServerRequestInterface $request, Order $order): PaymentResult
@@ -128,7 +129,7 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
         if (!is_array($event)) {
             return PaymentResult::failed('PayPal webhook body was not valid JSON.');
         }
-        $configuration = $this->configurationFactory->forCurrentRequest();
+        $configuration = $this->configurationFactory->forRequest($request);
         if (!$this->webhookVerifier->isSignatureValid($request, $body, $configuration)) {
             return PaymentResult::failed('PayPal webhook signature could not be verified.');
         }
@@ -165,7 +166,7 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
         if (!is_array($event)) {
             return null;
         }
-        $configuration = $this->configurationFactory->forCurrentRequest();
+        $configuration = $this->configurationFactory->forRequest($request);
 
         return $this->webhookVerifier->isSignatureValid($request, $body, $configuration) ? $event : null;
     }
@@ -202,14 +203,13 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
             && strtoupper((string)($amount['currency_code'] ?? '')) === strtoupper($order->getCurrency());
     }
 
-    private function capture(string $paypalOrderId, Order $order): PaymentResult
+    private function capture(string $paypalOrderId, Order $order, PaypalConfiguration $configuration): PaymentResult
     {
-        $configuration = $this->configurationFactory->forCurrentRequest();
         try {
             $capture = $this->orderClient->capture($paypalOrderId, $configuration);
         } catch (PaypalApiException $exception) {
             if ($exception->getPrevious() instanceof ApiTransportException) {
-                return $this->recoverLostCapture($paypalOrderId, $order);
+                return $this->recoverLostCapture($paypalOrderId, $order, $configuration);
             }
             $this->logger->error('PayPal capture failed.', ['exception' => $exception]);
             return PaymentResult::failed('The PayPal payment could not be completed.', $paypalOrderId);
@@ -224,10 +224,10 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
      * captured and stays as it is; one whose state cannot be learned is accepted with its payment pending,
      * for PayPal's capture webhook to settle.
      */
-    private function recoverLostCapture(string $paypalOrderId, Order $order): PaymentResult
+    private function recoverLostCapture(string $paypalOrderId, Order $order, PaypalConfiguration $configuration): PaymentResult
     {
         try {
-            $capture = $this->orderClient->show($paypalOrderId, $this->configurationFactory->forCurrentRequest());
+            $capture = $this->orderClient->show($paypalOrderId, $configuration);
         } catch (PaypalApiException $exception) {
             $this->logger->error('PayPal capture outcome unknown; check the order in PayPal.', [
                 'order' => $order->getUid(),
