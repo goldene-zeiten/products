@@ -1,0 +1,4 @@
+"tt_products_cat",,,,,,,,
+,"uid","pid","deleted","hidden","title","slug","note","parent_category"
+,20,1,0,0,"Child before its parent","/late-child","",21
+,21,1,0,0,"Parent after its child","/late-parent","",0
