@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContextItem;
+use TYPO3\CMS\Core\Site\Entity\Site;
 
 /**
  * Builds the immutable view of a basket that carriers decide on, so a carrier never has to reach into the
@@ -16,7 +17,11 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContextItem;
  */
 final class ShippingContextFactory
 {
-    public function createFromBasket(BasketViewModel $basketViewModel, Address $address, int $frontendUserUid = 0): ShippingContext
+    /**
+     * Pass the site of the request where it is at hand, so carriers find their per-site configuration
+     * without depending on the globally published request.
+     */
+    public function createFromBasket(BasketViewModel $basketViewModel, Address $address, int $frontendUserUid = 0, ?Site $site = null): ShippingContext
     {
         return new ShippingContext(
             array_map($this->toItem(...), $basketViewModel->getItems()),
@@ -25,7 +30,8 @@ final class ShippingContextFactory
             $basketViewModel->getCurrency(),
             $address->getCountry(),
             $address->getZip(),
-            $frontendUserUid
+            $frontendUserUid,
+            $site
         );
     }
 

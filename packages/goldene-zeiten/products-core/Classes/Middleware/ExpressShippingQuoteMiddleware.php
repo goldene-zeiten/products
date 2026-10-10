@@ -55,7 +55,7 @@ final readonly class ExpressShippingQuoteMiddleware implements MiddlewareInterfa
             zip: (string)($body['postalCode'] ?? ''),
             state: (string)($body['state'] ?? '')
         );
-        $quote = $this->shippingQuoteService->quote($basket, $address, $this->configurationFactory->createFromSite($site));
+        $quote = $this->shippingQuoteService->quote($basket, $address, $this->configurationFactory->createFromSite($site), $site);
 
         return new JsonResponse($quote->toArray());
     }

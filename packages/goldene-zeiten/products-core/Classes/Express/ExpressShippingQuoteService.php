@@ -13,6 +13,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Shipping\ShippingQuoteService;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use TYPO3\CMS\Core\Site\Entity\Site;
 
 /**
  * Answers an express wallet's live shipping-rate callback: given the signed basket snapshot and the
@@ -27,9 +28,12 @@ final class ExpressShippingQuoteService
         private readonly ShippingQuoteService $shippingQuoteService
     ) {}
 
-    public function quote(ExpressBasket $basket, Address $address, ProductsConfiguration $configuration): ExpressShippingQuote
+    /**
+     * Pass the site of the callback request, so carriers find their per-site configuration.
+     */
+    public function quote(ExpressBasket $basket, Address $address, ProductsConfiguration $configuration, ?Site $site = null): ExpressShippingQuote
     {
-        $context = $basket->toShippingContext($address->getCountry(), $address->getZip());
+        $context = $basket->toShippingContext($address->getCountry(), $address->getZip(), $site);
         $goodsTotal = $basket->getTotalGross();
 
         $options = array_map(

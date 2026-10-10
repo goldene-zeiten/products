@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContextItem;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
+use TYPO3\CMS\Core\Site\Entity\Site;
 
 /**
  * A snapshot of the shipping-relevant parts of a basket, small enough to travel inside a signed token.
@@ -44,7 +45,7 @@ final readonly class ExpressBasket
     /**
      * The carrier's view of this basket for a given destination - the missing half the wallet supplies.
      */
-    public function toShippingContext(string $countryCode, string $postCode): ShippingContext
+    public function toShippingContext(string $countryCode, string $postCode, ?Site $site = null): ShippingContext
     {
         return new ShippingContext(
             $this->items,
@@ -53,7 +54,8 @@ final readonly class ExpressBasket
             $this->currency,
             $countryCode,
             $postCode,
-            $this->frontendUserUid
+            $this->frontendUserUid,
+            $site
         );
     }
 

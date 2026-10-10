@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Core\Domain\Dto\Shipping;
 
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
+use TYPO3\CMS\Core\Site\Entity\Site;
 
 /**
  * Everything a carrier may decide on: what is being shipped, how heavy it is, where it is going and who
@@ -25,7 +26,8 @@ final readonly class ShippingContext
         private string $currency,
         private string $countryCode,
         private string $postCode = '',
-        private int $frontendUserUid = 0
+        private int $frontendUserUid = 0,
+        private ?Site $site = null
     ) {}
 
     /**
@@ -71,6 +73,16 @@ final readonly class ShippingContext
     public function getFrontendUserUid(): int
     {
         return $this->frontendUserUid;
+    }
+
+    /**
+     * The site the basket is shopped on, for a carrier to read its per-site configuration from. Prefer it
+     * over the globally published request: the express shipping-rate callback quotes before core publishes
+     * one. Null when the caller did not know the site.
+     */
+    public function getSite(): ?Site
+    {
+        return $this->site;
     }
 
     /**
