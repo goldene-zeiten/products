@@ -1,3 +1,7 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/Core/ViewHelpers"
+>
 <div class="wishlist">
     <h2><f:translate key="wishlist" /> <span class="badge">({wishlistCount})</span></h2>
     <f:if condition="{products}">
@@ -14,7 +18,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">{product.title}</h5>
                                 <p class="card-text">
-                                    <f:render partial="Product/Price" arguments="{price: product.price}" />
+                                    <f:render partial="Product/Price" arguments="{price: '{p:pricing.displayPrice(product: product)}'}" />
                                 </p>
                                 <div class="d-flex gap-2">
                                     <f:link.action action="show" controller="Product" extensionName="ProductsCore" pluginName="ProductDetail" pageUid="{settings.pids.detailPage}" arguments="{product: product}" class="btn btn-primary btn-sm"><f:translate key="details" extensionName="products_core" /></f:link.action>
@@ -50,3 +54,4 @@
         </f:else>
     </f:if>
 </div>
+</html>

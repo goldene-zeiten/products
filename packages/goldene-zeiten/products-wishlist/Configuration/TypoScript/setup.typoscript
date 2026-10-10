@@ -29,3 +29,9 @@ plugin {
     # priority.
     tx_productscore.view.partialRootPaths.100 = EXT:products_wishlist/Resources/Private/Partials/
 }
+
+lib.productsWishlistToggle = EXTBASEPLUGIN
+lib.productsWishlistToggle {
+    extensionName = ProductsWishlist
+    pluginName = WishlistToggle
+}

@@ -29,6 +29,21 @@ final class WishlistController extends ActionController
         return $this->htmlResponse();
     }
 
+    /**
+     * Renders the add/remove form for the product of the calling content object (`data.productUid`). The
+     * catalogue embeds it uncached, so the state and the form's request token are always the viewer's own,
+     * even on a page served from the page cache.
+     */
+    public function toggleAction(): ResponseInterface
+    {
+        $productUid = (int)($this->request->getAttribute('currentContentObject')?->data['productUid'] ?? 0);
+        $this->view->assignMultiple([
+            'productUid' => $productUid,
+            'onWishlist' => $productUid > 0 && $this->wishlistService->contains($this->request, $productUid),
+        ]);
+        return $this->htmlResponse();
+    }
+
     public function addAction(int $product): ResponseInterface
     {
         if (($rejected = $this->rejectForgedRequest()) !== null) {

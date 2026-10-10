@@ -19,4 +19,18 @@ defined('TYPO3') or die();
         ],
         ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
     );
+
+    // The add/remove toggle the catalogue renders per product through lib.productsWishlistToggle. Not a
+    // selectable content element: it is never registered in TCA.
+    ExtensionUtility::configurePlugin(
+        'ProductsWishlist',
+        'WishlistToggle',
+        [
+            WishlistController::class => 'toggle',
+        ],
+        [
+            WishlistController::class => 'toggle',
+        ],
+        ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+    );
 })();

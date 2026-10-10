@@ -1,0 +1,20 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
+<f:if condition="{productUid}">
+    <f:if condition="{onWishlist}">
+        <f:then>
+            <f:form action="remove" controller="Wishlist" pluginName="Wishlist" pageUid="{settings.pids.wishlistPage}" requestToken="products/wishlist" class="d-inline">
+                <f:form.hidden name="product" value="{productUid}" />
+                <f:form.submit value="{f:translate(key: 'remove_from_wishlist')}" class="btn btn-outline-secondary btn-sm" />
+            </f:form>
+        </f:then>
+        <f:else>
+            <f:form action="add" controller="Wishlist" pluginName="Wishlist" pageUid="{settings.pids.wishlistPage}" requestToken="products/wishlist" class="d-inline">
+                <f:form.hidden name="product" value="{productUid}" />
+                <f:form.submit value="{f:translate(key: 'add_to_wishlist')}" class="btn btn-outline-secondary btn-sm" />
+            </f:form>
+        </f:else>
+    </f:if>
+</f:if>
+</html>

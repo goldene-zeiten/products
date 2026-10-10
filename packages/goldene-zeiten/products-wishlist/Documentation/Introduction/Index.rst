@@ -23,10 +23,11 @@ Catalog integration
 
 :php:`GoldeneZeiten\Products\Wishlist\EventListener\EnrichProductViewWithWishlistListener` listens
 to the core's :php:`GoldeneZeiten\Products\Core\Event\EnrichProductViewEvent`, dispatched by the
-core catalog controller for every product list and detail view. The listener adds three template
-variables — whether the wishlist is enabled, the uids of the current visitor's wishlisted products,
-and the current wishlist count — which the shipped :file:`Product/WishlistToggle.html` partial uses
-to render an "add to wishlist" or "remove from wishlist" link per product.
+core catalog controller for every product list and detail view. The listener only adds whether the
+wishlist is enabled: the product list is page-cached for every visitor, so it must not carry anyone's
+wishlist. The shipped :file:`Product/WishlistToggle.html` partial therefore renders the TypoScript
+object ``lib.productsWishlistToggle`` per product - an uncached Extbase plugin that shows the current
+visitor's "add to wishlist" or "remove from wishlist" form, even on a page served from the page cache.
 
 That partial is registered at a higher path priority than the core's own (empty) partial of the
 same name, so it silently replaces the core's no-op stub once this extension is installed — no
