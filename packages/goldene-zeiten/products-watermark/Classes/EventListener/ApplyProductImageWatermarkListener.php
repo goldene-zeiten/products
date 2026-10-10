@@ -11,6 +11,9 @@ use GoldeneZeiten\Products\Watermark\Resource\WatermarkableImageDetector;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Resource\Event\AfterFileProcessingEvent;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
@@ -34,6 +37,8 @@ final class ApplyProductImageWatermarkListener
         private readonly WatermarkableImageDetector $detector,
         private readonly WatermarkApplier $applier,
         private readonly WatermarkConfigurationFactory $configurationFactory,
+        private readonly ConnectionPool $connectionPool,
+        private readonly FrontendInterface $runtimeCache,
         private readonly LoggerInterface $logger,
     ) {}
 
@@ -110,10 +115,57 @@ final class ApplyProductImageWatermarkListener
         }
 
         $watermarked = $this->applier->apply($localPath, (int)$dimensions[0], (int)$dimensions[1], $configuration);
+        if ($processedFile->usesOriginalFile()) {
+            $this->storeAsOwnVariant($processedFile, $watermarked, (int)$dimensions[0], (int)$dimensions[1]);
+            return;
+        }
         // Overwrites the processed variant in place, keeping its identifier, so the watermarked file is
-        // what gets served now and on every later cache hit. The processing cache stays valid without a
-        // repository write, which also avoids the ProcessedFileRepository::update() signature difference
-        // between TYPO3 13 and 14.
+        // what gets served now and on every later cache hit; its processed-file record stays valid as is.
         $processedFile->updateWithLocalFile($watermarked);
+    }
+
+    /**
+     * When the requested size needs no processing, core points the processed file at the original and has
+     * already persisted it that way. The watermarked image is stored under a name of its own instead, and
+     * the record is updated, so later requests find and serve the watermarked variant. Only the columns
+     * that locate the file change; the record's checksum and configuration stay as core persisted them.
+     */
+    private function storeAsOwnVariant(ProcessedFile $processedFile, string $watermarked, int $width, int $height): void
+    {
+        $processedFile->setName($this->variantName($processedFile));
+        $processedFile->updateWithLocalFile($watermarked);
+        $processedFile->updateProperties([
+            'width' => $width,
+            'height' => $height,
+        ]);
+
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_file_processedfile');
+        $queryBuilder
+            ->update('sys_file_processedfile')
+            ->set('identifier', $processedFile->getIdentifier())
+            ->set('name', $processedFile->getName())
+            ->set('width', $width)
+            ->set('height', $height)
+            ->where($queryBuilder->expr()->eq(
+                'uid',
+                $queryBuilder->createNamedParameter((int)$processedFile->getUid(), Connection::PARAM_INT)
+            ))
+            ->executeStatement();
+        // TYPO3 14 keeps the processed-file rows of the current request in the runtime cache; drop them so
+        // a second use of the image in this request finds the updated record too.
+        $this->runtimeCache->flushByTag('processed-files');
+    }
+
+    private function variantName(ProcessedFile $processedFile): string
+    {
+        $originalFile = $processedFile->getOriginalFile();
+        $hash = sha1(sprintf(
+            '%d|%s|%s',
+            $originalFile->getUid(),
+            $processedFile->getTaskIdentifier(),
+            json_encode($processedFile->getProcessingConfiguration())
+        ));
+
+        return sprintf('wm_%s_%s.%s', $originalFile->getNameWithoutExtension(), substr($hash, 0, 10), $processedFile->getExtension());
     }
 }

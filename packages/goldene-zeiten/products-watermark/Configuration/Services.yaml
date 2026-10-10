@@ -6,3 +6,7 @@ services:
 
   GoldeneZeiten\Products\Watermark\:
     resource: '../Classes/*'
+
+  GoldeneZeiten\Products\Watermark\EventListener\ApplyProductImageWatermarkListener:
+    arguments:
+      $runtimeCache: '@cache.runtime'

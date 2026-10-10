@@ -103,6 +103,25 @@ final class ApplyProductImageWatermarkListenerTest extends AbstractFunctionalTes
         $this->assertGreaterThan(90, $firstPass[1], 'A single 50% red-on-white blend keeps green well above a doubled blend.');
     }
 
+    #[Test]
+    public function aVariantAtTheOriginalSizeStaysWatermarkedOnLaterRequests(): void
+    {
+        $file = $this->indexImage('product_original_size.png');
+        $this->referenceAsProductImage($file);
+        $this->activateFrontendRequestWithWatermark(100);
+        // At or below the original size without a crop, core serves the original instead of a new variant.
+        $configuration = ['maxWidth' => 500, 'maxHeight' => 500];
+
+        $firstRequest = $file->process(ProcessedFile::CONTEXT_IMAGECROPSCALEMASK, $configuration);
+        $laterRequest = $file->process(ProcessedFile::CONTEXT_IMAGECROPSCALEMASK, $configuration);
+
+        $this->assertFalse($laterRequest->usesOriginalFile(), 'The watermarked variant must be persisted as a variant of its own.');
+        $this->assertSame($firstRequest->getIdentifier(), $laterRequest->getIdentifier());
+        $this->assertGreaterThan(200, $this->pixel($laterRequest->getForLocalProcessing(false), 5, 5)[0]);
+        $this->assertLessThan(60, $this->pixel($laterRequest->getForLocalProcessing(false), 5, 5)[1]);
+        $this->assertGreaterThan(240, $this->pixel($file->getForLocalProcessing(false), 5, 5)[1], 'The original must stay untouched.');
+    }
+
     /**
      * @return array{0: int, 1: int, 2: int}
      */
