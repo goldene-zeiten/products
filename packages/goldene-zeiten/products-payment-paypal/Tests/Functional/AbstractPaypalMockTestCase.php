@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Payment\Paypal\Tests\Functional;
 
 use GoldeneZeiten\Products\ApiClient\Authentication\OAuth2ClientCredentialsProvider;
 use GoldeneZeiten\Products\ApiClient\Http\ApiHttpClient;
+use GoldeneZeiten\Products\Payment\Paypal\Amount\PaypalAmountFormatter;
 use GoldeneZeiten\Products\Payment\Paypal\Authentication\PaypalCredentialsFactory;
 use GoldeneZeiten\Products\Payment\Paypal\Configuration\PaypalConfiguration;
 use GoldeneZeiten\Products\Payment\Paypal\Configuration\PaypalEnvironment;
@@ -56,7 +57,7 @@ abstract class AbstractPaypalMockTestCase extends AbstractApiMockTestCase
             $apiHttpClient,
             new OAuth2ClientCredentialsProvider($apiHttpClient, $this->tokenCache()),
             new PaypalCredentialsFactory(),
-            new PaypalOrderRequestBuilder(),
+            new PaypalOrderRequestBuilder(new PaypalAmountFormatter()),
             $this->get(EventDispatcherInterface::class),
         );
     }

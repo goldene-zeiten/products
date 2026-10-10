@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Payment\Paypal\Exception\PaypalApiException;
 use GoldeneZeiten\Products\Payment\Paypal\Tests\Functional\AbstractPaypalMockTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 
 final class HttpPaypalOrderClientTest extends AbstractPaypalMockTestCase
@@ -35,6 +36,27 @@ final class HttpPaypalOrderClientTest extends AbstractPaypalMockTestCase
         $this->assertSame('EUR', $body['purchase_units'][0]['amount']['currency_code']);
         $this->assertSame('12.34', $body['purchase_units'][0]['amount']['value']);
         $this->assertSame('https://shop.example/return', $body['payment_source']['paypal']['experience_context']['return_url']);
+    }
+
+    /**
+     * PayPal rejects decimals for the currencies it handles without a minor unit.
+     */
+    #[Test]
+    #[DataProvider('currencyAmountProvider')]
+    public function sendsTheTotalWithTheDecimalsPaypalAcceptsForTheCurrency(string $currency, string $amount, string $expectedValue): void
+    {
+        $this->orderClient()->createOrder($this->order(), $this->context($amount, $currency), $this->configuration());
+
+        $body = json_decode((string)$this->loggedRequests(self::ORDERS_PATH)[0]['body'], true);
+        $this->assertSame($expectedValue, $body['purchase_units'][0]['amount']['value']);
+    }
+
+    public static function currencyAmountProvider(): \Generator
+    {
+        yield 'euro with two decimals' => ['currency' => 'EUR', 'amount' => '12.30', 'expectedValue' => '12.30'];
+        yield 'yen without decimals' => ['currency' => 'JPY', 'amount' => '1000', 'expectedValue' => '1000'];
+        yield 'forint rounded to whole units' => ['currency' => 'HUF', 'amount' => '1234.56', 'expectedValue' => '1235'];
+        yield 'new taiwan dollar without decimals' => ['currency' => 'TWD', 'amount' => '499.00', 'expectedValue' => '499'];
     }
 
     #[Test]
@@ -87,11 +109,11 @@ final class HttpPaypalOrderClientTest extends AbstractPaypalMockTestCase
         return $order;
     }
 
-    private function context(string $amount = '12.34'): PaymentContext
+    private function context(string $amount = '12.34', string $currency = 'EUR'): PaymentContext
     {
         return new PaymentContext(
             Money::fromDecimalString($amount),
-            'EUR',
+            $currency,
             'DE',
             0,
             'https://shop.example/return',

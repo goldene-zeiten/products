@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Payment\Paypal\Order;
 
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Payment\Paypal\Amount\PaypalAmountFormatter;
 use GoldeneZeiten\Products\Payment\Paypal\Configuration\PaypalConfiguration;
 
 /**
@@ -15,6 +16,10 @@ use GoldeneZeiten\Products\Payment\Paypal\Configuration\PaypalConfiguration;
  */
 final class PaypalOrderRequestBuilder
 {
+    public function __construct(
+        private readonly PaypalAmountFormatter $amountFormatter,
+    ) {}
+
     /**
      * @return array<string, mixed>
      */
@@ -28,7 +33,7 @@ final class PaypalOrderRequestBuilder
                     'custom_id' => (string)($order->getUid() ?? 0),
                     'amount' => [
                         'currency_code' => $context->getCurrency(),
-                        'value' => $context->getAmount()->getDecimalString(),
+                        'value' => $this->amountFormatter->format($context->getAmount(), $context->getCurrency()),
                     ],
                 ],
             ],
