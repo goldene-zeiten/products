@@ -1,0 +1,24 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "GET",
+    "urlPath": "/payment/stripe/v1/checkout/sessions/cs_test_async"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "cs_test_async",
+      "object": "checkout.session",
+      "status": "complete",
+      "payment_status": "unpaid",
+      "payment_intent": "pi_test_async",
+      "client_reference_id": "42",
+      "amount_total": 1234,
+      "currency": "eur",
+      "url": null
+    }
+  }
+}

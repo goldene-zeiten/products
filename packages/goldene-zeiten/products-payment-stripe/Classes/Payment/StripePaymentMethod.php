@@ -19,6 +19,7 @@ use GoldeneZeiten\Products\Payment\Stripe\Event\ModifyStripeSessionRequestEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use Stripe\Event;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Exception\SignatureVerificationException;
 use Stripe\StripeObject;
@@ -36,6 +37,16 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface, Stati
     public const IDENTIFIER = 'stripe';
 
     private const SESSION_ID_PLACEHOLDER = 'session_id={CHECKOUT_SESSION_ID}';
+
+    private const EVENT_COMPLETED = 'checkout.session.completed';
+    private const EVENT_ASYNC_SUCCEEDED = 'checkout.session.async_payment_succeeded';
+    private const EVENT_ASYNC_FAILED = 'checkout.session.async_payment_failed';
+
+    private const HANDLED_EVENTS = [
+        self::EVENT_COMPLETED,
+        self::EVENT_ASYNC_SUCCEEDED,
+        self::EVENT_ASYNC_FAILED,
+    ];
 
     public function __construct(
         private readonly StripeConfigurationFactory $configurationFactory,
@@ -102,50 +113,71 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface, Stati
 
     public function handleWebhook(ServerRequestInterface $request, Order $order): PaymentResult
     {
-        $configuration = $this->configurationFactory->forCurrentRequest();
-        try {
-            $event = Webhook::constructEvent(
-                (string)$request->getBody(),
-                $request->getHeaderLine('Stripe-Signature'),
-                $configuration->webhookSecret,
-            );
-        } catch (\UnexpectedValueException | SignatureVerificationException) {
+        $event = $this->verifiedEvent($request);
+        if ($event === null) {
             return PaymentResult::failed('Stripe webhook signature could not be verified.');
         }
-        if ($event->type !== 'checkout.session.completed') {
-            return PaymentResult::pending();
+        if (!in_array($event->type, self::HANDLED_EVENTS, true)) {
+            return PaymentResult::unchanged();
         }
 
-        return $this->interpretSession($event->data->object, $order);
+        return $this->interpretEvent($event, $order);
     }
 
     /**
      * Stripe's webhook is one endpoint registered in the dashboard, so the callback carries no per-order
      * token. The `Stripe-Signature` header authenticates the body; only once it verifies is the session's
      * `client_reference_id` trusted to name the order {@see StaticWebhookPaymentMethodInterface}.
+     *
+     * Subscribe the endpoint to `checkout.session.completed`, `checkout.session.async_payment_succeeded` and
+     * `checkout.session.async_payment_failed`; any other event type is acknowledged and ignored.
      */
     public function handleStaticWebhook(ServerRequestInterface $request): WebhookResolution
     {
+        $event = $this->verifiedEvent($request);
+        if ($event === null) {
+            return WebhookResolution::unresolved(PaymentResult::failed('Stripe webhook signature could not be verified.'));
+        }
+        if (!in_array($event->type, self::HANDLED_EVENTS, true)) {
+            return WebhookResolution::ignored();
+        }
+        $order = $this->orderRepository->findByUid((int)($event->data->object->client_reference_id ?? 0));
+        if ($order === null) {
+            return WebhookResolution::unresolved(PaymentResult::failed('The Stripe webhook references an unknown order.'));
+        }
+
+        return WebhookResolution::resolved($order, $this->interpretEvent($event, $order));
+    }
+
+    private function verifiedEvent(ServerRequestInterface $request): ?Event
+    {
         $configuration = $this->configurationFactory->forCurrentRequest();
         try {
-            $event = Webhook::constructEvent(
+            return Webhook::constructEvent(
                 (string)$request->getBody(),
                 $request->getHeaderLine('Stripe-Signature'),
                 $configuration->webhookSecret,
             );
         } catch (\UnexpectedValueException | SignatureVerificationException) {
-            return WebhookResolution::unresolved(PaymentResult::failed('Stripe webhook signature could not be verified.'));
+            return null;
         }
-        if ($event->type !== 'checkout.session.completed') {
-            return WebhookResolution::unresolved(PaymentResult::pending());
-        }
+    }
+
+    /**
+     * An asynchronous payment (SEPA debit, bank transfer) completes the checkout session unpaid and settles
+     * later with a separate success or failure event; the failure carries the still-unpaid session.
+     */
+    private function interpretEvent(Event $event, Order $order): PaymentResult
+    {
         $session = $event->data->object;
-        $order = $this->orderRepository->findByUid((int)($session->client_reference_id ?? 0));
-        if ($order === null) {
-            return WebhookResolution::unresolved(PaymentResult::failed('The Stripe webhook references an unknown order.'));
+        if ($event->type !== self::EVENT_ASYNC_FAILED) {
+            return $this->interpretSession($session, $order);
+        }
+        if (!$this->belongsToOrder($session, $order)) {
+            return PaymentResult::unchanged();
         }
 
-        return WebhookResolution::resolved($order, $this->interpretSession($session, $order));
+        return PaymentResult::failed('The Stripe payment failed.', (string)($session->payment_intent ?? $session->id));
     }
 
     private function confirm(string $sessionId, Order $order): PaymentResult
@@ -163,29 +195,29 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface, Stati
 
     /**
      * A valid callback token only proves the caller owns *some* order of this shop; the `session_id` on the
-     * return URL is a separate, caller-controlled value. Binding the paid session to this order - by the
+     * return URL is a separate, caller-controlled value. Binding the session to this order - by the
      * `client_reference_id` set at creation, the settled amount and the currency - stops a cheap paid session
      * from being replayed onto an expensive unpaid order.
+     *
+     * A completed session that is still unpaid is an asynchronous payment on its way, so it is pending; one
+     * that never completed (expired, abandoned) failed.
      */
     private function interpretSession(StripeObject $session, Order $order): PaymentResult
     {
         $externalId = (string)($session->payment_intent ?? $session->id);
-        $paymentStatus = (string)($session->payment_status ?? '');
-        if ($paymentStatus === 'paid') {
-            if (!$this->belongsToOrder($session, $order)) {
-                $this->logger->warning('Stripe session does not match the order it was returned for.', [
-                    'order' => $order->getUid(),
-                    'session' => (string)($session->id ?? ''),
-                ]);
-                return PaymentResult::failed('The Stripe payment did not match the order.', $externalId);
-            }
-            return PaymentResult::completed(PaymentStatus::PAID, $externalId);
-        }
-        if ($paymentStatus === 'unpaid') {
+        $isSettled = in_array((string)($session->payment_status ?? ''), ['paid', 'no_payment_required'], true);
+        if (!$isSettled && (string)($session->status ?? '') !== 'complete') {
             return PaymentResult::failed('The Stripe payment was not completed.', $externalId);
         }
+        if (!$this->belongsToOrder($session, $order)) {
+            $this->logger->warning('Stripe session does not match the order it was returned for.', [
+                'order' => $order->getUid(),
+                'session' => (string)($session->id ?? ''),
+            ]);
+            return PaymentResult::failed('The Stripe payment did not match the order.', $externalId);
+        }
 
-        return PaymentResult::pending($externalId);
+        return $isSettled ? PaymentResult::completed(PaymentStatus::PAID, $externalId) : PaymentResult::pending($externalId);
     }
 
     private function belongsToOrder(StripeObject $session, Order $order): bool

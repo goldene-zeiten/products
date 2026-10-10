@@ -44,8 +44,11 @@ moving parts, and this extension implements all three:
     signature against the configured webhook signing secret via Stripe's own SDK
     (:php:`\Stripe\Webhook::constructEvent()` — see :ref:`introduction-webhook-verification` below), and
     only then resolves the order from the verified session's :code:`client_reference_id`. An unverified or
-    forged notification is never allowed to mark an order paid. Only the
-    :code:`checkout.session.completed` event type is acted on; any other event is acknowledged as pending.
+    forged notification is never allowed to mark an order paid. The
+    :code:`checkout.session.completed`, :code:`checkout.session.async_payment_succeeded` and
+    :code:`checkout.session.async_payment_failed` event types are acted on; any other event is acknowledged
+    and ignored. A completed session whose asynchronous payment (SEPA debit) is still on its way accepts the
+    order with its payment pending.
 
 Both callbacks are idempotent, as the core API requires: an order that is already
 :php:`PaymentStatus::PAID` is not re-confirmed against Stripe on a replayed return, and interpreting a
