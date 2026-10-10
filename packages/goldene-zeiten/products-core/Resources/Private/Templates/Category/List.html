@@ -1,3 +1,7 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/Core/ViewHelpers"
+>
 <div class="category-list">
     <f:if condition="{ancestorChain}">
         <f:then>
@@ -16,7 +20,7 @@
                         <div class="product-list-item card mb-4">
                             <div class="card-body">
                                 <h5 class="card-title">{product.title}</h5>
-                                <f:render partial="Product/Price" arguments="{price: product.price}" />
+                                <f:render partial="Product/Price" arguments="{price: '{p:pricing.displayPrice(product: product)}'}" />
                                 <f:link.action controller="Product" action="show" pageUid="{settings.pids.detailPage}" arguments="{product: product}" class="btn btn-primary"><f:translate key="details" /></f:link.action>
                             </div>
                         </div>
@@ -29,3 +33,4 @@
         </f:else>
     </f:if>
 </div>
+</html>
