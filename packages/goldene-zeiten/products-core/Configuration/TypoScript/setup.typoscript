@@ -27,9 +27,6 @@ plugin.tx_productscore {
             senderName = {$plugin.tx_productscore.settings.email.senderName}
             merchantRecipient = {$plugin.tx_productscore.settings.email.merchantRecipient}
         }
-        ajax {
-            pageType = {$plugin.tx_productscore.settings.ajax.pageType}
-        }
         invoice {
             pageType = {$plugin.tx_productscore.settings.invoice.pageType}
         }
@@ -38,32 +35,6 @@ plugin.tx_productscore {
         }
         stock {
             lowStockThreshold = {$plugin.tx_productscore.settings.stock.lowStockThreshold}
-        }
-    }
-}
-
-products_ajax = PAGE
-products_ajax {
-    typeNum = {$plugin.tx_productscore.settings.ajax.pageType}
-    config {
-        disableAllHeaderCode = 1
-        xhtml_cleaning = 0
-        admPanel = 0
-        debug = 0
-        no_cache = 1
-    }
-    10 = USER
-    10 {
-        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
-        extensionName = ProductsCore
-        pluginName = ProductList
-        vendorName = GoldeneZeiten
-        controller = ProductController
-        action = listByAjax
-        switchableControllerActions {
-            ProductController {
-                1 = listByAjax
-            }
         }
     }
 }

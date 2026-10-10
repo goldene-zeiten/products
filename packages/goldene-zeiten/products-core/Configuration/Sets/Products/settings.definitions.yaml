@@ -34,9 +34,6 @@ categories:
   privacy:
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.privacy'
     parent: products
-  technical:
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.technical'
-    parent: products
 
 settings:
   products.pids.storageFolder:
@@ -275,8 +272,3 @@ settings:
     default: 3650
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.gdpr.invoiceRetentionDays'
     category: privacy
-  products.ajax.pageType:
-    type: int
-    default: 1729512000
-    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.ajax.pageType'
-    category: technical

@@ -38,7 +38,7 @@ defined('TYPO3') or die();
         'ProductsCore',
         'ProductList',
         [
-            ProductController::class => 'list, listByAjax',
+            ProductController::class => 'list',
         ],
         [],
         ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
