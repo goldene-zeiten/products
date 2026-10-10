@@ -1,0 +1,15 @@
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,80,1,0,"Existing Product"
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",501,"tx_products_domain_model_product",80
+"tt_products",,,,,
+,"uid","pid","deleted","hidden","title","image"
+,501,1,0,0,"Product With Image",""
+"sys_file",,,,,
+,"uid","storage","identifier","name","missing"
+,500,1,"/product-one.jpg","product-one.jpg",0
+"sys_file_reference",,,,,,,,
+,"uid","pid","deleted","uid_local","uid_foreign","tablenames","fieldname","sorting_foreign"
+,900,1,0,500,501,"tt_products","image_uid",1

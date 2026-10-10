@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Core\Updates;
 
 use Doctrine\DBAL\ParameterType;
 use Symfony\Component\Console\Output\OutputInterface;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 
@@ -33,50 +34,66 @@ final class DownloadsCatalogMigrator
      */
     public function migrateAll(OutputInterface $output): void
     {
-        $attemptedMmUids = [];
-        while (($rows = $this->fetchPendingMmRows()) !== []) {
-            $newRows = array_filter(
-                $rows,
-                fn(array $row): bool => !in_array((int)$row['mm_uid'], $attemptedMmUids, true)
-            );
-            if ($newRows === []) {
-                break;
-            }
-            foreach ($newRows as $row) {
-                $attemptedMmUids[] = (int)$row['mm_uid'];
-                $this->migrateRow((int)$row['mm_uid'], (int)$row['uid_local'], (int)$row['uid_foreign'], $output);
+        $lastMmUid = 0;
+        while (($rows = $this->fetchPendingMmRows($lastMmUid)) !== []) {
+            foreach ($rows as $row) {
+                $lastMmUid = (int)$row['mm_uid'];
+                $this->migrateRow($lastMmUid, (int)$row['uid_local'], (int)$row['uid_foreign'], $output);
             }
         }
     }
 
+    public function hasPending(): bool
+    {
+        if (!$this->migrationHelper->tablesExist(self::MM_TABLE)) {
+            return false;
+        }
+        return $this->fetchPendingMmRows(0) !== [];
+    }
+
     /**
+     * MM rows of a migrated product whose catalog entry still has a legacy file the local product
+     * does not reference yet. Rows of an unmigrated product or of an entry without any file can
+     * never be migrated and therefore never count as pending.
+     *
      * @return array<int, array<string, mixed>>
      */
-    private function fetchPendingMmRows(): array
+    private function fetchPendingMmRows(int $afterMmUid): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::MM_TABLE);
         $queryBuilder->getRestrictions()->removeAll();
-        $queryBuilder->select(
-            'mm.uid AS mm_uid',
-            'mm.uid_local',
-            'mm.uid_foreign'
-        )
+        $queryBuilder->select('mm.uid AS mm_uid', 'mm.uid_local', 'mm.uid_foreign')
             ->from(self::MM_TABLE, 'mm')
-            ->andWhere($queryBuilder->expr()->eq('mm.deleted', 0))
-            ->andWhere($this->notYetMigratedCondition($queryBuilder))
+            ->join('mm', 'tx_products_migration_map', 'map', (string)$queryBuilder->expr()->and(
+                $queryBuilder->expr()->eq('map.legacy_uid', $queryBuilder->quoteIdentifier('mm.uid_local')),
+                $queryBuilder->expr()->eq('map.legacy_table', $queryBuilder->createNamedParameter('tt_products')),
+                $queryBuilder->expr()->eq('map.local_table', $queryBuilder->createNamedParameter(self::LOCAL_TABLE))
+            ))
+            ->andWhere($queryBuilder->expr()->eq('mm.deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)))
+            ->andWhere($queryBuilder->expr()->gt('map.local_uid', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)))
+            ->andWhere($queryBuilder->expr()->gt('mm.uid', $queryBuilder->createNamedParameter($afterMmUid, Connection::PARAM_INT)))
+            ->andWhere($this->hasUnmigratedFileCondition($queryBuilder))
+            ->orderBy('mm.uid')
             ->setMaxResults(LegacyMigrationHelper::BATCH_SIZE);
         return $queryBuilder->executeQuery()->fetchAllAssociative();
     }
 
-    private function notYetMigratedCondition(QueryBuilder $queryBuilder): string
+    private function hasUnmigratedFileCondition(QueryBuilder $queryBuilder): string
     {
         return sprintf(
-            'NOT EXISTS (SELECT 1 FROM %s WHERE tablenames = %s AND fieldname = %s '
-                . 'AND uid_foreign = %s AND deleted = 0 LIMIT 1)',
+            'EXISTS (SELECT 1 FROM %1$s %2$s WHERE %2$s.tablenames = %3$s AND %2$s.fieldname = %4$s '
+                . 'AND %2$s.uid_foreign = %5$s AND %2$s.deleted = 0 '
+                . 'AND NOT EXISTS (SELECT 1 FROM %1$s %6$s WHERE %6$s.tablenames = %7$s AND %6$s.fieldname = %8$s '
+                . 'AND %6$s.uid_foreign = %9$s AND %6$s.uid_local = %2$s.uid_local AND %6$s.deleted = 0))',
             $queryBuilder->quoteIdentifier('sys_file_reference'),
+            $queryBuilder->quoteIdentifier('legacy_reference'),
+            $queryBuilder->createNamedParameter(self::DOWNLOADS_TABLE),
+            $queryBuilder->createNamedParameter(self::LEGACY_DOWNLOADS_FIELD),
+            $queryBuilder->quoteIdentifier('mm.uid_foreign'),
+            $queryBuilder->quoteIdentifier('local_reference'),
             $queryBuilder->createNamedParameter(self::LOCAL_TABLE),
             $queryBuilder->createNamedParameter(self::LOCAL_FIELD),
-            $queryBuilder->quoteIdentifier('mm.uid_local')
+            $queryBuilder->quoteIdentifier('map.local_uid')
         );
     }
 

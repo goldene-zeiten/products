@@ -6,9 +6,11 @@ namespace GoldeneZeiten\Products\Core\Updates;
 
 use Doctrine\DBAL\ParameterType;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Resource\Enum\DuplicationBehavior;
+use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
@@ -43,9 +45,13 @@ final class LegacyMediaMigrator
     }
 
     /**
+     * Rows that carry legacy media (a filename list or legacy FAL references) and have no migrated
+     * reference yet, in uid order after the given cursor. A row whose files are all missing on disk
+     * stays pending, so callers page through with the cursor rather than until the set is empty.
+     *
      * @return array<int, array<string, mixed>>
      */
-    public function fetchPendingRows(LegacyMediaFieldMapping $mapping): array
+    public function fetchPendingRows(LegacyMediaFieldMapping $mapping, int $afterLegacyUid = 0): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($mapping->legacyTable);
         $queryBuilder->getRestrictions()->removeAll();
@@ -56,11 +62,28 @@ final class LegacyMediaMigrator
                 $queryBuilder->expr()->eq('map.legacy_table', $queryBuilder->createNamedParameter($mapping->legacyTable)),
                 $queryBuilder->expr()->eq('map.local_table', $queryBuilder->createNamedParameter($mapping->localTable))
             ))
-            ->andWhere($queryBuilder->expr()->eq('legacy.deleted', 0))
-            ->andWhere($queryBuilder->expr()->gt('map.local_uid', 0))
+            ->andWhere($queryBuilder->expr()->eq('legacy.deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)))
+            ->andWhere($queryBuilder->expr()->gt('map.local_uid', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)))
+            ->andWhere($queryBuilder->expr()->gt('legacy.uid', $queryBuilder->createNamedParameter($afterLegacyUid, Connection::PARAM_INT)))
+            ->andWhere($this->hasLegacyMediaCondition($queryBuilder, $mapping))
             ->andWhere($this->notYetMigratedCondition($queryBuilder, $mapping))
+            ->orderBy('legacy.uid')
             ->setMaxResults(LegacyMigrationHelper::BATCH_SIZE);
         return $queryBuilder->executeQuery()->fetchAllAssociative();
+    }
+
+    private function hasLegacyMediaCondition(QueryBuilder $queryBuilder, LegacyMediaFieldMapping $mapping): string
+    {
+        return (string)$queryBuilder->expr()->or(
+            $queryBuilder->expr()->neq('legacy.' . $mapping->legacyField, $queryBuilder->createNamedParameter('')),
+            sprintf(
+                'EXISTS (SELECT 1 FROM %s WHERE tablenames = %s AND fieldname = %s AND uid_foreign = %s AND deleted = 0)',
+                $queryBuilder->quoteIdentifier('sys_file_reference'),
+                $queryBuilder->createNamedParameter($mapping->legacyTable),
+                $queryBuilder->createNamedParameter($mapping->legacyField . '_uid'),
+                $queryBuilder->quoteIdentifier('legacy.uid')
+            )
+        );
     }
 
     private function notYetMigratedCondition(QueryBuilder $queryBuilder, LegacyMediaFieldMapping $mapping): string
@@ -162,7 +185,28 @@ final class LegacyMediaMigrator
             ));
             return;
         }
-        $file = $targetFolder->getStorage()->addFile($sourcePath, $targetFolder, $filename, DuplicationBehavior::RENAME);
+        $file = $this->importOrReuseFile($sourcePath, $filename, $targetFolder);
         $this->insertReference($context, $file->getUid(), $sorting, 0);
+    }
+
+    /**
+     * The legacy file is copied, never moved: several legacy records may list the same file, and
+     * each of them must find it. A file already imported with identical content is reused.
+     */
+    private function importOrReuseFile(string $sourcePath, string $filename, Folder $targetFolder): File
+    {
+        if ($targetFolder->hasFile($filename)) {
+            $existingFile = $targetFolder->getStorage()->getFileInFolder($filename, $targetFolder);
+            if ($existingFile instanceof File && $existingFile->getSha1() === sha1_file($sourcePath)) {
+                return $existingFile;
+            }
+        }
+        return $targetFolder->getStorage()->addFile(
+            $sourcePath,
+            $targetFolder,
+            $filename,
+            DuplicationBehavior::RENAME,
+            false
+        );
     }
 }
