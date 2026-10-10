@@ -56,8 +56,10 @@ comparable header to check the way PayPal's transmission signature can be verifi
 callback body cannot make that authenticated re-read report a completed session with a valid
 authorization token, so this re-read *is* the verification step — the same "verify with the gateway,
 never trust the caller" rule the core Payment Methods API requires. Only a re-read status of `COMPLETED`
-with a non-empty `authorization_token` proceeds to `placeOrder()`; anything else resolves to
-`PaymentResult::pending()` (still `WAITING`) or `PaymentResult::failed()` (the re-read itself failed).
+with a non-empty `authorization_token` proceeds to `placeOrder()` - and only while the order's payment is
+still open, so a completed session's update does not place an order the return already placed. A session
+still in progress resolves to `PaymentResult::unchanged()`; a final failure state (`CANCELLED`, `FAILED`,
+`ERROR`, `DISABLED`) or a failed re-read to `PaymentResult::failed()`.
 
 ## Configuration resolution
 
@@ -104,7 +106,9 @@ controls:
 - `hpp/read-session-completed.json` — reading HPP session `hpp_session_1` returns `status: COMPLETED`
   with authorization token `auth_token_1`.
 - `hpp/read-session-waiting.json` — reading HPP session `hpp_session_waiting` returns `status: WAITING`
-  with no authorization token, exercising the "not yet completed" pending path.
+  with no authorization token, exercising the "not yet completed" unchanged path.
+- `hpp/read-session-cancelled.json` — reading HPP session `hpp_session_cancelled` returns
+  `status: CANCELLED`, a final failure state.
 - `authorizations/place-order-accepted.json` — placing an order against `auth_token_1` returns `200`
   with order id `klarna_order_1` and `fraud_status: ACCEPTED`.
 - `authorizations/place-order-rejected.json` — placing an order against `auth_token_reject` returns
