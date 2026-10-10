@@ -1,9 +1,10 @@
 <div class="checkout-shipping-method">
     <h2><f:translate key="checkout_shipping_method" /></h2>
+    <f:flashMessages />
     <f:form action="submitShippingMethod">
         <f:for each="{shippingOptions}" as="option">
             <div class="form-check">
-                <f:form.radio name="shippingOption" value="{option.key}" checked="{f:if(condition: '\'{selectedShippingOption}\' == \'{option.key}\'', then: '1')}" class="form-check-input" id="shipping-option-{option.key}" />
+                <f:form.radio name="shippingOption" value="{option.key}" checked="{f:if(condition: '\'{selectedShippingOption}\' == \'{option.key}\'', then: '1')}" class="form-check-input" id="shipping-option-{option.key}" required="required" />
                 <label class="form-check-label" for="shipping-option-{option.key}">
                     {option.label} - {option.cost.decimalString}
                     <f:if condition="{option.deliveryEstimate}">

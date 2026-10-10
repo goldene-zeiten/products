@@ -17,6 +17,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Event\BeforeOrderPlacedEvent;
 use GoldeneZeiten\Products\Core\Event\PaymentInitiatedEvent;
 use GoldeneZeiten\Products\Core\Loyalty\LoyaltyRegistry;
+use GoldeneZeiten\Products\Core\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
@@ -42,7 +43,8 @@ final class OrderPlacementService
         private readonly FrontendUserResolver $frontendUserResolver,
         private readonly PriceQuoteService $priceQuoteService,
         private readonly ProductsConfigurationFactory $configurationFactory,
-        private readonly WithdrawalExclusionService $withdrawalExclusionService
+        private readonly WithdrawalExclusionService $withdrawalExclusionService,
+        private readonly PaymentContextFactory $paymentContextFactory
     ) {}
 
     public function place(
@@ -77,7 +79,10 @@ final class OrderPlacementService
             $choices->getGiftMessage(),
             $choices->isWithdrawalWaiverAccepted()
         );
-        $paymentMethod = $this->paymentMethodRegistry->get($paymentMethodIdentifier);
+        $paymentMethod = $this->paymentMethodRegistry->getAvailableMethod(
+            $paymentMethodIdentifier,
+            $this->paymentContextFactory->createFromBasket($basketViewModel, $address, $this->frontendUserResolver->getUid($request))
+        );
         $this->dispatchBeforeOrderPlaced($request, $basketViewModel, $address, $paymentMethod);
 
         [$order, $paymentResult] = $this->orderPlacementTransaction->run($request, $basketViewModel, $checkoutSelections, $address, $paymentMethod);

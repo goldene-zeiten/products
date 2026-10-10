@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Core\Service\Order\OrderCreationService;
+use GoldeneZeiten\Products\Core\Shipping\Exception\MissingShippingOptionException;
 use GoldeneZeiten\Products\Core\Shipping\Exception\NoShippingOptionAvailableException;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -49,20 +50,20 @@ final class OrderCreationServiceShippingTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
-    public function shippingIsANoOpWhenNoMethodWasChosen(): void
+    public function placementFailsWhenNoMethodWasChosenWhileShippingIsEnabled(): void
     {
         $subject = $this->subject();
 
-        $order = $subject->create(
+        $this->expectException(MissingShippingOptionException::class);
+        $this->expectExceptionCode(1791662975);
+
+        $subject->create(
             $this->requestWithShipping(enabled: true),
             $this->basketViewModel($this->product()),
             new CheckoutSelections(''),
             $this->address(),
             $this->paymentMethod()
         );
-
-        $this->assertSame('', $order->getShippingProvider());
-        $this->assertSame(0, $order->getShippingTotal()->getCents());
     }
 
     #[Test]

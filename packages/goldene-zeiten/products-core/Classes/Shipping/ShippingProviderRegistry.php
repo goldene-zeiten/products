@@ -91,17 +91,29 @@ final class ShippingProviderRegistry
 
     /**
      * Execution phase: the option behind the key the customer's choice was stored under. Null when the
-     * carrier is gone, or when it no longer offers that option for this basket.
+     * carrier is gone, or when the option is not among those {@see ShippingProviderRegistry::getAvailableOptions()}
+     * offers for this basket - a stored key never bypasses the fallback rule or an integrator's filter.
      */
     public function resolveOption(string $key, ShippingContext $context): ?ShippingOption
     {
         [$providerIdentifier, $optionIdentifier] = ShippingOption::splitKey($key);
         $provider = $this->providers[$providerIdentifier] ?? null;
-        if ($provider === null || $optionIdentifier === '') {
+        if ($provider === null || $optionIdentifier === '' || !$this->isOffered($key, $context)) {
             return null;
         }
 
         return $provider->resolve($optionIdentifier, $context);
+    }
+
+    public function isOffered(string $key, ShippingContext $context): bool
+    {
+        foreach ($this->getAvailableOptions($context) as $option) {
+            if ($option->getKey() === $key) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

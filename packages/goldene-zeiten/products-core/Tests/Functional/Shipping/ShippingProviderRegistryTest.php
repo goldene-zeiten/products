@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContextItem;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Shipping\ShippingProviderRegistry;
+use GoldeneZeiten\Products\ShippingFixture\HideShippingOptionListener;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -16,6 +17,12 @@ final class ShippingProviderRegistryTest extends AbstractFunctionalTestCase
     protected array $testExtensionsToLoad = [
         'goldene-zeiten/products-shipping-fixture',
     ];
+
+    protected function tearDown(): void
+    {
+        HideShippingOptionListener::$hiddenOptionKey = '';
+        parent::tearDown();
+    }
 
     #[Test]
     public function fixtureCarrierOptionsAppearAlongsideCoreOptions(): void
@@ -81,6 +88,17 @@ final class ShippingProviderRegistryTest extends AbstractFunctionalTestCase
         $context = $this->simpleShippingContext();
 
         $option = $registry->resolveOption('gone:x', $context);
+
+        $this->assertNull($option);
+    }
+
+    #[Test]
+    public function anOptionAListenerHidesCannotBeResolved(): void
+    {
+        HideShippingOptionListener::$hiddenOptionKey = 'fixture-carrier:express';
+        $registry = $this->get(ShippingProviderRegistry::class);
+
+        $option = $registry->resolveOption('fixture-carrier:express', $this->simpleShippingContext());
 
         $this->assertNull($option);
     }

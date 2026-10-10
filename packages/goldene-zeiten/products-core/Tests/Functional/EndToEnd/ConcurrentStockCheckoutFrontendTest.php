@@ -106,7 +106,9 @@ final class ConcurrentStockCheckoutFrontendTest extends AbstractFrontendTestCase
         // @todo Remove this switch once TYPO3 13 support is dropped and always assert 303.
         $expectedStatusCode = $this->coreVersionSuffix() === 'v13' ? 200 : 303;
         $this->assertSame($expectedStatusCode, $firstResponse->getStatusCode());
-        $this->assertSame($expectedStatusCode, $secondResponse->getStatusCode());
+        // A rejected placement sends the customer back to a checkout step as a propagated response, which
+        // is the response of the request on every core version.
+        $this->assertSame(303, $secondResponse->getStatusCode());
 
         $this->assertCSVDataSet(__DIR__ . '/Fixtures/ConcurrentStockCheckoutFrontendTest/Result/after_both_finalize_calls.csv');
         $this->assertCSVDataSet(__DIR__ . '/Fixtures/ConcurrentStockCheckoutFrontendTest/Result/after_both_finalize_calls_sessions_' . $this->coreVersionSuffix() . '.csv');
