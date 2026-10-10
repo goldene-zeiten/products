@@ -85,6 +85,27 @@ final class TtProductsProductUpgradeWizardTest extends AbstractFunctionalTestCas
         $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/product_category_mm.csv');
     }
 
+    /**
+     * The `categories` column counts the product's MM rows; FormEngine and the relation handler
+     * read it before looking at the MM table.
+     */
+    #[Test]
+    public function categoryCountMatchesTheLinkedCategories(): void
+    {
+        $subject = $this->subject(new BufferedOutput());
+
+        $subject->executeUpdate();
+
+        $connection = $this->getConnectionPool()->getConnectionForTable(self::LOCAL_TABLE);
+        $products = $connection->select(['uid', 'categories'], self::LOCAL_TABLE, ['sys_language_uid' => 0])->fetchAllAssociative();
+        $this->assertNotSame([], $products);
+        foreach ($products as $product) {
+            $linkedCategories = $this->getConnectionPool()->getConnectionForTable('tx_products_product_category_mm')
+                ->count('uid_foreign', 'tx_products_product_category_mm', ['uid_local' => (int)$product['uid']]);
+            $this->assertSame($linkedCategories, (int)$product['categories'], sprintf('Product %d', (int)$product['uid']));
+        }
+    }
+
     #[Test]
     public function orphanCategoryIsLeftUnassignedAndWarns(): void
     {
