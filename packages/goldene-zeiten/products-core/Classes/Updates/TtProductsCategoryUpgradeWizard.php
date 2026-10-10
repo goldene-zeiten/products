@@ -69,11 +69,16 @@ final class TtProductsCategoryUpgradeWizard implements UpgradeWizardInterface, C
             return true;
         }
         $pid = $this->storageFolderResolver->resolve();
+        $migratedWithParent = [];
         while (($rows = $this->migrationHelper->fetchUnmigratedBatch(self::LEGACY_TABLE, self::LOCAL_TABLE)) !== []) {
             foreach ($rows as $row) {
-                $this->migrateCategory($row, $pid);
+                $localUid = $this->migrateCategory($row, $pid);
+                if ((int)$row['parent_category'] !== 0) {
+                    $migratedWithParent[$localUid] = [(int)$row['uid'], (int)$row['parent_category']];
+                }
             }
         }
+        $this->linkParents($migratedWithParent);
         $this->overlayMigrator->migrate($this->output, $this->overlayConfig(), $this->overlayValues(...));
         return true;
     }
@@ -99,7 +104,7 @@ final class TtProductsCategoryUpgradeWizard implements UpgradeWizardInterface, C
     /**
      * @param array<string, mixed> $legacyRow
      */
-    private function migrateCategory(array $legacyRow, int $pid): void
+    private function migrateCategory(array $legacyRow, int $pid): int
     {
         $legacyUid = (int)$legacyRow['uid'];
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::LOCAL_TABLE);
@@ -110,30 +115,37 @@ final class TtProductsCategoryUpgradeWizard implements UpgradeWizardInterface, C
             'title' => (string)$legacyRow['title'],
             'slug' => (string)($legacyRow['slug'] ?? ''),
             'description' => (string)($legacyRow['note'] ?? ''),
-            'parent_category' => $this->resolveParent($legacyUid, (int)$legacyRow['parent_category']),
+            'parent_category' => 0,
         ])->executeStatement();
         $localUid = (int)$this->connectionPool->getConnectionForTable(self::LOCAL_TABLE)->lastInsertId();
         $this->migrationHelper->recordMapping(self::LEGACY_TABLE, $legacyUid, self::LOCAL_TABLE, $localUid);
+        return $localUid;
     }
 
     /**
-     * A single ascending-uid pass always migrates a parent before its children.
+     * Runs once every category is mapped, because a legacy parent may come later in uid order than
+     * its child.
+     *
+     * @param array<int, array{0: int, 1: int}> $migratedWithParent local uid => [legacy uid, legacy parent uid]
      */
-    private function resolveParent(int $legacyUid, int $legacyParentUid): int
+    private function linkParents(array $migratedWithParent): void
     {
-        if ($legacyParentUid === 0) {
-            return 0;
+        foreach ($migratedWithParent as $localUid => [$legacyUid, $legacyParentUid]) {
+            $parentLocalUid = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, $legacyParentUid, self::LOCAL_TABLE);
+            if ($parentLocalUid === null || $parentLocalUid === 0) {
+                $this->output->writeln(sprintf(
+                    '<comment>tt_products_cat uid %d referenced missing parent uid %d, linked to root instead.</comment>',
+                    $legacyUid,
+                    $legacyParentUid
+                ));
+                continue;
+            }
+            $this->connectionPool->getConnectionForTable(self::LOCAL_TABLE)->update(
+                self::LOCAL_TABLE,
+                ['parent_category' => $parentLocalUid],
+                ['uid' => $localUid]
+            );
         }
-        $localUid = $this->migrationHelper->resolveLocalUid(self::LEGACY_TABLE, $legacyParentUid, self::LOCAL_TABLE);
-        if ($localUid === null) {
-            $this->output->writeln(sprintf(
-                '<comment>tt_products_cat uid %d referenced missing parent uid %d, linked to root instead.</comment>',
-                $legacyUid,
-                $legacyParentUid
-            ));
-            return 0;
-        }
-        return $localUid;
     }
 
     /**

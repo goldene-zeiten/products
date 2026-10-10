@@ -94,6 +94,30 @@ final class TtProductsCategoryUpgradeWizardTest extends AbstractFunctionalTestCa
         $this->assertStringContainsString('parent uid 4 was never migrated', $output->fetch());
     }
 
+    /**
+     * Legacy category 20 points at parent 21, which comes later in uid order and is therefore not
+     * mapped yet when 20 is migrated. The parent link must survive anyway.
+     */
+    #[Test]
+    public function parentWithAHigherUidThanItsChildIsStillLinked(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsCategoryUpgradeWizardTest/parent_with_higher_uid.csv');
+        $output = new BufferedOutput();
+        $subject = $this->subject($output);
+
+        $subject->executeUpdate();
+
+        $migrationHelper = $this->get(LegacyMigrationHelper::class);
+        $childUid = $migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 20, self::LOCAL_TABLE);
+        $parentUid = $migrationHelper->resolveLocalUid(self::LEGACY_TABLE, 21, self::LOCAL_TABLE);
+        $child = $this->getConnectionPool()->getConnectionForTable(self::LOCAL_TABLE)
+            ->select(['parent_category'], self::LOCAL_TABLE, ['uid' => $childUid])
+            ->fetchAssociative();
+        $this->assertNotNull($parentUid);
+        $this->assertSame($parentUid, (int)($child['parent_category'] ?? 0));
+        $this->assertStringNotContainsString('referenced missing parent uid 21', $output->fetch());
+    }
+
     #[Test]
     public function executeUpdateIsIdempotent(): void
     {
