@@ -16,6 +16,7 @@ class VoucherRedemption extends AbstractEntity
     protected int $frontendUser = 0;
     protected int $discountTotal = 0;
     protected ?\DateTime $redeemedAt = null;
+    protected ?\DateTime $revertedAt = null;
 
     public function getVoucherUid(): int
     {
@@ -75,5 +76,13 @@ class VoucherRedemption extends AbstractEntity
     public function setRedeemedAt(?\DateTime $redeemedAt): void
     {
         $this->redeemedAt = $redeemedAt;
+    }
+
+    /**
+     * When the order was cancelled and the voucher given back; null while the redemption stands.
+     */
+    public function getRevertedAt(): ?\DateTime
+    {
+        return $this->revertedAt;
     }
 }

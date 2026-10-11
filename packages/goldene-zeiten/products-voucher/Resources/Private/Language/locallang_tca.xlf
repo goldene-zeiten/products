@@ -72,6 +72,9 @@
 			<trans-unit id="tx_products_domain_model_voucherredemption.redeemed_at" resname="tx_products_domain_model_voucherredemption.redeemed_at">
 				<source>Redeemed At</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.reverted_at" resname="tx_products_domain_model_voucherredemption.reverted_at">
+				<source>Reverted at (order cancelled)</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
