@@ -56,12 +56,17 @@ test('spending credit points reduces the order total, and points earned from the
 
   await expect(page.getByText('Your order number is', { exact: false })).toBeVisible();
 
-  // Total Net + Tax is the pre-redemption subtotal; the gap to Total Gross is the redemption discount
-  const totalNet = await rowValue(page, 'Total Net');
-  const totalTax = await rowValue(page, 'Tax');
+  // The redemption is listed as a discount and, being a price reduction, lowers net and VAT with the gross
+  expect(Math.round((await rowValue(page, 'Discount')) * 100)).toBe(500);
   const totalGross = await rowValue(page, 'Total Gross');
-  const redemptionDiscount = Math.round((totalNet + totalTax - totalGross) * 100);
-  expect(redemptionDiscount).toBe(500);
+  const totalNet = await rowValue(page, 'Total Net');
+  const vatRows = page.locator('tr.order-summary-vat');
+  let totalVat = 0;
+  for (let index = 0; index < (await vatRows.count()); index++) {
+    const match = (await vatRows.nth(index).textContent()).match(/([\d.,]+)\s*EUR/);
+    totalVat += parseFloat(match[1].replace(',', ''));
+  }
+  expect(Math.round((totalNet + totalVat) * 100)).toBe(Math.round(totalGross * 100));
 
   // Reward Mug earns 30 points/unit: 100 - 50 (spent) + 30 (earned) = 80
   await emptyBasket(page);

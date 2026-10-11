@@ -1,3 +1,6 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
 <div class="order-summary">
     <h3><f:translate key="order_summary" /></h3>
     <table class="table">
@@ -28,26 +31,79 @@
             </f:for>
         </tbody>
         <tfoot>
-            <tr>
-                <th colspan="3"><f:translate key="total_net" /></th>
-                <td>{summary.totalNet.decimalString} {summary.currency}</td>
-            </tr>
-            <tr>
-                <th colspan="3"><f:translate key="tax" /></th>
-                <td>{summary.totalTax.decimalString} {summary.currency}</td>
-            </tr>
-            <tr>
-                <th colspan="3"><f:translate key="total_gross" /></th>
-                <td><strong>{summary.totalGross.decimalString} {summary.currency}</strong></td>
-            </tr>
-            <f:if condition="{summary.depositTotal.cents} > 0">
+            <f:if condition="{totals}">
                 <f:then>
-                    <tr>
-                        <th colspan="3"><f:translate key="deposit_total" /></th>
-                        <td>{summary.depositTotal.decimalString} {summary.currency}</td>
+                    <tr class="order-summary-subtotal">
+                        <th colspan="3"><f:translate key="summary_subtotal" /></th>
+                        <td>{totals.itemsTotalGross.decimalString} {summary.currency}</td>
+                    </tr>
+                    <f:if condition="{totals.shippingTotal.cents} != 0">
+                        <tr class="order-summary-shipping">
+                            <th colspan="3"><f:translate key="summary_shipping" /></th>
+                            <td>{totals.shippingTotal.decimalString} {summary.currency}</td>
+                        </tr>
+                    </f:if>
+                    <f:if condition="{totals.handlingFeeTotal.cents} != 0">
+                        <tr class="order-summary-handling-fee">
+                            <th colspan="3"><f:translate key="summary_handling_fee" /></th>
+                            <td>{totals.handlingFeeTotal.decimalString} {summary.currency}</td>
+                        </tr>
+                    </f:if>
+                    <f:if condition="{totals.paymentFeeTotal.cents} != 0">
+                        <tr class="order-summary-payment-fee">
+                            <th colspan="3"><f:translate key="summary_payment_fee" /></th>
+                            <td>{totals.paymentFeeTotal.decimalString} {summary.currency}</td>
+                        </tr>
+                    </f:if>
+                    <f:if condition="{totals.depositTotal.cents} != 0">
+                        <tr class="order-summary-deposit">
+                            <th colspan="3"><f:translate key="deposit_total" /></th>
+                            <td>{totals.depositTotal.decimalString} {summary.currency}</td>
+                        </tr>
+                    </f:if>
+                    <f:if condition="{totals.discountTotal.cents} != 0">
+                        <tr class="order-summary-discount">
+                            <th colspan="3"><f:translate key="summary_discount" /></th>
+                            <td>-{totals.discountTotal.decimalString} {summary.currency}</td>
+                        </tr>
+                    </f:if>
+                    <f:if condition="{totals.roundingDifference.cents} != 0">
+                        <tr class="order-summary-rounding">
+                            <th colspan="3"><f:translate key="summary_rounding" /></th>
+                            <td>{totals.roundingDifference.decimalString} {summary.currency}</td>
+                        </tr>
+                    </f:if>
+                    <tr class="order-summary-total">
+                        <th colspan="3"><f:translate key="total_gross" /></th>
+                        <td><strong>{totals.totalGross.decimalString} {summary.currency}</strong></td>
+                    </tr>
+                    <f:for each="{totals.vatLines}" as="vatLine">
+                        <tr class="order-summary-vat">
+                            <th colspan="3"><f:translate key="summary_vat_included" arguments="{0: vatLine.percent}" /></th>
+                            <td>{vatLine.tax.decimalString} {summary.currency}</td>
+                        </tr>
+                    </f:for>
+                    <tr class="order-summary-net">
+                        <th colspan="3"><f:translate key="total_net" /></th>
+                        <td>{totals.totalNet.decimalString} {summary.currency}</td>
                     </tr>
                 </f:then>
+                <f:else>
+                    <tr>
+                        <th colspan="3"><f:translate key="total_net" /></th>
+                        <td>{summary.totalNet.decimalString} {summary.currency}</td>
+                    </tr>
+                    <tr>
+                        <th colspan="3"><f:translate key="tax" /></th>
+                        <td>{summary.totalTax.decimalString} {summary.currency}</td>
+                    </tr>
+                    <tr>
+                        <th colspan="3"><f:translate key="total_gross" /></th>
+                        <td><strong>{summary.totalGross.decimalString} {summary.currency}</strong></td>
+                    </tr>
+                </f:else>
             </f:if>
         </tfoot>
     </table>
 </div>
+</html>
