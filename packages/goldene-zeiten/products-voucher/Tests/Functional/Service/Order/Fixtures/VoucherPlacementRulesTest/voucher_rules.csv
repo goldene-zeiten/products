@@ -1,0 +1,28 @@
+"pages",,,,,,
+,"uid","pid","sorting","deleted","title","slug"
+,1,0,256,0,"Root","/"
+,2,1,256,0,"Shop","/shop"
+
+"tx_products_domain_model_taxclass",,,
+,"uid","title","code"
+,1,"Standard Tax","standard"
+
+"tx_products_domain_model_taxrate",,,,
+,"uid","tax_class","country","rate"
+,1,1,"DE","19.00"
+
+"tx_products_domain_model_product",,,,,,
+,"uid","pid","title","slug","price","tax_class","in_stock"
+,1,2,"Regular Product","regular-product","100.00",1,100
+,2,2,"Campaign Product","campaign-product","100.00",1,100
+
+"tx_products_domain_model_priceperiod",,,,,,,
+,"uid","pid","product","fe_group","price","valid_from","valid_until"
+,1,2,2,0,"80.00",946684800,0
+
+"tx_products_domain_model_voucher",,,,,,,
+,"uid","pid","code","discount_type","discount_value","combinable","usage_limit"
+,1,1,"SOLO","percentage","10.00",0,0
+,2,1,"STACK","percentage","10.00",1,0
+,3,1,"BIG","fixed","80.00",1,0
+,4,1,"MORE","fixed","50.00",1,0

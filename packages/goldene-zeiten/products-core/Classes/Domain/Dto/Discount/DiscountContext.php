@@ -28,7 +28,8 @@ final readonly class DiscountContext
         private int $frontendUserUid,
         private ServerRequestInterface $request,
         private AdjustmentCollection $accumulatedAdjustments,
-        private VatBuckets $goodsVatBuckets
+        private VatBuckets $goodsVatBuckets,
+        private bool $goodsAlreadyDiscounted = false
     ) {}
 
     public function getGoodsTotal(): Money
@@ -58,5 +59,14 @@ final readonly class DiscountContext
     public function getGoodsVatBuckets(): VatBuckets
     {
         return $this->goodsVatBuckets;
+    }
+
+    /**
+     * Whether goods are already sold below their list price - by a category, customer or price-period
+     * discount - which a discount that does not combine with others has to respect.
+     */
+    public function isGoodsAlreadyDiscounted(): bool
+    {
+        return $this->goodsAlreadyDiscounted;
     }
 }

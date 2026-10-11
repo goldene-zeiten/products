@@ -39,16 +39,21 @@ final class VoucherService
     }
 
     /**
+     * The vouchers an order is placed with: every one must still apply, the same way the basket checked
+     * it when the code was entered - including that a voucher which does not combine stands alone, on
+     * goods that are not discounted already.
+     *
      * @param string[] $codes
      * @throws VoucherNotFoundException|VoucherNotApplicableException
      */
-    public function resolveAllOrFail(array $codes, Money $basketGoodsTotal, int $frontendUser): BasketDiscountSummary
+    public function resolveAllOrFail(array $codes, Money $basketGoodsTotal, int $frontendUser, bool $basketAlreadyDiscounted = false): BasketDiscountSummary
     {
         $vouchers = [];
         foreach ($codes as $code) {
-            $vouchers[] = $this->resolve($code, $basketGoodsTotal, $frontendUser);
+            $vouchers[] = $this->resolve($code, $basketGoodsTotal, $frontendUser, $basketAlreadyDiscounted);
         }
-        return new BasketDiscountSummary($vouchers, $this->calculateCombinedDiscount($vouchers, $basketGoodsTotal));
+        $this->assertCombinable($vouchers);
+        return $this->summarize($vouchers, $basketGoodsTotal);
     }
 
     /**
@@ -56,11 +61,7 @@ final class VoucherService
      */
     public function calculateCombinedDiscount(array $vouchers, Money $basketGoodsTotal): Money
     {
-        $total = Money::fromCents(0);
-        foreach ($vouchers as $voucher) {
-            $total = $total->add($voucher->calculateDiscount($basketGoodsTotal));
-        }
-        return $total->getCents() > $basketGoodsTotal->getCents() ? $basketGoodsTotal : $total;
+        return $this->summarize($vouchers, $basketGoodsTotal)->getDiscountTotal();
     }
 
     /**
@@ -68,8 +69,45 @@ final class VoucherService
      */
     public function buildDiscountSummary(array $codes, Money $basketGoodsTotal, int $frontendUser): BasketDiscountSummary
     {
-        $vouchers = $this->resolveValidVouchers($codes, $basketGoodsTotal, $frontendUser);
-        return new BasketDiscountSummary($vouchers, $this->calculateCombinedDiscount($vouchers, $basketGoodsTotal));
+        return $this->summarize($this->resolveValidVouchers($codes, $basketGoodsTotal, $frontendUser), $basketGoodsTotal);
+    }
+
+    /**
+     * Each voucher takes its discount off what the vouchers before it left of the goods, so together they
+     * never take off more than the goods cost, and each one's share is what it really took.
+     *
+     * @param Voucher[] $vouchers
+     */
+    private function summarize(array $vouchers, Money $basketGoodsTotal): BasketDiscountSummary
+    {
+        $remaining = $basketGoodsTotal;
+        $shares = [];
+        foreach ($vouchers as $voucher) {
+            $discount = $voucher->calculateDiscount($basketGoodsTotal);
+            $share = $discount->getCents() > $remaining->getCents() ? $remaining : $discount;
+            $shares[] = $share;
+            $remaining = $remaining->subtract($share);
+        }
+        return new BasketDiscountSummary($vouchers, $basketGoodsTotal->subtract($remaining), $shares);
+    }
+
+    /**
+     * @param Voucher[] $vouchers
+     * @throws VoucherNotApplicableException
+     */
+    private function assertCombinable(array $vouchers): void
+    {
+        if (count($vouchers) < 2) {
+            return;
+        }
+        foreach ($vouchers as $voucher) {
+            if (!$voucher->isCombinable()) {
+                throw new VoucherNotApplicableException(
+                    sprintf('Voucher "%s" cannot be combined with other vouchers.', $voucher->getCode()),
+                    1791667564
+                );
+            }
+        }
     }
 
     /**
