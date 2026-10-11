@@ -18,7 +18,7 @@
                         </tr>
                         <tr>
                             <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.status" /></th>
-                            <td>{order.status}</td>
+                            <td>{statusLabels.{order.status}}</td>
                         </tr>
                         <tr>
                             <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.payment_status" /></th>
@@ -48,6 +48,34 @@
                                 </tr>
                             </f:then>
                         </f:if>
+                        <f:if condition="{order.deliveredAt}">
+                            <tr>
+                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.delivered_at" /></th>
+                                <td>{order.deliveredAt}</td>
+                            </tr>
+                        </f:if>
+                        <f:if condition="{order.withdrawnAt}">
+                            <tr>
+                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.withdrawn_at" /></th>
+                                <td>{order.withdrawnAt}</td>
+                            </tr>
+                            <tr>
+                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.refund_due" /></th>
+                                <td>{order.refundDueBy}</td>
+                            </tr>
+                        </f:if>
+                        <f:if condition="{order.returnProofAt}">
+                            <tr>
+                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.return_proof" /></th>
+                                <td>{order.returnProofAt}</td>
+                            </tr>
+                        </f:if>
+                        <f:if condition="{order.returnedAt}">
+                            <tr>
+                                <th><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.returned" /></th>
+                                <td>{order.returnedAt}</td>
+                            </tr>
+                        </f:if>
                         <f:if condition="{order.customerNote}">
                             <f:then>
                                 <tr>
@@ -57,6 +85,25 @@
                             </f:then>
                         </f:if>
                     </table>
+
+                    <f:if condition="{awaitingReturn}">
+                        <div class="alert alert-warning">
+                            <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.withdrawal.awaiting_return" />
+                            <f:if condition="{refundWithheld}">
+                                <br><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.withdrawal.refund_withheld" />
+                            </f:if>
+                        </div>
+                    </f:if>
+                    <f:if condition="{order.withdrawalLog}">
+                        <h3><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.section.withdrawal" /></h3>
+                        <f:for each="{order.withdrawalLog}" as="statement">
+                            <p>
+                                <strong>{statement.at}</strong> &ndash; {statement.name} &lt;{statement.email}&gt;<br>
+                                <f:for each="{statement.items}" as="statementItem">&bull; {statementItem.title} (&times; {statementItem.quantity})<br></f:for>
+                                <f:if condition="{statement.reason}">{statement.reason}</f:if>
+                            </p>
+                        </f:for>
+                    </f:if>
 
                     <f:if condition="{orderDetailPanels}">
                         <f:then>
@@ -90,13 +137,40 @@
                                 </form>
                             </f:then>
                         </f:if>
+                        <f:if condition="{canMarkDelivered}">
+                            <form method="post">
+                                <input type="hidden" name="orderUid" value="{order.uid}" />
+                                <input type="hidden" name="action" value="markDelivered" />
+                                <button type="submit" class="btn btn-default">
+                                    <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.action.mark_delivered" />
+                                </button>
+                            </form>
+                        </f:if>
+                        <f:if condition="{canRecordReturnProof}">
+                            <form method="post">
+                                <input type="hidden" name="orderUid" value="{order.uid}" />
+                                <input type="hidden" name="action" value="recordReturnProof" />
+                                <button type="submit" class="btn btn-default">
+                                    <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.action.record_return_proof" />
+                                </button>
+                            </form>
+                        </f:if>
+                        <f:if condition="{awaitingReturn}">
+                            <form method="post">
+                                <input type="hidden" name="orderUid" value="{order.uid}" />
+                                <input type="hidden" name="action" value="markReturned" />
+                                <button type="submit" class="btn btn-default">
+                                    <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.action.mark_returned" />
+                                </button>
+                            </form>
+                        </f:if>
                         <f:for each="{availableStatusTransitions}" as="targetStatus">
                             <form method="post">
                                 <input type="hidden" name="orderUid" value="{order.uid}" />
                                 <input type="hidden" name="action" value="transition" />
                                 <input type="hidden" name="targetStatus" value="{targetStatus.value}" />
                                 <button type="submit" class="btn btn-default">
-                                    <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.action.transition_to" arguments="{0: targetStatus.value}" />
+                                    <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.action.transition_to" arguments="{0: targetStatus.label}" />
                                 </button>
                             </form>
                         </f:for>
@@ -134,7 +208,7 @@
                     <select name="status" class="form-select">
                         <option value=""></option>
                         <f:for each="{statusOptions}" as="statusOption">
-                            <option value="{statusOption.value}" selected="{f:if(condition: '{statusOption.value} == {filter.status}', then: 'selected')}">{statusOption.value}</option>
+                            <option value="{statusOption.value}" selected="{f:if(condition: '{statusOption.value} == {filter.status}', then: 'selected')}">{statusLabels.{statusOption.value}}</option>
                         </f:for>
                     </select>
                 </div>
@@ -163,7 +237,7 @@
                                     <td>{order.orderNumber}</td>
                                     <td>{order.orderDate}</td>
                                     <td>{order.email}</td>
-                                    <td>{order.status}</td>
+                                    <td>{statusLabels.{order.status}}</td>
                                     <td>{order.paymentStatus}</td>
                                     <td><p:format.money value="{order.totalGrossCents}" currency="{order.currency}" /></td>
                                     <td class="text-end">

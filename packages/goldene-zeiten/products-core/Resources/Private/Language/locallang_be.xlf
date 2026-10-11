@@ -249,6 +249,63 @@
 			<trans-unit id="pages.tx_products_nav_class.description" resname="pages.tx_products_nav_class.description">
 				<source>Applied by menus rendering this page's navigation entry - e.g. to style the withdrawal link as a button in the footer.</source>
 			</trans-unit>
+			<trans-unit id="order.status.new" resname="order.status.new">
+				<source>New</source>
+			</trans-unit>
+			<trans-unit id="order.status.pending" resname="order.status.pending">
+				<source>Pending</source>
+			</trans-unit>
+			<trans-unit id="order.status.confirmed" resname="order.status.confirmed">
+				<source>Confirmed</source>
+			</trans-unit>
+			<trans-unit id="order.status.shipped" resname="order.status.shipped">
+				<source>Shipped</source>
+			</trans-unit>
+			<trans-unit id="order.status.completed" resname="order.status.completed">
+				<source>Completed</source>
+			</trans-unit>
+			<trans-unit id="order.status.cancelled" resname="order.status.cancelled">
+				<source>Cancelled</source>
+			</trans-unit>
+			<trans-unit id="order.status.withdrawn" resname="order.status.withdrawn">
+				<source>Withdrawn, awaiting return</source>
+			</trans-unit>
+			<trans-unit id="order.section.withdrawal" resname="order.section.withdrawal">
+				<source>Right of withdrawal</source>
+			</trans-unit>
+			<trans-unit id="order.column.delivered_at" resname="order.column.delivered_at">
+				<source>Delivered</source>
+			</trans-unit>
+			<trans-unit id="order.column.withdrawn_at" resname="order.column.withdrawn_at">
+				<source>Withdrawal submitted</source>
+			</trans-unit>
+			<trans-unit id="order.column.refund_due" resname="order.column.refund_due">
+				<source>Refund due by</source>
+			</trans-unit>
+			<trans-unit id="order.column.return_proof" resname="order.column.return_proof">
+				<source>Proof of return shipment</source>
+			</trans-unit>
+			<trans-unit id="order.column.returned" resname="order.column.returned">
+				<source>Returned goods received</source>
+			</trans-unit>
+			<trans-unit id="order.column.withdrawn_items" resname="order.column.withdrawn_items">
+				<source>Withdrawn items</source>
+			</trans-unit>
+			<trans-unit id="order.action.mark_delivered" resname="order.action.mark_delivered">
+				<source>Mark delivered</source>
+			</trans-unit>
+			<trans-unit id="order.action.record_return_proof" resname="order.action.record_return_proof">
+				<source>Record proof of return shipment</source>
+			</trans-unit>
+			<trans-unit id="order.action.mark_returned" resname="order.action.mark_returned">
+				<source>Goods received back</source>
+			</trans-unit>
+			<trans-unit id="order.withdrawal.awaiting_return" resname="order.withdrawal.awaiting_return">
+				<source>The customer withdrew after shipping. Refund the payment within 14 days of the withdrawal; you may withhold it until the goods are received back or proof of return shipment is recorded.</source>
+			</trans-unit>
+			<trans-unit id="order.withdrawal.refund_withheld" resname="order.withdrawal.refund_withheld">
+				<source>Refund withheld until the goods are received back or proof of return shipment is recorded.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

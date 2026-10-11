@@ -301,7 +301,6 @@ return [
             'config' => [
                 'type' => 'datetime',
                 'size' => 13,
-                'readOnly' => true,
             ],
         ],
         'returned_at' => [
@@ -309,7 +308,6 @@ return [
             'config' => [
                 'type' => 'datetime',
                 'size' => 13,
-                'readOnly' => true,
             ],
         ],
         'withdrawal_log' => [

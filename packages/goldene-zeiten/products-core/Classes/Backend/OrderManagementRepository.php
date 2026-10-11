@@ -147,7 +147,30 @@ final class OrderManagementRepository
             'shippingTotalCents' => (int)($row['shipping_total'] ?? 0),
             'currency' => (string)$row['currency'],
             'customerNote' => (string)($row['customer_note'] ?? ''),
+            'deliveredAt' => $this->formatTimestamp((int)($row['delivered_at'] ?? 0)),
+            'withdrawnAt' => $this->formatTimestamp((int)($row['withdrawn_at'] ?? 0)),
+            'refundDueBy' => $this->formatRefundDeadline((int)($row['withdrawn_at'] ?? 0)),
+            'returnProofAt' => $this->formatTimestamp((int)($row['return_proof_at'] ?? 0)),
+            'returnedAt' => $this->formatTimestamp((int)($row['returned_at'] ?? 0)),
+            'withdrawalLog' => $this->decodeLog((string)($row['withdrawal_log'] ?? '[]')),
         ];
+    }
+
+    /**
+     * Art. 13 Directive 2011/83/EU: the refund is due within 14 days of being informed of the withdrawal.
+     */
+    private function formatRefundDeadline(int $withdrawnAt): ?string
+    {
+        return $withdrawnAt > 0 ? date('Y-m-d', strtotime('+14 days', $withdrawnAt) ?: $withdrawnAt) : null;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function decodeLog(string $json): array
+    {
+        $decoded = json_decode($json, true);
+        return is_array($decoded) ? array_values($decoded) : [];
     }
 
     private function formatTimestamp(int $timestamp): ?string
