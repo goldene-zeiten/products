@@ -279,6 +279,10 @@
 				<source>Address returned goods are sent to (defaults to the trader address)</source>
 				<target>Anschrift für die Rücksendung der Waren (Standard: Anschrift des Unternehmers)</target>
 			</trans-unit>
+			<trans-unit id="setting.products.withdrawal.instructionVariant" resname="setting.products.withdrawal.instructionVariant">
+				<source>Start of the withdrawal period the instructions state (goods, multipleGoods, lots, regularDelivery, digitalContent)</source>
+				<target>Beginn der Widerrufsfrist in der Widerrufsbelehrung (goods, multipleGoods, lots, regularDelivery, digitalContent)</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

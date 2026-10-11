@@ -403,6 +403,10 @@
 				<source>Refund withheld until the goods are received back or proof of return shipment is recorded.</source>
 				<target>Rückerstattung zurückgehalten, bis die Ware eingegangen ist oder ein Nachweis der Rücksendung vorliegt.</target>
 			</trans-unit>
+			<trans-unit id="plugin.withdrawal_instructions" resname="plugin.withdrawal_instructions">
+				<source>Withdrawal instructions and model form</source>
+				<target>Widerrufsbelehrung und Muster-Widerrufsformular</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

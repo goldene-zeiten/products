@@ -1,0 +1,13 @@
+
+{instructions.form.heading}
+{instructions.form.lead}
+
+- {instructions.form.to}
+- {instructions.form.notice}
+- {instructions.form.ordered}
+- {instructions.form.name}
+- {instructions.form.address}
+- {instructions.form.signature}
+- {instructions.form.date}
+
+{instructions.form.delete}

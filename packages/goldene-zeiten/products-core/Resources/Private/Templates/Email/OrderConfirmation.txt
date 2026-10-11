@@ -11,10 +11,11 @@
 </f:then>
 <f:else>
 <f:if condition="{withdrawalPeriodDays}">
-<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_notice_intro" arguments="{0: withdrawalPeriodDays}" />
+<f:render partial="Withdrawal/Instructions" arguments="{instructions: instructions}" />
 <f:if condition="{withdrawalUrl}">
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_button_label" />: {withdrawalUrl}
 </f:if>
+<f:render partial="Withdrawal/ModelForm" arguments="{instructions: instructions}" />
 <f:if condition="{withdrawalExcludedItems}">
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_notice_excluded_items" />
 <f:for each="{withdrawalExcludedItems}" as="excludedItem">- {excludedItem.title}

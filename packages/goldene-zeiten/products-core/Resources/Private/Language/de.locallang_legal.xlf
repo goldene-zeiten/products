@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_core/Resources/Private/Language/de.locallang_legal.xlf" date="2026-10-11T12:00:00Z" product-name="products">
+		<header/>
+		<body>
+			<trans-unit id="legal.instructions.heading" resname="legal.instructions.heading">
+				<source>Model instructions on withdrawal</source>
+				<target>Muster-Widerrufsbelehrung</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.right_heading" resname="legal.instructions.right_heading">
+				<source>Right of withdrawal</source>
+				<target>Widerrufsrecht</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.right" resname="legal.instructions.right">
+				<source>You have the right to withdraw from this contract within 14 days without giving any reason.</source>
+				<target>Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.period.goods" resname="legal.instructions.period.goods">
+				<source>The withdrawal period will expire after 14 days from the day on which you acquire, or a third party other than the carrier and indicated by you acquires, physical possession of the goods.</source>
+				<target>Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem Sie oder ein von Ihnen benannter Dritter, der nicht der Beförderer ist, die Waren in Besitz genommen haben bzw. hat.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.period.multipleGoods" resname="legal.instructions.period.multipleGoods">
+				<source>The withdrawal period will expire after 14 days from the day on which you acquire, or a third party other than the carrier and indicated by you acquires, physical possession of the last good.</source>
+				<target>Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem Sie oder ein von Ihnen benannter Dritter, der nicht der Beförderer ist, die letzte Ware in Besitz genommen haben bzw. hat.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.period.lots" resname="legal.instructions.period.lots">
+				<source>The withdrawal period will expire after 14 days from the day on which you acquire, or a third party other than the carrier and indicated by you acquires, physical possession of the last lot or piece.</source>
+				<target>Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem Sie oder ein von Ihnen benannter Dritter, der nicht der Beförderer ist, die letzte Teilsendung oder das letzte Stück in Besitz genommen haben bzw. hat.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.period.regularDelivery" resname="legal.instructions.period.regularDelivery">
+				<source>The withdrawal period will expire after 14 days from the day on which you acquire, or a third party other than the carrier and indicated by you acquires, physical possession of the first good.</source>
+				<target>Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem Sie oder ein von Ihnen benannter Dritter, der nicht der Beförderer ist, die erste Ware in Besitz genommen haben bzw. hat.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.period.digitalContent" resname="legal.instructions.period.digitalContent">
+				<source>The withdrawal period will expire after 14 days from the day of the conclusion of the contract.</source>
+				<target>Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag des Vertragsabschlusses.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.exercise" resname="legal.instructions.exercise">
+				<source>To exercise the right of withdrawal, you must inform us (%s) of your decision to withdraw from this contract by an unequivocal statement (e.g. a letter sent by post, fax or e-mail). You may use the attached model withdrawal form, but it is not obligatory.</source>
+				<target>Um Ihr Widerrufsrecht auszuüben, müssen Sie uns (%s) mittels einer eindeutigen Erklärung (z.B. ein mit der Post versandter Brief, Telefax oder E-Mail) über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren. Sie können dafür das beigefügte Muster-Widerrufsformular verwenden, das jedoch nicht vorgeschrieben ist.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.online_function" resname="legal.instructions.online_function">
+				<source>You can also exercise your right of withdrawal online at %s. If you use this online feature, we will send you an acknowledgement of receipt of the withdrawal on a durable medium (e.g. by email), including its content and the date and time of its submission, without undue delay.</source>
+				<target>Sie können Ihr Widerrufsrecht auch online unter %s ausüben. Wenn Sie diese Online-Funktion nutzen, übermitteln wir Ihnen auf einem dauerhaften Datenträger (z. B. durch eine E-Mail) unverzüglich eine Eingangsbestätigung mit Informationen zum Inhalt der Widerrufserklärung sowie dem Datum und der Uhrzeit ihres Eingangs.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.online_form" resname="legal.instructions.online_form">
+				<source>You can also electronically fill in and submit the model withdrawal form or any other unequivocal statement on our website %s. If you use this option, we will communicate to you an acknowledgement of receipt of such a withdrawal on a durable medium (e.g. by email) without delay.</source>
+				<target>Sie können das Muster-Widerrufsformular oder eine andere eindeutige Erklärung auch auf unserer Webseite %s elektronisch ausfüllen und übermitteln. Machen Sie von dieser Möglichkeit Gebrauch, so werden wir Ihnen unverzüglich (z. B. per E-Mail) eine Bestätigung über den Eingang eines solchen Widerrufs übermitteln.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.deadline" resname="legal.instructions.deadline">
+				<source>To meet the withdrawal deadline, it is sufficient for you to send your communication concerning your exercise of the right of withdrawal before the withdrawal period has expired.</source>
+				<target>Zur Wahrung der Widerrufsfrist reicht es aus, dass Sie die Mitteilung über die Ausübung des Widerrufsrechts vor Ablauf der Widerrufsfrist absenden.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.effects_heading" resname="legal.instructions.effects_heading">
+				<source>Effects of withdrawal</source>
+				<target>Folgen des Widerrufs</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.effects" resname="legal.instructions.effects">
+				<source>If you withdraw from this contract, we shall reimburse to you all payments received from you, including the costs of delivery (with the exception of the supplementary costs resulting from your choice of a type of delivery other than the least expensive type of standard delivery offered by us), without undue delay and in any event not later than 14 days from the day on which we are informed about your decision to withdraw from this contract. We will carry out such reimbursement using the same means of payment as you used for the initial transaction, unless you have expressly agreed otherwise; in any event, you will not incur any fees as a result of such reimbursement.</source>
+				<target>Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten haben, einschließlich der Lieferkosten (mit Ausnahme der zusätzlichen Kosten, die sich daraus ergeben, dass Sie eine andere Art der Lieferung als die von uns angebotene, günstigste Standardlieferung gewählt haben), unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen, an dem die Mitteilung über Ihren Widerruf dieses Vertrags bei uns eingegangen ist. Für diese Rückzahlung verwenden wir dasselbe Zahlungsmittel, das Sie bei der ursprünglichen Transaktion eingesetzt haben, es sei denn, mit Ihnen wurde ausdrücklich etwas anderes vereinbart; in keinem Fall werden Ihnen wegen dieser Rückzahlung Entgelte berechnet.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.withholding" resname="legal.instructions.withholding">
+				<source>We may withhold reimbursement until we have received the goods back or you have supplied evidence of having sent back the goods, whichever is the earliest.</source>
+				<target>Wir können die Rückzahlung verweigern, bis wir die Waren wieder zurückerhalten haben oder bis Sie den Nachweis erbracht haben, dass Sie die Waren zurückgesandt haben, je nachdem, welches der frühere Zeitpunkt ist.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.return" resname="legal.instructions.return">
+				<source>You shall send back the goods or hand them over to us (%s), without undue delay and in any event not later than 14 days from the day on which you communicate your withdrawal from this contract to us. The deadline is met if you send back the goods before the period of 14 days has expired.</source>
+				<target>Sie haben die Waren unverzüglich und in jedem Fall spätestens binnen vierzehn Tagen ab dem Tag, an dem Sie uns über den Widerruf dieses Vertrags unterrichten, an uns (%s) zurückzusenden oder zu übergeben. Die Frist ist gewahrt, wenn Sie die Waren vor Ablauf der Frist von vierzehn Tagen absenden.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.return_cost_trader" resname="legal.instructions.return_cost_trader">
+				<source>We will bear the cost of returning the goods.</source>
+				<target>Wir tragen die Kosten der Rücksendung der Waren.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.return_cost_customer" resname="legal.instructions.return_cost_customer">
+				<source>You will have to bear the direct cost of returning the goods.</source>
+				<target>Sie tragen die unmittelbaren Kosten der Rücksendung der Waren.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.diminished_value" resname="legal.instructions.diminished_value">
+				<source>You are only liable for any diminished value of the goods resulting from the handling other than what is necessary to establish the nature, characteristics and functioning of the goods.</source>
+				<target>Sie müssen für einen etwaigen Wertverlust der Waren nur aufkommen, wenn dieser Wertverlust auf einen zur Prüfung der Beschaffenheit, Eigenschaften und Funktionsweise der Waren nicht notwendigen Umgang mit ihnen zurückzuführen ist.</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.exceptions_heading" resname="legal.instructions.exceptions_heading">
+				<source>Exceptions from the right of withdrawal</source>
+				<target>Ausnahmen vom Widerrufsrecht</target>
+			</trans-unit>
+			<trans-unit id="legal.instructions.exceptions" resname="legal.instructions.exceptions">
+				<source>There is no right of withdrawal for goods that are made to your specifications or clearly personalised, nor for digital content that is not supplied on a tangible medium once its supply has begun with your prior express consent and your acknowledgement that you thereby lose your right of withdrawal. For sealed goods that are not suitable for return for health protection or hygiene reasons, and for sealed audio or video recordings or sealed computer software, the right of withdrawal expires if the seal was broken after delivery.</source>
+				<target>Das Widerrufsrecht besteht nicht bei Waren, die nach Ihren Vorgaben angefertigt werden oder eindeutig auf Ihre persönlichen Bedürfnisse zugeschnitten sind, und nicht bei digitalen Inhalten, die nicht auf einem körperlichen Datenträger geliefert werden, wenn die Ausführung mit Ihrer vorherigen ausdrücklichen Zustimmung und Ihrer Bestätigung begonnen hat, dass Sie dadurch Ihr Widerrufsrecht verlieren. Bei versiegelten Waren, die aus Gründen des Gesundheitsschutzes oder der Hygiene nicht zur Rückgabe geeignet sind, sowie bei versiegelten Audio- oder Videoaufzeichnungen oder versiegelter Computersoftware erlischt das Widerrufsrecht, wenn die Versiegelung nach der Lieferung entfernt wurde.</target>
+			</trans-unit>
+			<trans-unit id="legal.form.heading" resname="legal.form.heading">
+				<source>Model withdrawal form</source>
+				<target>Muster-Widerrufsformular</target>
+			</trans-unit>
+			<trans-unit id="legal.form.lead" resname="legal.form.lead">
+				<source>(complete and return this form only if you wish to withdraw from the contract)</source>
+				<target>(Wenn Sie den Vertrag widerrufen wollen, dann füllen Sie bitte dieses Formular aus und senden Sie es zurück)</target>
+			</trans-unit>
+			<trans-unit id="legal.form.to" resname="legal.form.to">
+				<source>To %s:</source>
+				<target>An %s:</target>
+			</trans-unit>
+			<trans-unit id="legal.form.notice" resname="legal.form.notice">
+				<source>I/We (*) hereby give notice that I/We (*) withdraw from my/our (*) contract of sale of the following goods (*)/for the provision of the following service (*),</source>
+				<target>Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über den Kauf der folgenden Waren (*)/die Erbringung der folgenden Dienstleistung (*)</target>
+			</trans-unit>
+			<trans-unit id="legal.form.ordered" resname="legal.form.ordered">
+				<source>Ordered on (*)/received on (*),</source>
+				<target>Bestellt am (*)/erhalten am (*)</target>
+			</trans-unit>
+			<trans-unit id="legal.form.name" resname="legal.form.name">
+				<source>Name of consumer(s),</source>
+				<target>Name des/der Verbraucher(s)</target>
+			</trans-unit>
+			<trans-unit id="legal.form.address" resname="legal.form.address">
+				<source>Address of consumer(s),</source>
+				<target>Anschrift des/der Verbraucher(s)</target>
+			</trans-unit>
+			<trans-unit id="legal.form.signature" resname="legal.form.signature">
+				<source>Signature of consumer(s) (only if this form is notified on paper),</source>
+				<target>Unterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier)</target>
+			</trans-unit>
+			<trans-unit id="legal.form.date" resname="legal.form.date">
+				<source>Date</source>
+				<target>Datum</target>
+			</trans-unit>
+			<trans-unit id="legal.form.delete" resname="legal.form.delete">
+				<source>(*) Delete as appropriate.</source>
+				<target>(*) Unzutreffendes streichen.</target>
+			</trans-unit>
+			<trans-unit id="legal.trader.phone" resname="legal.trader.phone">
+				<source>telephone: %s</source>
+				<target>Telefon: %s</target>
+			</trans-unit>
+			<trans-unit id="legal.trader.email" resname="legal.trader.email">
+				<source>e-mail: %s</source>
+				<target>E-Mail: %s</target>
+			</trans-unit>
+			<trans-unit id="legal.trader.missing" resname="legal.trader.missing">
+				<source>[name, geographical address, telephone number and email address of the trader]</source>
+				<target>[Name, Anschrift, Telefonnummer und E-Mail-Adresse des Unternehmers]</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

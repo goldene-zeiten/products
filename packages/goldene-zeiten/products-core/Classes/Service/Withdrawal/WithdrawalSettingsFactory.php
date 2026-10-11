@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Core\Service\Withdrawal;
 
 use GoldeneZeiten\Products\Core\Domain\Dto\Withdrawal\TraderIdentity;
 use GoldeneZeiten\Products\Core\Domain\Dto\Withdrawal\WithdrawalSettings;
+use GoldeneZeiten\Products\Core\Domain\Enum\WithdrawalInstructionVariant;
 use TYPO3\CMS\Core\Settings\SettingsInterface;
 
 /**
@@ -21,6 +22,7 @@ final class WithdrawalSettingsFactory
             assumedDeliveryDays: (int)$this->read($settings, 'products.withdrawal.assumedDeliveryDays', 14),
             timezone: (string)$this->read($settings, 'products.withdrawal.timezone', 'Europe/Berlin'),
             returnCostBorneByTrader: (bool)$this->read($settings, 'products.withdrawal.returnCostBorneByTrader', false),
+            instructionVariant: WithdrawalInstructionVariant::tryFrom((string)$this->read($settings, 'products.withdrawal.instructionVariant', '')) ?? WithdrawalInstructionVariant::MULTIPLE_GOODS,
             trader: new TraderIdentity(
                 name: (string)$this->read($settings, 'products.withdrawal.trader.name', ''),
                 address: (string)$this->read($settings, 'products.withdrawal.trader.address', ''),

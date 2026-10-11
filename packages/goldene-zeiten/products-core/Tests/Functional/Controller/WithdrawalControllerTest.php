@@ -132,6 +132,33 @@ final class WithdrawalControllerTest extends AbstractFrontendTestCase
     }
 
     #[Test]
+    public function theWithdrawalPageShowsTheModelInstructionsAndTheModelForm(): void
+    {
+        $response = $this->executeFrontendSubRequest($this->requestFor('form', []));
+
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('Model instructions on withdrawal', $body);
+        $this->assertStringContainsString('You have the right to withdraw from this contract within 14 days without giving any reason.', $body);
+        $this->assertStringContainsString('You can also exercise your right of withdrawal online at', $body);
+        $this->assertStringContainsString('Model withdrawal form', $body);
+        $this->assertStringContainsString('Ordered on (*)/received on (*),', $body);
+    }
+
+    #[Test]
+    public function theInstructionsContentElementRendersTheModelTextsForATermsPage(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/WithdrawalControllerTest/withdrawal_instructions_content.csv');
+
+        $response = $this->executeFrontendSubRequest(new InternalRequest('http://localhost/shop'));
+
+        $body = (string)$response->getBody();
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('Effects of withdrawal', $body);
+        $this->assertStringContainsString('Exceptions from the right of withdrawal', $body);
+        $this->assertStringContainsString('Model withdrawal form', $body);
+    }
+
+    #[Test]
     public function selectActionListsTheItemsOfTheIdentifiedOrderAndOffersOnlyTheConfirmButton(): void
     {
         $this->fetchWithinWithdrawalPeriodOrder();

@@ -112,6 +112,46 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     }
 
     #[Test]
+    public function sendOrderConfirmationCarriesTheModelInstructionsAndTheModelFormOnADurableMedium(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_with_items_and_addresses.csv');
+        $this->writeSiteConfiguration(
+            'products',
+            $this->buildSiteConfiguration(1, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
+                'settings' => [
+                    'products' => [
+                        'pids' => ['withdrawalPage' => 2],
+                        'withdrawal' => [
+                            'trader' => [
+                                'name' => 'Shop GmbH',
+                                'address' => "Main Street 1\n12345 Sampletown",
+                                'email' => 'widerruf@shop.example',
+                            ],
+                        ],
+                    ],
+                ],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+        $subject = $this->get(OrderMailService::class);
+        $order = $this->fetchPersistedOrder(1);
+        $order->setOrderDate(new \DateTime());
+        $order->setInvoiceNumber('');
+
+        $subject->sendOrderConfirmation($order);
+
+        $email = TestMailer::getSentEmails()[0];
+        foreach ([(string)$email->getHtmlBody(), (string)$email->getTextBody()] as $body) {
+            $this->assertStringContainsString('You have the right to withdraw from this contract within 14 days without giving any reason.', $body);
+            $this->assertStringContainsString('you must inform us (Shop GmbH, Main Street 1, 12345 Sampletown, e-mail: widerruf@shop.example)', $body);
+            $this->assertStringContainsString('We may withhold reimbursement until we have received the goods back', $body);
+            $this->assertStringContainsString('You can also exercise your right of withdrawal online at', $body);
+            $this->assertStringContainsString('Model withdrawal form', $body);
+        }
+    }
+
+    #[Test]
     public function sendOrderConfirmationNoticesFullExclusionInsteadOfTheButton(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_with_excluded_items.csv');
@@ -507,6 +547,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->assertStringContainsString('Too small', $text);
         $this->assertStringContainsString('2026-10-01 12:15:30 CEST', $text);
         $this->assertStringContainsString('2026-10-01 12:15:30 CEST', (string)$sentEmails[0]->getHtmlBody());
+        $this->assertStringContainsString('Model withdrawal form', $text);
     }
 
     #[Test]

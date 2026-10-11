@@ -48,4 +48,5 @@
 <f:if condition="{returnRequired}">
     <p><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_refund_withhold" /></p>
 </f:if>
+<f:render partial="Withdrawal/ModelForm" arguments="{instructions: instructions}" />
 <f:render partial="Email/Signature" arguments="{_all}" />

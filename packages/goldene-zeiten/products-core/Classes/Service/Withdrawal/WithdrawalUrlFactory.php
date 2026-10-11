@@ -27,6 +27,21 @@ final class WithdrawalUrlFactory
     ) {}
 
     /**
+     * The address of the online withdrawal function itself, without any order; empty when the order's
+     * site no longer exists or has no withdrawal page configured.
+     */
+    public function createFunctionUrlFor(Order $order): string
+    {
+        try {
+            $site = $this->siteFinder->getSiteByIdentifier($order->getSiteIdentifier());
+        } catch (SiteNotFoundException) {
+            return '';
+        }
+        $pageId = (int)$site->getSettings()->get('products.pids.withdrawalPage', 0);
+        return $pageId === 0 ? '' : (string)$site->getRouter()->generateUri($pageId);
+    }
+
+    /**
      * Null when the order's site no longer exists or no withdrawal page is configured - the mail
      * then simply renders without the button.
      */

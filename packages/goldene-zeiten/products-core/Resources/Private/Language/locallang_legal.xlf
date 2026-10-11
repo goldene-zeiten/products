@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_core/Resources/Private/Language/locallang_legal.xlf" date="2026-10-11T12:00:00Z" product-name="products">
+		<header/>
+		<body>
+			<trans-unit id="legal.instructions.heading" resname="legal.instructions.heading">
+				<source>Model instructions on withdrawal</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.right_heading" resname="legal.instructions.right_heading">
+				<source>Right of withdrawal</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.right" resname="legal.instructions.right">
+				<source>You have the right to withdraw from this contract within 14 days without giving any reason.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.period.goods" resname="legal.instructions.period.goods">
+				<source>The withdrawal period will expire after 14 days from the day on which you acquire, or a third party other than the carrier and indicated by you acquires, physical possession of the goods.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.period.multipleGoods" resname="legal.instructions.period.multipleGoods">
+				<source>The withdrawal period will expire after 14 days from the day on which you acquire, or a third party other than the carrier and indicated by you acquires, physical possession of the last good.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.period.lots" resname="legal.instructions.period.lots">
+				<source>The withdrawal period will expire after 14 days from the day on which you acquire, or a third party other than the carrier and indicated by you acquires, physical possession of the last lot or piece.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.period.regularDelivery" resname="legal.instructions.period.regularDelivery">
+				<source>The withdrawal period will expire after 14 days from the day on which you acquire, or a third party other than the carrier and indicated by you acquires, physical possession of the first good.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.period.digitalContent" resname="legal.instructions.period.digitalContent">
+				<source>The withdrawal period will expire after 14 days from the day of the conclusion of the contract.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.exercise" resname="legal.instructions.exercise">
+				<source>To exercise the right of withdrawal, you must inform us (%s) of your decision to withdraw from this contract by an unequivocal statement (e.g. a letter sent by post, fax or e-mail). You may use the attached model withdrawal form, but it is not obligatory.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.online_function" resname="legal.instructions.online_function">
+				<source>You can also exercise your right of withdrawal online at %s. If you use this online feature, we will send you an acknowledgement of receipt of the withdrawal on a durable medium (e.g. by email), including its content and the date and time of its submission, without undue delay.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.online_form" resname="legal.instructions.online_form">
+				<source>You can also electronically fill in and submit the model withdrawal form or any other unequivocal statement on our website %s. If you use this option, we will communicate to you an acknowledgement of receipt of such a withdrawal on a durable medium (e.g. by email) without delay.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.deadline" resname="legal.instructions.deadline">
+				<source>To meet the withdrawal deadline, it is sufficient for you to send your communication concerning your exercise of the right of withdrawal before the withdrawal period has expired.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.effects_heading" resname="legal.instructions.effects_heading">
+				<source>Effects of withdrawal</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.effects" resname="legal.instructions.effects">
+				<source>If you withdraw from this contract, we shall reimburse to you all payments received from you, including the costs of delivery (with the exception of the supplementary costs resulting from your choice of a type of delivery other than the least expensive type of standard delivery offered by us), without undue delay and in any event not later than 14 days from the day on which we are informed about your decision to withdraw from this contract. We will carry out such reimbursement using the same means of payment as you used for the initial transaction, unless you have expressly agreed otherwise; in any event, you will not incur any fees as a result of such reimbursement.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.withholding" resname="legal.instructions.withholding">
+				<source>We may withhold reimbursement until we have received the goods back or you have supplied evidence of having sent back the goods, whichever is the earliest.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.return" resname="legal.instructions.return">
+				<source>You shall send back the goods or hand them over to us (%s), without undue delay and in any event not later than 14 days from the day on which you communicate your withdrawal from this contract to us. The deadline is met if you send back the goods before the period of 14 days has expired.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.return_cost_trader" resname="legal.instructions.return_cost_trader">
+				<source>We will bear the cost of returning the goods.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.return_cost_customer" resname="legal.instructions.return_cost_customer">
+				<source>You will have to bear the direct cost of returning the goods.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.diminished_value" resname="legal.instructions.diminished_value">
+				<source>You are only liable for any diminished value of the goods resulting from the handling other than what is necessary to establish the nature, characteristics and functioning of the goods.</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.exceptions_heading" resname="legal.instructions.exceptions_heading">
+				<source>Exceptions from the right of withdrawal</source>
+			</trans-unit>
+			<trans-unit id="legal.instructions.exceptions" resname="legal.instructions.exceptions">
+				<source>There is no right of withdrawal for goods that are made to your specifications or clearly personalised, nor for digital content that is not supplied on a tangible medium once its supply has begun with your prior express consent and your acknowledgement that you thereby lose your right of withdrawal. For sealed goods that are not suitable for return for health protection or hygiene reasons, and for sealed audio or video recordings or sealed computer software, the right of withdrawal expires if the seal was broken after delivery.</source>
+			</trans-unit>
+			<trans-unit id="legal.form.heading" resname="legal.form.heading">
+				<source>Model withdrawal form</source>
+			</trans-unit>
+			<trans-unit id="legal.form.lead" resname="legal.form.lead">
+				<source>(complete and return this form only if you wish to withdraw from the contract)</source>
+			</trans-unit>
+			<trans-unit id="legal.form.to" resname="legal.form.to">
+				<source>To %s:</source>
+			</trans-unit>
+			<trans-unit id="legal.form.notice" resname="legal.form.notice">
+				<source>I/We (*) hereby give notice that I/We (*) withdraw from my/our (*) contract of sale of the following goods (*)/for the provision of the following service (*),</source>
+			</trans-unit>
+			<trans-unit id="legal.form.ordered" resname="legal.form.ordered">
+				<source>Ordered on (*)/received on (*),</source>
+			</trans-unit>
+			<trans-unit id="legal.form.name" resname="legal.form.name">
+				<source>Name of consumer(s),</source>
+			</trans-unit>
+			<trans-unit id="legal.form.address" resname="legal.form.address">
+				<source>Address of consumer(s),</source>
+			</trans-unit>
+			<trans-unit id="legal.form.signature" resname="legal.form.signature">
+				<source>Signature of consumer(s) (only if this form is notified on paper),</source>
+			</trans-unit>
+			<trans-unit id="legal.form.date" resname="legal.form.date">
+				<source>Date</source>
+			</trans-unit>
+			<trans-unit id="legal.form.delete" resname="legal.form.delete">
+				<source>(*) Delete as appropriate.</source>
+			</trans-unit>
+			<trans-unit id="legal.trader.phone" resname="legal.trader.phone">
+				<source>telephone: %s</source>
+			</trans-unit>
+			<trans-unit id="legal.trader.email" resname="legal.trader.email">
+				<source>e-mail: %s</source>
+			</trans-unit>
+			<trans-unit id="legal.trader.missing" resname="legal.trader.missing">
+				<source>[name, geographical address, telephone number and email address of the trader]</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

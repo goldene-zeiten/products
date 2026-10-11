@@ -8,8 +8,7 @@
 	</f:then>
 	<f:else>
 		<f:if condition="{withdrawalPeriodDays}">
-			<p>
-				<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_notice_intro" arguments="{0: withdrawalPeriodDays}" /></p>
+			<f:render partial="Withdrawal/Instructions" arguments="{instructions: instructions}" />
 			<f:if condition="{withdrawalUrl}">
 				<table role="presentation" cellpadding="0" cellspacing="0" style="margin: 16px 0;">
 					<tr>
@@ -19,6 +18,7 @@
 					</tr>
 				</table>
 			</f:if>
+			<f:render partial="Withdrawal/ModelForm" arguments="{instructions: instructions}" />
 			<f:if condition="{withdrawalExcludedItems}">
 				<p>
 					<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_notice_excluded_items" /><br>

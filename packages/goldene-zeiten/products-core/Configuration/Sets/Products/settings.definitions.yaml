@@ -139,6 +139,11 @@ settings:
     default: 'Europe/Berlin'
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.withdrawal.timezone'
     category: withdrawal
+  products.withdrawal.instructionVariant:
+    type: string
+    default: multipleGoods
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.withdrawal.instructionVariant'
+    category: withdrawal
   products.withdrawal.returnCostBorneByTrader:
     type: bool
     default: false

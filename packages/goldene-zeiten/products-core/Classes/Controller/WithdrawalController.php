@@ -16,10 +16,12 @@ use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalEmailMism
 use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalNameMissingException;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalNoItemSelectedException;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalPeriodExpiredException;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalInstructionsBuilder;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalRateLimiter;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalService;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalSettingsFactory;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Routing\PageArguments;
 use TYPO3\CMS\Core\Settings\SettingsInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Entity\SiteSettings;
@@ -42,7 +44,8 @@ final class WithdrawalController extends ActionController
         private readonly WithdrawalService $withdrawalService,
         private readonly WithdrawalRateLimiter $withdrawalRateLimiter,
         private readonly WithdrawalSettingsFactory $withdrawalSettingsFactory,
-        private readonly FrontendUserResolver $frontendUserResolver
+        private readonly FrontendUserResolver $frontendUserResolver,
+        private readonly WithdrawalInstructionsBuilder $instructionsBuilder
     ) {}
 
     public function formAction(?int $order = null, ?string $hash = null): ResponseInterface
@@ -62,6 +65,16 @@ final class WithdrawalController extends ActionController
             'trader' => $settings->trader,
         ]);
         $this->assignStatementVariables($orderObject, $settings, $now);
+        $this->assignInstructions($settings, $orderObject);
+        return $this->htmlResponse();
+    }
+
+    /**
+     * The model instructions on withdrawal and the model withdrawal form, for a terms page.
+     */
+    public function instructionsAction(): ResponseInterface
+    {
+        $this->assignInstructions($this->withdrawalSettings(), null);
         return $this->htmlResponse();
     }
 
@@ -84,6 +97,7 @@ final class WithdrawalController extends ActionController
             'trader' => $this->withdrawalSettings()->trader,
         ]);
         $this->assignStatementVariables($orderObject, $this->withdrawalSettings(), new \DateTimeImmutable(), false);
+        $this->assignInstructions($this->withdrawalSettings(), $orderObject);
         return $this->htmlResponse();
     }
 
@@ -191,6 +205,28 @@ final class WithdrawalController extends ActionController
         if ($assignName) {
             $this->view->assign('name', $order->getBillingName());
         }
+    }
+
+    private function assignInstructions(WithdrawalSettings $settings, ?Order $order): void
+    {
+        $variant = $order instanceof Order ? $this->instructionsBuilder->variantFor($order) : $settings->instructionVariant;
+        $this->view->assign('instructions', $this->instructionsBuilder->build($settings, $variant, $this->withdrawalFunctionUrl()));
+    }
+
+    /**
+     * Where the online withdrawal function lives: the configured withdrawal page, else the page showing
+     * the current plugin.
+     */
+    private function withdrawalFunctionUrl(): string
+    {
+        $site = $this->request->getAttribute('site');
+        $pageUid = $site instanceof Site ? (int)$site->getSettings()->get('products.pids.withdrawalPage', 0) : 0;
+        $routing = $this->request->getAttribute('routing');
+        $pageUid = $pageUid > 0 ? $pageUid : ($routing instanceof PageArguments ? $routing->getPageId() : 0);
+        if ($pageUid === 0) {
+            return '';
+        }
+        return $this->uriBuilder->reset()->setTargetPageUid($pageUid)->setCreateAbsoluteUri(true)->build();
     }
 
     private function formatSubmission(WithdrawalStatement $statement): string

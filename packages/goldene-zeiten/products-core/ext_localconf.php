@@ -147,6 +147,16 @@ defined('TYPO3') or die();
 
     ExtensionUtility::configurePlugin(
         'ProductsCore',
+        'WithdrawalInstructions',
+        [
+            WithdrawalController::class => 'instructions',
+        ],
+        [],
+        ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+    );
+
+    ExtensionUtility::configurePlugin(
+        'ProductsCore',
         'Download',
         [
             DownloadController::class => 'list, file',

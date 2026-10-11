@@ -204,6 +204,9 @@
 			<trans-unit id="setting.products.withdrawal.trader.returnAddress" resname="setting.products.withdrawal.trader.returnAddress">
 				<source>Address returned goods are sent to (defaults to the trader address)</source>
 			</trans-unit>
+			<trans-unit id="setting.products.withdrawal.instructionVariant" resname="setting.products.withdrawal.instructionVariant">
+				<source>Start of the withdrawal period the instructions state (goods, multipleGoods, lots, regularDelivery, digitalContent)</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

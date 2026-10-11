@@ -1,0 +1,20 @@
+
+{instructions.heading}
+
+{instructions.rightHeading}
+{instructions.right}
+{instructions.period}
+{instructions.exercise}
+<f:if condition="{instructions.onlineFunction}">{instructions.onlineFunction}
+</f:if><f:if condition="{instructions.onlineForm}">{instructions.onlineForm}
+</f:if>{instructions.deadline}
+
+{instructions.effectsHeading}
+{instructions.effects}
+<f:if condition="{instructions.withholding}">{instructions.withholding}
+</f:if><f:if condition="{instructions.returnInstruction}">{instructions.returnInstruction}
+</f:if><f:if condition="{instructions.returnCost}">{instructions.returnCost}
+</f:if><f:if condition="{instructions.diminishedValue}">{instructions.diminishedValue}
+</f:if>
+{instructions.exceptionsHeading}
+{instructions.exceptions}
