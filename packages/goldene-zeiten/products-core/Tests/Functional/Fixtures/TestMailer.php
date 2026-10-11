@@ -25,7 +25,7 @@ final class TestMailer implements MailerInterface
     public function send(RawMessage $message, ?Envelope $envelope = null): void
     {
         if (self::$failing) {
-            throw new TransportException('The test transport refuses every message.');
+            throw new TransportException('The test transport refuses every message.', 1791732627);
         }
         if ($message instanceof Email) {
             self::$sentEmails[] = $message;
