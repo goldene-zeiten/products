@@ -58,13 +58,20 @@ The extension registers ten content element plugins:
 
 ..  confval:: Withdrawal
 
-    Renders the Art. 11a withdrawal form and confirmation - prefilled when reached from the
-    withdrawal button in the order confirmation email or the thank-you/order-detail links, plain
-    (order number + email) when opened directly, e.g. from a footer navigation. Usually not placed
+    Renders the Art. 11a withdrawal function - prefilled when reached from the withdrawal button in
+    the order confirmation email or the thank-you/order-detail links, a list of their own orders for
+    a logged-in customer, plain (order number + email) when opened directly, e.g. from a footer
+    navigation. Usually not placed
     by hand: the :guilabel:`Withdrawal page` page type inserts it automatically. See
     :ref:`Order withdrawal <users-manual-withdrawal>`. Needs `products.pids.withdrawalPage`
     configured, the same way :rst:dir:`Checkout`/:rst:dir:`OrderHistory` need their own page
     settings.
+
+..  confval:: WithdrawalInstructions
+
+    Renders the model instructions on withdrawal and the model withdrawal form of Annex I of
+    Directive 2011/83/EU in the official wording, with the trader data from the site settings. Place
+    it on the terms page. See :ref:`Withdrawal instructions <users-manual-withdrawal-information>`.
 
 Payment
 =======
