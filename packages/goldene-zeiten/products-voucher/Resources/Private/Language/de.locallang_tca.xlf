@@ -95,6 +95,10 @@
 				<source>Redeemed At</source>
 				<target>Eingelöst am</target>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_voucherredemption.reverted_at" resname="tx_products_domain_model_voucherredemption.reverted_at">
+				<source>Reverted at (order cancelled)</source>
+				<target>Zurückgenommen am (Bestellung storniert)</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

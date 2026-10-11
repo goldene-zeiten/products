@@ -231,6 +231,10 @@
 				<source>Slug</source>
 				<target>Slug</target>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_category.hide_in_slug_path" resname="tx_products_domain_model_category.hide_in_slug_path">
+				<source>Hide in slug path</source>
+				<target>Im Slug-Pfad ausblenden</target>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_category.description" resname="tx_products_domain_model_category.description">
 				<source>Description</source>
 				<target>Beschreibung</target>
@@ -499,6 +503,10 @@
 				<source>Title</source>
 				<target>Titel</target>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.slug" resname="tx_products_domain_model_article.slug">
+				<source>Slug</source>
+				<target>Slug</target>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_article.item_number" resname="tx_products_domain_model_article.item_number">
 				<source>Item Number</source>
 				<target>Artikelnummer</target>
@@ -694,6 +702,10 @@
 			<trans-unit id="tx_products_domain_model_order.deposit_total" resname="tx_products_domain_model_order.deposit_total">
 				<source>Deposit Total</source>
 				<target>Pfand gesamt</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.payment_fee_total" resname="tx_products_domain_model_order.payment_fee_total">
+				<source>Payment Fee Total</source>
+				<target>Zahlungsgebühr gesamt</target>
 			</trans-unit>
 			<trans-unit id="tx_products_domain_model_order.tax_country" resname="tx_products_domain_model_order.tax_country">
 				<source>Tax Country</source>
