@@ -23,6 +23,11 @@ final readonly class ExpressShippingQuoteOption
         private string $deliveryEstimate = ''
     ) {}
 
+    public function withOrderTotal(Money $orderTotal): self
+    {
+        return new self($this->key, $this->label, $this->shippingAmount, $orderTotal, $this->deliveryEstimate);
+    }
+
     public function getKey(): string
     {
         return $this->key;

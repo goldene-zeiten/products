@@ -12,6 +12,8 @@
          data-currency="{configuration.currency}"
          data-minor-unit-decimals="{configuration.minorUnitDecimals}"
          data-basket-token="{basketToken}"
+         data-provider="stripe-express"
+         data-adjustments-label="{f:translate(key: 'LLL:EXT:products_express_stripe/Resources/Private/Language/locallang.xlf:express_checkout_adjustments')}"
          data-shipping-quote-url="{configuration.shippingQuoteUrl}"
          data-error-message="{f:translate(key: 'LLL:EXT:products_express_stripe/Resources/Private/Language/locallang.xlf:express_checkout_failed')}"
          data-confirm-url="{f:uri.action(action: 'confirm', pageType: settings.confirm.pageType)}"
