@@ -68,7 +68,9 @@ final class FormControlLabelTest extends AbstractFrontendTestCase
             $labels = $xpath->query(sprintf('//label[@for="%s"]', $id));
             $this->assertNotFalse($labels);
             $this->assertSame(1, $labels->length, sprintf('Control "%s" has no label.', $name));
-            $this->assertNotSame('', trim((string)$labels->item(0)?->textContent), sprintf('The label of "%s" is empty.', $name));
+            $label = $labels->item(0);
+            $this->assertInstanceOf(\DOMElement::class, $label);
+            $this->assertNotSame('', trim($label->textContent), sprintf('The label of "%s" is empty.', $name));
         }
     }
 
