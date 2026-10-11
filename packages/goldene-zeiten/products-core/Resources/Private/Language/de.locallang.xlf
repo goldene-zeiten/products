@@ -39,6 +39,10 @@
 				<source>Quantity</source>
 				<target>Menge</target>
 			</trans-unit>
+			<trans-unit id="quantity_of" resname="quantity_of">
+				<source>Quantity of %s</source>
+				<target>Menge von %s</target>
+			</trans-unit>
 			<trans-unit id="price" resname="price">
 				<source>Price</source>
 				<target>Preis</target>
@@ -70,6 +74,34 @@
 			<trans-unit id="deposit_total" resname="deposit_total">
 				<source>Deposit</source>
 				<target>Pfand</target>
+			</trans-unit>
+			<trans-unit id="summary_subtotal" resname="summary_subtotal">
+				<source>Subtotal</source>
+				<target>Zwischensumme</target>
+			</trans-unit>
+			<trans-unit id="summary_shipping" resname="summary_shipping">
+				<source>Shipping</source>
+				<target>Versand</target>
+			</trans-unit>
+			<trans-unit id="summary_handling_fee" resname="summary_handling_fee">
+				<source>Handling fee</source>
+				<target>Bearbeitungsgebühr</target>
+			</trans-unit>
+			<trans-unit id="summary_payment_fee" resname="summary_payment_fee">
+				<source>Payment fee</source>
+				<target>Zahlungsgebühr</target>
+			</trans-unit>
+			<trans-unit id="summary_discount" resname="summary_discount">
+				<source>Discount</source>
+				<target>Rabatt</target>
+			</trans-unit>
+			<trans-unit id="summary_rounding" resname="summary_rounding">
+				<source>Rounding</source>
+				<target>Rundung</target>
+			</trans-unit>
+			<trans-unit id="summary_vat_included" resname="summary_vat_included">
+				<source>incl. %s%% VAT</source>
+				<target>inkl. %s%% MwSt.</target>
 			</trans-unit>
 			<trans-unit id="proceed_to_checkout" resname="proceed_to_checkout">
 				<source>Proceed to Checkout</source>
@@ -123,9 +155,61 @@
 				<source>Continue to Payment</source>
 				<target>Weiter zur Zahlung</target>
 			</trans-unit>
+			<trans-unit id="checkout_payment_failed" resname="checkout_payment_failed">
+				<source>Your payment could not be completed and your order was cancelled. Please choose a payment method and try again.</source>
+				<target>Ihre Zahlung konnte nicht abgeschlossen werden und Ihre Bestellung wurde storniert. Bitte wählen Sie eine Zahlungsart und versuchen Sie es erneut.</target>
+			</trans-unit>
+			<trans-unit id="checkout_payment_unconfirmed" resname="checkout_payment_unconfirmed">
+				<source>Your payment has not been confirmed by the payment provider yet. Please complete it there or choose another payment method.</source>
+				<target>Ihre Zahlung wurde vom Zahlungsanbieter noch nicht bestätigt. Bitte schließen Sie sie dort ab oder wählen Sie eine andere Zahlungsart.</target>
+			</trans-unit>
+			<trans-unit id="checkout_payment_cancelled" resname="checkout_payment_cancelled">
+				<source>You cancelled the payment, so your order was cancelled. Your basket is unchanged - please choose a payment method to try again.</source>
+				<target>Sie haben die Zahlung abgebrochen, daher wurde Ihre Bestellung storniert. Ihr Warenkorb ist unverändert - bitte wählen Sie eine Zahlungsart, um es erneut zu versuchen.</target>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_email" resname="checkout_address_error_email">
+				<source>Please enter a valid email address.</source>
+				<target>Bitte geben Sie eine gültige E-Mail-Adresse ein.</target>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_firstName" resname="checkout_address_error_firstName">
+				<source>Please enter your first name.</source>
+				<target>Bitte geben Sie Ihren Vornamen ein.</target>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_lastName" resname="checkout_address_error_lastName">
+				<source>Please enter your last name.</source>
+				<target>Bitte geben Sie Ihren Nachnamen ein.</target>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_street" resname="checkout_address_error_street">
+				<source>Please enter your street and house number.</source>
+				<target>Bitte geben Sie Straße und Hausnummer ein.</target>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_zip" resname="checkout_address_error_zip">
+				<source>Please enter your postal code.</source>
+				<target>Bitte geben Sie Ihre Postleitzahl ein.</target>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_city" resname="checkout_address_error_city">
+				<source>Please enter your city.</source>
+				<target>Bitte geben Sie Ihren Ort ein.</target>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_country" resname="checkout_address_error_country">
+				<source>Please choose your country.</source>
+				<target>Bitte wählen Sie Ihr Land.</target>
+			</trans-unit>
+			<trans-unit id="checkout_delivery_address_incomplete" resname="checkout_delivery_address_incomplete">
+				<source>Please complete the delivery address: name, street, postal code, city and country are required.</source>
+				<target>Bitte vervollständigen Sie die Lieferadresse: Name, Straße, Postleitzahl, Ort und Land sind erforderlich.</target>
+			</trans-unit>
 			<trans-unit id="checkout_no_shipping_available" resname="checkout_no_shipping_available">
 				<source>We cannot ship this order to your address. Please change your address or the items in your basket.</source>
 				<target>Wir können diese Bestellung nicht an Ihre Adresse versenden. Bitte ändern Sie Ihre Adresse oder die Artikel in Ihrem Warenkorb.</target>
+			</trans-unit>
+			<trans-unit id="checkout_shipping_option_required" resname="checkout_shipping_option_required">
+				<source>Please choose one of the offered shipping options.</source>
+				<target>Bitte wählen Sie eine der angebotenen Versandarten.</target>
+			</trans-unit>
+			<trans-unit id="checkout_shipping_option_unavailable" resname="checkout_shipping_option_unavailable">
+				<source>Your shipping option is no longer available for your basket and address. Please choose again.</source>
+				<target>Ihre Versandart steht für Ihren Warenkorb und Ihre Adresse nicht mehr zur Verfügung. Bitte wählen Sie erneut.</target>
 			</trans-unit>
 			<trans-unit id="checkout_shipping_method" resname="checkout_shipping_method">
 				<source>Checkout: Shipping Method</source>
@@ -134,6 +218,10 @@
 			<trans-unit id="checkout_payment" resname="checkout_payment">
 				<source>Checkout: Payment Method</source>
 				<target>Kasse: Zahlungsart</target>
+			</trans-unit>
+			<trans-unit id="checkout_payment_method_required" resname="checkout_payment_method_required">
+				<source>Please choose one of the offered payment methods.</source>
+				<target>Bitte wählen Sie eine der angebotenen Zahlungsarten.</target>
 			</trans-unit>
 			<trans-unit id="continue_to_review" resname="continue_to_review">
 				<source>Continue to Review</source>
@@ -338,6 +426,14 @@
 			<trans-unit id="download.no_files" resname="download.no_files">
 				<source>No downloadable files available for this order.</source>
 				<target>Für diese Bestellung sind keine Dateien zum Download verfügbar.</target>
+			</trans-unit>
+			<trans-unit id="download.available_after_payment" resname="download.available_after_payment">
+				<source>Your downloads will be available once your payment has been received.</source>
+				<target>Ihre Downloads stehen zur Verfügung, sobald Ihre Zahlung eingegangen ist.</target>
+			</trans-unit>
+			<trans-unit id="downloads.available_after_purchase" resname="downloads.available_after_purchase">
+				<source>Available for download after purchase.</source>
+				<target>Nach dem Kauf zum Download verfügbar.</target>
 			</trans-unit>
 			<trans-unit id="tracking" resname="tracking">
 				<source>Tracking</source>

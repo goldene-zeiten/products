@@ -51,10 +51,6 @@
 				<source>Privacy &amp; GDPR</source>
 				<target>Datenschutz &amp; DSGVO</target>
 			</trans-unit>
-			<trans-unit id="category.technical" resname="category.technical">
-				<source>Technical</source>
-				<target>Technik</target>
-			</trans-unit>
 			<trans-unit id="setting.products.pids.storageFolder" resname="setting.products.pids.storageFolder">
 				<source>Storage folder UID</source>
 				<target>UID des Speicherordners</target>
@@ -238,10 +234,6 @@
 			<trans-unit id="setting.products.gdpr.invoiceRetentionDays" resname="setting.products.gdpr.invoiceRetentionDays">
 				<source>Days to retain order/invoice data before automatic deletion (GDPR data minimization) - set per your jurisdiction's statutory bookkeeping retention period, e.g. 10 years in Germany</source>
 				<target>Tage, für die Bestell- und Rechnungsdaten vor der automatischen Löschung aufbewahrt werden (DSGVO-Datenminimierung) – entsprechend der gesetzlichen Aufbewahrungsfrist Ihres Landes festlegen, z. B. 10 Jahre in Deutschland</target>
-			</trans-unit>
-			<trans-unit id="setting.products.ajax.pageType" resname="setting.products.ajax.pageType">
-				<source>AJAX page typeNum</source>
-				<target>typeNum der AJAX-Seite</target>
 			</trans-unit>
 			<trans-unit id="category.withdrawal" resname="category.withdrawal">
 				<source>Right of withdrawal</source>

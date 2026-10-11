@@ -199,6 +199,10 @@
 				<source>No records found.</source>
 				<target>Keine Datensätze gefunden.</target>
 			</trans-unit>
+			<trans-unit id="message.no_storage_folder" resname="message.no_storage_folder">
+				<source>No storage folder found. Records cannot be created until one is configured.</source>
+				<target>Es wurde kein Speicherordner gefunden. Datensätze können erst angelegt werden, wenn einer konfiguriert ist.</target>
+			</trans-unit>
 			<trans-unit id="tree.tree_label" resname="tree.tree_label">
 				<source>Categories and products</source>
 				<target>Kategorien und Produkte</target>
