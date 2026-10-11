@@ -47,6 +47,8 @@
         <f:render partial="Order/Summary" arguments="{summary: basket, totals: totals}" />
     </div>
 
+    <f:render partial="Checkout/LoyaltyRedeem" arguments="{_all}" />
+
     <div class="mt-4">
         <f:form action="finalize" requestToken="products/checkout">
             <f:render partial="Checkout/LoyaltySlot" arguments="{_all}" />

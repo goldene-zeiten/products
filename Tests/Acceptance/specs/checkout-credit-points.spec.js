@@ -50,7 +50,14 @@ test('spending credit points reduces the order total, and points earned from the
 
   await expect(page.getByText('You have 100 credit points available.')).toBeVisible();
 
+  const totalBeforeSpending = await rowValue(page, 'Total Gross');
   await page.locator('#spendPoints').fill('50');
+  await page.getByRole('button', { name: 'Apply credit points' }).click();
+
+  // The review shows the total the order will be placed with, so the selected points are already in it
+  expect(Math.round((await rowValue(page, 'Discount')) * 100)).toBe(500);
+  expect(Math.round((await rowValue(page, 'Total Gross')) * 100)).toBe(Math.round(totalBeforeSpending * 100) - 500);
+
   await page.locator('#termsAccepted').check();
   await page.getByRole('button', { name: 'Order with obligation to pay' }).click();
 
