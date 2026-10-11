@@ -263,39 +263,153 @@ point.
 ..  _users-manual-withdrawal:
 
 Order withdrawal
-==================
+================
 
-A customer can withdraw from their order themselves within
-`products.checkout.withdrawalPeriodDays` (14 days by default) of placing it — there is no fe_user
-account requirement, matching this shop's guest-checkout-first design. The function follows
-Art. 11a of the Consumer Rights Directive 2011/83/EU (inserted by Directive (EU) 2023/2673,
+A customer can withdraw from their order themselves online - there is no fe_user account
+requirement, matching this shop's guest-checkout-first design. The function follows Art. 9 to 14 of
+the Consumer Rights Directive 2011/83/EU, including Art. 11a (inserted by Directive (EU) 2023/2673,
 applicable since 19 June 2026): a clearly labelled "Withdraw from contract here" entry point
-leading to a confirmation form with a "Confirm withdrawal" button.
+(German: "Vertrag widerrufen") leading to a statement form with a confirmation button that is
+labelled only "Confirm withdrawal" (German: "Widerruf bestätigen").
 
-The form is reachable in two ways:
+..  _users-manual-withdrawal-period:
+
+The withdrawal period
+---------------------
+
+The period is 14 days (`products.checkout.withdrawalPeriodDays`) and is worked out per order item:
+
+*   **Goods.** The 14 days start the day after the customer - or a third party they named, other
+    than the carrier - received the goods. For an order delivered in several parts, the **last**
+    part counts. The delivery date comes from, in this order:
+
+    *   the order's :guilabel:`Delivered at` date (``delivered_at``), which is set by the order
+        module's :guilabel:`Mark delivered` button, by completing the order, or by an integration
+        that learns of the delivery; an item can carry a delivery date of its own for split
+        deliveries, and the order's period then starts with the latest one;
+    *   otherwise the shipping date (read from the status log) plus the days in
+        `products.withdrawal.assumedDeliveryDays` (14 by default - deliberately in the customer's
+        favour).
+
+    Until the goods are delivered, the period has not started: **an order can be withdrawn from
+    before it is delivered, however old it is.** A shipped or delivered order stays withdrawable
+    until the period has run out.
+
+*   **Digital content** without a tangible medium: 14 days from the order. Once the customer gave
+    the :ref:`waiver <users-manual-withdrawal-exemptions>` there is no right of withdrawal left.
+
+*   **Withdrawal information missing.** If the withdrawal information never reached the customer on
+    a durable medium - the order confirmation email carries it, and the order records when it was
+    sent (``withdrawal_information_provided_at``) - the period is extended by twelve months
+    (Art. 10). If the information arrives later, the period ends 14 days after it.
+
+*   **Timeliness.** A withdrawal is in time when it was *submitted* before the period expired
+    (Art. 11a(5)); the submission date and time is stored with the statement
+    (``withdrawn_at``), so a statement that the shop processes later still counts.
+
+Setting `products.checkout.withdrawalPeriodDays` to ``0`` disables the whole feature.
+
+The withdrawal function
+-----------------------
+
+The form is reachable in three ways:
 
 *   **Prefilled, via an order link.** The order confirmation email carries a prominent withdrawal
     button, and the thank-you and order-detail pages carry the same link. These links transport
-    the order uid plus an HMAC capability token, so the form opens prefilled with the order number
-    and billing email — and the token, not the guessable uid, is what grants the prefill.
+    the order uid plus an HMAC capability token, so the form opens prefilled with the customer's
+    name, the order number and the billing email - and the token, not the guessable uid, is what
+    grants the prefill.
 
-*   **Plain, via the withdrawal page itself** — typically linked from a footer or meta navigation
-    (see :ref:`the page type below <users-manual-withdrawal-page-type>`). The customer identifies
-    the order by its order number and billing email address. Unknown number and wrong email answer
-    with the same generic message, so order numbers cannot be probed, and confirmation attempts
-    are rate limited per client IP
+*   **Logged in.** A logged-in customer who opens the withdrawal page sees a list of their own
+    withdrawable orders and picks one - they do not identify themselves again. Submitting is only
+    accepted as a ``POST`` request from the logged-in session.
+
+*   **Plain, via the withdrawal page itself** - typically linked from a footer or meta navigation
+    (see :ref:`the page type below <users-manual-withdrawal-page-type>`). The customer enters
+    their name, the order number and the billing email address and continues to a second step
+    that lists the order's items. Unknown number and wrong email answer with the same generic
+    message, so order numbers cannot be probed, and attempts are rate limited per client IP
     (``$GLOBALS['TYPO3_CONF_VARS']['SYS']['rateLimiter']['products-withdrawal-confirm']['limit']``,
     10 per minute by default).
 
-Either way, submitting checks the email matches the order's billing address, the order is still
-within the withdrawal period, its current status is still cancellable (not already shipped,
-cancelled, or refunded), and the order is not entirely made up of
-:ref:`exempt items <users-manual-withdrawal-exemptions>`.
+The statement asks for the customer's name, shows the order number, asks to confirm the email
+address the acknowledgement goes to and lists the order's items. All withdrawable items are
+selected; the customer can deselect some to **withdraw from part of the order**. Items that carry
+no right of withdrawal (:ref:`exempt <users-manual-withdrawal-exemptions>`), items already
+withdrawn and items whose period has run out are shown but cannot be selected. Submitting checks
+that the email matches the order's billing address, that the order is not cancelled and that at
+least one selected item can still be withdrawn.
 
-A successful withdrawal moves the order straight to :guilabel:`Cancelled` and sends the merchant a
-dedicated notification (in addition to the customer's own status-change email) — a customer-driven
-cancellation specifically needs to alert the shop to act, unlike an ordinary backend-driven status
-change. Setting `products.checkout.withdrawalPeriodDays` to ``0`` disables the whole feature.
+What happens after a withdrawal
+-------------------------------
+
+*   **The order had not been shipped.** The withdrawn items go back into stock. If nothing is left
+    in the order it is moved to :guilabel:`Cancelled`; if items remain (for example an exempt
+    personalized item that is still produced and shipped) it stays as it is.
+
+*   **The order had been shipped or delivered.** The statement is recorded and the order moves to
+    :guilabel:`Withdrawn, awaiting return`. Nothing goes back into stock until the returned goods
+    are confirmed in the backend.
+
+In both cases the customer immediately receives an **acknowledgement of receipt by email** (a
+durable medium, Art. 11a(4)) with the content of the statement (name, order number, withdrawn
+items, email address), the **date and time of its submission** in the shop's time zone
+(`products.withdrawal.timezone`), the return instructions (address, deadline of 14 days, who bears the
+cost), the refund rules and the model withdrawal form. The merchant is notified as well. The
+order's status-changed email is not sent additionally.
+
+Backend steps
+-------------
+
+The order module (:guilabel:`Orders`) shows the delivery, the withdrawal, the **date the refund is
+due** (14 days after the statement, Art. 13) and the return milestones, and offers these actions:
+
+*   :guilabel:`Mark delivered` - for a shipped order, stamps the delivery that starts the
+    withdrawal period. Completing an order does the same when no delivery date was recorded.
+*   :guilabel:`Record proof of return shipment` - for an order awaiting return, when the customer
+    proved they sent the goods back.
+*   :guilabel:`Goods received back` - the returned goods have arrived. The withdrawn items go back
+    into stock; the order is completed when items remain with the customer and cancelled when
+    everything came back.
+*   :guilabel:`Refund` - refunds the payment through its payment method. After a partial withdrawal
+    it covers the withdrawn lines only. For shipped goods the refund is **withheld until the goods
+    are received back or proof of sending is recorded**, whichever comes first (Art. 13(3)); the
+    module explains why the button is missing.
+
+The order statuses and the moves between them:
+
+*   New: can move to Pending, Confirmed or Cancelled.
+*   Pending: can move to Confirmed or Cancelled.
+*   Confirmed: can move to Shipped or Cancelled.
+*   Shipped: can move to Completed, or - through a withdrawal - to Withdrawn, awaiting return.
+*   Completed: can move to Withdrawn, awaiting return (a late withdrawal inside the period).
+*   Withdrawn, awaiting return: can move to Completed or Cancelled; the backend does this with
+    :guilabel:`Goods received back`.
+*   Cancelled: final.
+
+The withdrawn status is entered by the customer's withdrawal only; the backend does not offer it
+as a manual step.
+
+..  _users-manual-withdrawal-information:
+
+Withdrawal instructions and model form
+--------------------------------------
+
+The trader has to give the model instructions on withdrawal and the model withdrawal form
+(Annex I(A) and I(B) of the directive). They are rendered in the official English and German wording
+with the trader's identity from the site settings (`products.withdrawal.trader.*`), and with the
+start of the period that fits the order. They appear
+
+*   on the withdrawal page, below the form,
+*   in the order confirmation email (HTML and text), which is the confirmation on a durable medium
+    that Art. 8(7) requires,
+*   in the withdrawal acknowledgement email (the model form), and
+*   anywhere an editor places the :rst:dir:`WithdrawalInstructions` content element, for example on
+    the terms page. Without an order the start of the period follows
+    `products.withdrawal.instructionVariant`.
+
+Set the trader name, address, email and telephone number and, if returns go somewhere else, the
+return address. A visible placeholder is printed until the trader name or address is configured.
 
 ..  _users-manual-withdrawal-page-type:
 
@@ -336,12 +450,18 @@ Products can be flagged in :guilabel:`Withdrawal right exemption` on the product
     be placed through the normal checkout. Express/wallet checkouts collect no such consent, so
     orders placed through them simply keep their withdrawal right.
 
+*   **Sealed goods unsuitable for return for health or hygiene reasons** (Art. 16(e)) and
+    **sealed audio or video recordings and sealed software** (Art. 16(i)). The right is lost only
+    if the customer unsealed the goods after delivery, which the shop cannot know - so these items
+    **stay withdrawable**. The withdrawal form, the acknowledgement and the instructions state the
+    condition instead.
+
 The exemption is snapshotted onto every order item at placement time, so a later product edit does
 not change the legal status an item was sold under. An order consisting entirely of exempt items
 offers no withdrawal function — the email button and page links are replaced by an explanatory
-notice, and the form refuses it. A mixed order stays withdrawable as a whole, because the
-statutory right on its non-exempt items cannot be denied; the merchant withdrawal notification
-lists the exempt items so the refund can be handled accordingly.
+notice, and the form refuses it. In a mixed order the exempt items are shown in the form but cannot
+be selected, so the customer withdraws from the other items only; the merchant withdrawal
+notification lists the exempt items.
 
 The FE order-detail page (:rst:dir:`OrderHistory`'s ``show`` action, linked from the thank-you page
 and order history) works the same way as invoice download and withdrawal: a logged-in customer

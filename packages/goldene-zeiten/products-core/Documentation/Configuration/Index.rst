@@ -392,9 +392,68 @@ from. Set it before creating any content.
         :type: int
         :Default: 14
 
-        Days after order placement a customer may self-service withdraw/cancel their order via the
-        link on `products.pids.withdrawalPage`. ``0`` disables the feature entirely. See
-        :ref:`Order withdrawal <users-manual-withdrawal>`.
+        Length of the withdrawal period in days; the statutory period is 14. It runs from the
+        delivery of the goods, not from the order. ``0`` disables the self-service withdrawal
+        entirely. See :ref:`The withdrawal period <users-manual-withdrawal-period>`.
+
+    ..  confval:: products.withdrawal.assumedDeliveryDays
+        :type: int
+        :Default: 14
+
+        Days between shipping and delivery that are assumed while no delivery date is recorded on a
+        shipped order. A higher value favours the customer.
+
+    ..  confval:: products.withdrawal.timezone
+        :type: string
+        :Default: Europe/Berlin
+
+        Time zone in which withdrawal deadlines end (at midnight) and in which the submission time is
+        shown in the acknowledgement of receipt.
+
+    ..  confval:: products.withdrawal.instructionVariant
+        :type: string
+        :Default: multipleGoods
+
+        The start of the withdrawal period the instructions state when they are shown without an
+        order: ``goods``, ``multipleGoods``, ``lots``, ``regularDelivery`` or ``digitalContent``.
+        Instructions in an order's confirmation email follow the order's contents.
+
+    ..  confval:: products.withdrawal.returnCostBorneByTrader
+        :type: bool
+        :Default: false
+
+        Whether the shop pays for returning withdrawn goods. The instructions and the
+        acknowledgement state the customer bears the direct return cost otherwise.
+
+    ..  confval:: products.withdrawal.trader.name
+        :type: string
+        :Default: (empty)
+
+        Name of the trader as printed in the withdrawal instructions and on the model form.
+
+    ..  confval:: products.withdrawal.trader.address
+        :type: string
+        :Default: (empty)
+
+        Geographical address of the trader, one address line per line.
+
+    ..  confval:: products.withdrawal.trader.email
+        :type: string
+        :Default: (empty)
+
+        Email address the trader can be reached at for a withdrawal.
+
+    ..  confval:: products.withdrawal.trader.phone
+        :type: string
+        :Default: (empty)
+
+        Telephone number of the trader.
+
+    ..  confval:: products.withdrawal.trader.returnAddress
+        :type: string
+        :Default: (empty)
+
+        Address withdrawn goods are sent to. Falls back to the trader address.
 
     ..  confval:: products.seo.pageTitleMode
         :type: string
