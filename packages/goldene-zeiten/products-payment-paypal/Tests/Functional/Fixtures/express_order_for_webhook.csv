@@ -1,0 +1,6 @@
+"tx_products_domain_model_order",,,,,,,,,
+,"uid","pid","deleted","order_number","currency","total_gross","payment_status","status"
+,42,1,0,"ORD-42","EUR",1234,"pending","confirmed"
+"tx_products_domain_model_paymenttransaction",,,,,,,,,
+,"uid","pid","deleted","order_uid","payment_method","external_id","state","amount","currency"
+,1,0,0,42,"paypal-express","EXPRESS-CAPTURE-1","pending",1234,"EUR"

@@ -36,6 +36,17 @@ final class StripeExpressPaymentClientTest extends AbstractStripeExpressMockTest
     }
 
     #[Test]
+    public function aProcessingIntentIsPendingForTheRequestedAmount(): void
+    {
+        $result = $this->client()->settle(10800, 'EUR', 'pm_processing', $this->configuration());
+
+        $this->assertSame(PaymentResultState::PENDING, $result->getState());
+        $this->assertSame(PaymentStatus::PENDING, $result->getPaymentStatus());
+        $this->assertSame('pi_test_processing', $result->getExternalId());
+        $this->assertSame(10800, $result->getSettledAmount()?->getCents());
+    }
+
+    #[Test]
     public function aSettledIntentCanBeRefundedInFull(): void
     {
         $this->client()->refund('pi_test_1', $this->configuration());

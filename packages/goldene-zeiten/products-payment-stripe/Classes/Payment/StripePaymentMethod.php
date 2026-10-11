@@ -37,6 +37,12 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface, Stati
 {
     public const IDENTIFIER = 'stripe';
 
+    /**
+     * The identifier express orders paid through Stripe are recorded under; their PaymentIntent ids are
+     * bound to the order by it.
+     */
+    public const EXPRESS_PROVIDER_IDENTIFIER = 'stripe-express';
+
     private const SESSION_ID_PLACEHOLDER = 'session_id={CHECKOUT_SESSION_ID}';
 
     private const EVENT_COMPLETED = 'checkout.session.completed';
@@ -56,6 +62,7 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface, Stati
         private readonly OrderRepository $orderRepository,
         private readonly StripeAmountConverter $amountConverter,
         private readonly LoggerInterface $logger,
+        private readonly StripePaymentIntentWebhookResolver $paymentIntentResolver,
     ) {}
 
     public function getIdentifier(): string
@@ -132,13 +139,18 @@ final class StripePaymentMethod implements RedirectPaymentMethodInterface, Stati
      * `client_reference_id` trusted to name the order {@see StaticWebhookPaymentMethodInterface}.
      *
      * Subscribe the endpoint to `checkout.session.completed`, `checkout.session.async_payment_succeeded` and
-     * `checkout.session.async_payment_failed`; any other event type is acknowledged and ignored.
+     * `checkout.session.async_payment_failed`; add `payment_intent.succeeded` and
+     * `payment_intent.payment_failed` to settle express payments {@see StripePaymentIntentWebhookResolver}.
+     * Any other event type is acknowledged and ignored.
      */
     public function handleStaticWebhook(ServerRequestInterface $request): WebhookResolution
     {
         $event = $this->verifiedEvent($request);
         if ($event === null) {
             return WebhookResolution::unresolved(PaymentResult::failed('Stripe webhook signature could not be verified.'));
+        }
+        if ($this->paymentIntentResolver->supports($event)) {
+            return $this->paymentIntentResolver->resolve($event);
         }
         if (!in_array($event->type, self::HANDLED_EVENTS, true)) {
             return WebhookResolution::ignored();

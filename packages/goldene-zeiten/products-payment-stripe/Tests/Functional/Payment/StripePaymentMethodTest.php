@@ -15,6 +15,7 @@ use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Payment\Stripe\Amount\StripeAmountConverter;
 use GoldeneZeiten\Products\Payment\Stripe\Client\StripeClientFactory;
 use GoldeneZeiten\Products\Payment\Stripe\Configuration\StripeConfigurationFactory;
+use GoldeneZeiten\Products\Payment\Stripe\Payment\StripePaymentIntentWebhookResolver;
 use GoldeneZeiten\Products\Payment\Stripe\Payment\StripePaymentMethod;
 use GoldeneZeiten\Products\Payment\Stripe\Tests\Functional\AbstractStripeMockTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -271,12 +272,67 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
             $this->get(OrderRepository::class),
             new StripeAmountConverter(),
             new NullLogger(),
+            $this->get(StripePaymentIntentWebhookResolver::class),
         );
 
         $resolution = $subject->handleStaticWebhook($this->siteOnlyRequest($this->webhookRequest(true)));
 
         $this->assertSame(42, $resolution->getOrder()?->getUid());
         $this->assertSame(PaymentStatus::PAID, $resolution->getResult()->getPaymentStatus());
+    }
+
+    #[Test]
+    public function aSucceededPaymentIntentSettlesTheExpressOrderBoundToIt(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/express_order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->paymentIntentRequest('payment_intent.succeeded', 'pi_express_1'));
+
+        $this->assertSame(42, $resolution->getOrder()?->getUid());
+        $this->assertSame(PaymentStatus::PAID, $resolution->getResult()->getPaymentStatus());
+        $this->assertSame('pi_express_1', $resolution->getResult()->getExternalId());
+    }
+
+    #[Test]
+    public function aFailedPaymentIntentRejectsTheExpressOrderBoundToIt(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/express_order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->paymentIntentRequest('payment_intent.payment_failed', 'pi_express_1'));
+
+        $this->assertSame(42, $resolution->getOrder()?->getUid());
+        $this->assertSame(PaymentResultState::FAILED, $resolution->getResult()->getState());
+    }
+
+    #[Test]
+    public function aPaymentIntentOfNoExpressOrderIsAcknowledgedAndIgnored(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/express_order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->paymentIntentRequest('payment_intent.succeeded', 'pi_of_a_checkout_session'));
+
+        $this->assertTrue($resolution->isIgnored());
+    }
+
+    #[Test]
+    public function aSucceededPaymentIntentOfAnotherAmountDoesNotSettleTheExpressOrder(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/express_order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->paymentIntentRequest('payment_intent.succeeded', 'pi_express_1', 100));
+
+        $this->assertNull($resolution->getOrder());
+        $this->assertSame(PaymentResultState::FAILED, $resolution->getResult()->getState());
+    }
+
+    #[Test]
+    public function aPaymentIntentEventWithAnInvalidSignatureResolvesNothing(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/express_order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->paymentIntentRequest('payment_intent.succeeded', 'pi_express_1', 1234, false));
+
+        $this->assertNull($resolution->getOrder());
     }
 
     private function siteOnlyRequest(ServerRequestInterface $request): ServerRequestInterface
@@ -317,6 +373,7 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
             $this->get(OrderRepository::class),
             new StripeAmountConverter(),
             new NullLogger(),
+            $this->get(StripePaymentIntentWebhookResolver::class),
         );
     }
 
@@ -359,6 +416,35 @@ final class StripePaymentMethodTest extends AbstractStripeMockTestCase
                         'client_reference_id' => '42',
                         'amount_total' => $amountTotal,
                         'currency' => $currency,
+                    ],
+                ],
+            ],
+            JSON_THROW_ON_ERROR,
+        );
+        $timestamp = time();
+        $signature = $validSignature
+            ? 't=' . $timestamp . ',v1=' . hash_hmac('sha256', $timestamp . '.' . $payload, 'whsec_test')
+            : 't=' . $timestamp . ',v1=deadbeef';
+
+        return new ServerRequest('https://shop.example/webhook', 'POST', $this->stream($payload), [
+            'Stripe-Signature' => $signature,
+        ]);
+    }
+
+    private function paymentIntentRequest(string $type, string $intentId, int $amount = 1234, bool $validSignature = true): ServerRequestInterface
+    {
+        $payload = json_encode(
+            [
+                'id' => 'evt_2',
+                'object' => 'event',
+                'type' => $type,
+                'data' => [
+                    'object' => [
+                        'id' => $intentId,
+                        'object' => 'payment_intent',
+                        'amount' => 1234,
+                        'amount_received' => $amount,
+                        'currency' => 'eur',
                     ],
                 ],
             ],

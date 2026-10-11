@@ -36,6 +36,10 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
  * then has the provider's {@see ExpressSettlementInterface} charge exactly the order total and refuses to
  * mark the order paid for any other amount. A payment settled for an order that then fails is refunded.
  *
+ * A payment that is accepted but not final yet (processing, held for review) places the order with its
+ * payment pending, exactly as the redirect flow does; the gateway's webhook later settles or rejects it by
+ * the payment reference {@see ExpressPaymentRecorder} bound to the order.
+ *
  * It reuses the exact {@see OrderCreationService} and {@see OrderFinalizationService} normal checkout runs
  * on, in one transaction, so stock, numbering, loyalty and basket clearing behave identically - the single
  * source of truth the express seam is built around. Unlike the shipping-rate callback it runs in a normal
@@ -49,6 +53,7 @@ final readonly class ExpressOrderService
         private ProductsConfigurationFactory $configurationFactory,
         private OrderCreationService $orderCreationService,
         private OrderFinalizationService $orderFinalizationService,
+        private ExpressPaymentRecorder $paymentRecorder,
         private ConnectionPool $connectionPool,
         private EventDispatcherInterface $eventDispatcher,
         private LoggerInterface $logger
@@ -96,6 +101,7 @@ final readonly class ExpressOrderService
         try {
             $settled = $settlement->settle($order);
             $this->assertSettledAmount($order, $settled);
+            $this->paymentRecorder->record($order, $provider, $settled);
             $this->orderFinalizationService->finalize($order, $settled, $request);
         } catch (\Throwable $exception) {
             $this->abort($settlement, $settled, $order, $exception);

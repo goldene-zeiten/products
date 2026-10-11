@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Core\Domain\Enum\PaymentResultState;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\PaymentTransactionRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Payment\Paypal\Amount\PaypalAmountFormatter;
 use GoldeneZeiten\Products\Payment\Paypal\Configuration\PaypalConfigurationFactory;
@@ -245,6 +246,7 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
             $this->get(OrderRepository::class),
             new PaypalAmountFormatter(),
             new NullLogger(),
+            $this->get(PaymentTransactionRepository::class),
         );
 
         $result = $subject->handleReturn($this->siteOnlyRequest($this->returnRequest('PAYPAL-ORDER-1')), $this->order());
@@ -292,6 +294,7 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
             $this->get(OrderRepository::class),
             new PaypalAmountFormatter(),
             new NullLogger(),
+            $this->get(PaymentTransactionRepository::class),
         );
     }
 
@@ -353,6 +356,55 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
         $this->assertNull($resolution->getOrder(), 'A webhook capture whose amount does not match the order must not resolve it.');
     }
 
+    /**
+     * An express capture carries the basket's hash as its custom id, so the order is found by the capture id
+     * the shop recorded for it.
+     */
+    #[Test]
+    public function handleStaticWebhookResolvesAnExpressOrderByItsCaptureAndMarksItPaid(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/express_order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->staticWebhookRequest('9f8e7d6c5b4a', '12.34', 'EUR', resourceId: 'EXPRESS-CAPTURE-1'));
+
+        $this->assertSame(42, $resolution->getOrder()?->getUid());
+        $this->assertSame(PaymentStatus::PAID, $resolution->getResult()->getPaymentStatus());
+    }
+
+    #[Test]
+    public function handleStaticWebhookFailsAnExpressOrderOnADeniedCapture(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/express_order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->staticWebhookRequest('9f8e7d6c5b4a', '12.34', 'EUR', 'PAYMENT.CAPTURE.DENIED', 'EXPRESS-CAPTURE-1'));
+
+        $this->assertSame(42, $resolution->getOrder()?->getUid());
+        $this->assertSame(PaymentResultState::FAILED, $resolution->getResult()->getState());
+    }
+
+    #[Test]
+    public function handleStaticWebhookRejectsAnExpressCaptureWithATamperedAmount(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/express_order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->staticWebhookRequest('9f8e7d6c5b4a', '1.00', 'EUR', resourceId: 'EXPRESS-CAPTURE-1'));
+
+        $this->assertNull($resolution->getOrder());
+    }
+
+    /**
+     * A custom id that merely starts with digits must not be read as an order uid.
+     */
+    #[Test]
+    public function handleStaticWebhookDoesNotReadAHashedCustomIdAsAnOrderUid(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_for_webhook.csv');
+
+        $resolution = $this->subject()->handleStaticWebhook($this->staticWebhookRequest('42abc9f8e', '12.34', 'EUR', resourceId: 'UNKNOWN-CAPTURE'));
+
+        $this->assertNull($resolution->getOrder());
+    }
+
     #[Test]
     public function handleStaticWebhookAcknowledgesAnEventTypeItDoesNotHandle(): void
     {
@@ -395,13 +447,13 @@ final class PaypalPaymentMethodTest extends AbstractPaypalMockTestCase
         $this->assertNull($resolution->getOrder(), 'An unverified webhook must not resolve an order.');
     }
 
-    private function staticWebhookRequest(string $customId, string $amountValue, string $currency, string $eventType = 'PAYMENT.CAPTURE.COMPLETED'): ServerRequestInterface
+    private function staticWebhookRequest(string $customId, string $amountValue, string $currency, string $eventType = 'PAYMENT.CAPTURE.COMPLETED', string $resourceId = 'CAPTURE-9'): ServerRequestInterface
     {
         $body = json_encode(
             [
                 'event_type' => $eventType,
                 'resource' => [
-                    'id' => 'CAPTURE-9',
+                    'id' => $resourceId,
                     'custom_id' => $customId,
                     'amount' => [
                         'value' => $amountValue,

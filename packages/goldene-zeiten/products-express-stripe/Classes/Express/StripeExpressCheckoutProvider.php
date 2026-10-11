@@ -9,6 +9,7 @@ use GoldeneZeiten\Products\Core\Express\ExpressCheckoutProviderInterface;
 use GoldeneZeiten\Products\Core\Middleware\ExpressShippingQuoteMiddleware;
 use GoldeneZeiten\Products\Express\Stripe\Configuration\StripeExpressConfigurationFactory;
 use GoldeneZeiten\Products\Payment\Stripe\Amount\StripeAmountConverter;
+use GoldeneZeiten\Products\Payment\Stripe\Payment\StripePaymentMethod;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -23,7 +24,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 final class StripeExpressCheckoutProvider implements ExpressCheckoutProviderInterface
 {
-    public const IDENTIFIER = 'stripe-express';
+    public const IDENTIFIER = StripePaymentMethod::EXPRESS_PROVIDER_IDENTIFIER;
 
     /**
      * The currencies Stripe's Express Checkout Element is offered for. Offering it for anything else only
