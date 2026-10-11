@@ -68,11 +68,12 @@ final class ExpressCheckoutController extends ActionController
         $body = $this->request->getParsedBody();
         $body = is_array($body) ? $body : [];
 
+        $address = $this->buildAddress($body);
         try {
             $order = $this->confirmService->confirm(
                 $this->request,
-                $this->basketService->getBasketViewModel($this->request),
-                $this->buildAddress($body),
+                $this->basketService->getBasketViewModel($this->request, $address->getCountry()),
+                $address,
                 (string)($body['shippingOption'] ?? ''),
                 (string)($body['paymentMethodId'] ?? '')
             );

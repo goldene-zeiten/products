@@ -84,6 +84,16 @@ final class ExpressCheckoutControllerTest extends AbstractFrontendTestCase
         $this->assertStringContainsString('tx_productscore_checkout[hash]=' . $token, $redirectUrl);
     }
 
+    #[Test]
+    public function theOrderIsTaxedInTheCountryOfTheWalletAddress(): void
+    {
+        $this->confirm('FR');
+
+        $order = $this->order();
+        $this->assertSame('FR', $order->getTaxCountry());
+        $this->assertSame(52, $order->getTotalTax()->getCents());
+    }
+
     /**
      * @return array<string, mixed>
      */
