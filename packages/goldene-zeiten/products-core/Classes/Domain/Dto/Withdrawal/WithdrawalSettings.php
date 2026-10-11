@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Domain\Dto\Withdrawal;
 
+use GoldeneZeiten\Products\Core\Domain\Enum\WithdrawalInstructionVariant;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**
@@ -19,6 +20,7 @@ final readonly class WithdrawalSettings
         public string $timezone = 'Europe/Berlin',
         public bool $returnCostBorneByTrader = false,
         public TraderIdentity $trader = new TraderIdentity(),
+        public WithdrawalInstructionVariant $instructionVariant = WithdrawalInstructionVariant::MULTIPLE_GOODS,
     ) {}
 
     public function getDateTimeZone(): \DateTimeZone

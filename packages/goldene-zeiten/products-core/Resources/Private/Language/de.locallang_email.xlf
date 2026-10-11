@@ -79,10 +79,6 @@
 				<source>Reason given</source>
 				<target>Angegebene Begründung</target>
 			</trans-unit>
-			<trans-unit id="withdrawal_notice_intro" resname="withdrawal_notice_intro">
-				<source>You have the right to withdraw from this contract within %d days without giving any reason.</source>
-				<target>Sie haben das Recht, binnen %d Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.</target>
-			</trans-unit>
 			<trans-unit id="withdrawal_button_label" resname="withdrawal_button_label">
 				<source>Withdraw from contract here</source>
 				<target>Vertrag widerrufen</target>

@@ -16,6 +16,7 @@ use GoldeneZeiten\Products\Core\Service\Exception\AgbFileNotFoundException;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoicePdfService;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceRenderer;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalExclusionService;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalInstructionsBuilder;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalSettingsFactory;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalUrlFactory;
 use Psr\Log\LoggerInterface;
@@ -47,6 +48,7 @@ final class OrderMailService
         private readonly WithdrawalUrlFactory $withdrawalUrlFactory,
         private readonly WithdrawalExclusionService $withdrawalExclusionService,
         private readonly WithdrawalSettingsFactory $withdrawalSettingsFactory,
+        private readonly WithdrawalInstructionsBuilder $instructionsBuilder,
         private readonly ConnectionPool $connectionPool
     ) {}
 
@@ -79,6 +81,11 @@ final class OrderMailService
         $email->assignMultiple([
             'withdrawalPeriodDays' => $withdrawalSettings->periodDays,
             'withdrawalUrl' => $this->withdrawalUrlFactory->createFor($order),
+            'instructions' => $this->instructionsBuilder->build(
+                $withdrawalSettings,
+                $this->instructionsBuilder->variantFor($order),
+                $this->withdrawalUrlFactory->createFunctionUrlFor($order)
+            ),
         ]);
     }
 
@@ -251,6 +258,11 @@ final class OrderMailService
             'trader' => $withdrawalSettings->trader,
             'returnCostBorneByTrader' => $withdrawalSettings->returnCostBorneByTrader,
             'conditionalItems' => $this->itemsLostByUnsealing($withdrawnItems),
+            'instructions' => $this->instructionsBuilder->build(
+                $withdrawalSettings,
+                $this->instructionsBuilder->variantFor($order),
+                $this->withdrawalUrlFactory->createFunctionUrlFor($order)
+            ),
         ]);
         $this->mailer->send($email);
     }

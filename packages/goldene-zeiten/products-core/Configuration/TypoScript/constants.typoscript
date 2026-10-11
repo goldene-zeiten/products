@@ -56,6 +56,8 @@ products {
         assumedDeliveryDays = 14
         # cat=products/withdrawal; type=string; label=Time zone for withdrawal deadlines and acknowledgements
         timezone = Europe/Berlin
+        # cat=products/withdrawal; type=string; label=Start of the withdrawal period the instructions state (goods|multipleGoods|lots|regularDelivery|digitalContent)
+        instructionVariant = multipleGoods
         # cat=products/withdrawal; type=boolean; label=The shop bears the cost of returning withdrawn goods
         returnCostBorneByTrader = 0
         trader {

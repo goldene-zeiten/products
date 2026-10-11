@@ -13,5 +13,7 @@
             <p><f:translate key="order_no_longer_withdrawable" /></p>
         </f:else>
     </f:if>
+    <f:render partial="Withdrawal/Instructions" arguments="{instructions: instructions}" />
+    <f:render partial="Withdrawal/ModelForm" arguments="{instructions: instructions}" />
 </div>
 </html>

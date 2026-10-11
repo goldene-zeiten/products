@@ -1,0 +1,34 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
+<div class="withdrawal-instructions">
+    <h3>{instructions.heading}</h3>
+    <h4>{instructions.rightHeading}</h4>
+    <p>{instructions.right}</p>
+    <p>{instructions.period}</p>
+    <p>{instructions.exercise}</p>
+    <f:if condition="{instructions.onlineFunction}">
+        <p>{instructions.onlineFunction}</p>
+    </f:if>
+    <f:if condition="{instructions.onlineForm}">
+        <p>{instructions.onlineForm}</p>
+    </f:if>
+    <p>{instructions.deadline}</p>
+    <h4>{instructions.effectsHeading}</h4>
+    <p>{instructions.effects}</p>
+    <f:if condition="{instructions.withholding}">
+        <p>{instructions.withholding}</p>
+    </f:if>
+    <f:if condition="{instructions.returnInstruction}">
+        <p>{instructions.returnInstruction}</p>
+    </f:if>
+    <f:if condition="{instructions.returnCost}">
+        <p>{instructions.returnCost}</p>
+    </f:if>
+    <f:if condition="{instructions.diminishedValue}">
+        <p>{instructions.diminishedValue}</p>
+    </f:if>
+    <h4>{instructions.exceptionsHeading}</h4>
+    <p>{instructions.exceptions}</p>
+</div>
+</html>

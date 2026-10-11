@@ -51,5 +51,7 @@
             </f:form>
         </f:else>
     </f:if>
+    <f:render partial="Withdrawal/Instructions" arguments="{instructions: instructions}" />
+    <f:render partial="Withdrawal/ModelForm" arguments="{instructions: instructions}" />
 </div>
 </html>

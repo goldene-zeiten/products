@@ -34,6 +34,7 @@ plugin.tx_productscore {
         withdrawal {
             assumedDeliveryDays = {$products.withdrawal.assumedDeliveryDays}
             timezone = {$products.withdrawal.timezone}
+            instructionVariant = {$products.withdrawal.instructionVariant}
             returnCostBorneByTrader = {$products.withdrawal.returnCostBorneByTrader}
             trader {
                 name = {$products.withdrawal.trader.name}

@@ -67,6 +67,13 @@ defined('TYPO3') or die();
 
     ExtensionUtility::registerPlugin(
         'ProductsCore',
+        'WithdrawalInstructions',
+        'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.withdrawal_instructions',
+        'EXT:products_core/Resources/Public/Icons/Extension.svg'
+    );
+
+    ExtensionUtility::registerPlugin(
+        'ProductsCore',
         'Download',
         'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.download',
         'EXT:products_core/Resources/Public/Icons/Extension.svg'

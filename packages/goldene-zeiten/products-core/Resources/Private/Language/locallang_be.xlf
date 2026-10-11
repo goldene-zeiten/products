@@ -306,6 +306,9 @@
 			<trans-unit id="order.withdrawal.refund_withheld" resname="order.withdrawal.refund_withheld">
 				<source>Refund withheld until the goods are received back or proof of return shipment is recorded.</source>
 			</trans-unit>
+			<trans-unit id="plugin.withdrawal_instructions" resname="plugin.withdrawal_instructions">
+				<source>Withdrawal instructions and model form</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
