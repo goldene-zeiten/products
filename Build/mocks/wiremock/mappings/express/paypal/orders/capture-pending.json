@@ -1,0 +1,37 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/express/paypal/v2/checkout/orders/PAYPAL-EXPRESS-ORDER-PENDING/capture"
+  },
+  "response": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "PAYPAL-EXPRESS-ORDER-PENDING",
+      "status": "COMPLETED",
+      "purchase_units": [
+        {
+          "reference_id": "default",
+          "payments": {
+            "captures": [
+              {
+                "id": "EXPRESS-CAPTURE-PENDING",
+                "status": "PENDING",
+                "status_details": {
+                  "reason": "OTHER"
+                },
+                "amount": {
+                  "currency_code": "EUR",
+                  "value": "100.00"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -7,12 +7,16 @@ namespace GoldeneZeiten\Products\Express\Stripe\Tests\Functional\Express;
 use GoldeneZeiten\Products\Core\Domain\Dto\Address;
 use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\PaymentTransactionRepository;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Express\Exception\ExpressAmountMismatchException;
 use GoldeneZeiten\Products\Core\Express\Exception\ExpressOrderFailedException;
+use GoldeneZeiten\Products\Core\Payment\PaymentCallbackService;
 use GoldeneZeiten\Products\Core\Shipping\Exception\MissingShippingOptionException;
 use GoldeneZeiten\Products\Express\Stripe\Express\Exception\ExpressPaymentDeclinedException;
 use GoldeneZeiten\Products\Express\Stripe\Express\StripeExpressConfirmService;
@@ -21,6 +25,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Site\Entity\Site;
 
 /**
@@ -165,6 +170,92 @@ final class StripeExpressConfirmServiceTest extends AbstractStripeExpressMockTes
         );
 
         $this->assertSame(PaymentStatus::PAID, $order->getPaymentStatus());
+    }
+
+    #[Test]
+    public function aPaymentThatIsStillProcessingAcceptsTheOrderAsPendingAndBindsThePaymentIntent(): void
+    {
+        $order = $this->get(StripeExpressConfirmService::class)->confirm(
+            $this->request(),
+            $this->basketViewModel($this->product()),
+            new Address(email: 'wallet@example.com', firstName: 'Wallet', lastName: 'Buyer', street: 'Wallet St 1', zip: '10115', city: 'Berlin', country: 'DE'),
+            '',
+            'pm_processing'
+        );
+
+        $this->assertSame(PaymentStatus::PENDING, $order->getPaymentStatus());
+        $this->assertSame(OrderStatus::CONFIRMED, $order->getStatus());
+        $this->assertSame([], $this->loggedRequests('/express/stripe/v1/refunds'));
+        $transaction = $this->get(PaymentTransactionRepository::class)->findOneByExternalId('stripe-express', 'pi_test_processing');
+        $this->assertSame($order->getUid(), $transaction?->getOrderUid());
+    }
+
+    #[Test]
+    public function theStripeWebhookSettlesAProcessingExpressOrderOnceThePaymentIntentSucceeds(): void
+    {
+        $order = $this->get(StripeExpressConfirmService::class)->confirm(
+            $this->request(),
+            $this->basketViewModel($this->product()),
+            new Address(email: 'wallet@example.com', firstName: 'Wallet', lastName: 'Buyer', street: 'Wallet St 1', zip: '10115', city: 'Berlin', country: 'DE'),
+            '',
+            'pm_processing'
+        );
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['products_payment_stripe'] = [
+            'secretKey' => 'sk_test_x',
+            'webhookSecret' => 'whsec_test',
+            'apiBaseUrl' => $this->mockRoot . '/express/stripe',
+        ];
+
+        $this->get(PaymentCallbackService::class)->handleStaticWebhook(
+            'stripe',
+            $this->paymentIntentEvent('payment_intent.succeeded', 'pi_test_processing', 10000)
+        );
+
+        $this->assertSame(PaymentStatus::PAID, $this->get(OrderRepository::class)->findByUid((int)$order->getUid())?->getPaymentStatus());
+    }
+
+    #[Test]
+    public function theStripeWebhookCancelsAProcessingExpressOrderWhenThePaymentIntentFails(): void
+    {
+        $order = $this->get(StripeExpressConfirmService::class)->confirm(
+            $this->request(),
+            $this->basketViewModel($this->product()),
+            new Address(email: 'wallet@example.com', firstName: 'Wallet', lastName: 'Buyer', street: 'Wallet St 1', zip: '10115', city: 'Berlin', country: 'DE'),
+            '',
+            'pm_processing'
+        );
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['products_payment_stripe'] = [
+            'secretKey' => 'sk_test_x',
+            'webhookSecret' => 'whsec_test',
+            'apiBaseUrl' => $this->mockRoot . '/express/stripe',
+        ];
+
+        $this->get(PaymentCallbackService::class)->handleStaticWebhook(
+            'stripe',
+            $this->paymentIntentEvent('payment_intent.payment_failed', 'pi_test_processing', 0)
+        );
+
+        $reloaded = $this->get(OrderRepository::class)->findByUid((int)$order->getUid());
+        $this->assertSame(PaymentStatus::FAILED, $reloaded?->getPaymentStatus());
+        $this->assertSame(OrderStatus::CANCELLED, $reloaded->getStatus());
+    }
+
+    private function paymentIntentEvent(string $type, string $intentId, int $amountReceived): ServerRequestInterface
+    {
+        $payload = json_encode([
+            'id' => 'evt_express',
+            'object' => 'event',
+            'type' => $type,
+            'data' => ['object' => ['id' => $intentId, 'object' => 'payment_intent', 'amount' => 10000, 'amount_received' => $amountReceived, 'currency' => 'eur']],
+        ], JSON_THROW_ON_ERROR);
+        $timestamp = time();
+        $stream = new Stream('php://temp', 'rw');
+        $stream->write($payload);
+        $stream->rewind();
+
+        return new ServerRequest('http://localhost/webhook', 'POST', $stream, [
+            'Stripe-Signature' => 't=' . $timestamp . ',v1=' . hash_hmac('sha256', $timestamp . '.' . $payload, 'whsec_test'),
+        ]);
     }
 
     private function request(bool $shipping = false): ServerRequestInterface

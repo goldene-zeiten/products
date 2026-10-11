@@ -17,9 +17,8 @@ use Stripe\PaymentIntent;
 /**
  * Settles an express wallet payment by creating and confirming a Stripe PaymentIntent in one call for the
  * server-computed amount and the payment method the Express Checkout Element authorised. Redirects are
- * disabled: a wallet payment resolves in the sheet, so a "succeeded" intent means paid and anything else
- * is treated as not-yet-paid rather than sending the buyer off to a redirect the express flow has no
- * place for.
+ * disabled: a wallet payment resolves in the sheet, so a "succeeded" intent means paid, a "processing" one
+ * is accepted as pending for Stripe's webhook to settle, and anything else is not paid.
  */
 final class StripeExpressPaymentClient
 {
@@ -70,7 +69,7 @@ final class StripeExpressPaymentClient
             return PaymentResult::completed(PaymentStatus::PAID, $externalId, [], $this->settledAmount($intent, $requestedCents, $currency));
         }
         if ($status === 'processing') {
-            return PaymentResult::pending($externalId);
+            return PaymentResult::pending($externalId, settledAmount: Money::fromCents($requestedCents));
         }
 
         return PaymentResult::failed(sprintf('Stripe express payment was not completed (status "%s").', $status), $externalId);

@@ -24,7 +24,8 @@ final class RecordingSettlement implements ExpressSettlementInterface
 
     public function __construct(
         private readonly ?Money $reportedAmount = null,
-        private readonly ?\Throwable $failure = null
+        private readonly ?\Throwable $failure = null,
+        private readonly bool $pending = false
     ) {}
 
     public function settle(Order $order): PaymentResult
@@ -32,6 +33,10 @@ final class RecordingSettlement implements ExpressSettlementInterface
         $this->charged[] = $order->getTotalGross();
         if ($this->failure !== null) {
             throw $this->failure;
+        }
+
+        if ($this->pending) {
+            return PaymentResult::pending('settled-1', settledAmount: $this->reportedAmount ?? $order->getTotalGross());
         }
 
         return PaymentResult::completed(PaymentStatus::PAID, 'settled-1', settledAmount: $this->reportedAmount ?? $order->getTotalGross());

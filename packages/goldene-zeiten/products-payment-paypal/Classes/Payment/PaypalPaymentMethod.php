@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Payment\WebhookResolution;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
+use GoldeneZeiten\Products\Core\Domain\Repository\PaymentTransactionRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Payment\RedirectPaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\StaticWebhookPaymentMethodInterface;
@@ -34,6 +35,12 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, StaticWebhookPaymentMethodInterface
 {
     public const IDENTIFIER = 'paypal';
+
+    /**
+     * The identifier express orders paid through PayPal are recorded under; their capture ids are bound to
+     * the order by it.
+     */
+    public const EXPRESS_PROVIDER_IDENTIFIER = 'paypal-express';
 
     /**
      * The currencies PayPal settles in. Offering PayPal for anything else only fails at create-order time.
@@ -61,6 +68,7 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
         private readonly OrderRepository $orderRepository,
         private readonly PaypalAmountFormatter $amountFormatter,
         private readonly LoggerInterface $logger,
+        private readonly PaymentTransactionRepository $paymentTransactionRepository,
     ) {}
 
     public function getIdentifier(): string
@@ -198,7 +206,7 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
      */
     private function resolveCapture(array $resource, array $event): WebhookResolution
     {
-        $order = $this->orderRepository->findByUid((int)($resource['custom_id'] ?? 0));
+        $order = $this->orderOfCapture($resource);
         if ($order === null) {
             return WebhookResolution::unresolved(PaymentResult::failed('The PayPal webhook references an unknown order.'));
         }
@@ -208,6 +216,23 @@ final class PaypalPaymentMethod implements RedirectPaymentMethodInterface, Stati
         }
 
         return WebhookResolution::resolved($order, $this->interpretEvent($event));
+    }
+
+    /**
+     * An express capture is bound to its order by the capture id recorded when the order was accepted - its
+     * custom id is the basket's hash. Any other capture names its order by the uid it was created with.
+     *
+     * @param array<string, mixed> $resource
+     */
+    private function orderOfCapture(array $resource): ?Order
+    {
+        $transaction = $this->paymentTransactionRepository->findOneByExternalId(self::EXPRESS_PROVIDER_IDENTIFIER, (string)($resource['id'] ?? ''));
+        if ($transaction !== null) {
+            return $this->orderRepository->findByUid($transaction->getOrderUid());
+        }
+        $customId = (string)($resource['custom_id'] ?? '');
+
+        return ctype_digit($customId) ? $this->orderRepository->findByUid((int)$customId) : null;
     }
 
     /**

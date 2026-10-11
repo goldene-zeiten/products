@@ -36,9 +36,9 @@ final readonly class PaymentResult
     /**
      * @param array<string, mixed> $rawData
      */
-    public static function pending(string $externalId = '', array $rawData = []): self
+    public static function pending(string $externalId = '', array $rawData = [], ?Money $settledAmount = null): self
     {
-        return new self(PaymentResultState::PENDING, PaymentStatus::PENDING, $externalId, rawData: $rawData);
+        return new self(PaymentResultState::PENDING, PaymentStatus::PENDING, $externalId, rawData: $rawData, settledAmount: $settledAmount);
     }
 
     /**

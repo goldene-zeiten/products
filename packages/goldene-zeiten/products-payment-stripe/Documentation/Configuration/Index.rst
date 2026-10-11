@@ -78,7 +78,10 @@ browser, so the order is still confirmed even if the return never happens.
     reference is trusted.
 #.  Select the :code:`checkout.session.completed`, :code:`checkout.session.async_payment_succeeded` and
     :code:`checkout.session.async_payment_failed` events to listen to; the latter two settle asynchronous
-    payment methods such as SEPA debit. Other events are acknowledged but ignored.
+    payment methods such as SEPA debit. If the shop also offers express checkout, add
+    :code:`payment_intent.succeeded` and :code:`payment_intent.payment_failed`: they settle an express
+    payment that was still processing when the wallet sheet closed. Other events are acknowledged but
+    ignored.
 #.  Save the endpoint, then copy its :guilabel:`Signing secret` into
     `products.payment.stripe.webhookSecret`.
 

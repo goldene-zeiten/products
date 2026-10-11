@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
+use GoldeneZeiten\Products\Core\Domain\Repository\PaymentTransactionRepository;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Event\BeforeOrderPlacedEvent;
@@ -129,6 +130,51 @@ final class ExpressOrderServiceTest extends AbstractFunctionalTestCase
 
         $this->assertSame([], $settlement->refunded);
         $this->assertCancelledWithStockRestored();
+    }
+
+    #[Test]
+    public function aPaymentThatIsStillProcessingAcceptsTheOrderWithAPendingPaymentAndBindsItsReference(): void
+    {
+        $settlement = new RecordingSettlement(pending: true);
+
+        $order = $this->get(ExpressOrderService::class)->place(
+            $this->request(shipping: true),
+            $this->get(ExpressCheckoutProviderRegistry::class)->get('fixture-express'),
+            $this->basketViewModel($this->product(1)),
+            $this->address(),
+            'tablerate:1',
+            $settlement
+        );
+
+        $this->assertSame(PaymentStatus::PENDING, $order->getPaymentStatus());
+        $this->assertSame(OrderStatus::CONFIRMED, $order->getStatus());
+        $this->assertSame([], $settlement->refunded);
+        $transaction = $this->get(PaymentTransactionRepository::class)->findOneByExternalId('fixture-express', 'settled-1');
+        $this->assertNotNull($transaction);
+        $this->assertSame($order->getUid(), $transaction->getOrderUid());
+        $this->assertSame(10800, $transaction->getAmount());
+    }
+
+    #[Test]
+    public function aPendingPaymentOfADifferentAmountIsRefundedAndNoOrderIsKept(): void
+    {
+        $settlement = new RecordingSettlement(Money::fromCents(10500), pending: true);
+
+        try {
+            $this->get(ExpressOrderService::class)->place(
+                $this->request(shipping: true),
+                $this->get(ExpressCheckoutProviderRegistry::class)->get('fixture-express'),
+                $this->basketViewModel($this->product(1)),
+                $this->address(),
+                'tablerate:1',
+                $settlement
+            );
+            $this->fail('Expected ExpressAmountMismatchException was not thrown.');
+        } catch (ExpressAmountMismatchException) {
+            // expected
+        }
+
+        $this->assertCount(1, $settlement->refunded);
     }
 
     private function assertCancelledWithStockRestored(): void

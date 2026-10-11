@@ -1,0 +1,14 @@
+{
+  "priority": 5,
+  "request": {
+    "method": "POST",
+    "urlPath": "/express/stripe/v1/payment_intents",
+    "bodyPatterns": [ { "contains": "payment_method=pm_processing" } ]
+  },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "body": "{{formData request.body 'form'}}{\"id\":\"pi_test_processing\",\"object\":\"payment_intent\",\"status\":\"processing\",\"amount\":{{form.amount}},\"amount_received\":0,\"currency\":\"eur\"}",
+    "transformers": [ "response-template" ]
+  }
+}
