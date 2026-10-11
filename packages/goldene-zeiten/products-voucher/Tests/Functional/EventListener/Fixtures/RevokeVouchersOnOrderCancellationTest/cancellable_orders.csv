@@ -1,0 +1,14 @@
+"tx_products_domain_model_order",,,,,,
+,"uid","pid","order_number","status","payment_status","frontend_user"
+,1,0,"ORD-1","pending","open",5
+,2,0,"ORD-2","pending","open",5
+
+"tx_products_domain_model_voucher",,,,,,,,,
+,"uid","pid","code","discount_type","discount_value","combinable","usage_limit","redemption_count","generated_from_order","hidden"
+,1,1,"ONCE","percentage","10.00",1,1,1,0,0
+,2,1,"GAINED-UNUSED","fixed","5.00",0,1,0,1,0
+,3,1,"GAINED-USED","fixed","5.00",0,1,1,2,0
+
+"tx_products_domain_model_voucherredemption",,,,,,,
+,"uid","pid","voucher_uid","voucher_code","order_uid","frontend_user","discount_total"
+,1,1,1,"ONCE",1,5,1000

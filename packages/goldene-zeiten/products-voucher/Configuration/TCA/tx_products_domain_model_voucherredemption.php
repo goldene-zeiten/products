@@ -13,7 +13,7 @@ return [
         'iconfile' => 'EXT:products_core/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'voucher_uid, voucher_code, order_uid, frontend_user, discount_total, redeemed_at'],
+        '1' => ['showitem' => 'voucher_uid, voucher_code, order_uid, frontend_user, discount_total, redeemed_at, reverted_at'],
     ],
     'columns' => [
         'voucher_uid' => [
@@ -54,6 +54,15 @@ return [
         ],
         'redeemed_at' => [
             'label' => 'LLL:EXT:products_voucher/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_voucherredemption.redeemed_at',
+            'config' => [
+                'type' => 'datetime',
+                'size' => 13,
+                'eval' => 'datetime',
+                'readOnly' => true,
+            ],
+        ],
+        'reverted_at' => [
+            'label' => 'LLL:EXT:products_voucher/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_voucherredemption.reverted_at',
             'config' => [
                 'type' => 'datetime',
                 'size' => 13,
