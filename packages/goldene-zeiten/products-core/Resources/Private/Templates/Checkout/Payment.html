@@ -1,7 +1,7 @@
 <div class="checkout-payment">
     <h2><f:translate key="checkout_payment" /></h2>
     <f:flashMessages />
-    <f:form action="submitPayment">
+    <f:form action="submitPayment" requestToken="products/checkout">
         <f:for each="{paymentMethods}" as="method">
             <div class="form-check">
                 <f:form.radio name="paymentMethod" value="{method.identifier}" checked="{f:if(condition: '{paymentMethod} == {method.identifier}', then: '1')}" class="form-check-input" id="method-{method.identifier}" required="required" />
