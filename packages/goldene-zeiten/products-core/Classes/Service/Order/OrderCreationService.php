@@ -15,6 +15,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutSelections;
 use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\PlacementContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\PlacementDetails;
 use GoldeneZeiten\Products\Core\Domain\Dto\Loyalty\LoyaltyContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderTotals;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingSelection;
 use GoldeneZeiten\Products\Core\Domain\Enum\AdjustmentType;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
@@ -58,7 +59,8 @@ final class OrderCreationService
         private readonly HandlingFeeService $handlingFeeService,
         private readonly ProductsConfigurationFactory $configurationFactory,
         private readonly TermsSnapshotService $termsSnapshotService,
-        private readonly TaxService $taxService
+        private readonly TaxService $taxService,
+        private readonly OrderTotalsCalculator $orderTotalsCalculator
     ) {}
 
     /**
@@ -94,12 +96,31 @@ final class OrderCreationService
         return $order;
     }
 
+    /**
+     * What placing the order would charge, line by line - computed exactly as {@see create()} computes it,
+     * without booking anything. The checkout review shows this, so it shows the amount that is charged.
+     */
+    public function quote(
+        ServerRequestInterface $request,
+        BasketViewModel $basketViewModel,
+        CheckoutSelections $checkoutSelections,
+        Address $address,
+        ?PaymentMethodInterface $paymentMethod
+    ): OrderTotals {
+        $details = $this->resolvePlacementContext($request, $basketViewModel, $checkoutSelections, $address, $paymentMethod)->getDetails();
+        return $this->orderTotalsCalculator->calculate(
+            $basketViewModel,
+            $details->getAdjustments(),
+            $this->configurationFactory->create($request)->getRoundingMode()
+        );
+    }
+
     private function resolvePlacementContext(
         ServerRequestInterface $request,
         BasketViewModel $basketViewModel,
         CheckoutSelections $checkoutSelections,
         Address $address,
-        PaymentMethodInterface $paymentMethod
+        ?PaymentMethodInterface $paymentMethod
     ): PlacementContext {
         $configuration = $this->configurationFactory->create($request);
         $frontendUser = $this->frontendUserResolver->getUid($request);
@@ -124,7 +145,7 @@ final class OrderCreationService
         foreach ($this->loyaltyRegistry->collectRedemption($loyaltyContext) as $loyaltyAdjustment) {
             $adjustments = $adjustments->with($loyaltyAdjustment);
         }
-        $paymentFee = $this->paymentFee($paymentMethod, $basketViewModel, $address, $frontendUser);
+        $paymentFee = $paymentMethod !== null ? $this->paymentFee($paymentMethod, $basketViewModel, $address, $frontendUser) : null;
         if ($paymentFee !== null) {
             $adjustments = $adjustments->with($paymentFee->withTaxRate($ancillaryTaxRate()));
         }

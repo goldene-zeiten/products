@@ -1,0 +1,7 @@
+"tx_products_domain_model_order",,,,,,,,,,,,,,,,,,,
+,"uid","pid","deleted","order_number","frontend_user","email","currency","total_net","total_tax","total_gross","tax_breakdown","discount_total","shipping_total","handling_fee_total","deposit_total","payment_fee_total","items","status","payment_status"
+,1,2,0,"ORD-1",0,"buyer@example.com","EUR",8908,1691,10599,"{""19"":1691}",1000,595,238,0,250,1,"new","open"
+
+"tx_products_domain_model_orderitem",,,,,,,,
+,"uid","pid","parent_order","title","quantity","unit_price_gross","line_total_gross","tax_rate","line_total_net"
+,1,2,1,"Shirt",1,10516,10516,"0.19",8837

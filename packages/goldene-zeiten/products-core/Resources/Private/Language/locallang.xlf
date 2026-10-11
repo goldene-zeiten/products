@@ -54,6 +54,27 @@
 			<trans-unit id="deposit_total" resname="deposit_total">
 				<source>Deposit</source>
 			</trans-unit>
+			<trans-unit id="summary_subtotal" resname="summary_subtotal">
+				<source>Subtotal</source>
+			</trans-unit>
+			<trans-unit id="summary_shipping" resname="summary_shipping">
+				<source>Shipping</source>
+			</trans-unit>
+			<trans-unit id="summary_handling_fee" resname="summary_handling_fee">
+				<source>Handling fee</source>
+			</trans-unit>
+			<trans-unit id="summary_payment_fee" resname="summary_payment_fee">
+				<source>Payment fee</source>
+			</trans-unit>
+			<trans-unit id="summary_discount" resname="summary_discount">
+				<source>Discount</source>
+			</trans-unit>
+			<trans-unit id="summary_rounding" resname="summary_rounding">
+				<source>Rounding</source>
+			</trans-unit>
+			<trans-unit id="summary_vat_included" resname="summary_vat_included">
+				<source>incl. %s%% VAT</source>
+			</trans-unit>
 			<trans-unit id="proceed_to_checkout" resname="proceed_to_checkout">
 				<source>Proceed to Checkout</source>
 			</trans-unit>

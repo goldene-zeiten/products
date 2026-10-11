@@ -74,6 +74,31 @@ final class OrderTotalsInvariantTest extends AbstractFunctionalTestCase
         $this->assertSame(2499, $order->getDiscountTotal()->getCents());
     }
 
+    #[Test]
+    public function theReviewQuoteShowsWhatTheOrderCharges(): void
+    {
+        $request = $this->request();
+        $basketService = $this->get(BasketService::class);
+        $basketService->add($request, 1, null, 1);
+        $basketService->add($request, 2, null, 2);
+        $this->get(VoucherCheckoutState::class)->addCode($request, 'TENOFF');
+        $subject = $this->get(OrderCreationService::class);
+
+        $totals = $subject->quote(
+            $request,
+            $basketService->getBasketViewModel($request, 'DE'),
+            new CheckoutSelections('tablerate:1'),
+            new Address(email: 'buyer@example.com', country: 'DE'),
+            $this->get(PaymentMethodRegistry::class)->get('fixture-surcharge')
+        );
+
+        $this->assertSame(12674, $totals->getTotalGross()->getCents());
+        $this->assertSame(1844, $totals->getTotalTax()->getCents());
+        $this->assertSame(['19' => 1720, '7' => 124], $totals->getTaxBreakdown());
+        $this->assertSame(14040, $totals->getItemsTotalGross()->getCents());
+        $this->assertSame(0, $totals->getRoundingDifference()->getCents());
+    }
+
     private function placeMixedOrder(): Order
     {
         $request = $this->request();

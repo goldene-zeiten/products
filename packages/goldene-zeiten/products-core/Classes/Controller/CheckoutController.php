@@ -6,7 +6,10 @@ namespace GoldeneZeiten\Products\Core\Controller;
 
 use GoldeneZeiten\Products\Core\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Core\Domain\Dto\Address;
+use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutChoices;
+use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutSelections;
+use GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderTotals;
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
@@ -25,6 +28,7 @@ use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceTokenService;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\IncompleteAddressException;
 use GoldeneZeiten\Products\Core\Service\Order\Exception\OrderPlacementExceptionInterface;
+use GoldeneZeiten\Products\Core\Service\Order\OrderCreationService;
 use GoldeneZeiten\Products\Core\Service\Order\OrderPlacementService;
 use GoldeneZeiten\Products\Core\Service\Order\OrderTokenService;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalExclusionService;
@@ -57,7 +61,8 @@ final class CheckoutController extends ActionController
         private readonly ProductsConfigurationFactory $configurationFactory,
         private readonly PriceQuoteService $priceQuoteService,
         private readonly WithdrawalExclusionService $withdrawalExclusionService,
-        private readonly AddressCompletenessChecker $addressCompletenessChecker
+        private readonly AddressCompletenessChecker $addressCompletenessChecker,
+        private readonly OrderCreationService $orderCreationService
     ) {}
 
     public function addressAction(): ResponseInterface
@@ -213,10 +218,12 @@ final class CheckoutController extends ActionController
         $enrichEvent = new EnrichCheckoutReviewEvent($this->request);
         $this->eventDispatcher->dispatch($enrichEvent);
 
+        $paymentMethod = $this->findPaymentMethod($paymentMethodIdentifier);
         $this->view->assignMultiple([
             'basket' => $basket,
+            'totals' => $this->quoteTotals($basket, $address, $paymentMethod),
             'address' => $address,
-            'paymentMethod' => $this->findPaymentMethod($paymentMethodIdentifier),
+            'paymentMethod' => $paymentMethod,
             'shippingSelection' => $shippingSelection,
             'deliveryAddress' => $this->checkoutService->getDeliveryAddress($this->request),
             'giftMessage' => $this->checkoutService->getGiftMessage($this->request),
@@ -224,6 +231,25 @@ final class CheckoutController extends ActionController
             'withdrawalExemptPersonalizedItems' => $this->withdrawalExclusionService->basketContainsPersonalized($basket),
         ] + $enrichEvent->getVariables());
         return $this->htmlResponse();
+    }
+
+    /**
+     * A discount that no longer applies - an expired voucher, say - would refuse the order anyway; the
+     * review then shows the goods alone with the reason, and placing the order reports it again.
+     */
+    private function quoteTotals(BasketViewModel $basket, Address $address, ?PaymentMethodInterface $paymentMethod): ?OrderTotals
+    {
+        $selections = new CheckoutSelections(
+            $this->checkoutService->getShippingOption($this->request),
+            $this->checkoutService->getDeliveryAddress($this->request),
+            $this->checkoutService->getGiftMessage($this->request)
+        );
+        try {
+            return $this->orderCreationService->quote($this->request, $basket, $selections, $address, $paymentMethod);
+        } catch (OrderPlacementExceptionInterface $exception) {
+            $this->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
+            return null;
+        }
     }
 
     /**
