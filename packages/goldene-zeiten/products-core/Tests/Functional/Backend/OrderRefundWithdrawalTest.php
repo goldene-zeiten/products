@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Core\Tests\Functional\Backend;
 use GoldeneZeiten\Products\Core\Backend\Exception\OrderRefundWithheldException;
 use GoldeneZeiten\Products\Core\Backend\OrderAccessGuard;
 use GoldeneZeiten\Products\Core\Backend\OrderDataFactory;
+use GoldeneZeiten\Products\Core\Backend\OrderRefundClaim;
 use GoldeneZeiten\Products\Core\Backend\OrderRefundService;
 use GoldeneZeiten\Products\Core\Backend\OrderReturnService;
 use GoldeneZeiten\Products\Core\Backend\OrderStatusWriter;
@@ -107,6 +108,7 @@ final class OrderRefundWithdrawalTest extends AbstractFunctionalTestCase
             new PaymentMethodRegistry([$gateway], $this->get(EventDispatcherInterface::class)),
             $this->get(OrderDataFactory::class),
             $this->get(OrderStatusWriter::class),
+            $this->get(OrderRefundClaim::class),
         );
     }
 }

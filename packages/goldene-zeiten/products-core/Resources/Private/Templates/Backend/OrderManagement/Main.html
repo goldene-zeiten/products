@@ -164,6 +164,17 @@
                                 </button>
                             </form>
                         </f:if>
+                        <f:if condition="{canCompleteRefund}">
+                            <f:then>
+                                <form method="post">
+                                    <input type="hidden" name="orderUid" value="{order.uid}" />
+                                    <input type="hidden" name="action" value="completeRefund" />
+                                    <button type="submit" class="btn btn-warning">
+                                        <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.action.complete_refund" />
+                                    </button>
+                                </form>
+                            </f:then>
+                        </f:if>
                         <f:for each="{availableStatusTransitions}" as="targetStatus">
                             <form method="post">
                                 <input type="hidden" name="orderUid" value="{order.uid}" />

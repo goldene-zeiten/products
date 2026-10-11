@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Core\Backend\Exception\OrderAccessDeniedException;
 use GoldeneZeiten\Products\Core\Backend\Exception\OrderNotAwaitingReturnException;
 use GoldeneZeiten\Products\Core\Backend\Exception\OrderNotRefundableException;
 use GoldeneZeiten\Products\Core\Backend\Exception\OrderNotShippedException;
+use GoldeneZeiten\Products\Core\Backend\Exception\OrderRefundFailedException;
 use GoldeneZeiten\Products\Core\Backend\Exception\OrderRefundWithheldException;
 use GoldeneZeiten\Products\Core\Backend\Exception\OrderStatusWriteFailedException;
 use GoldeneZeiten\Products\Core\Backend\OrderDataFactory;
@@ -152,6 +153,7 @@ final class OrderManagementModuleController
             'canRecordReturnProof' => $order !== null && $order['status'] === OrderStatus::WITHDRAWN->value && $order['returnProofAt'] === null,
             'refundWithheld' => $order !== null && $order['status'] === OrderStatus::WITHDRAWN->value && $order['returnProofAt'] === null,
             'canMarkPaid' => $order !== null && $this->canMarkPaid($order['paymentStatus']),
+            'canCompleteRefund' => $order !== null && $order['paymentStatus'] === PaymentStatus::REFUND_PENDING->value,
             'canRefund' => $order !== null && $this->canRefund($order['paymentMethod'], $order['paymentStatus']),
             'listUrl' => (string)$this->uriBuilder->buildUriFromRequest($request, ['order']),
             'orderDetailPanels' => $order !== null ? $this->orderDetailPanelRegistry->renderPanels($orderUid) : [],
@@ -176,7 +178,7 @@ final class OrderManagementModuleController
     private function canRefund(string $paymentMethodIdentifier, string $paymentStatusValue): bool
     {
         $status = PaymentStatus::tryFrom($paymentStatusValue);
-        if ($status === null || !$status->canTransitionTo(PaymentStatus::REFUNDED)) {
+        if ($status === null || !$status->isRefundable()) {
             return false;
         }
         try {
@@ -278,6 +280,7 @@ final class OrderManagementModuleController
             |OrderRefundWithheldException
             |OrderNotShippedException
             |OrderNotAwaitingReturnException
+            |OrderRefundFailedException
             |OrderStatusWriteFailedException $exception
         ) {
             $moduleTemplate->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
@@ -292,6 +295,10 @@ final class OrderManagementModuleController
         $backendUser = $this->getBackendUser();
         if ($action === 'markPaid') {
             $this->orderStatusWriter->changePaymentStatus($orderUid, PaymentStatus::PAID, $backendUser);
+            return;
+        }
+        if ($action === 'completeRefund') {
+            $this->orderStatusWriter->changePaymentStatus($orderUid, PaymentStatus::REFUNDED, $backendUser);
             return;
         }
         if ($action === 'refund') {
