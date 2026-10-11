@@ -10,6 +10,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamFactoryInterface;
 use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Security\Nonce;
+use TYPO3\CMS\Core\Security\RequestToken;
 use TYPO3\CMS\Core\Session\SessionManager;
 use TYPO3\CMS\Core\Session\UserSession;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
@@ -376,8 +378,15 @@ final class CheckoutStepValidationTest extends AbstractFrontendTestCase
         }
         $queryParameters['cHash'] = $this->get(CacheHashCalculator::class)->generateForParameters($parameterString);
 
+        // The checkout forms' request token, which every state-changing step requires.
+        $nonce = Nonce::create();
+
         return (new InternalRequest('http://localhost/shop'))
             ->withQueryParameters($queryParameters)
-            ->withCookieParams(['fe_typo_user' => UserSession::createFromRecord(self::SESSION_ID, [])->getJwt()]);
+            ->withHeader(RequestToken::HEADER_NAME, RequestToken::create('products/checkout')->toHashSignedJwt($nonce))
+            ->withCookieParams([
+                'fe_typo_user' => UserSession::createFromRecord(self::SESSION_ID, [])->getJwt(),
+                'typo3nonce_' . $nonce->getSigningIdentifier()->name => $nonce->toHashSignedJwt(),
+            ]);
     }
 }

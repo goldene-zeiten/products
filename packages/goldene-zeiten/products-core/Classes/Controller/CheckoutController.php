@@ -21,6 +21,7 @@ use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException
 use GoldeneZeiten\Products\Core\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
+use GoldeneZeiten\Products\Core\Security\FrontendRequestTokenValidator;
 use GoldeneZeiten\Products\Core\Service\Checkout\AddressCompletenessChecker;
 use GoldeneZeiten\Products\Core\Service\Checkout\CheckoutService;
 use GoldeneZeiten\Products\Core\Service\Checkout\PriceQuoteService;
@@ -48,6 +49,19 @@ use TYPO3\CMS\Frontend\Controller\ErrorController;
 
 final class CheckoutController extends ActionController
 {
+    private const REQUEST_TOKEN_SCOPE = 'products/checkout';
+
+    /**
+     * The checkout step each state-changing action belongs to - where a request without the checkout
+     * forms' token is sent back to.
+     */
+    private const STEP_OF_PROTECTED_ACTION = [
+        'submitAddressAction' => 'address',
+        'submitShippingMethodAction' => 'shippingMethod',
+        'submitPaymentAction' => 'payment',
+        'finalizeAction' => 'review',
+    ];
+
     public function __construct(
         private readonly CheckoutService $checkoutService,
         private readonly PaymentMethodRegistry $paymentMethodRegistry,
@@ -64,8 +78,26 @@ final class CheckoutController extends ActionController
         private readonly WithdrawalExclusionService $withdrawalExclusionService,
         private readonly AddressCompletenessChecker $addressCompletenessChecker,
         private readonly OrderCreationService $orderCreationService,
-        private readonly ErrorController $errorController
+        private readonly ErrorController $errorController,
+        private readonly FrontendRequestTokenValidator $requestTokenValidator
     ) {}
+
+    /**
+     * A state-changing step is only honoured when it carries the request token the checkout forms issue,
+     * so a cross-site request cannot change the customer's checkout or place an order; placing the order
+     * additionally requires a POST. Checked before the arguments are mapped.
+     */
+    protected function initializeAction(): void
+    {
+        $step = self::STEP_OF_PROTECTED_ACTION[$this->actionMethodName] ?? null;
+        if ($step === null) {
+            return;
+        }
+        $isPost = $this->request->getMethod() === 'POST';
+        if (!$this->requestTokenValidator->isValid(self::REQUEST_TOKEN_SCOPE) || ($step === 'review' && !$isPost)) {
+            $this->backToStep($step, $this->translate('csrf.invalid_request'));
+        }
+    }
 
     public function addressAction(): ResponseInterface
     {

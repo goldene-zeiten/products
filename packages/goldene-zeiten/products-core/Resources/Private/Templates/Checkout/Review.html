@@ -48,7 +48,7 @@
     </div>
 
     <div class="mt-4">
-        <f:form action="finalize">
+        <f:form action="finalize" requestToken="products/checkout">
             <f:render partial="Checkout/LoyaltySlot" arguments="{_all}" />
             <div class="form-check mb-3">
                 <f:form.checkbox name="termsAccepted" value="1" class="form-check-input" id="termsAccepted" required="required" />

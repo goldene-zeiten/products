@@ -8,6 +8,8 @@ use GoldeneZeiten\Products\Testing\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamFactoryInterface;
 use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Security\Nonce;
+use TYPO3\CMS\Core\Security\RequestToken;
 use TYPO3\CMS\Core\Session\UserSession;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 
@@ -91,8 +93,12 @@ final class ConcurrentStockCheckoutFrontendTest extends AbstractFrontendTestCase
             ->withMethod('POST')
             ->withParsedBody($parsedBody)
             ->withBody($body);
-        $firstRequest = $preparedRequest->withCookieParams(['fe_typo_user' => $this->sessionCookie(self::SESSION_ID_A)]);
-        $secondRequest = $preparedRequest->withCookieParams(['fe_typo_user' => $this->sessionCookie(self::SESSION_ID_B)]);
+        // The review form's request token, which placing an order requires.
+        $nonce = Nonce::create();
+        $nonceCookie = ['typo3nonce_' . $nonce->getSigningIdentifier()->name => $nonce->toHashSignedJwt()];
+        $preparedRequest = $preparedRequest->withHeader(RequestToken::HEADER_NAME, RequestToken::create('products/checkout')->toHashSignedJwt($nonce));
+        $firstRequest = $preparedRequest->withCookieParams(['fe_typo_user' => $this->sessionCookie(self::SESSION_ID_A)] + $nonceCookie);
+        $secondRequest = $preparedRequest->withCookieParams(['fe_typo_user' => $this->sessionCookie(self::SESSION_ID_B)] + $nonceCookie);
 
         $firstResponse = $this->executeFrontendSubRequest($firstRequest);
         $secondResponse = $this->executeFrontendSubRequest($secondRequest);

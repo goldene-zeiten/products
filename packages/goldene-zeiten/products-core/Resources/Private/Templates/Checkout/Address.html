@@ -1,7 +1,7 @@
 <div class="checkout-address">
     <h2><f:translate key="checkout_address" /></h2>
     <f:flashMessages />
-    <f:form action="submitAddress" name="address" object="{address}">
+    <f:form action="submitAddress" name="address" object="{address}" requestToken="products/checkout">
         <div class="mb-3">
             <label for="email" class="form-label"><f:translate key="email" /></label>
             <f:form.textfield property="email" class="form-control" errorClass="is-invalid" type="email" id="email" />
