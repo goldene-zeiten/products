@@ -1,0 +1,50 @@
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_heading" />
+
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:hello" />
+
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_intro" />
+
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_content" />
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_customer_name" />: {statement.name}
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:order_number" />: {order.orderNumber}
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_email" />: {statement.email}
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_submitted_at" />: {submittedAt}
+
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_statement" />
+<f:for each="{withdrawnItems}" as="withdrawnItem">- {withdrawnItem.title} (x {withdrawnItem.quantity})
+</f:for>
+<f:if condition="{statement.reason}">
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_reason" />: {statement.reason}
+</f:if>
+<f:if condition="{conditionalItems}">
+
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_conditional" />
+<f:for each="{conditionalItems}" as="conditionalItem">- {conditionalItem.title}
+</f:for>
+</f:if>
+
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_return_heading" />
+<f:if condition="{returnRequired}">
+<f:then>
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_return" arguments="{0: returnAndRefundDeadline}" />
+
+<f:if condition="{trader.name}">{trader.name}
+</f:if><f:for each="{trader.returnAddressLines}" as="addressLine">{addressLine}
+</f:for>
+<f:if condition="{returnCostBorneByTrader}">
+<f:then><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_return_cost_trader" /></f:then>
+<f:else><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_return_cost_customer" /></f:else>
+</f:if>
+</f:then>
+<f:else>
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_no_return" />
+</f:else>
+</f:if>
+
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_refund_heading" />
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_refund" arguments="{0: returnAndRefundDeadline}" />
+<f:if condition="{returnRequired}">
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_refund_withhold" />
+</f:if>
+
+<f:render partial="Email/Signature" arguments="{_all}" />

@@ -298,10 +298,10 @@
 				<source>This cancellation link is invalid or has expired.</source>
 			</trans-unit>
 			<trans-unit id="withdrawal_confirmed" resname="withdrawal_confirmed">
-				<source>Order cancelled</source>
+				<source>Withdrawal received</source>
 			</trans-unit>
 			<trans-unit id="withdrawal_confirmed_text" resname="withdrawal_confirmed_text">
-				<source>Your order %s has been cancelled. We will be in touch about next steps.</source>
+				<source>Your withdrawal for order %s has been received.</source>
 			</trans-unit>
 			<trans-unit id="withdrawal_email_mismatch" resname="withdrawal_email_mismatch">
 				<source>The email address does not match this order.</source>
@@ -359,6 +359,57 @@
 			</trans-unit>
 			<trans-unit id="withdrawal_exempt_personalized_notice" resname="withdrawal_exempt_personalized_notice">
 				<source>Your order contains items made to your specifications or clearly personalized. These items are exempt from the statutory right of withdrawal.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_name_label" resname="withdrawal_name_label">
+				<source>Your name</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_continue" resname="withdrawal_continue">
+				<source>Continue</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_items_legend" resname="withdrawal_items_legend">
+				<source>Items to withdraw from</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_item_quantity" resname="withdrawal_item_quantity">
+				<source>Quantity: %d</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_item_exempt" resname="withdrawal_item_exempt">
+				<source>Exempt from the right of withdrawal</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_item_withdrawn" resname="withdrawal_item_withdrawn">
+				<source>Already withdrawn</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_item_expired" resname="withdrawal_item_expired">
+				<source>The withdrawal period for this item has expired</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_item_sealed_hygiene" resname="withdrawal_item_sealed_hygiene">
+				<source>The right of withdrawal only applies while the item is still sealed: it cannot be returned once unsealed for health or hygiene reasons.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_item_sealed_media" resname="withdrawal_item_sealed_media">
+				<source>The right of withdrawal only applies while the sealed audio or video recording or software is still sealed.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_pick_order" resname="withdrawal_pick_order">
+				<source>Select the order you want to withdraw from:</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_pick_order_link" resname="withdrawal_pick_order_link">
+				<source>Order %s</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_no_orders" resname="withdrawal_no_orders">
+				<source>You have no order left that can be withdrawn from.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_name_missing" resname="withdrawal_name_missing">
+				<source>Please enter your name.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_no_item_selected" resname="withdrawal_no_item_selected">
+				<source>Please select at least one item to withdraw from.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_confirmed_email_hint" resname="withdrawal_confirmed_email_hint">
+				<source>We have sent an acknowledgement of receipt, including the content and the date and time of your withdrawal, to %s.</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_confirmed_submitted_at" resname="withdrawal_confirmed_submitted_at">
+				<source>Submitted on %s</source>
+			</trans-unit>
+			<trans-unit id="withdrawal_datetime_format" resname="withdrawal_datetime_format">
+				<source>Y-m-d H:i:s T</source>
 			</trans-unit>
 		</body>
 	</file>

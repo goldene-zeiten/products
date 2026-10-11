@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Service;
 
+use GoldeneZeiten\Products\Core\Domain\Dto\Withdrawal\WithdrawalStatement;
 use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Category;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
@@ -15,9 +16,12 @@ use GoldeneZeiten\Products\Core\Service\Exception\AgbFileNotFoundException;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoicePdfService;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceRenderer;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalExclusionService;
+use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalSettingsFactory;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalUrlFactory;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mime\Address;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Mail\FluidEmail;
 use TYPO3\CMS\Core\Mail\MailerInterface;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -41,40 +45,59 @@ final class OrderMailService
         private readonly ResourceFactory $resourceFactory,
         private readonly LoggerInterface $logger,
         private readonly WithdrawalUrlFactory $withdrawalUrlFactory,
-        private readonly WithdrawalExclusionService $withdrawalExclusionService
+        private readonly WithdrawalExclusionService $withdrawalExclusionService,
+        private readonly WithdrawalSettingsFactory $withdrawalSettingsFactory,
+        private readonly ConnectionPool $connectionPool
     ) {}
 
     public function sendOrderConfirmation(Order $order): void
     {
         $email = $this->buildEmail($order, 'OrderConfirmation', self::LANGUAGE_FILE . 'order_confirmation_subject', $order->getEmail());
-        $settings = $this->settingsResolver->getSettings($order);
-        $this->assignWithdrawalVariables($email, $order, $this->getIntSetting($settings, 'products.checkout.withdrawalPeriodDays', 14));
+        $this->assignWithdrawalVariables($email, $order);
         $this->attachInvoice($email, $order);
         $this->attachAgb($email, $order);
         $this->mailer->send($email);
+        $this->recordWithdrawalInformation($order);
     }
 
     /**
      * The confirmation mail is the durable medium carrying the withdrawal instruction: the period,
-     * the deadline, the one-click button to the prefilled form (Art. 11a Directive 2011/83/EU) -
-     * or, for orders (partially) made up of Art. 16 exempt items, the notice which items carry no
-     * withdrawal right instead.
+     * the one-click button to the prefilled form (Art. 11a Directive 2011/83/EU) - or, for orders
+     * (partially) made up of Art. 16 exempt items, the notice which items carry no withdrawal right.
      */
-    private function assignWithdrawalVariables(FluidEmail $email, Order $order, int $days): void
+    private function assignWithdrawalVariables(FluidEmail $email, Order $order): void
     {
+        $withdrawalSettings = $this->withdrawalSettingsFactory->fromSettings($this->settingsResolver->getSettings($order));
         $fullyExcluded = $this->withdrawalExclusionService->isFullyExcluded($order);
         $email->assignMultiple([
             'withdrawalFullyExcluded' => $fullyExcluded,
             'withdrawalExcludedItems' => $this->withdrawalExclusionService->excludedItems($order),
         ]);
-        if ($fullyExcluded || $days <= 0 || $order->getOrderDate() === null) {
+        if ($fullyExcluded || $withdrawalSettings->periodDays <= 0) {
             return;
         }
         $email->assignMultiple([
-            'withdrawalPeriodDays' => $days,
-            'withdrawalDeadline' => (clone $order->getOrderDate())->modify(sprintf('+%d days', $days))->format('Y-m-d'),
+            'withdrawalPeriodDays' => $withdrawalSettings->periodDays,
             'withdrawalUrl' => $this->withdrawalUrlFactory->createFor($order),
         ]);
+    }
+
+    /**
+     * Without the withdrawal information on a durable medium the withdrawal period grows by twelve
+     * months (Art. 10), so the moment the confirmation left the shop is recorded on the order.
+     */
+    private function recordWithdrawalInformation(Order $order): void
+    {
+        if ($order->getUid() === null || $this->withdrawalExclusionService->isFullyExcluded($order)) {
+            return;
+        }
+        $order->setWithdrawalInformationProvidedAt(new \DateTime());
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_products_domain_model_order');
+        $queryBuilder
+            ->update('tx_products_domain_model_order')
+            ->set('withdrawal_information_provided_at', time())
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($order->getUid(), Connection::PARAM_INT)))
+            ->executeStatement();
     }
 
     /**
@@ -186,20 +209,70 @@ final class OrderMailService
     }
 
     /**
-     * Fired directly from WithdrawalService on a successful self-service cancellation - not
-     * routed through OrderStatusChangedEvent/sendOrderStatusChanged() (which only notifies the
-     * customer) because the merchant specifically needs to know a *customer-initiated*
-     * cancellation happened, mirroring legacy's WithdrawalController sending to both shop and
-     * customer. Reuses the same recipient resolution as a new order (global + per-category).
+     * Fired directly from WithdrawalService on a successful self-service withdrawal - not routed
+     * through OrderStatusChangedEvent/sendOrderStatusChanged() (which only notifies the customer)
+     * because the merchant specifically needs to know a *customer-initiated* withdrawal happened and
+     * which items it covers. Reuses the same recipient resolution as a new order (global + per-category).
+     *
+     * @param OrderItem[] $withdrawnItems
      */
-    public function sendWithdrawalNotification(Order $order, string $reason): void
+    public function sendWithdrawalNotification(Order $order, WithdrawalStatement $statement, array $withdrawnItems): void
     {
         foreach ($this->resolveMerchantRecipients($order) as $recipient) {
             $email = $this->buildEmail($order, 'Withdrawal', self::LANGUAGE_FILE . 'withdrawal_subject', $recipient);
-            $email->assign('reason', $reason);
-            $email->assign('withdrawalExcludedItems', $this->withdrawalExclusionService->excludedItems($order));
+            $email->assignMultiple([
+                'statement' => $statement,
+                'withdrawnItems' => $withdrawnItems,
+                'submittedAt' => $this->formatSubmission($order, $statement),
+                'awaitingReturn' => $order->getStatus() === OrderStatus::WITHDRAWN,
+                'withdrawalExcludedItems' => $this->withdrawalExclusionService->excludedItems($order),
+            ]);
             $this->mailer->send($email);
         }
+    }
+
+    /**
+     * The acknowledgement of receipt on a durable medium that Art. 11a(4) Directive 2011/83/EU requires
+     * without undue delay: the content of the statement, the date and time of its submission, what
+     * happens to the goods and the refund.
+     *
+     * @param OrderItem[] $withdrawnItems
+     */
+    public function sendWithdrawalAcknowledgement(Order $order, WithdrawalStatement $statement, array $withdrawnItems): void
+    {
+        $withdrawalSettings = $this->withdrawalSettingsFactory->fromSettings($this->settingsResolver->getSettings($order));
+        $email = $this->buildEmail($order, 'WithdrawalAcknowledgement', self::LANGUAGE_FILE . 'withdrawal_acknowledgement_subject', $statement->email);
+        $email->assignMultiple([
+            'statement' => $statement,
+            'withdrawnItems' => $withdrawnItems,
+            'submittedAt' => $this->formatSubmission($order, $statement),
+            'returnRequired' => $order->getStatus() === OrderStatus::WITHDRAWN,
+            'returnAndRefundDeadline' => $statement->submittedAt->setTimezone($withdrawalSettings->getDateTimeZone())->modify('+14 days')->format('Y-m-d'),
+            'trader' => $withdrawalSettings->trader,
+            'returnCostBorneByTrader' => $withdrawalSettings->returnCostBorneByTrader,
+            'conditionalItems' => $this->itemsLostByUnsealing($withdrawnItems),
+        ]);
+        $this->mailer->send($email);
+    }
+
+    /**
+     * @param OrderItem[] $items
+     * @return OrderItem[]
+     */
+    private function itemsLostByUnsealing(array $items): array
+    {
+        return array_values(array_filter($items, static fn(OrderItem $item): bool => $item->getWithdrawalExclusion()->isLostByUnsealing()));
+    }
+
+    /**
+     * The submission moment in the shop's time zone, so the customer reads the same time on the
+     * acknowledgement as on the clock of the shop that received the statement.
+     */
+    private function formatSubmission(Order $order, WithdrawalStatement $statement): string
+    {
+        $withdrawalSettings = $this->withdrawalSettingsFactory->fromSettings($this->settingsResolver->getSettings($order));
+        $format = (string)LocalizationUtility::translate(self::LANGUAGE_FILE . 'withdrawal_datetime_format', 'ProductsCore');
+        return $statement->submittedAt->setTimezone($withdrawalSettings->getDateTimeZone())->format($format !== '' ? $format : 'Y-m-d H:i:s T');
     }
 
     public function sendLowStockWarning(string $title, int $newStock): void
@@ -323,10 +396,5 @@ final class OrderMailService
     private function getBoolSetting(SettingsInterface $settings, string $path, bool $default): bool
     {
         return $settings->has($path) ? (bool)$settings->get($path) : $default;
-    }
-
-    private function getIntSetting(SettingsInterface $settings, string $path, int $default): int
-    {
-        return $settings->has($path) ? (int)$settings->get($path) : $default;
     }
 }

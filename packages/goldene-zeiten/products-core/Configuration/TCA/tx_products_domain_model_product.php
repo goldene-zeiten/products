@@ -438,6 +438,14 @@ return [
                         'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.withdrawal_exclusion.digital_content',
                         'value' => 'digital_content',
                     ],
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.withdrawal_exclusion.sealed_hygiene',
+                        'value' => 'sealed_hygiene',
+                    ],
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.withdrawal_exclusion.sealed_media',
+                        'value' => 'sealed_media',
+                    ],
                 ],
             ],
         ],

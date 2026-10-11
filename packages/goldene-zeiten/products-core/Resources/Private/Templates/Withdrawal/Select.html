@@ -1,0 +1,17 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
+<div class="withdrawal-form">
+    <f:flashMessages />
+    <h2><f:translate key="withdrawal_heading" /></h2>
+    <f:if condition="{withdrawable}">
+        <f:then>
+            <p><f:translate key="withdrawal_form_intro" /></p>
+            <f:render partial="Withdrawal/Statement" arguments="{_all}" />
+        </f:then>
+        <f:else>
+            <p><f:translate key="order_no_longer_withdrawable" /></p>
+        </f:else>
+    </f:if>
+</div>
+</html>

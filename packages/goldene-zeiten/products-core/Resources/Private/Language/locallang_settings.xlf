@@ -91,7 +91,7 @@
 				<source>Store client IP address</source>
 			</trans-unit>
 			<trans-unit id="setting.products.checkout.withdrawalPeriodDays" resname="setting.products.checkout.withdrawalPeriodDays">
-				<source>Days after order placement a customer may self-service withdraw/cancel (0 disables it)</source>
+				<source>Withdrawal period in days; the statutory period is 14 (0 disables self-service withdrawal)</source>
 			</trans-unit>
 			<trans-unit id="setting.products.checkout.priceQuoteValiditySeconds" resname="setting.products.checkout.priceQuoteValiditySeconds">
 				<source>How long a reviewed price quote remains valid before checkout forces a fresh review (seconds) - default 15 minutes</source>
@@ -176,6 +176,33 @@
 			</trans-unit>
 			<trans-unit id="setting.products.gdpr.invoiceRetentionDays" resname="setting.products.gdpr.invoiceRetentionDays">
 				<source>Days to retain order/invoice data before automatic deletion (GDPR data minimization) - set per your jurisdiction's statutory bookkeeping retention period, e.g. 10 years in Germany</source>
+			</trans-unit>
+			<trans-unit id="category.withdrawal" resname="category.withdrawal">
+				<source>Right of withdrawal</source>
+			</trans-unit>
+			<trans-unit id="setting.products.withdrawal.assumedDeliveryDays" resname="setting.products.withdrawal.assumedDeliveryDays">
+				<source>Days between shipping and delivery assumed while no delivery date is recorded</source>
+			</trans-unit>
+			<trans-unit id="setting.products.withdrawal.timezone" resname="setting.products.withdrawal.timezone">
+				<source>Time zone for withdrawal deadlines and acknowledgements</source>
+			</trans-unit>
+			<trans-unit id="setting.products.withdrawal.returnCostBorneByTrader" resname="setting.products.withdrawal.returnCostBorneByTrader">
+				<source>The shop bears the cost of returning withdrawn goods</source>
+			</trans-unit>
+			<trans-unit id="setting.products.withdrawal.trader.name" resname="setting.products.withdrawal.trader.name">
+				<source>Trader name used in the withdrawal instructions</source>
+			</trans-unit>
+			<trans-unit id="setting.products.withdrawal.trader.address" resname="setting.products.withdrawal.trader.address">
+				<source>Trader geographical address (one line per address line)</source>
+			</trans-unit>
+			<trans-unit id="setting.products.withdrawal.trader.email" resname="setting.products.withdrawal.trader.email">
+				<source>Trader email address for withdrawals</source>
+			</trans-unit>
+			<trans-unit id="setting.products.withdrawal.trader.phone" resname="setting.products.withdrawal.trader.phone">
+				<source>Trader telephone number</source>
+			</trans-unit>
+			<trans-unit id="setting.products.withdrawal.trader.returnAddress" resname="setting.products.withdrawal.trader.returnAddress">
+				<source>Address returned goods are sent to (defaults to the trader address)</source>
 			</trans-unit>
 		</body>
 	</file>

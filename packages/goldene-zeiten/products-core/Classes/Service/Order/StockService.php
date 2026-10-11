@@ -32,26 +32,90 @@ final class StockService
 
     /**
      * Puts the items of an order that never left the warehouse back into stock - for an order cancelled
-     * before shipping. Lines of unlimited products or articles were never taken out, so they are skipped.
+     * before shipping. Items already put back, e.g. by a partial withdrawal, are skipped.
      */
     public function releaseForOrder(int $orderUid): void
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_products_domain_model_orderitem');
-        $result = $queryBuilder
-            ->select('product', 'article', 'quantity')
-            ->from('tx_products_domain_model_orderitem')
-            ->where($queryBuilder->expr()->eq('parent_order', $queryBuilder->createNamedParameter($orderUid, Connection::PARAM_INT)))
-            ->executeQuery();
-        while ($row = $result->fetchAssociative()) {
-            $productUid = (int)$row['product'];
-            $articleUid = (int)$row['article'];
-            if ($this->isUnlimited(self::PRODUCT_TABLE, $productUid) || ($articleUid > 0 && $this->isUnlimited(self::ARTICLE_TABLE, $articleUid))) {
-                continue;
-            }
-            $articleUid > 0
-                ? $this->increment(self::ARTICLE_TABLE, $articleUid, (int)$row['quantity'])
-                : $this->increment(self::PRODUCT_TABLE, $productUid, (int)$row['quantity']);
+        $this->release($orderUid, [], false);
+    }
+
+    /**
+     * Puts the withdrawn items of an order back into stock - for goods the customer sent back after
+     * withdrawing from a shipped order. Items already put back are skipped.
+     */
+    public function releaseWithdrawnForOrder(int $orderUid): void
+    {
+        $this->release($orderUid, [], true);
+    }
+
+    /**
+     * Puts specific order items back into stock - for a partial withdrawal from an unshipped order.
+     *
+     * @param int[] $itemUids
+     */
+    public function releaseItems(array $itemUids): void
+    {
+        if ($itemUids === []) {
+            return;
         }
+        $this->release(0, $itemUids, false);
+    }
+
+    /**
+     * Lines of unlimited products or articles were never taken out of stock, so they are not returned,
+     * but still marked as processed.
+     *
+     * @param int[] $itemUids
+     */
+    private function release(int $orderUid, array $itemUids, bool $onlyWithdrawn): void
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_products_domain_model_orderitem');
+        $queryBuilder
+            ->select('uid', 'product', 'article', 'quantity')
+            ->from('tx_products_domain_model_orderitem')
+            ->where($queryBuilder->expr()->eq('restocked_at', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)));
+        if ($orderUid > 0) {
+            $queryBuilder->andWhere($queryBuilder->expr()->eq('parent_order', $queryBuilder->createNamedParameter($orderUid, Connection::PARAM_INT)));
+        }
+        if ($itemUids !== []) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($itemUids, Connection::PARAM_INT_ARRAY)));
+        }
+        if ($onlyWithdrawn) {
+            $queryBuilder->andWhere($queryBuilder->expr()->gt('withdrawn_at', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)));
+        }
+        $result = $queryBuilder->executeQuery();
+        $processed = [];
+        while ($row = $result->fetchAssociative()) {
+            $this->putBackLine((int)$row['product'], (int)$row['article'], (int)$row['quantity']);
+            $processed[] = (int)$row['uid'];
+        }
+        $this->markRestocked($processed);
+    }
+
+    private function putBackLine(int $productUid, int $articleUid, int $quantity): void
+    {
+        if ($this->isUnlimited(self::PRODUCT_TABLE, $productUid) || ($articleUid > 0 && $this->isUnlimited(self::ARTICLE_TABLE, $articleUid))) {
+            return;
+        }
+        $articleUid > 0
+            ? $this->increment(self::ARTICLE_TABLE, $articleUid, $quantity)
+            : $this->increment(self::PRODUCT_TABLE, $productUid, $quantity);
+    }
+
+    /**
+     * @param int[] $itemUids
+     */
+    private function markRestocked(array $itemUids): void
+    {
+        if ($itemUids === []) {
+            return;
+        }
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_products_domain_model_orderitem');
+        $queryBuilder
+            ->update('tx_products_domain_model_orderitem')
+            ->set('restocked_at', time())
+            ->where($queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($itemUids, Connection::PARAM_INT_ARRAY)))
+            ->executeStatement();
     }
 
     private function increment(string $table, int $uid, int $quantity): void

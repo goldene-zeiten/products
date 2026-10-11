@@ -13,7 +13,7 @@ return [
         'iconfile' => 'EXT:products_core/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => 'parent_order, --palette--;;productRef, --palette--;;titles, quantity, --palette--;;pricing, --palette--;;lineTotals, options, withdrawal_exclusion'],
+        '1' => ['showitem' => 'parent_order, --palette--;;productRef, --palette--;;titles, quantity, --palette--;;pricing, --palette--;;lineTotals, options, withdrawal_exclusion, --palette--;;withdrawal'],
     ],
     'palettes' => [
         'productRef' => [
@@ -24,6 +24,9 @@ return [
         ],
         'pricing' => [
             'showitem' => 'unit_price_net, unit_price_gross, tax_rate',
+        ],
+        'withdrawal' => [
+            'showitem' => 'delivered_at, withdrawn_at, restocked_at',
         ],
         'lineTotals' => [
             'showitem' => 'line_total_net, line_total_tax, line_total_gross, --linebreak--, deposit_total',
@@ -165,7 +168,38 @@ return [
                         'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.withdrawal_exclusion.digital_content',
                         'value' => 'digital_content',
                     ],
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.withdrawal_exclusion.sealed_hygiene',
+                        'value' => 'sealed_hygiene',
+                    ],
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.withdrawal_exclusion.sealed_media',
+                        'value' => 'sealed_media',
+                    ],
                 ],
+            ],
+        ],
+        'delivered_at' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderitem.delivered_at',
+            'config' => [
+                'type' => 'datetime',
+                'size' => 13,
+            ],
+        ],
+        'withdrawn_at' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderitem.withdrawn_at',
+            'config' => [
+                'type' => 'datetime',
+                'size' => 13,
+                'readOnly' => true,
+            ],
+        ],
+        'restocked_at' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_orderitem.restocked_at',
+            'config' => [
+                'type' => 'datetime',
+                'size' => 13,
+                'readOnly' => true,
             ],
         ],
     ],

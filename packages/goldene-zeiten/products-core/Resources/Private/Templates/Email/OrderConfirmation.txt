@@ -12,7 +12,6 @@
 <f:else>
 <f:if condition="{withdrawalPeriodDays}">
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_notice_intro" arguments="{0: withdrawalPeriodDays}" />
-<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_notice_deadline" arguments="{0: withdrawalDeadline}" />
 <f:if condition="{withdrawalUrl}">
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_button_label" />: {withdrawalUrl}
 </f:if>

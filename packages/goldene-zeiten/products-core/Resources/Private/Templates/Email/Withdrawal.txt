@@ -1,12 +1,21 @@
-<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_intro" />
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_merchant_intro" />
 
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:order_number" />: {order.orderNumber}
-<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:customer_email" />: {order.email}
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_customer_name" />: {statement.name}
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:customer_email" />: {statement.email}
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_submitted_at" />: {submittedAt}
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:order_total" />: {order.totalGross.decimalString} {order.currency}
-<f:if condition="{reason}">
+
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_items_heading" />:
+<f:for each="{withdrawnItems}" as="withdrawnItem">- {withdrawnItem.title} (x {withdrawnItem.quantity})
+</f:for>
+<f:if condition="{statement.reason}">
 <f:then>
-<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_reason" />: {reason}
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_reason" />: {statement.reason}
 </f:then>
+</f:if>
+<f:if condition="{awaitingReturn}">
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_merchant_awaiting_return" />
 </f:if>
 <f:if condition="{withdrawalExcludedItems}">
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_merchant_excluded_items" />

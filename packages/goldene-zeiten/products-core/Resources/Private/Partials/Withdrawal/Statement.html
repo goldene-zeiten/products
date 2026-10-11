@@ -1,0 +1,70 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
+<f:form action="confirm" name="withdrawal">
+    <f:if condition="{mode} == 'token'">
+        <f:form.hidden name="order" value="{order.uid}" />
+        <f:form.hidden name="hash" value="{hash}" />
+    </f:if>
+    <f:if condition="{mode} == 'customer'">
+        <f:form.hidden name="order" value="{order.uid}" />
+    </f:if>
+    <f:if condition="{mode} == 'plain'">
+        <f:form.hidden name="orderNumber" value="{order.orderNumber}" />
+    </f:if>
+    <f:form.hidden name="itemSelection" value="1" />
+    <div class="mb-3">
+        <label for="withdrawal-name" class="form-label"><f:translate key="withdrawal_name_label" /></label>
+        <f:form.textfield id="withdrawal-name" name="name" value="{name}" class="form-control" required="required" />
+    </div>
+    <div class="mb-3">
+        <label for="withdrawal-order-number" class="form-label"><f:translate key="withdrawal_order_number_label" /></label>
+        <input id="withdrawal-order-number" type="text" value="{order.orderNumber}" class="form-control" readonly="readonly" />
+    </div>
+    <div class="mb-3">
+        <label for="withdrawal-email" class="form-label"><f:translate key="confirm_email" /></label>
+        <f:form.textfield id="withdrawal-email" name="email" type="email" value="{order.email}" class="form-control" required="required" />
+    </div>
+    <fieldset class="mb-3 withdrawal-items">
+        <legend class="form-label"><f:translate key="withdrawal_items_legend" /></legend>
+        <f:for each="{itemStates}" as="itemState">
+            <div class="form-check withdrawal-item withdrawal-item-{itemState.availability.value}">
+                <f:if condition="{itemState.selectable}">
+                    <f:then>
+                        <f:form.checkbox id="withdrawal-item-{itemState.item.uid}" name="items" multiple="1" value="{itemState.item.uid}" checked="1" class="form-check-input" />
+                        <label for="withdrawal-item-{itemState.item.uid}" class="form-check-label">
+                            {itemState.item.title} <span class="text-muted">(<f:translate key="withdrawal_item_quantity" arguments="{0: itemState.item.quantity}" />)</span>
+                        </label>
+                    </f:then>
+                    <f:else>
+                        <input type="checkbox" class="form-check-input" disabled="disabled" />
+                        <span class="form-check-label text-muted">{itemState.item.title}</span>
+                    </f:else>
+                </f:if>
+                <f:if condition="{itemState.availability.value} == 'exempt'">
+                    <small class="d-block text-muted"><f:translate key="withdrawal_item_exempt" /></small>
+                </f:if>
+                <f:if condition="{itemState.availability.value} == 'withdrawn'">
+                    <small class="d-block text-muted"><f:translate key="withdrawal_item_withdrawn" /></small>
+                </f:if>
+                <f:if condition="{itemState.availability.value} == 'expired'">
+                    <small class="d-block text-muted"><f:translate key="withdrawal_item_expired" /></small>
+                </f:if>
+                <f:if condition="{itemState.selectable}">
+                    <f:if condition="{itemState.item.withdrawalExclusion.value} == 'sealed_hygiene'">
+                        <small class="d-block text-muted"><f:translate key="withdrawal_item_sealed_hygiene" /></small>
+                    </f:if>
+                    <f:if condition="{itemState.item.withdrawalExclusion.value} == 'sealed_media'">
+                        <small class="d-block text-muted"><f:translate key="withdrawal_item_sealed_media" /></small>
+                    </f:if>
+                </f:if>
+            </div>
+        </f:for>
+    </fieldset>
+    <div class="mb-3">
+        <label for="withdrawal-reason" class="form-label"><f:translate key="withdrawal_reason_label" /></label>
+        <f:form.textarea id="withdrawal-reason" name="reason" class="form-control" />
+    </div>
+    <f:form.submit value="{f:translate(key: 'confirm_withdrawal')}" class="btn btn-danger" />
+</f:form>
+</html>

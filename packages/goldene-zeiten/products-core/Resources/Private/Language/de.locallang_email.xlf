@@ -72,12 +72,8 @@
 				<target>Verbleibender Lagerbestand: %d</target>
 			</trans-unit>
 			<trans-unit id="withdrawal_subject" resname="withdrawal_subject">
-				<source>Order Cancelled by Customer: %s</source>
-				<target>Bestellung vom Kunden widerrufen: %s</target>
-			</trans-unit>
-			<trans-unit id="withdrawal_intro" resname="withdrawal_intro">
-				<source>The customer has withdrawn from (cancelled) this order.</source>
-				<target>Der Kunde hat von diesem Vertrag (Bestellung) widerrufen bzw. die Bestellung storniert.</target>
+				<source>Withdrawal from order %s</source>
+				<target>Widerruf der Bestellung %s</target>
 			</trans-unit>
 			<trans-unit id="withdrawal_reason" resname="withdrawal_reason">
 				<source>Reason given</source>
@@ -87,13 +83,9 @@
 				<source>You have the right to withdraw from this contract within %d days without giving any reason.</source>
 				<target>Sie haben das Recht, binnen %d Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.</target>
 			</trans-unit>
-			<trans-unit id="withdrawal_notice_deadline" resname="withdrawal_notice_deadline">
-				<source>The withdrawal period expires on %s.</source>
-				<target>Die Widerrufsfrist endet am %s.</target>
-			</trans-unit>
 			<trans-unit id="withdrawal_button_label" resname="withdrawal_button_label">
 				<source>Withdraw from contract here</source>
-				<target>Vertrag hier widerrufen</target>
+				<target>Vertrag widerrufen</target>
 			</trans-unit>
 			<trans-unit id="withdrawal_notice_fully_excluded" resname="withdrawal_notice_fully_excluded">
 				<source>All items of this order are exempt from the statutory right of withdrawal (personalized items, or digital content supplied immediately with your express consent), so the order cannot be withdrawn.</source>
@@ -106,6 +98,90 @@
 			<trans-unit id="withdrawal_merchant_excluded_items" resname="withdrawal_merchant_excluded_items">
 				<source>Note: this order contains items exempt from the right of withdrawal:</source>
 				<target>Hinweis: Diese Bestellung enthält Artikel, die vom Widerrufsrecht ausgenommen sind:</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_merchant_intro" resname="withdrawal_merchant_intro">
+				<source>A customer has submitted a withdrawal statement for this order.</source>
+				<target>Ein Kunde hat für diese Bestellung eine Widerrufserklärung abgegeben.</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_customer_name" resname="withdrawal_customer_name">
+				<source>Name</source>
+				<target>Name</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_submitted_at" resname="withdrawal_submitted_at">
+				<source>Date and time of submission</source>
+				<target>Datum und Uhrzeit der Abgabe</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_items_heading" resname="withdrawal_items_heading">
+				<source>Items withdrawn from</source>
+				<target>Widerrufene Artikel</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_merchant_awaiting_return" resname="withdrawal_merchant_awaiting_return">
+				<source>The goods had already been shipped. The order stays in the withdrawn status until you mark the returned goods as received.</source>
+				<target>Die Ware war bereits versandt. Die Bestellung bleibt im Status „widerrufen“, bis Sie den Eingang der Rücksendung im Backend bestätigen.</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_subject" resname="withdrawal_acknowledgement_subject">
+				<source>Acknowledgement of receipt of your withdrawal for order %s</source>
+				<target>Eingangsbestätigung Ihres Widerrufs zur Bestellung %s</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_heading" resname="withdrawal_acknowledgement_heading">
+				<source>Acknowledgement of receipt of your withdrawal</source>
+				<target>Eingangsbestätigung Ihres Widerrufs</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_intro" resname="withdrawal_acknowledgement_intro">
+				<source>We have received your withdrawal statement. This email is the acknowledgement of receipt on a durable medium.</source>
+				<target>Wir haben Ihre Widerrufserklärung erhalten. Diese E-Mail ist die Eingangsbestätigung auf einem dauerhaften Datenträger.</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_content" resname="withdrawal_acknowledgement_content">
+				<source>Content of your withdrawal statement</source>
+				<target>Inhalt Ihrer Widerrufserklärung</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_statement" resname="withdrawal_acknowledgement_statement">
+				<source>I hereby withdraw from my contract concerning the following items:</source>
+				<target>Hiermit widerrufe ich den von mir abgeschlossenen Vertrag über folgende Artikel:</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_email" resname="withdrawal_acknowledgement_email">
+				<source>Email address for this confirmation</source>
+				<target>E-Mail-Adresse für diese Bestätigung</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_conditional" resname="withdrawal_acknowledgement_conditional">
+				<source>For the following items the right of withdrawal only applies as long as you have not unsealed them after delivery. Please return them sealed:</source>
+				<target>Für die folgenden Artikel besteht das Widerrufsrecht nur, solange Sie sie nach der Lieferung nicht entsiegelt haben. Bitte senden Sie sie ungeöffnet zurück:</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_return_heading" resname="withdrawal_acknowledgement_return_heading">
+				<source>Returning the goods</source>
+				<target>Rücksendung der Ware</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_return" resname="withdrawal_acknowledgement_return">
+				<source>Please send the goods back to the address below without undue delay and in any event not later than %s. The deadline is met if you send the goods back before it has expired.</source>
+				<target>Bitte senden Sie die Ware unverzüglich und spätestens bis zum %s an die folgende Anschrift zurück. Die Frist ist gewahrt, wenn Sie die Ware vor Ablauf der Frist absenden.</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_return_cost_trader" resname="withdrawal_acknowledgement_return_cost_trader">
+				<source>We bear the cost of returning the goods.</source>
+				<target>Wir tragen die Kosten der Rücksendung der Ware.</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_return_cost_customer" resname="withdrawal_acknowledgement_return_cost_customer">
+				<source>You bear the direct cost of returning the goods.</source>
+				<target>Sie tragen die unmittelbaren Kosten der Rücksendung der Ware.</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_no_return" resname="withdrawal_acknowledgement_no_return">
+				<source>Your order had not been shipped yet, so there is nothing to send back.</source>
+				<target>Ihre Bestellung war noch nicht versandt, daher ist keine Rücksendung erforderlich.</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_refund_heading" resname="withdrawal_acknowledgement_refund_heading">
+				<source>Refund</source>
+				<target>Rückerstattung</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_refund" resname="withdrawal_acknowledgement_refund">
+				<source>We will reimburse all payments received from you for the withdrawn items, including the costs of standard delivery where you withdraw from the whole order, without undue delay and in any event not later than %s, using the same means of payment you used for the initial transaction. You will not incur any fees as a result of this reimbursement.</source>
+				<target>Wir erstatten Ihnen alle für die widerrufenen Artikel erhaltenen Zahlungen, bei einem Widerruf der gesamten Bestellung einschließlich der Kosten der Standardlieferung, unverzüglich und spätestens bis zum %s. Wir verwenden dafür dasselbe Zahlungsmittel, das Sie bei der ursprünglichen Transaktion eingesetzt haben. Durch diese Rückzahlung entstehen Ihnen keine Kosten.</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_acknowledgement_refund_withhold" resname="withdrawal_acknowledgement_refund_withhold">
+				<source>We may withhold the reimbursement until we have received the goods back or you have supplied evidence of having sent them back, whichever is the earliest.</source>
+				<target>Wir können die Rückzahlung verweigern, bis wir die Ware zurückerhalten haben oder bis Sie den Nachweis erbracht haben, dass Sie die Ware zurückgesandt haben, je nachdem, welches der frühere Zeitpunkt ist.</target>
+			</trans-unit>
+			<trans-unit id="withdrawal_datetime_format" resname="withdrawal_datetime_format">
+				<source>Y-m-d H:i:s T</source>
+				<target>d.m.Y, H:i:s \U\h\r T</target>
 			</trans-unit>
 		</body>
 	</file>
