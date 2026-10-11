@@ -21,6 +21,15 @@ final class RecordingRefundPaymentMethod implements PaymentMethodInterface, Refu
     public int $refundCalls = 0;
     public ?Money $lastAmount = null;
 
+    /**
+     * @param (\Closure(): void)|null $duringRefund runs while the gateway call is in flight
+     */
+    public function __construct(
+        private readonly ?PaymentResult $refundResult = null,
+        private readonly ?\Closure $duringRefund = null,
+        private readonly ?\Throwable $failure = null
+    ) {}
+
     public function getIdentifier(): string
     {
         return 'recording-refund';
@@ -60,6 +69,13 @@ final class RecordingRefundPaymentMethod implements PaymentMethodInterface, Refu
     {
         $this->refundCalls++;
         $this->lastAmount = $amount;
-        return PaymentResult::completed(PaymentStatus::REFUNDED, 'RECORDING');
+        if ($this->duringRefund !== null) {
+            ($this->duringRefund)();
+        }
+        if ($this->failure !== null) {
+            throw $this->failure;
+        }
+
+        return $this->refundResult ?? PaymentResult::completed(PaymentStatus::REFUNDED, 'RECORDING');
     }
 }

@@ -329,6 +329,11 @@ additionally implement :php:`RefundablePaymentMethodInterface`:
     :php:`$amount` is a :php:`Money` value object; call :php:`getAmount()` to get the
     cents value.
 
+    A completed result marks the order refunded. A pending result keeps the order in the payment
+    status "refund pending", from which it cannot be refunded again; a gateway notification
+    finalizing a :php:`PaymentStatus::REFUNDED` result, or the backend's :guilabel:`Complete refund`
+    action, then completes it. A failed result or an exception releases the order for a new refund.
+
 The backend only offers refund/cancel actions if the order's payment method implements
 :php:`RefundablePaymentMethodInterface` (checked via :code:`instanceof`). Methods that do
 not support refunds (e.g., bank transfers) simply do not implement this interface.

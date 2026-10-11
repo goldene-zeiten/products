@@ -99,6 +99,9 @@
 			<trans-unit id="order.action.refund" resname="order.action.refund">
 				<source>Refund</source>
 			</trans-unit>
+			<trans-unit id="order.action.complete_refund" resname="order.action.complete_refund">
+				<source>Complete refund</source>
+			</trans-unit>
 			<trans-unit id="order.export.title" resname="order.export.title">
 				<source>Export order</source>
 			</trans-unit>

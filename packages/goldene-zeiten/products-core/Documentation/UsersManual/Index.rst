@@ -233,7 +233,9 @@ A :guilabel:`Refund` action also appears once an order's payment status can move
 its payment method supports refunds. The invoice payment method shipped with this extension
 supports it as an acknowledgement (there is no gateway to call back — refunding an invoice payment
 just records that the money was returned outside the system); third-party payment methods can
-implement the same contract to wire up a real refund call.
+implement the same contract to wire up a real refund call. Only one refund can be in flight per
+order: while a gateway has accepted a refund but not completed it, the order shows the payment status
+"refund pending" and a :guilabel:`Complete refund` action finishes it once the money is returned.
 
 An :guilabel:`Export order` section appears when an order exporter is installed, with one button per
 exporter that applies to that order; choosing one downloads the order in that exporter's format. No
