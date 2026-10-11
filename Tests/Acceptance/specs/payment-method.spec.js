@@ -5,7 +5,7 @@ import {
   fillAddressAndReachShipping,
   selectFirstShippingAndReachPayment,
 } from '../helper/checkout.js';
-import { GATEWAY, resetMockJournal, gatewayReturnUrls } from '../helper/roundtrip.js';
+import { GATEWAY, prepareGatewayReturn, removeGatewayStubs, resetMockJournal } from '../helper/roundtrip.js';
 
 const MOCK = process.env.MOCK_BASE_URL;
 
@@ -53,11 +53,15 @@ for (const method of ['paypal', 'stripe', 'klarna', 'amazon']) {
     // Come back from the gateway the way it would return the customer; the shop captures and finalizes.
     // A two-hop gateway (Amazon Pay) returns twice - the review leg bounces back to the gateway (caught by
     // the route above), the result leg lands on the confirmation page.
-    const returnUrls = await gatewayReturnUrls(request, MOCK, method);
-    for (const returnUrl of returnUrls) {
-      await page.goto(returnUrl);
-    }
+    const { returnUrls, stubIds } = await prepareGatewayReturn(request, MOCK, method);
+    try {
+      for (const returnUrl of returnUrls) {
+        await page.goto(returnUrl);
+      }
 
-    await expect(page.getByText('Your order number is', { exact: false })).toBeVisible();
+      await expect(page.getByText('Your order number is', { exact: false })).toBeVisible();
+    } finally {
+      await removeGatewayStubs(request, MOCK, stubIds);
+    }
   });
 }
