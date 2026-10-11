@@ -87,7 +87,7 @@ final class ExpressCheckoutController extends ActionController
             state: (string)($body['state'] ?? '')
         );
         try {
-            $quote = $this->checkoutService->quoteShipping($this->request, $this->basketService->getBasketViewModel($this->request), $address, (string)($body['orderId'] ?? ''));
+            $quote = $this->checkoutService->quoteShipping($this->request, $this->basketService->getBasketViewModel($this->request, $address->getCountry()), $address, (string)($body['orderId'] ?? ''));
         } catch (PaypalApiException) {
             return new JsonResponse(['error' => 'shipping_failed'], 502);
         }
@@ -98,11 +98,12 @@ final class ExpressCheckoutController extends ActionController
     public function confirmAction(): ResponseInterface
     {
         $body = $this->parsedBody();
+        $address = $this->buildAddress($body);
         try {
             $order = $this->checkoutService->confirm(
                 $this->request,
-                $this->basketService->getBasketViewModel($this->request),
-                $this->buildAddress($body),
+                $this->basketService->getBasketViewModel($this->request, $address->getCountry()),
+                $address,
                 (string)($body['shippingOption'] ?? ''),
                 (string)($body['orderId'] ?? '')
             );
