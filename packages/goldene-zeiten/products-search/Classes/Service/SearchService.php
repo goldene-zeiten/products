@@ -7,15 +7,14 @@ namespace GoldeneZeiten\Products\Search\Service;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Search\Domain\Dto\SearchResult;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 
 final class SearchService
 {
     private const DEFAULT_RESULTS_PER_PAGE = 20;
 
     public function __construct(
-        private readonly ProductRepository $productRepository,
-        private readonly ConfigurationManagerInterface $configurationManager
+        private readonly ProductRepository $productRepository
     ) {}
 
     public function search(string $term, ?int $categoryUid, int $page, ServerRequestInterface $request): SearchResult
@@ -35,11 +34,10 @@ final class SearchService
 
     private function resultsPerPage(ServerRequestInterface $request): int
     {
-        $this->configurationManager->setRequest($request);
-        $settings = $this->configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'ProductsCore'
-        );
-        return max(1, (int)($settings['search']['resultsPerPage'] ?? self::DEFAULT_RESULTS_PER_PAGE));
+        $site = $request->getAttribute('site');
+        if (!$site instanceof SiteInterface) {
+            return self::DEFAULT_RESULTS_PER_PAGE;
+        }
+        return max(1, (int)$site->getSettings()->get('products.search.resultsPerPage', self::DEFAULT_RESULTS_PER_PAGE));
     }
 }

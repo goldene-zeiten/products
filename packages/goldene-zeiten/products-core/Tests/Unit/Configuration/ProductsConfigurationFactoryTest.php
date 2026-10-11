@@ -7,10 +7,8 @@ namespace GoldeneZeiten\Products\Core\Tests\Unit\Configuration;
 use GoldeneZeiten\Products\Core\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Core\Service\PriceRoundingService;
 use PHPUnit\Framework\Attributes\Test;
-use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Site\Entity\Site;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 final class ProductsConfigurationFactoryTest extends UnitTestCase
@@ -45,51 +43,41 @@ final class ProductsConfigurationFactoryTest extends UnitTestCase
     }
 
     #[Test]
-    public function defaultCountryPricingModeAndCurrencyStillComeFromExtbaseSettings(): void
+    public function defaultCountryPricingModeAndCurrencyAreReadFromSiteSettings(): void
     {
-        $configuration = $this->subject([
+        $site = new Site('products', 1, ['settings' => ['products' => [
             'tax' => ['defaultCountry' => 'AT'],
             'pricing' => ['mode' => 'net', 'currency' => 'CHF'],
-        ])->create(new ServerRequest('http://localhost/'));
+        ]]]);
+        $request = (new ServerRequest('http://localhost/'))->withAttribute('site', $site);
+
+        $configuration = $this->subject()->create($request);
 
         $this->assertSame('AT', $configuration->getDefaultCountry());
         $this->assertSame('net', $configuration->getPricingMode());
         $this->assertSame('CHF', $configuration->getCurrency());
     }
 
-    /**
-     * @param array<string, mixed> $extbaseSettings
-     */
-    private function subject(array $extbaseSettings = []): ProductsConfigurationFactory
+    #[Test]
+    public function defaultCountryPricingModeAndCurrencyFallBackToDefaultsWithoutASite(): void
     {
-        return new ProductsConfigurationFactory($this->fakeConfigurationManager($extbaseSettings));
+        $configuration = $this->subject()->create(new ServerRequest('http://localhost/'));
+
+        $this->assertSame('DE', $configuration->getDefaultCountry());
+        $this->assertSame('gross', $configuration->getPricingMode());
+        $this->assertSame('EUR', $configuration->getCurrency());
     }
 
-    /**
-     * @param array<string, mixed> $configuration
-     */
-    private function fakeConfigurationManager(array $configuration): ConfigurationManagerInterface
+    #[Test]
+    public function theFactoryNeverTouchesTheSharedConfigurationManager(): void
     {
-        return new class ($configuration) implements ConfigurationManagerInterface {
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function __construct(private readonly array $configuration) {}
+        $constructor = (new \ReflectionClass(ProductsConfigurationFactory::class))->getConstructor();
 
-            /**
-             * @return array<string, mixed>
-             */
-            public function getConfiguration(string $configurationType, ?string $extensionName = null, ?string $pluginName = null): array
-            {
-                return $this->configuration;
-            }
+        $this->assertNull($constructor);
+    }
 
-            /**
-             * @param array<string, mixed> $configuration
-             */
-            public function setConfiguration(array $configuration = []): void {}
-
-            public function setRequest(ServerRequestInterface $request): void {}
-        };
+    private function subject(): ProductsConfigurationFactory
+    {
+        return new ProductsConfigurationFactory();
     }
 }
