@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Express\Paypal\Controller;
 use GoldeneZeiten\Products\Core\Domain\Dto\Address;
 use GoldeneZeiten\Products\Core\Domain\Dto\Express\ExpressCheckoutContext;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
+use GoldeneZeiten\Products\Core\Express\Exception\ExpressOrderExceptionInterface;
 use GoldeneZeiten\Products\Core\Express\ExpressBasketFactory;
 use GoldeneZeiten\Products\Core\Express\ExpressBasketTokenService;
 use GoldeneZeiten\Products\Core\Express\ExpressCheckoutProviderRegistry;
@@ -105,6 +106,8 @@ final class ExpressCheckoutController extends ActionController
             );
         } catch (ExpressPaymentDeclinedException) {
             return new JsonResponse(['error' => 'payment_declined'], 402);
+        } catch (ExpressOrderExceptionInterface) {
+            return new JsonResponse(['error' => 'order_failed'], 409);
         }
 
         return new JsonResponse(['redirectUrl' => $this->thankYouUrl($order)]);

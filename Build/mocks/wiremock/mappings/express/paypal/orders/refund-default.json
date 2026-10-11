@@ -1,0 +1,17 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPathPattern": "/express/paypal/v2/payments/captures/[A-Z0-9-]+/refund"
+  },
+  "response": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "REFUND-1",
+      "status": "COMPLETED"
+    }
+  }
+}

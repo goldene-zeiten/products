@@ -1,0 +1,13 @@
+{
+  "priority": 10,
+  "request": { "method": "POST", "urlPath": "/express/stripe/v1/refunds" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "id": "re_test_1",
+      "object": "refund",
+      "status": "succeeded"
+    }
+  }
+}

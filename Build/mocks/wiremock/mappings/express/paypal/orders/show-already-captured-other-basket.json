@@ -1,0 +1,35 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "GET",
+    "urlPath": "/express/paypal/v2/checkout/orders/PAYPAL-EXPRESS-ORDER-CAPTURED"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "PAYPAL-EXPRESS-ORDER-CAPTURED",
+      "status": "COMPLETED",
+      "purchase_units": [
+        {
+          "reference_id": "default",
+          "custom_id": "a-different-basket",
+          "payments": {
+            "captures": [
+              {
+                "id": "EXPRESS-CAPTURE-OTHER",
+                "status": "COMPLETED",
+                "amount": {
+                  "currency_code": "EUR",
+                  "value": "100.00"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

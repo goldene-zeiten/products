@@ -26,6 +26,27 @@ final class StripeExpressPaymentClientTest extends AbstractStripeExpressMockTest
     }
 
     #[Test]
+    public function aSucceededIntentReportsTheAmountStripeReceived(): void
+    {
+        $result = $this->client()->settle(10800, 'EUR', 'pm_card_visa', $this->configuration());
+        $underpaid = $this->client()->settle(10800, 'EUR', 'pm_underpaid', $this->configuration());
+
+        $this->assertSame(10800, $result->getSettledAmount()?->getCents());
+        $this->assertSame(100, $underpaid->getSettledAmount()?->getCents());
+    }
+
+    #[Test]
+    public function aSettledIntentCanBeRefundedInFull(): void
+    {
+        $this->client()->refund('pi_test_1', $this->configuration());
+
+        $refunds = $this->loggedRequests('/express/stripe/v1/refunds');
+        $this->assertCount(1, $refunds);
+        parse_str((string)$refunds[0]['body'], $body);
+        $this->assertSame('pi_test_1', $body['payment_intent']);
+    }
+
+    #[Test]
     #[DataProvider('minorUnitProvider')]
     public function theIntentIsCreatedInTheCurrencysMinorUnit(int $amountCents, string $currency, string $expectedAmount): void
     {
