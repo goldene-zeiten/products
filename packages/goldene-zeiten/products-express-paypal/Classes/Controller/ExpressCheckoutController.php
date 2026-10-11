@@ -13,6 +13,7 @@ use GoldeneZeiten\Products\Core\Express\ExpressBasketTokenService;
 use GoldeneZeiten\Products\Core\Express\ExpressCheckoutProviderRegistry;
 use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
+use GoldeneZeiten\Products\Core\Service\Order\OrderTokenService;
 use GoldeneZeiten\Products\Express\Paypal\Express\Exception\ExpressPaymentDeclinedException;
 use GoldeneZeiten\Products\Express\Paypal\Express\PaypalExpressCheckoutProvider;
 use GoldeneZeiten\Products\Express\Paypal\Express\PaypalExpressCheckoutService;
@@ -40,6 +41,7 @@ final class ExpressCheckoutController extends ActionController
         private readonly ExpressCheckoutProviderRegistry $providerRegistry,
         private readonly ExpressBasketFactory $expressBasketFactory,
         private readonly ExpressBasketTokenService $basketTokenService,
+        private readonly OrderTokenService $orderTokenService,
         private readonly PaypalExpressCheckoutService $checkoutService
     ) {}
 
@@ -149,6 +151,12 @@ final class ExpressCheckoutController extends ActionController
         return $this->uriBuilder->reset()
             ->setCreateAbsoluteUri(true)
             ->setTargetPageUid($checkoutPageUid)
-            ->uriFor('thankYou', ['order' => $order->getUid()], 'Checkout', 'ProductsCore', 'Checkout');
+            ->uriFor(
+                'thankYou',
+                ['order' => $order->getUid(), 'hash' => $this->orderTokenService->generateToken($order)],
+                'Checkout',
+                'ProductsCore',
+                'Checkout'
+            );
     }
 }
