@@ -1,0 +1,19 @@
+"tx_products_domain_model_orderaddress",,,,,,,,,,,
+,"uid","pid","address_type","company","salutation","first_name","last_name","street","house_number","zip","city","country"
+,31,2,"billing","","Mr","Jane","Shopper","Main Street","1","12345","Sampletown","DE"
+"tx_products_domain_model_product",,,,,,
+,"uid","pid","title","slug","in_stock","unlimited_stock"
+,31,2,"Red Shoes","red-shoes",3,0
+,32,2,"Blue Hat","blue-hat",1,0
+,33,2,"Engraved Ring","engraved-ring",0,0
+"tx_products_domain_model_order",,,,,,,,,,,,,,,
+,"uid","pid","order_number","invoice_number","email","frontend_user","currency","total_net","total_tax","total_gross","billing_address","site_identifier","status","payment_status"
+,31,2,"ORD-W-OPEN","","shopper@example.com",5,"EUR",8403,1597,10000,31,"products","confirmed","paid"
+,32,2,"ORD-W-SHIPPED","","shopper@example.com",5,"EUR",8403,1597,10000,31,"products","shipped","paid"
+"tx_products_domain_model_orderitem",,,,,,,,,,,
+,"uid","pid","parent_order","product","article","title","item_number","quantity","line_total_gross","withdrawal_exclusion"
+,31,2,31,31,0,"Red Shoes","SHOE-RED",2,4000,""
+,32,2,31,32,0,"Blue Hat","HAT-BLUE",1,1000,""
+,33,2,31,33,0,"Engraved Ring","RING-1",1,2000,"personalized"
+,34,2,32,31,0,"Red Shoes","SHOE-RED",1,2000,""
+,35,2,32,32,0,"Blue Hat","HAT-BLUE",1,1000,"sealed_hygiene"

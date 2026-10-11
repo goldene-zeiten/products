@@ -1,4 +1,12 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
 <div class="withdrawal-confirmed">
     <h2><f:translate key="withdrawal_confirmed" /></h2>
     <p><f:translate key="withdrawal_confirmed_text" arguments="{0: order.orderNumber}" /></p>
+    <p>
+        <f:translate key="withdrawal_confirmed_submitted_at" arguments="{0: submittedAt}" /><br>
+        <f:translate key="withdrawal_confirmed_email_hint" arguments="{0: statement.email}" />
+    </p>
 </div>
+</html>

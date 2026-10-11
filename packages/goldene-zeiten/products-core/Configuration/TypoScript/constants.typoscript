@@ -46,10 +46,30 @@ products {
         storeClientIp = 0
     }
     checkout {
-        # cat=products/order; type=int; label=Days after order placement a customer may self-service withdraw/cancel (0 disables it)
+        # cat=products/order; type=int; label=Withdrawal period in days; the statutory period is 14 (0 disables self-service withdrawal)
         withdrawalPeriodDays = 14
         # cat=products/order; type=int; label=How long a reviewed price quote remains valid before checkout forces a fresh review (seconds) - default 15 minutes
         priceQuoteValiditySeconds = 900
+    }
+    withdrawal {
+        # cat=products/withdrawal; type=int; label=Days between shipping and delivery assumed while no delivery date is recorded
+        assumedDeliveryDays = 14
+        # cat=products/withdrawal; type=string; label=Time zone for withdrawal deadlines and acknowledgements
+        timezone = Europe/Berlin
+        # cat=products/withdrawal; type=boolean; label=The shop bears the cost of returning withdrawn goods
+        returnCostBorneByTrader = 0
+        trader {
+            # cat=products/withdrawal; type=string; label=Trader name used in the withdrawal instructions
+            name =
+            # cat=products/withdrawal; type=string; label=Trader geographical address (lines separated by a line break)
+            address =
+            # cat=products/withdrawal; type=string; label=Trader email address for withdrawals
+            email =
+            # cat=products/withdrawal; type=string; label=Trader telephone number
+            phone =
+            # cat=products/withdrawal; type=string; label=Address returned goods are sent to (defaults to the trader address)
+            returnAddress =
+        }
     }
     stock {
         # cat=products/catalog; type=int; label=Stock level at/below which a low-stock warning email is sent to the merchant

@@ -11,6 +11,8 @@ use GoldeneZeiten\Products\Core\Tests\Functional\Fixtures\TestMailer;
 use GoldeneZeiten\Products\Testing\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
@@ -85,6 +87,7 @@ final class WithdrawalControllerTest extends AbstractFrontendTestCase
             'order' => $this->orderUid($order),
             'hash' => $token,
             'email' => 'shopper@example.com',
+            'name' => 'Jane Shopper',
             'reason' => 'Changed my mind',
         ]));
 
@@ -100,6 +103,7 @@ final class WithdrawalControllerTest extends AbstractFrontendTestCase
         $response = $this->executeFrontendSubRequest($this->requestFor('confirm', [
             'orderNumber' => 'ORD-1',
             'email' => 'shopper@example.com',
+            'name' => 'Jane Shopper',
             'reason' => 'Found a better price',
         ]));
 
@@ -120,10 +124,106 @@ final class WithdrawalControllerTest extends AbstractFrontendTestCase
         $response = $this->executeFrontendSubRequest($this->requestFor('confirm', [
             'orderNumber' => 'ORD-1',
             'email' => 'someone-else@example.com',
+            'name' => 'Jane Shopper',
         ]));
 
-        $this->assertStringNotContainsString('Order cancelled', (string)$response->getBody());
+        $this->assertStringNotContainsString('Withdrawal received', (string)$response->getBody());
         $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/withdrawal_confirm_leaves_order_confirmed.csv');
+    }
+
+    #[Test]
+    public function selectActionListsTheItemsOfTheIdentifiedOrderAndOffersOnlyTheConfirmButton(): void
+    {
+        $this->fetchWithinWithdrawalPeriodOrder();
+
+        $response = $this->executeFrontendSubRequest($this->requestFor('select', [
+            'orderNumber' => 'ORD-1',
+            'email' => 'shopper@example.com',
+            'name' => 'Jane Shopper',
+        ]));
+
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('Red Shoes', $body);
+        $this->assertStringContainsString('tx_productscore_withdrawal[items][]', $body);
+        $this->assertStringContainsString('value="Confirm withdrawal"', $body);
+        $this->assertStringContainsString('value="Jane Shopper"', $body);
+    }
+
+    #[Test]
+    public function selectActionRevealsNothingAboutAnOrderForANonMatchingPair(): void
+    {
+        $this->fetchWithinWithdrawalPeriodOrder();
+
+        $response = $this->executeFrontendSubRequest($this->requestFor('select', [
+            'orderNumber' => 'ORD-1',
+            'email' => 'someone-else@example.com',
+        ]));
+
+        $this->assertStringNotContainsString('Red Shoes', (string)$response->getBody());
+    }
+
+    #[Test]
+    public function confirmActionWithdrawsOnlyTheSelectedItems(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/orders_for_withdrawal.csv');
+        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(31);
+        $this->assertInstanceOf(Order::class, $order);
+        $order->setOrderDate(new \DateTime());
+        $this->get(OrderRepository::class)->update($order);
+        $this->get(PersistenceManagerInterface::class)->persistAll();
+
+        $response = $this->executeFrontendSubRequest($this->requestFor('confirm', [
+            'orderNumber' => 'ORD-W-OPEN',
+            'email' => 'shopper@example.com',
+            'name' => 'Jane Shopper',
+            'itemSelection' => 1,
+            'items' => [32],
+        ]));
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('Withdrawal received', (string)$response->getBody());
+        $this->assertSame(0, $this->withdrawnAtOf(31));
+        $this->assertGreaterThan(0, $this->withdrawnAtOf(32));
+    }
+
+    #[Test]
+    public function confirmActionRefusesAnEmptyItemSelection(): void
+    {
+        $this->fetchWithinWithdrawalPeriodOrder();
+
+        $response = $this->executeFrontendSubRequest($this->requestFor('confirm', [
+            'orderNumber' => 'ORD-1',
+            'email' => 'shopper@example.com',
+            'name' => 'Jane Shopper',
+            'itemSelection' => 1,
+        ]));
+
+        $this->assertStringNotContainsString('Withdrawal received', (string)$response->getBody());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/withdrawal_confirm_leaves_order_confirmed.csv');
+    }
+
+    #[Test]
+    public function confirmActionRefusesAWithdrawalWithoutAName(): void
+    {
+        $this->fetchWithinWithdrawalPeriodOrder();
+
+        $response = $this->executeFrontendSubRequest($this->requestFor('confirm', [
+            'orderNumber' => 'ORD-1',
+            'email' => 'shopper@example.com',
+        ]));
+
+        $this->assertStringNotContainsString('Withdrawal received', (string)$response->getBody());
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/withdrawal_confirm_leaves_order_confirmed.csv');
+    }
+
+    private function withdrawnAtOf(int $itemUid): int
+    {
+        $queryBuilder = $this->get(ConnectionPool::class)->getQueryBuilderForTable('tx_products_domain_model_orderitem');
+        return (int)$queryBuilder->select('withdrawn_at')
+            ->from('tx_products_domain_model_orderitem')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($itemUid, Connection::PARAM_INT)))
+            ->executeQuery()
+            ->fetchOne();
     }
 
     /**
@@ -148,13 +248,15 @@ final class WithdrawalControllerTest extends AbstractFrontendTestCase
     }
 
     /**
-     * @param array<string, int|string> $arguments
+     * @param array<string, int|string|array<int, int>> $arguments
      */
     private function requestFor(string $action, array $arguments): InternalRequest
     {
         $queryParameters = ['tx_productscore_withdrawal[action]' => $action];
         foreach ($arguments as $name => $value) {
-            $queryParameters[sprintf('tx_productscore_withdrawal[%s]', $name)] = $value;
+            foreach (is_array($value) ? $value : [null => $value] as $index => $entry) {
+                $queryParameters[sprintf('tx_productscore_withdrawal[%s]', $name) . (is_array($value) ? sprintf('[%d]', $index) : '')] = $entry;
+            }
         }
 
         // RFC3986 encoding required; RFC1738 "+" breaks cHash for values with spaces.

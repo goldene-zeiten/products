@@ -31,6 +31,18 @@ plugin.tx_productscore {
             withdrawalPeriodDays = {$products.checkout.withdrawalPeriodDays}
             priceQuoteValiditySeconds = {$products.checkout.priceQuoteValiditySeconds}
         }
+        withdrawal {
+            assumedDeliveryDays = {$products.withdrawal.assumedDeliveryDays}
+            timezone = {$products.withdrawal.timezone}
+            returnCostBorneByTrader = {$products.withdrawal.returnCostBorneByTrader}
+            trader {
+                name = {$products.withdrawal.trader.name}
+                address = {$products.withdrawal.trader.address}
+                email = {$products.withdrawal.trader.email}
+                phone = {$products.withdrawal.trader.phone}
+                returnAddress = {$products.withdrawal.trader.returnAddress}
+            }
+        }
         stock {
             lowStockThreshold = {$products.stock.lowStockThreshold}
         }

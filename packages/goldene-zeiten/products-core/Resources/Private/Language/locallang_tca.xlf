@@ -708,6 +708,42 @@
 			<trans-unit id="tx_products_domain_model_article.content_unit" resname="tx_products_domain_model_article.content_unit">
 				<source>Content Unit</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.tab_withdrawal" resname="tx_products_domain_model_order.tab_withdrawal">
+				<source>Withdrawal</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.delivered_at" resname="tx_products_domain_model_order.delivered_at">
+				<source>Delivered at (last good received by the customer)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.withdrawal_information_provided_at" resname="tx_products_domain_model_order.withdrawal_information_provided_at">
+				<source>Withdrawal information provided at</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.withdrawn_at" resname="tx_products_domain_model_order.withdrawn_at">
+				<source>Withdrawal statement submitted at</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.return_proof_at" resname="tx_products_domain_model_order.return_proof_at">
+				<source>Proof of return shipment received at</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.returned_at" resname="tx_products_domain_model_order.returned_at">
+				<source>Returned goods received at</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.withdrawal_log" resname="tx_products_domain_model_order.withdrawal_log">
+				<source>Withdrawal statements (log)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_orderitem.delivered_at" resname="tx_products_domain_model_orderitem.delivered_at">
+				<source>Delivered at</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_orderitem.withdrawn_at" resname="tx_products_domain_model_orderitem.withdrawn_at">
+				<source>Withdrawn at</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_orderitem.restocked_at" resname="tx_products_domain_model_orderitem.restocked_at">
+				<source>Back in stock at</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.withdrawal_exclusion.sealed_hygiene" resname="tx_products_domain_model_product.withdrawal_exclusion.sealed_hygiene">
+				<source>Sealed, unsuitable for return for health or hygiene reasons (Art. 16(e))</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.withdrawal_exclusion.sealed_media" resname="tx_products_domain_model_product.withdrawal_exclusion.sealed_media">
+				<source>Sealed audio/video recording or software (Art. 16(i))</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

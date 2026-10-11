@@ -931,6 +931,54 @@
 				<source>Content Unit</source>
 				<target>Einheit der Füllmenge</target>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.tab_withdrawal" resname="tx_products_domain_model_order.tab_withdrawal">
+				<source>Withdrawal</source>
+				<target>Widerruf</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.delivered_at" resname="tx_products_domain_model_order.delivered_at">
+				<source>Delivered at (last good received by the customer)</source>
+				<target>Zugestellt am (letzte Ware beim Kunden eingegangen)</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.withdrawal_information_provided_at" resname="tx_products_domain_model_order.withdrawal_information_provided_at">
+				<source>Withdrawal information provided at</source>
+				<target>Widerrufsbelehrung erteilt am</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.withdrawn_at" resname="tx_products_domain_model_order.withdrawn_at">
+				<source>Withdrawal statement submitted at</source>
+				<target>Widerrufserklärung abgegeben am</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.return_proof_at" resname="tx_products_domain_model_order.return_proof_at">
+				<source>Proof of return shipment received at</source>
+				<target>Nachweis der Rücksendung erhalten am</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.returned_at" resname="tx_products_domain_model_order.returned_at">
+				<source>Returned goods received at</source>
+				<target>Rücksendung eingegangen am</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.withdrawal_log" resname="tx_products_domain_model_order.withdrawal_log">
+				<source>Withdrawal statements (log)</source>
+				<target>Widerrufserklärungen (Protokoll)</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_orderitem.delivered_at" resname="tx_products_domain_model_orderitem.delivered_at">
+				<source>Delivered at</source>
+				<target>Zugestellt am</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_orderitem.withdrawn_at" resname="tx_products_domain_model_orderitem.withdrawn_at">
+				<source>Withdrawn at</source>
+				<target>Widerrufen am</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_orderitem.restocked_at" resname="tx_products_domain_model_orderitem.restocked_at">
+				<source>Back in stock at</source>
+				<target>Wieder eingelagert am</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.withdrawal_exclusion.sealed_hygiene" resname="tx_products_domain_model_product.withdrawal_exclusion.sealed_hygiene">
+				<source>Sealed, unsuitable for return for health or hygiene reasons (Art. 16(e))</source>
+				<target>Versiegelt, aus Gründen des Gesundheits- oder Hygieneschutzes nicht zur Rückgabe geeignet (Art. 16 Buchst. e)</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.withdrawal_exclusion.sealed_media" resname="tx_products_domain_model_product.withdrawal_exclusion.sealed_media">
+				<source>Sealed audio/video recording or software (Art. 16(i))</source>
+				<target>Versiegelte Audio-/Videoaufzeichnung oder Software (Art. 16 Buchst. i)</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

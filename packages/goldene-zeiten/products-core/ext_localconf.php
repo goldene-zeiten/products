@@ -137,10 +137,10 @@ defined('TYPO3') or die();
         'ProductsCore',
         'Withdrawal',
         [
-            WithdrawalController::class => 'form, confirm',
+            WithdrawalController::class => 'form, select, confirm',
         ],
         [
-            WithdrawalController::class => 'form, confirm',
+            WithdrawalController::class => 'form, select, confirm',
         ],
         ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
     );

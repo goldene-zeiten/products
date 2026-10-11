@@ -59,6 +59,12 @@ class Order extends AbstractEntity
     protected string $giftMessage = '';
     protected ?\DateTime $termsAcceptedAt = null;
     protected ?\DateTime $withdrawalWaiverAcceptedAt = null;
+    protected ?\DateTime $deliveredAt = null;
+    protected ?\DateTime $withdrawalInformationProvidedAt = null;
+    protected ?\DateTime $withdrawnAt = null;
+    protected ?\DateTime $returnProofAt = null;
+    protected ?\DateTime $returnedAt = null;
+    protected string $withdrawalLog = '[]';
     /**
      * @var ObjectStorage<FileReference>
      */
@@ -122,6 +128,15 @@ class Order extends AbstractEntity
     public function getBillingAddress(): ?OrderAddress
     {
         return $this->billingAddress;
+    }
+
+    /**
+     * The name on the billing address, the prefill for the name field of the withdrawal statement.
+     */
+    public function getBillingName(): string
+    {
+        $address = $this->billingAddress;
+        return $address === null ? '' : trim($address->getFirstName() . ' ' . $address->getLastName());
     }
 
     public function setBillingAddress(?OrderAddress $billingAddress): void
@@ -450,6 +465,98 @@ class Order extends AbstractEntity
     public function setWithdrawalWaiverAcceptedAt(?\DateTime $withdrawalWaiverAcceptedAt): void
     {
         $this->withdrawalWaiverAcceptedAt = $withdrawalWaiverAcceptedAt;
+    }
+
+    /**
+     * When the customer, or a third party they named, took physical possession of the last good
+     * (Art. 9(2)(b) Directive 2011/83/EU). Set when the backend marks the order delivered, or by an
+     * integration that learns of the delivery; null while it is unknown or still under way.
+     */
+    public function getDeliveredAt(): ?\DateTime
+    {
+        return $this->deliveredAt;
+    }
+
+    public function setDeliveredAt(?\DateTime $deliveredAt): void
+    {
+        $this->deliveredAt = $deliveredAt;
+    }
+
+    /**
+     * When the withdrawal information (Annex I(A) instructions) reached the customer on a durable
+     * medium. Without it the withdrawal period is extended by twelve months (Art. 10).
+     */
+    public function getWithdrawalInformationProvidedAt(): ?\DateTime
+    {
+        return $this->withdrawalInformationProvidedAt;
+    }
+
+    public function setWithdrawalInformationProvidedAt(?\DateTime $withdrawalInformationProvidedAt): void
+    {
+        $this->withdrawalInformationProvidedAt = $withdrawalInformationProvidedAt;
+    }
+
+    /**
+     * Submission time of the latest withdrawal statement - the moment that decides whether the
+     * withdrawal was timely (Art. 11a(5)) and from which the refund period runs (Art. 13).
+     */
+    public function getWithdrawnAt(): ?\DateTime
+    {
+        return $this->withdrawnAt;
+    }
+
+    public function setWithdrawnAt(?\DateTime $withdrawnAt): void
+    {
+        $this->withdrawnAt = $withdrawnAt;
+    }
+
+    public function getReturnProofAt(): ?\DateTime
+    {
+        return $this->returnProofAt;
+    }
+
+    public function setReturnProofAt(?\DateTime $returnProofAt): void
+    {
+        $this->returnProofAt = $returnProofAt;
+    }
+
+    public function getReturnedAt(): ?\DateTime
+    {
+        return $this->returnedAt;
+    }
+
+    public function setReturnedAt(?\DateTime $returnedAt): void
+    {
+        $this->returnedAt = $returnedAt;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getWithdrawalLog(): array
+    {
+        return json_decode($this->withdrawalLog, true) ?: [];
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $withdrawalLog
+     */
+    public function setWithdrawalLog(array $withdrawalLog): void
+    {
+        $this->withdrawalLog = (string)json_encode($withdrawalLog);
+    }
+
+    /**
+     * When the order was handed to the carrier, read from the status log; null if it never was.
+     */
+    public function getShippedAt(): ?\DateTimeImmutable
+    {
+        foreach (array_reverse($this->getStatusLog()) as $entry) {
+            if (($entry['to'] ?? '') === OrderStatus::SHIPPED->value && isset($entry['at'])) {
+                return new \DateTimeImmutable((string)$entry['at']);
+            }
+        }
+        return null;
     }
 
     public function getSiteIdentifier(): string

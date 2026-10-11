@@ -22,6 +22,9 @@ categories:
   discovery:
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.discovery'
     parent: products
+  withdrawal:
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.withdrawal'
+    parent: products
   email:
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:category.email'
     parent: products
@@ -126,6 +129,46 @@ settings:
     default: 14
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.checkout.withdrawalPeriodDays'
     category: order
+  products.withdrawal.assumedDeliveryDays:
+    type: int
+    default: 14
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.withdrawal.assumedDeliveryDays'
+    category: withdrawal
+  products.withdrawal.timezone:
+    type: string
+    default: 'Europe/Berlin'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.withdrawal.timezone'
+    category: withdrawal
+  products.withdrawal.returnCostBorneByTrader:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.withdrawal.returnCostBorneByTrader'
+    category: withdrawal
+  products.withdrawal.trader.name:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.withdrawal.trader.name'
+    category: withdrawal
+  products.withdrawal.trader.address:
+    type: text
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.withdrawal.trader.address'
+    category: withdrawal
+  products.withdrawal.trader.email:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.withdrawal.trader.email'
+    category: withdrawal
+  products.withdrawal.trader.phone:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.withdrawal.trader.phone'
+    category: withdrawal
+  products.withdrawal.trader.returnAddress:
+    type: text
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.withdrawal.trader.returnAddress'
+    category: withdrawal
   products.checkout.priceQuoteValiditySeconds:
     type: int
     default: 900

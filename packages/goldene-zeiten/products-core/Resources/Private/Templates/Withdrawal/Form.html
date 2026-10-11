@@ -1,48 +1,55 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
 <div class="withdrawal-form">
     <f:flashMessages />
     <h2><f:translate key="withdrawal_heading" /></h2>
     <f:if condition="{invalidToken}">
         <p class="alert alert-warning"><f:translate key="invalid_or_expired_link" /></p>
     </f:if>
-    <f:if condition="{order} && !{withdrawable}">
+    <f:if condition="{order}">
         <f:then>
-            <p><f:translate key="order_no_longer_withdrawable" /></p>
+            <f:if condition="{withdrawable}">
+                <f:then>
+                    <p><f:translate key="withdrawal_form_intro" /></p>
+                    <f:render partial="Withdrawal/Statement" arguments="{_all}" />
+                </f:then>
+                <f:else>
+                    <p><f:translate key="order_no_longer_withdrawable" /></p>
+                </f:else>
+            </f:if>
         </f:then>
         <f:else>
+            <f:if condition="{customerOrders}">
+                <p><f:translate key="withdrawal_pick_order" /></p>
+                <ul class="withdrawal-orders">
+                    <f:for each="{customerOrders}" as="customerOrder">
+                        <li>
+                            <f:link.action action="form" arguments="{order: customerOrder.uid}">
+                                <f:translate key="withdrawal_pick_order_link" arguments="{0: customerOrder.orderNumber}" />
+                                <f:if condition="{customerOrder.orderDate}">(<f:format.date format="d.m.Y">{customerOrder.orderDate}</f:format.date>)</f:if>
+                            </f:link.action>
+                        </li>
+                    </f:for>
+                </ul>
+            </f:if>
             <p><f:translate key="withdrawal_form_intro" /></p>
-            <f:form action="confirm" name="withdrawal">
-                <f:if condition="{order}">
-                    <f:form.hidden name="order" value="{order.uid}" />
-                    <f:form.hidden name="hash" value="{hash}" />
-                </f:if>
+            <f:form action="select" name="withdrawal">
+                <div class="mb-3">
+                    <label for="withdrawal-name" class="form-label"><f:translate key="withdrawal_name_label" /></label>
+                    <f:form.textfield id="withdrawal-name" name="name" class="form-control" required="required" />
+                </div>
                 <div class="mb-3">
                     <label for="withdrawal-order-number" class="form-label"><f:translate key="withdrawal_order_number_label" /></label>
-                    <f:if condition="{order}">
-                        <f:then>
-                            <f:form.textfield id="withdrawal-order-number" name="orderNumber" value="{order.orderNumber}" class="form-control" readonly="readonly" />
-                        </f:then>
-                        <f:else>
-                            <f:form.textfield id="withdrawal-order-number" name="orderNumber" class="form-control" required="required" />
-                        </f:else>
-                    </f:if>
+                    <f:form.textfield id="withdrawal-order-number" name="orderNumber" class="form-control" required="required" />
                 </div>
                 <div class="mb-3">
                     <label for="withdrawal-email" class="form-label"><f:translate key="confirm_email" /></label>
-                    <f:if condition="{order}">
-                        <f:then>
-                            <f:form.textfield id="withdrawal-email" name="email" type="email" value="{order.email}" class="form-control" required="required" />
-                        </f:then>
-                        <f:else>
-                            <f:form.textfield id="withdrawal-email" name="email" type="email" class="form-control" required="required" />
-                        </f:else>
-                    </f:if>
+                    <f:form.textfield id="withdrawal-email" name="email" type="email" class="form-control" required="required" />
                 </div>
-                <div class="mb-3">
-                    <label for="withdrawal-reason" class="form-label"><f:translate key="withdrawal_reason_label" /></label>
-                    <f:form.textarea id="withdrawal-reason" name="reason" class="form-control" />
-                </div>
-                <f:form.submit value="{f:translate(key: 'confirm_withdrawal')}" class="btn btn-danger" />
+                <f:form.submit value="{f:translate(key: 'withdrawal_continue')}" class="btn btn-primary" />
             </f:form>
         </f:else>
     </f:if>
 </div>
+</html>

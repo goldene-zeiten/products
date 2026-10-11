@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Service;
 
+use GoldeneZeiten\Products\Core\Domain\Dto\Withdrawal\WithdrawalStatement;
 use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
+use GoldeneZeiten\Products\Core\Domain\Enum\WithdrawalExclusion;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Model\OrderItem;
 use GoldeneZeiten\Products\Core\Domain\Repository\OrderRepository;
@@ -15,6 +17,8 @@ use GoldeneZeiten\Products\Testing\AbstractFrontendTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Mime\Part\DataPart;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
@@ -242,7 +246,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
     public function sendWithdrawalNotificationIsSkippedWithoutConfiguredRecipient(): void
     {
         $subject = $this->get(OrderMailService::class);
-        $subject->sendWithdrawalNotification($this->buildOrder(), 'Changed my mind');
+        $subject->sendWithdrawalNotification($this->buildOrder(), $this->buildStatement('Changed my mind'), []);
 
         $this->assertCount(0, TestMailer::getSentEmails());
     }
@@ -267,7 +271,7 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $order = $this->buildOrder();
         $order->setSiteIdentifier('products-with-withdrawal-notification');
 
-        $subject->sendWithdrawalNotification($order, 'Changed my mind');
+        $subject->sendWithdrawalNotification($order, $this->buildStatement('Changed my mind'), []);
 
         $sentEmails = TestMailer::getSentEmails();
         $this->assertCount(1, $sentEmails);
@@ -478,6 +482,124 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $file = $folder->createFile($fileName);
         $file->setContents($contents);
         return $file;
+    }
+
+    #[Test]
+    public function sendWithdrawalAcknowledgementCarriesTheStatementContentAndTheSubmissionTimeInTheShopTimezone(): void
+    {
+        $subject = $this->get(OrderMailService::class);
+        $order = $this->buildOrder();
+        $item = new OrderItem();
+        $item->setTitle('Red Shoes');
+        $item->setQuantity(2);
+        $order->getItems()->attach($item);
+
+        $subject->sendWithdrawalAcknowledgement($order, $this->buildStatement('Too small'), [$item]);
+
+        $sentEmails = TestMailer::getSentEmails();
+        $this->assertCount(1, $sentEmails);
+        $this->assertSame('shopper@example.com', $sentEmails[0]->getTo()[0]->getAddress());
+        $this->assertStringContainsString('ORD-1', (string)$sentEmails[0]->getSubject());
+        $text = (string)$sentEmails[0]->getTextBody();
+        $this->assertStringContainsString('Jane Shopper', $text);
+        $this->assertStringContainsString('shopper@example.com', $text);
+        $this->assertStringContainsString('Red Shoes (x 2)', $text);
+        $this->assertStringContainsString('Too small', $text);
+        $this->assertStringContainsString('2026-10-01 12:15:30 CEST', $text);
+        $this->assertStringContainsString('2026-10-01 12:15:30 CEST', (string)$sentEmails[0]->getHtmlBody());
+    }
+
+    #[Test]
+    public function sendWithdrawalAcknowledgementNamesTheReturnAddressAndDeadlineForAShippedOrder(): void
+    {
+        $this->writeSiteConfiguration(
+            'products',
+            $this->buildSiteConfiguration(1, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
+                'settings' => [
+                    'products' => [
+                        'withdrawal' => [
+                            'trader' => [
+                                'name' => 'Shop GmbH',
+                                'address' => "Returns Street 5\n12345 Sampletown",
+                            ],
+                        ],
+                    ],
+                ],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+        $subject = $this->get(OrderMailService::class);
+        $order = $this->buildOrder();
+        $order->setStatus(OrderStatus::WITHDRAWN);
+
+        $subject->sendWithdrawalAcknowledgement($order, $this->buildStatement(''), []);
+
+        $text = (string)TestMailer::getSentEmails()[0]->getTextBody();
+        $this->assertStringContainsString('Returns Street 5', $text);
+        $this->assertStringContainsString('12345 Sampletown', $text);
+        $this->assertStringContainsString('2026-10-15', $text);
+        $this->assertStringContainsString('We may withhold the reimbursement', $text);
+    }
+
+    #[Test]
+    public function sendWithdrawalAcknowledgementAsksForNoReturnOfUnshippedGoods(): void
+    {
+        $subject = $this->get(OrderMailService::class);
+        $order = $this->buildOrder();
+        $order->setStatus(OrderStatus::CANCELLED);
+
+        $subject->sendWithdrawalAcknowledgement($order, $this->buildStatement(''), []);
+
+        $text = (string)TestMailer::getSentEmails()[0]->getTextBody();
+        $this->assertStringContainsString('had not been shipped yet', $text);
+        $this->assertStringNotContainsString('We may withhold the reimbursement', $text);
+    }
+
+    #[Test]
+    public function sendWithdrawalAcknowledgementWarnsAboutTheSealOfConditionalItems(): void
+    {
+        $subject = $this->get(OrderMailService::class);
+        $order = $this->buildOrder();
+        $item = new OrderItem();
+        $item->setTitle('Sealed Cream');
+        $item->setWithdrawalExclusion(WithdrawalExclusion::SEALED_HYGIENE);
+
+        $subject->sendWithdrawalAcknowledgement($order, $this->buildStatement(''), [$item]);
+
+        $this->assertStringContainsString('not unsealed them after delivery', (string)TestMailer::getSentEmails()[0]->getTextBody());
+    }
+
+    #[Test]
+    public function sendOrderConfirmationRecordsThatTheWithdrawalInformationWasProvided(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/order_with_items_and_addresses.csv');
+        $subject = $this->get(OrderMailService::class);
+        $order = $this->fetchPersistedOrder(1);
+        $order->setOrderDate(new \DateTime());
+        $order->setInvoiceNumber('');
+
+        $subject->sendOrderConfirmation($order);
+
+        $this->assertNotNull($order->getWithdrawalInformationProvidedAt());
+        $queryBuilder = $this->get(ConnectionPool::class)->getQueryBuilderForTable('tx_products_domain_model_order');
+        $stored = (int)$queryBuilder->select('withdrawal_information_provided_at')
+            ->from('tx_products_domain_model_order')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT)))
+            ->executeQuery()
+            ->fetchOne();
+        $this->assertGreaterThan(0, $stored);
+    }
+
+    private function buildStatement(string $reason): WithdrawalStatement
+    {
+        return new WithdrawalStatement(
+            'Jane Shopper',
+            'shopper@example.com',
+            $reason,
+            null,
+            new \DateTimeImmutable('2026-10-01 10:15:30', new \DateTimeZone('UTC'))
+        );
     }
 
     private function buildOrder(): Order

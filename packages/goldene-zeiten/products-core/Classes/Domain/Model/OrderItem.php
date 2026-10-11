@@ -35,6 +35,9 @@ class OrderItem extends AbstractEntity
     /** @var string */
     protected string $options = '[]';
     protected WithdrawalExclusion $withdrawalExclusion = WithdrawalExclusion::NONE;
+    protected ?\DateTime $deliveredAt = null;
+    protected ?\DateTime $withdrawnAt = null;
+    protected ?\DateTime $restockedAt = null;
 
     public function getParentOrder(): ?Order
     {
@@ -204,5 +207,45 @@ class OrderItem extends AbstractEntity
     public function setWithdrawalExclusion(WithdrawalExclusion $withdrawalExclusion): void
     {
         $this->withdrawalExclusion = $withdrawalExclusion;
+    }
+
+    /**
+     * Set when this item reached the customer in a delivery of its own; the withdrawal period of an
+     * order delivered in several parts runs from the last of them (Art. 9(2)(b)(ii)).
+     */
+    public function getDeliveredAt(): ?\DateTime
+    {
+        return $this->deliveredAt;
+    }
+
+    public function setDeliveredAt(?\DateTime $deliveredAt): void
+    {
+        $this->deliveredAt = $deliveredAt;
+    }
+
+    /**
+     * When the customer withdrew from the contract for this item; null while the item stands.
+     */
+    public function getWithdrawnAt(): ?\DateTime
+    {
+        return $this->withdrawnAt;
+    }
+
+    public function setWithdrawnAt(?\DateTime $withdrawnAt): void
+    {
+        $this->withdrawnAt = $withdrawnAt;
+    }
+
+    /**
+     * When the item was put back into stock after it was withdrawn.
+     */
+    public function getRestockedAt(): ?\DateTime
+    {
+        return $this->restockedAt;
+    }
+
+    public function setRestockedAt(?\DateTime $restockedAt): void
+    {
+        $this->restockedAt = $restockedAt;
     }
 }

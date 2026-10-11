@@ -13,7 +13,7 @@ return [
         'iconfile' => 'EXT:products_core/Resources/Public/Icons/Extension.svg',
     ],
     'types' => [
-        '1' => ['showitem' => '--div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_general, order_number, order_date, --palette--;;statusInfo, invoice_number, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_customer, frontend_user, email, --palette--;;addresses, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_payment, --palette--;;payment, shipping_provider, shipping_option, shipping_label, --palette--;;costs, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_totals, --palette--;;totals, discount_total, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_tax, tax_country, tax_breakdown, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_items, items, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_notes, customer_note, gift_message, terms_accepted_at, withdrawal_waiver_accepted_at, terms_document, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_technical, site_identifier, status_log, legacy_order_data, legacy_country_name'],
+        '1' => ['showitem' => '--div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_general, order_number, order_date, --palette--;;statusInfo, invoice_number, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_customer, frontend_user, email, --palette--;;addresses, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_payment, --palette--;;payment, shipping_provider, shipping_option, shipping_label, --palette--;;costs, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_totals, --palette--;;totals, discount_total, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_tax, tax_country, tax_breakdown, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_items, items, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_notes, customer_note, gift_message, terms_accepted_at, withdrawal_waiver_accepted_at, terms_document, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_withdrawal, delivered_at, withdrawal_information_provided_at, withdrawn_at, return_proof_at, returned_at, withdrawal_log, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.tab_technical, site_identifier, status_log, legacy_order_data, legacy_country_name'],
     ],
     'palettes' => [
         'statusInfo' => [
@@ -270,6 +270,52 @@ return [
             'config' => [
                 'type' => 'datetime',
                 'size' => 13,
+                'readOnly' => true,
+            ],
+        ],
+        'delivered_at' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.delivered_at',
+            'config' => [
+                'type' => 'datetime',
+                'size' => 13,
+            ],
+        ],
+        'withdrawal_information_provided_at' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.withdrawal_information_provided_at',
+            'config' => [
+                'type' => 'datetime',
+                'size' => 13,
+                'readOnly' => true,
+            ],
+        ],
+        'withdrawn_at' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.withdrawn_at',
+            'config' => [
+                'type' => 'datetime',
+                'size' => 13,
+                'readOnly' => true,
+            ],
+        ],
+        'return_proof_at' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.return_proof_at',
+            'config' => [
+                'type' => 'datetime',
+                'size' => 13,
+                'readOnly' => true,
+            ],
+        ],
+        'returned_at' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.returned_at',
+            'config' => [
+                'type' => 'datetime',
+                'size' => 13,
+                'readOnly' => true,
+            ],
+        ],
+        'withdrawal_log' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_order.withdrawal_log',
+            'config' => [
+                'type' => 'text',
                 'readOnly' => true,
             ],
         ],
