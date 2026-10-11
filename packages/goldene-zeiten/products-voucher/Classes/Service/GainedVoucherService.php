@@ -35,7 +35,13 @@ final class GainedVoucherService
         }
         $voucher = $this->buildVoucher($order, $configuration);
         $this->gainedVoucherRepository->add($voucher);
-        $this->persistenceManager->persistAll();
+        try {
+            $this->persistenceManager->persistAll();
+        } catch (\Throwable $exception) {
+            // Forget the voucher, so the next persist of the request does not try to write it again.
+            $this->gainedVoucherRepository->remove($voucher);
+            throw $exception;
+        }
         $this->eventDispatcher->dispatch(new VoucherGeneratedEvent($voucher, $order));
         return $voucher;
     }
