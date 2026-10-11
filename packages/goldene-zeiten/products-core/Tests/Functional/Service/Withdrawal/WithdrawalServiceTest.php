@@ -143,6 +143,20 @@ final class WithdrawalServiceTest extends AbstractFrontendTestCase
     }
 
     #[Test]
+    public function aWithdrawalStandsEvenWhenTheMailServerIsUnreachable(): void
+    {
+        $subject = $this->get(WithdrawalService::class);
+        $order = $this->fetchOrder(1);
+        $order->setOrderDate(new \DateTime());
+        TestMailer::failAllSends();
+
+        $subject->withdraw($order, new WithdrawalStatement('Jane Shopper', 'shopper@example.com', '', null, new \DateTimeImmutable()), new WithdrawalSettings(timezone: 'UTC'));
+
+        $this->assertSame(OrderStatus::CANCELLED, $order->getStatus());
+        $this->assertCount(0, TestMailer::getSentEmails());
+    }
+
+    #[Test]
     public function withdrawRecordsTheStatementOnTheOrderAndItsItems(): void
     {
         $subject = $this->get(WithdrawalService::class);

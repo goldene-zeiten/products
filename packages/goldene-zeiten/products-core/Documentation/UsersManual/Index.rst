@@ -420,7 +420,9 @@ Rather than placing the :rst:dir:`Withdrawal` plugin by hand, create a page of t
 :guilabel:`Withdrawal page` (doktype ``175``): the plugin content element is inserted
 automatically when the page is created (or an existing page is switched to the type), so the page
 renders the form with no further editor steps. Put the page into your footer or meta navigation so
-the function stays continuously available during the withdrawal period, as Art. 11a requires. The
+the function stays continuously available during the withdrawal period, as Art. 11a requires.
+Title the page "Withdraw from contract here" (German: "Vertrag widerrufen"), the words Art. 11a
+prescribes for the function. The
 page record carries a :guilabel:`Navigation item CSS class(es)` field
 (``pages.tx_products_nav_class``) to style that navigation entry, for example:
 

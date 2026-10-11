@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Tests\Functional\Fixtures;
 
 use Symfony\Component\Mailer\Envelope;
+use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\NullTransport;
 use Symfony\Component\Mailer\Transport\TransportInterface;
@@ -19,8 +20,13 @@ final class TestMailer implements MailerInterface
      */
     private static array $sentEmails = [];
 
+    private static bool $failing = false;
+
     public function send(RawMessage $message, ?Envelope $envelope = null): void
     {
+        if (self::$failing) {
+            throw new TransportException('The test transport refuses every message.');
+        }
         if ($message instanceof Email) {
             self::$sentEmails[] = $message;
         }
@@ -52,5 +58,14 @@ final class TestMailer implements MailerInterface
     public static function reset(): void
     {
         self::$sentEmails = [];
+        self::$failing = false;
+    }
+
+    /**
+     * Makes every following send fail like an unreachable mail server would.
+     */
+    public static function failAllSends(): void
+    {
+        self::$failing = true;
     }
 }

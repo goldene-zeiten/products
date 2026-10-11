@@ -22,6 +22,8 @@ use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalEmailMism
 use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalNameMissingException;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalNoItemSelectedException;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\Exception\WithdrawalPeriodExpiredException;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 /**
@@ -41,7 +43,8 @@ final class WithdrawalService
         private readonly OrderMailService $orderMailService,
         private readonly PersistenceManagerInterface $persistenceManager,
         private readonly WithdrawalPeriodCalculator $periodCalculator,
-        private readonly StockService $stockService
+        private readonly StockService $stockService,
+        private readonly LoggerInterface $logger
     ) {}
 
     /**
@@ -172,8 +175,31 @@ final class WithdrawalService
         $this->persistenceManager->persistAll();
         $this->stockService->releaseItems($stockItemUids);
 
-        $this->orderMailService->sendWithdrawalAcknowledgement($order, $statement, $selected);
-        $this->orderMailService->sendWithdrawalNotification($order, $statement, $selected);
+        $this->sendMails($order, $statement, $selected);
+    }
+
+    /**
+     * The withdrawal is valid the moment it was submitted; an unreachable mail server must neither undo
+     * it nor show the consumer an error page. The failure is logged for the merchant to follow up.
+     *
+     * @param OrderItem[] $selected
+     */
+    private function sendMails(Order $order, WithdrawalStatement $statement, array $selected): void
+    {
+        $sends = [
+            fn() => $this->orderMailService->sendWithdrawalAcknowledgement($order, $statement, $selected),
+            fn() => $this->orderMailService->sendWithdrawalNotification($order, $statement, $selected),
+        ];
+        foreach ($sends as $send) {
+            try {
+                $send();
+            } catch (TransportExceptionInterface $exception) {
+                $this->logger->error(
+                    sprintf('Failed to send a withdrawal mail for order %s.', $order->getOrderNumber()),
+                    ['exception' => $exception]
+                );
+            }
+        }
     }
 
     private function availabilityOf(Order $order, OrderItem $item, WithdrawalSettings $settings, \DateTimeImmutable $at, bool $waiverGiven): WithdrawalItemAvailability
