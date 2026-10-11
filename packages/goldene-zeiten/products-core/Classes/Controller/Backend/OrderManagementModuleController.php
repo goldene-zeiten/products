@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Controller\Backend;
 
 use GoldeneZeiten\Products\Core\Backend\Exception\OrderAccessDeniedException;
+use GoldeneZeiten\Products\Core\Backend\Exception\OrderNotAwaitingReturnException;
 use GoldeneZeiten\Products\Core\Backend\Exception\OrderNotRefundableException;
+use GoldeneZeiten\Products\Core\Backend\Exception\OrderNotShippedException;
+use GoldeneZeiten\Products\Core\Backend\Exception\OrderRefundWithheldException;
 use GoldeneZeiten\Products\Core\Backend\Exception\OrderStatusWriteFailedException;
 use GoldeneZeiten\Products\Core\Backend\OrderDataFactory;
 use GoldeneZeiten\Products\Core\Backend\OrderDetail\OrderDetailPanelRegistry;
 use GoldeneZeiten\Products\Core\Backend\OrderListFilter;
 use GoldeneZeiten\Products\Core\Backend\OrderManagementRepository;
 use GoldeneZeiten\Products\Core\Backend\OrderRefundService;
+use GoldeneZeiten\Products\Core\Backend\OrderReturnService;
 use GoldeneZeiten\Products\Core\Backend\OrderStatusWriter;
 use GoldeneZeiten\Products\Core\Domain\Dto\Export\ExportContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderData;
@@ -49,6 +53,7 @@ final class OrderManagementModuleController
         private readonly OrderManagementRepository $orderRepository,
         private readonly OrderStatusWriter $orderStatusWriter,
         private readonly OrderRefundService $orderRefundService,
+        private readonly OrderReturnService $orderReturnService,
         private readonly OrderDataFactory $orderDataFactory,
         private readonly PaymentMethodRegistry $paymentMethodRegistry,
         private readonly OrderExportService $orderExportService,
@@ -126,6 +131,7 @@ final class OrderManagementModuleController
             'filter' => $filter,
             'orders' => $this->orderRepository->fetchFiltered($filter, $this->getBackendUser()),
             'statusOptions' => OrderStatus::cases(),
+            'statusLabels' => $this->statusLabels(),
             'detailUrl' => (string)$this->uriBuilder->buildUriFromRequest($request, []),
         ];
     }
@@ -139,7 +145,12 @@ final class OrderManagementModuleController
         return [
             'mode' => 'detail',
             'order' => $order,
+            'statusLabels' => $this->statusLabels(),
             'availableStatusTransitions' => $order !== null ? $this->availableStatusTransitions($order['status']) : [],
+            'canMarkDelivered' => $order !== null && $this->canMarkDelivered($order),
+            'awaitingReturn' => $order !== null && $order['status'] === OrderStatus::WITHDRAWN->value,
+            'canRecordReturnProof' => $order !== null && $order['status'] === OrderStatus::WITHDRAWN->value && $order['returnProofAt'] === null,
+            'refundWithheld' => $order !== null && $order['status'] === OrderStatus::WITHDRAWN->value && $order['returnProofAt'] === null,
             'canMarkPaid' => $order !== null && $this->canMarkPaid($order['paymentStatus']),
             'canRefund' => $order !== null && $this->canRefund($order['paymentMethod'], $order['paymentStatus']),
             'listUrl' => (string)$this->uriBuilder->buildUriFromRequest($request, ['order']),
@@ -176,7 +187,9 @@ final class OrderManagementModuleController
     }
 
     /**
-     * @return OrderStatus[]
+     * The withdrawn status is entered by the customer's withdrawal only, never set by hand.
+     *
+     * @return array<int, array{value: string, label: string}>
      */
     private function availableStatusTransitions(string $statusValue): array
     {
@@ -184,7 +197,34 @@ final class OrderManagementModuleController
         if ($current === null) {
             return [];
         }
-        return array_values(array_filter(OrderStatus::cases(), $current->canTransitionTo(...)));
+        $transitions = [];
+        foreach (OrderStatus::cases() as $target) {
+            if ($target !== OrderStatus::WITHDRAWN && $current->canTransitionTo($target)) {
+                $transitions[] = ['value' => $target->value, 'label' => $this->translate('order.status.' . $target->value)];
+            }
+        }
+        return $transitions;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function statusLabels(): array
+    {
+        $labels = [];
+        foreach (OrderStatus::cases() as $status) {
+            $labels[$status->value] = $this->translate('order.status.' . $status->value);
+        }
+        return $labels;
+    }
+
+    /**
+     * @param array<string, mixed> $order
+     */
+    private function canMarkDelivered(array $order): bool
+    {
+        return $order['deliveredAt'] === null
+            && in_array($order['status'], [OrderStatus::SHIPPED->value, OrderStatus::COMPLETED->value], true);
     }
 
     private function canMarkPaid(string $paymentStatusValue): bool
@@ -235,6 +275,9 @@ final class OrderManagementModuleController
             |PaymentMethodNotFoundException
             |OrderAccessDeniedException
             |OrderNotRefundableException
+            |OrderRefundWithheldException
+            |OrderNotShippedException
+            |OrderNotAwaitingReturnException
             |OrderStatusWriteFailedException $exception
         ) {
             $moduleTemplate->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
@@ -253,6 +296,18 @@ final class OrderManagementModuleController
         }
         if ($action === 'refund') {
             $this->orderRefundService->refund($orderUid, $backendUser);
+            return;
+        }
+        if ($action === 'markDelivered') {
+            $this->orderReturnService->markDelivered($orderUid, $backendUser);
+            return;
+        }
+        if ($action === 'recordReturnProof') {
+            $this->orderReturnService->recordReturnProof($orderUid, $backendUser);
+            return;
+        }
+        if ($action === 'markReturned') {
+            $this->orderReturnService->markReturned($orderUid, $backendUser);
             return;
         }
         if ($action === 'transition') {

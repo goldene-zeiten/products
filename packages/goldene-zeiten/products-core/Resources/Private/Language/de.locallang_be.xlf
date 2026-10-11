@@ -327,6 +327,82 @@
 				<source>Applied by menus rendering this page's navigation entry - e.g. to style the withdrawal link as a button in the footer.</source>
 				<target>Wird von Menüs auf den Navigationseintrag dieser Seite angewendet - z. B. um den Widerrufslink im Footer als Button zu gestalten.</target>
 			</trans-unit>
+			<trans-unit id="order.status.new" resname="order.status.new">
+				<source>New</source>
+				<target>Neu</target>
+			</trans-unit>
+			<trans-unit id="order.status.pending" resname="order.status.pending">
+				<source>Pending</source>
+				<target>Ausstehend</target>
+			</trans-unit>
+			<trans-unit id="order.status.confirmed" resname="order.status.confirmed">
+				<source>Confirmed</source>
+				<target>Bestätigt</target>
+			</trans-unit>
+			<trans-unit id="order.status.shipped" resname="order.status.shipped">
+				<source>Shipped</source>
+				<target>Versendet</target>
+			</trans-unit>
+			<trans-unit id="order.status.completed" resname="order.status.completed">
+				<source>Completed</source>
+				<target>Abgeschlossen</target>
+			</trans-unit>
+			<trans-unit id="order.status.cancelled" resname="order.status.cancelled">
+				<source>Cancelled</source>
+				<target>Storniert</target>
+			</trans-unit>
+			<trans-unit id="order.status.withdrawn" resname="order.status.withdrawn">
+				<source>Withdrawn, awaiting return</source>
+				<target>Widerrufen, Rücksendung erwartet</target>
+			</trans-unit>
+			<trans-unit id="order.section.withdrawal" resname="order.section.withdrawal">
+				<source>Right of withdrawal</source>
+				<target>Widerrufsrecht</target>
+			</trans-unit>
+			<trans-unit id="order.column.delivered_at" resname="order.column.delivered_at">
+				<source>Delivered</source>
+				<target>Zugestellt</target>
+			</trans-unit>
+			<trans-unit id="order.column.withdrawn_at" resname="order.column.withdrawn_at">
+				<source>Withdrawal submitted</source>
+				<target>Widerruf abgegeben</target>
+			</trans-unit>
+			<trans-unit id="order.column.refund_due" resname="order.column.refund_due">
+				<source>Refund due by</source>
+				<target>Rückerstattung fällig bis</target>
+			</trans-unit>
+			<trans-unit id="order.column.return_proof" resname="order.column.return_proof">
+				<source>Proof of return shipment</source>
+				<target>Nachweis der Rücksendung</target>
+			</trans-unit>
+			<trans-unit id="order.column.returned" resname="order.column.returned">
+				<source>Returned goods received</source>
+				<target>Rücksendung eingegangen</target>
+			</trans-unit>
+			<trans-unit id="order.column.withdrawn_items" resname="order.column.withdrawn_items">
+				<source>Withdrawn items</source>
+				<target>Widerrufene Artikel</target>
+			</trans-unit>
+			<trans-unit id="order.action.mark_delivered" resname="order.action.mark_delivered">
+				<source>Mark delivered</source>
+				<target>Als zugestellt markieren</target>
+			</trans-unit>
+			<trans-unit id="order.action.record_return_proof" resname="order.action.record_return_proof">
+				<source>Record proof of return shipment</source>
+				<target>Nachweis der Rücksendung erfassen</target>
+			</trans-unit>
+			<trans-unit id="order.action.mark_returned" resname="order.action.mark_returned">
+				<source>Goods received back</source>
+				<target>Rücksendung eingegangen</target>
+			</trans-unit>
+			<trans-unit id="order.withdrawal.awaiting_return" resname="order.withdrawal.awaiting_return">
+				<source>The customer withdrew after shipping. Refund the payment within 14 days of the withdrawal; you may withhold it until the goods are received back or proof of return shipment is recorded.</source>
+				<target>Der Kunde hat nach dem Versand widerrufen. Erstatten Sie die Zahlung innerhalb von 14 Tagen nach dem Widerruf; Sie dürfen sie zurückhalten, bis die Ware zurückgesandt eingegangen ist oder ein Nachweis der Rücksendung vorliegt.</target>
+			</trans-unit>
+			<trans-unit id="order.withdrawal.refund_withheld" resname="order.withdrawal.refund_withheld">
+				<source>Refund withheld until the goods are received back or proof of return shipment is recorded.</source>
+				<target>Rückerstattung zurückgehalten, bis die Ware eingegangen ist oder ein Nachweis der Rücksendung vorliegt.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

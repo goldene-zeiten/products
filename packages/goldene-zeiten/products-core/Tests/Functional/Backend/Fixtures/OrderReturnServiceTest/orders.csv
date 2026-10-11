@@ -1,0 +1,40 @@
+"be_groups",,,,,,
+,"uid","pid","title","db_mountpoints","tables_select","tables_modify"
+,1,0,"Order readers",2,"tx_products_domain_model_order",""
+
+"be_users",,,,,
+,"uid","pid","username","admin","usergroup"
+,1,0,"admin",1,""
+,2,0,"reader",0,"1"
+
+"pages",,,,,,,,,,,,
+,"uid","pid","sorting","deleted","title","slug","doktype","perms_userid","perms_groupid","perms_user","perms_group","perms_everybody"
+,1,0,256,0,"Root","/",1,1,0,31,0,0
+,2,1,256,0,"Orders","/orders",254,1,0,31,0,19
+
+"tx_products_domain_model_product",,,,,,
+,"uid","pid","title","slug","in_stock","unlimited_stock"
+,1,2,"Red Shoes","red-shoes",10,0
+,2,2,"Blue Hat","blue-hat",10,0
+
+"tx_products_domain_model_order",,,,,,,,,,,,,,,
+,"uid","pid","deleted","order_number","email","currency","total_gross","shipping_total","status","payment_status","payment_method","status_log","delivered_at","withdrawn_at","return_proof_at"
+,1,2,0,"ORD-SHIPPED","a@example.com","EUR",5000,500,"shipped","paid","recording-refund","[{""from"":""confirmed"",""to"":""shipped"",""at"":""2026-09-01T10:00:00+00:00""}]",0,0,0
+,2,2,0,"ORD-WITHDRAWN-ALL","b@example.com","EUR",5000,500,"withdrawn","paid","recording-refund","[]",0,1790000000,0
+,3,2,0,"ORD-WITHDRAWN-PART","c@example.com","EUR",5000,500,"withdrawn","paid","recording-refund","[]",0,1790000000,0
+,4,2,0,"ORD-OPEN-PART","d@example.com","EUR",5000,500,"confirmed","paid","recording-refund","[]",0,1790000000,0
+,5,2,0,"ORD-WITHDRAWN-PROOF","e@example.com","EUR",5000,500,"withdrawn","paid","recording-refund","[]",0,1790000000,1790100000
+,6,2,0,"ORD-COMPLETED","f@example.com","EUR",5000,500,"completed","paid","recording-refund","[]",0,0,0
+
+"tx_products_domain_model_orderitem",,,,,,,,,,
+,"uid","pid","parent_order","product","article","title","quantity","line_total_gross","withdrawn_at","restocked_at"
+,1,2,1,1,0,"Red Shoes",1,2000,0,0
+,2,2,1,2,0,"Blue Hat",1,2500,0,0
+,3,2,2,1,0,"Red Shoes",1,2000,1790000000,0
+,4,2,2,2,0,"Blue Hat",2,2500,1790000000,0
+,5,2,3,1,0,"Red Shoes",1,2000,1790000000,0
+,6,2,3,2,0,"Blue Hat",1,2500,0,0
+,7,2,4,1,0,"Red Shoes",1,2000,1790000000,1790000000
+,8,2,4,2,0,"Blue Hat",1,2500,0,0
+,9,2,5,1,0,"Red Shoes",1,2000,1790000000,0
+,10,2,5,2,0,"Blue Hat",1,2500,0,0

@@ -86,7 +86,19 @@ final class OrderStatusManager
 
         $order->setStatus($target);
         $this->appendStatusLog($order, $current, $target, $note);
+        $this->recordDeliveryOnCompletion($order, $current, $target);
         $this->eventDispatcher->dispatch(new OrderStatusChangedEvent((int)$order->getUid(), $current, $target));
+    }
+
+    /**
+     * Completing an order means its goods arrived, which is the moment the withdrawal period starts.
+     * Goods that come back after a withdrawal were delivered long before.
+     */
+    private function recordDeliveryOnCompletion(Order $order, OrderStatus $from, OrderStatus $to): void
+    {
+        if ($to === OrderStatus::COMPLETED && $from !== OrderStatus::WITHDRAWN && $order->getDeliveredAt() === null) {
+            $order->setDeliveredAt(new \DateTime());
+        }
     }
 
     public function transitionPayment(Order $order, PaymentStatus $target): void

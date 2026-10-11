@@ -19,6 +19,7 @@ use GoldeneZeiten\Products\Core\Payment\RefundablePaymentMethodInterface;
 final class RecordingRefundPaymentMethod implements PaymentMethodInterface, RefundablePaymentMethodInterface
 {
     public int $refundCalls = 0;
+    public ?Money $lastAmount = null;
 
     public function getIdentifier(): string
     {
@@ -58,6 +59,7 @@ final class RecordingRefundPaymentMethod implements PaymentMethodInterface, Refu
     public function refund(OrderData $order, Money $amount): PaymentResult
     {
         $this->refundCalls++;
+        $this->lastAmount = $amount;
         return PaymentResult::completed(PaymentStatus::REFUNDED, 'RECORDING');
     }
 }

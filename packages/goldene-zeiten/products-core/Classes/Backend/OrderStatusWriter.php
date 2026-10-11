@@ -35,7 +35,7 @@ final class OrderStatusWriter
 
     public function changeStatus(int $orderUid, OrderStatus $target, ?string $note, BackendUserAuthentication $beUser): void
     {
-        $row = $this->fetchRow($orderUid, ['status', 'status_log']);
+        $row = $this->fetchRow($orderUid, ['status', 'status_log', 'delivered_at']);
         if ($row === null) {
             return;
         }
@@ -51,10 +51,14 @@ final class OrderStatusWriter
         }
 
         $log = $this->appendStatusLog((string)$row['status_log'], $current, $target, $note);
-        $this->writeDatamap($orderUid, [
+        $fields = [
             'status' => $target->value,
             'status_log' => (string)json_encode($log),
-        ], $beUser);
+        ];
+        if ($target === OrderStatus::COMPLETED && $current !== OrderStatus::WITHDRAWN && (int)$row['delivered_at'] === 0) {
+            $fields['delivered_at'] = (string)time();
+        }
+        $this->writeFields($orderUid, $fields, $beUser);
         $this->eventDispatcher->dispatch(new OrderStatusChangedEvent($orderUid, $current, $target));
     }
 
@@ -75,7 +79,7 @@ final class OrderStatusWriter
             );
         }
 
-        $this->writeDatamap($orderUid, ['payment_status' => $target->value], $beUser);
+        $this->writeFields($orderUid, ['payment_status' => $target->value], $beUser);
         $this->eventDispatcher->dispatch(new PaymentStatusChangedEvent($orderUid, $current, $target));
     }
 
@@ -118,9 +122,11 @@ final class OrderStatusWriter
     }
 
     /**
+     * Writes plain fields of an order through the DataHandler.
+     *
      * @param array<string, string> $fields
      */
-    private function writeDatamap(int $orderUid, array $fields, BackendUserAuthentication $beUser): void
+    public function writeFields(int $orderUid, array $fields, BackendUserAuthentication $beUser): void
     {
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $dataHandler->start([self::TABLE => [$orderUid => $fields]], [], $beUser);

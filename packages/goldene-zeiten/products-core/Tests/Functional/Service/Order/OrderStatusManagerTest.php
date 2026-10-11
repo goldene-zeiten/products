@@ -52,6 +52,31 @@ final class OrderStatusManagerTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function completingAShippedOrderRecordsItsDelivery(): void
+    {
+        $subject = $this->get(OrderStatusManager::class);
+        $order = new Order();
+        $order->setStatus(OrderStatus::SHIPPED);
+
+        $subject->transition($order, OrderStatus::COMPLETED);
+
+        $this->assertNotNull($order->getDeliveredAt());
+    }
+
+    #[Test]
+    public function completingAnOrderKeepsADeliveryDateThatWasRecordedBefore(): void
+    {
+        $subject = $this->get(OrderStatusManager::class);
+        $order = new Order();
+        $order->setStatus(OrderStatus::SHIPPED);
+        $order->setDeliveredAt(new \DateTime('2026-01-02'));
+
+        $subject->transition($order, OrderStatus::COMPLETED);
+
+        $this->assertSame('2026-01-02', $order->getDeliveredAt()?->format('Y-m-d'));
+    }
+
+    #[Test]
     public function transitionToSameStatusIsNoop(): void
     {
         $subject = $this->get(OrderStatusManager::class);
