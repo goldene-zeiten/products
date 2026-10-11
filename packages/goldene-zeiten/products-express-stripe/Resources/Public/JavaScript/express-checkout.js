@@ -29,6 +29,7 @@ export default class StripeExpressCheckout {
     this.confirmUrl = container.getAttribute('data-confirm-url');
     this.quoteOptions = [];
     this.selectedShippingOption = '';
+    this.errorMessage = container.getAttribute('data-error-message') || '';
     this.whenStripeReady(() => this.mount());
   }
 
@@ -112,10 +113,22 @@ export default class StripeExpressCheckout {
       const payload = await response.json();
       if (response.ok && payload.redirectUrl) {
         window.location.assign(payload.redirectUrl);
+        return;
       }
+      this.failPayment(event);
     } catch (fetchError) {
       console.error('Stripe express confirm failed:', fetchError);
+      this.failPayment(event);
     }
+  }
+
+  failPayment(event) {
+    event.paymentFailed({ reason: 'fail' });
+    const message = document.createElement('p');
+    message.setAttribute('role', 'alert');
+    message.className = 'products-express-checkout__error';
+    message.textContent = this.errorMessage;
+    this.container.appendChild(message);
   }
 
   async fetchQuote(address) {
