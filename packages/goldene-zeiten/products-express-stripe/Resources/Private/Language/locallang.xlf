@@ -9,6 +9,9 @@
 			<trans-unit id="express_checkout_failed" resname="express_checkout_failed">
 				<source>Your payment could not be completed. Nothing has been charged - please try again or use the regular checkout.</source>
 			</trans-unit>
+			<trans-unit id="express_checkout_adjustments" resname="express_checkout_adjustments">
+				<source>Fees and discounts</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

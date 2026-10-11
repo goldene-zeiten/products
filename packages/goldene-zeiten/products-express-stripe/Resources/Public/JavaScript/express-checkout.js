@@ -14,7 +14,8 @@
  * All amounts handed to Stripe are integer minor units of the currency (whole yen, cents, thousandths of a
  * dinar). The button's own amount arrives in them; the shipping quote answers in the shop's hundredths and
  * is converted on arrival. The element's `amount` is kept in step with the chosen shipping via
- * `elements.update()` so the sheet total matches what the server will charge.
+ * `elements.update()` and is the order total the server quoted for it - goods, shipping, fees and discounts -
+ * so the sheet total is the amount the server will charge.
  */
 export default class StripeExpressCheckout {
   constructor(container) {
@@ -25,6 +26,8 @@ export default class StripeExpressCheckout {
     const minorUnitDecimals = parseInt(container.getAttribute('data-minor-unit-decimals'), 10);
     this.minorUnitsPerHundredth = 10 ** ((Number.isNaN(minorUnitDecimals) ? 2 : minorUnitDecimals) - 2);
     this.basketToken = container.getAttribute('data-basket-token');
+    this.provider = container.getAttribute('data-provider') || '';
+    this.adjustmentsLabel = container.getAttribute('data-adjustments-label') || 'Fees and discounts';
     this.shippingQuoteUrl = container.getAttribute('data-shipping-quote-url');
     this.confirmUrl = container.getAttribute('data-confirm-url');
     this.quoteOptions = [];
@@ -65,7 +68,7 @@ export default class StripeExpressCheckout {
       emailRequired: true,
       shippingAddressRequired: true,
       shippingRates: [{ id: 'pending', displayName: '…', amount: 0 }],
-      lineItems: this.lineItems(0),
+      lineItems: this.lineItems(null),
     });
   }
 
@@ -77,10 +80,10 @@ export default class StripeExpressCheckout {
     }
     const chosen = this.quoteOptions[0];
     this.selectedShippingOption = chosen.key;
-    this.elements.update({ amount: this.goodsAmount + chosen.shippingAmount });
+    this.elements.update({ amount: chosen.orderTotal });
     event.resolve({
       shippingRates: this.quoteOptions.map((option) => this.toShippingRate(option)),
-      lineItems: this.lineItems(chosen.shippingAmount),
+      lineItems: this.lineItems(chosen),
     });
   }
 
@@ -91,8 +94,8 @@ export default class StripeExpressCheckout {
       return;
     }
     this.selectedShippingOption = option.key;
-    this.elements.update({ amount: this.goodsAmount + option.shippingAmount });
-    event.resolve({ lineItems: this.lineItems(option.shippingAmount) });
+    this.elements.update({ amount: option.orderTotal });
+    event.resolve({ lineItems: this.lineItems(option) });
   }
 
   async onConfirm(event) {
@@ -138,6 +141,7 @@ export default class StripeExpressCheckout {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           basketToken: this.basketToken,
+          provider: this.provider,
           country: address.country || '',
           postalCode: address.postal_code || '',
           state: address.state || '',
@@ -148,7 +152,11 @@ export default class StripeExpressCheckout {
       }
       const quote = await response.json();
       this.quoteOptions = Array.isArray(quote.options)
-        ? quote.options.map((option) => ({ ...option, shippingAmount: this.toMinorUnits(option.shippingAmount) }))
+        ? quote.options.map((option) => ({
+            ...option,
+            shippingAmount: this.toMinorUnits(option.shippingAmount),
+            orderTotal: this.toMinorUnits(option.orderTotal),
+          }))
         : [];
       return quote;
     } catch (fetchError) {
@@ -165,11 +173,17 @@ export default class StripeExpressCheckout {
     return { id: option.key, displayName: option.label, amount: option.shippingAmount };
   }
 
-  lineItems(shippingAmount) {
-    return [
+  lineItems(option) {
+    const shippingAmount = option ? option.shippingAmount : 0;
+    const items = [
       { name: 'Subtotal', amount: this.goodsAmount },
       { name: 'Shipping', amount: shippingAmount },
     ];
+    const adjustments = option ? option.orderTotal - this.goodsAmount - shippingAmount : 0;
+    if (adjustments !== 0) {
+      items.push({ name: this.adjustmentsLabel, amount: adjustments });
+    }
+    return items;
   }
 
   confirmBody(paymentMethodId, event) {
