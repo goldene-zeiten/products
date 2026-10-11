@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Core\Domain\Dto\Payment;
 
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentResultState;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 #[Exclude]
@@ -20,15 +21,16 @@ final readonly class PaymentResult
         private string $externalId = '',
         private string $redirectUrl = '',
         private string $failureReason = '',
-        private array $rawData = []
+        private array $rawData = [],
+        private ?Money $settledAmount = null
     ) {}
 
     /**
      * @param array<string, mixed> $rawData
      */
-    public static function completed(PaymentStatus $paymentStatus, string $externalId = '', array $rawData = []): self
+    public static function completed(PaymentStatus $paymentStatus, string $externalId = '', array $rawData = [], ?Money $settledAmount = null): self
     {
-        return new self(PaymentResultState::COMPLETED, $paymentStatus, $externalId, rawData: $rawData);
+        return new self(PaymentResultState::COMPLETED, $paymentStatus, $externalId, rawData: $rawData, settledAmount: $settledAmount);
     }
 
     /**
@@ -81,6 +83,15 @@ final readonly class PaymentResult
     public function getFailureReason(): string
     {
         return $this->failureReason;
+    }
+
+    /**
+     * The amount the gateway reports it actually moved, where the payment settles before the order exists
+     * (express checkout); null where the order total was never in question.
+     */
+    public function getSettledAmount(): ?Money
+    {
+        return $this->settledAmount;
     }
 
     /**

@@ -1,0 +1,23 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/express/paypal/v2/checkout/orders/PAYPAL-EXPRESS-ORDER-CAPTURED/capture"
+  },
+  "response": {
+    "status": 422,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "name": "UNPROCESSABLE_ENTITY",
+      "details": [
+        {
+          "issue": "ORDER_ALREADY_CAPTURED",
+          "description": "Order already captured."
+        }
+      ],
+      "message": "The requested action could not be performed, semantically incorrect, or failed business validation."
+    }
+  }
+}

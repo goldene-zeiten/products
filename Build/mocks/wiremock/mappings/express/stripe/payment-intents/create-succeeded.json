@@ -4,12 +4,7 @@
   "response": {
     "status": 200,
     "headers": { "Content-Type": "application/json" },
-    "jsonBody": {
-      "id": "pi_test_1",
-      "object": "payment_intent",
-      "status": "succeeded",
-      "amount": 10500,
-      "currency": "eur"
-    }
+    "body": "{{formData request.body 'form'}}{\"id\":\"pi_test_1\",\"object\":\"payment_intent\",\"status\":\"succeeded\",\"amount\":{{form.amount}},\"amount_received\":{{form.amount}},\"currency\":\"eur\"}",
+    "transformers": [ "response-template" ]
   }
 }

@@ -11,6 +11,9 @@ use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
+use GoldeneZeiten\Products\Core\Express\Exception\ExpressAmountMismatchException;
+use GoldeneZeiten\Products\Core\Express\Exception\ExpressOrderFailedException;
+use GoldeneZeiten\Products\Core\Shipping\Exception\MissingShippingOptionException;
 use GoldeneZeiten\Products\Express\Stripe\Express\Exception\ExpressPaymentDeclinedException;
 use GoldeneZeiten\Products\Express\Stripe\Express\StripeExpressConfirmService;
 use GoldeneZeiten\Products\Express\Stripe\Tests\Functional\AbstractStripeExpressMockTestCase;
@@ -30,7 +33,7 @@ final class StripeExpressConfirmServiceTest extends AbstractStripeExpressMockTes
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../../../../products-core/Tests/Functional/Service/Order/Fixtures/order_placement.csv');
+        $this->importCSVDataSet(__DIR__ . '/../../../../products-core/Tests/Functional/Express/Fixtures/express_with_fees.csv');
         $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['products_express_stripe'] = [
             'publishableKey' => 'pk_test',
             'secretKey' => 'sk_test_x',
@@ -69,6 +72,65 @@ final class StripeExpressConfirmServiceTest extends AbstractStripeExpressMockTes
         );
     }
 
+    #[Test]
+    public function theWalletIsChargedTheFullOrderTotal(): void
+    {
+        $order = $this->get(StripeExpressConfirmService::class)->confirm(
+            $this->request(shipping: true),
+            $this->basketViewModel($this->product()),
+            new Address(email: 'wallet@example.com', firstName: 'Wallet', lastName: 'Buyer', street: 'Wallet St 1', zip: '10115', city: 'Berlin', country: 'DE'),
+            'tablerate:1',
+            'pm_card_visa'
+        );
+
+        // 100.00 goods + 5.00 shipping + 3.00 handling fee, not the 105.00 goods-plus-carrier figure.
+        parse_str((string)$this->loggedRequests('/express/stripe/v1/payment_intents')[0]['body'], $body);
+        $this->assertSame('10800', $body['amount']);
+        $this->assertSame(10800, $order->getTotalGross()->getCents());
+        $this->assertSame(PaymentStatus::PAID, $order->getPaymentStatus());
+    }
+
+    #[Test]
+    public function aMissingShippingOptionIsRejectedBeforeTheCardIsCharged(): void
+    {
+        try {
+            $this->get(StripeExpressConfirmService::class)->confirm(
+                $this->request(shipping: true),
+                $this->basketViewModel($this->product()),
+                new Address(email: 'wallet@example.com', firstName: 'Wallet', lastName: 'Buyer', street: 'Wallet St 1', zip: '10115', city: 'Berlin', country: 'DE'),
+                '',
+                'pm_card_visa'
+            );
+            $this->fail('Expected ExpressOrderFailedException was not thrown.');
+        } catch (ExpressOrderFailedException $exception) {
+            $this->assertInstanceOf(MissingShippingOptionException::class, $exception->getPrevious());
+        }
+
+        $this->assertSame([], $this->loggedRequests('/express/stripe/v1/payment_intents'));
+    }
+
+    #[Test]
+    public function aPaymentThatSettledADifferentAmountIsRefunded(): void
+    {
+        try {
+            $this->get(StripeExpressConfirmService::class)->confirm(
+                $this->request(),
+                $this->basketViewModel($this->product()),
+                new Address(email: 'wallet@example.com', firstName: 'Wallet', lastName: 'Buyer', street: 'Wallet St 1', zip: '10115', city: 'Berlin', country: 'DE'),
+                '',
+                'pm_underpaid'
+            );
+            $this->fail('Expected ExpressAmountMismatchException was not thrown.');
+        } catch (ExpressAmountMismatchException) {
+            // expected
+        }
+
+        $refunds = $this->loggedRequests('/express/stripe/v1/refunds');
+        $this->assertCount(1, $refunds);
+        parse_str((string)$refunds[0]['body'], $body);
+        $this->assertSame('pi_test_underpaid', $body['payment_intent']);
+    }
+
     /**
      * Express callbacks may run before core publishes the current request, so credentials configured only
      * on the site must be read from the site of the request the service is handed.
@@ -105,10 +167,16 @@ final class StripeExpressConfirmServiceTest extends AbstractStripeExpressMockTes
         $this->assertSame(PaymentStatus::PAID, $order->getPaymentStatus());
     }
 
-    private function request(): ServerRequestInterface
+    private function request(bool $shipping = false): ServerRequestInterface
     {
+        $site = new Site('products', 1, ['settings' => ['products' => [
+            'shipping' => ['enabled' => $shipping],
+            'handling' => ['enabled' => $shipping],
+        ]]]);
+
         return (new ServerRequest('http://localhost/'))
-            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE);
+            ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
+            ->withAttribute('site', $site);
     }
 
     private function product(): Product

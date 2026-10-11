@@ -31,6 +31,22 @@ final class StripeAmountConverterTest extends UnitTestCase
     }
 
     #[Test]
+    #[DataProvider('minorUnitProvider')]
+    public function convertsAMinorUnitAmountBackIntoHundredths(int $minorUnits, string $currency, int $expectedCents): void
+    {
+        $subject = new StripeAmountConverter();
+
+        $this->assertSame($expectedCents, $subject->fromMinorUnits($minorUnits, $currency)->getCents());
+    }
+
+    public static function minorUnitProvider(): \Generator
+    {
+        yield 'euro cents' => ['minorUnits' => 1234, 'currency' => 'EUR', 'expectedCents' => 1234];
+        yield 'yen in whole units' => ['minorUnits' => 1000, 'currency' => 'JPY', 'expectedCents' => 100000];
+        yield 'dinar in thousandths' => ['minorUnits' => 12340, 'currency' => 'BHD', 'expectedCents' => 1234];
+    }
+
+    #[Test]
     #[DataProvider('decimalsProvider')]
     public function reportsTheDecimalsOfTheCurrencysMinorUnit(string $currency, int $expected): void
     {

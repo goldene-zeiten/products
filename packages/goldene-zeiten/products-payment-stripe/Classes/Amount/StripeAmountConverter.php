@@ -37,6 +37,18 @@ final readonly class StripeAmountConverter
     }
 
     /**
+     * The inverse of {@see toMinorUnits()}: an amount Stripe reports back, as the shop's hundredths.
+     */
+    public function fromMinorUnits(int $minorUnits, string $currency): Money
+    {
+        return Money::fromCents(match ($this->decimals($currency)) {
+            0 => $minorUnits * 100,
+            3 => (int)round($minorUnits / 10),
+            default => $minorUnits,
+        });
+    }
+
+    /**
      * The number of decimals Stripe's minor unit has for the currency, for a frontend that has to convert
      * the shop's hundredths itself.
      */

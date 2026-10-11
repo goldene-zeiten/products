@@ -47,20 +47,46 @@ final class StripeExpressPaymentClient
             return PaymentResult::failed('Stripe express payment failed: ' . $exception->getMessage());
         }
 
-        return $this->interpret($intent);
+        return $this->interpret($intent, $amountCents, $currency);
     }
 
-    private function interpret(PaymentIntent $intent): PaymentResult
+    /**
+     * Gives the money of a settled intent back in full, for an express order that could not be placed.
+     *
+     * @throws ApiErrorException
+     */
+    public function refund(string $paymentIntentId, StripeExpressConfiguration $configuration): void
+    {
+        $this->clientFactory->create($configuration->toStripeConfiguration())->refunds->create([
+            'payment_intent' => $paymentIntentId,
+        ]);
+    }
+
+    private function interpret(PaymentIntent $intent, int $requestedCents, string $currency): PaymentResult
     {
         $status = (string)$intent->status;
         $externalId = (string)$intent->id;
         if ($status === 'succeeded') {
-            return PaymentResult::completed(PaymentStatus::PAID, $externalId);
+            return PaymentResult::completed(PaymentStatus::PAID, $externalId, [], $this->settledAmount($intent, $requestedCents, $currency));
         }
         if ($status === 'processing') {
             return PaymentResult::pending($externalId);
         }
 
         return PaymentResult::failed(sprintf('Stripe express payment was not completed (status "%s").', $status), $externalId);
+    }
+
+    /**
+     * What Stripe reports it received. An amount equal to the requested one in Stripe's minor unit is the
+     * requested amount itself, so a currency Stripe rounds is not mistaken for an underpayment.
+     */
+    private function settledAmount(PaymentIntent $intent, int $requestedCents, string $currency): Money
+    {
+        $requested = Money::fromCents($requestedCents);
+        $received = (int)($intent->amount_received ?? $intent->amount);
+
+        return $received === $this->amountConverter->toMinorUnits($requested, $currency)
+            ? $requested
+            : $this->amountConverter->fromMinorUnits($received, $currency);
     }
 }
