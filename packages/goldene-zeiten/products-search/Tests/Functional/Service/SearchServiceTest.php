@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Search\Tests\Functional\Service;
 
-use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Search\Service\SearchService;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
-use GoldeneZeiten\Products\Testing\FixtureConfigurationManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Core\Site\Entity\Site;
 
 final class SearchServiceTest extends AbstractFunctionalTestCase
 {
@@ -47,7 +45,7 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
     #[DataProvider('paginationProvider')]
     public function paginationBehavior(int $resultsPerPage, string $term, int $requestedPage, int $expectedCount, int $expectedCurrentPage, int $expectedTotalPages): void
     {
-        $result = $this->subject(resultsPerPage: $resultsPerPage)->search($term, null, $requestedPage, $this->createRequest());
+        $result = $this->subject()->search($term, null, $requestedPage, $this->createRequest($resultsPerPage));
 
         $this->assertTrue($result->hasSearched());
         $this->assertTrue($result->hasResults());
@@ -73,18 +71,15 @@ final class SearchServiceTest extends AbstractFunctionalTestCase
         $this->assertFalse($result->hasResults());
     }
 
-    private function subject(int $resultsPerPage = 20): SearchService
+    private function subject(): SearchService
     {
-        return new SearchService($this->get(ProductRepository::class), $this->fakeConfigurationManager($resultsPerPage));
+        return $this->get(SearchService::class);
     }
 
-    private function fakeConfigurationManager(int $resultsPerPage): ConfigurationManagerInterface
+    private function createRequest(int $resultsPerPage = 20): ServerRequestInterface
     {
-        return new FixtureConfigurationManager(['search' => ['resultsPerPage' => $resultsPerPage]]);
-    }
+        $site = new Site('products', 1, ['settings' => ['products' => ['search' => ['resultsPerPage' => $resultsPerPage]]]]);
 
-    private function createRequest(): ServerRequestInterface
-    {
-        return new ServerRequest('http://example.com/');
+        return (new ServerRequest('http://example.com/'))->withAttribute('site', $site);
     }
 }

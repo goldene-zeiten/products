@@ -8,7 +8,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\PageTitle\PageTitleProviderInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 
 /**
  * Substitutes the product's title/subtitle for the page title on a product single-view page.
@@ -20,23 +20,18 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 #[Autoconfigure(public: true)]
 final class ProductPageTitleProvider implements PageTitleProviderInterface
 {
-    /**
-     * @var array<string, mixed>
-     */
-    private array $settings = [];
+    private string $pageTitleMode = 'title';
 
     public function __construct(
-        private readonly CurrentProductHolder $currentProductHolder,
-        private readonly ConfigurationManagerInterface $configurationManager
+        private readonly CurrentProductHolder $currentProductHolder
     ) {}
 
     public function setRequest(ServerRequestInterface $request): void
     {
-        $this->configurationManager->setRequest($request);
-        $this->settings = $this->configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'ProductsCore'
-        );
+        $site = $request->getAttribute('site');
+        $this->pageTitleMode = $site instanceof SiteInterface
+            ? (string)$site->getSettings()->get('products.seo.pageTitleMode', 'title')
+            : 'title';
     }
 
     public function getTitle(): string
@@ -46,7 +41,7 @@ final class ProductPageTitleProvider implements PageTitleProviderInterface
             return '';
         }
 
-        return match ((string)($this->settings['seo']['pageTitleMode'] ?? 'title')) {
+        return match ($this->pageTitleMode) {
             'none' => '',
             'subtitleOrTitle' => $product->getSubtitle() !== '' ? $product->getSubtitle() : $product->getTitle(),
             'titleAndSubtitle' => $this->combine($product, $product->getTitle(), $product->getSubtitle()),
