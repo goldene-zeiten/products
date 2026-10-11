@@ -38,8 +38,9 @@ The express flow
 2.  **Live shipping.** When the shopper picks an address in the wallet sheet, the JS posts the token and the
     (street-redacted) destination to the core express shipping-rate endpoint
     (:code:`/products/express/shipping-quote`). It answers with the shop's own carrier options and costs —
-    the same ones the in-shop checkout would show — and the sheet's total is kept in step with the chosen
-    option.
+    the same ones the in-shop checkout would show. Each option also carries the order total the shopper's
+    session basket would be charged with it — goods, carrier, fees, discounts and rounding — and the sheet's
+    total is kept in step with the chosen option.
 
 3.  **Confirm.** On confirmation the JS creates a Stripe PaymentMethod from the wallet and posts it, with the
     wallet address and the chosen shipping option, to this extension's confirm endpoint. The server
@@ -48,9 +49,13 @@ The express flow
     paid order through the very same order-creation and finalization services the normal checkout runs on.
     It answers with the thank-you URL the browser is sent to.
 
-Because the charge is settled before the order exists, the amount is computed the same way the shipping-rate
-callback quoted it (goods total plus the chosen carrier cost), and order creation reruns the identical quote
-— so the shopper is charged exactly what the wallet sheet showed.
+Because the charge is settled before the order exists, the amount is computed by the same core quote the
+shipping-rate callback used for the sheet, and order creation reruns the identical quote — so the shopper is
+charged exactly what the wallet sheet showed.
+
+A payment Stripe reports as still processing is accepted as a pending order. Subscribe the Stripe webhook
+endpoint to :code:`payment_intent.succeeded` and :code:`payment_intent.payment_failed` so it settles or
+cancels that order.
 
 One button, every wallet
 ========================
