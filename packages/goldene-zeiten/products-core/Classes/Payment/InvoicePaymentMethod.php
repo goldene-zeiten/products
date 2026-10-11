@@ -13,7 +13,8 @@ use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Event\InvoiceNumberGeneratedEvent;
 use GoldeneZeiten\Products\Core\Service\Order\NumberRangeService;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -22,15 +23,9 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePaymentMethodInterface
 {
-    /**
-     * @var array<string, mixed>|null
-     */
-    private ?array $settings = null;
-
     public function __construct(
         private readonly NumberRangeService $numberRangeService,
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly ConfigurationManagerInterface $configurationManager
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     public function getIdentifier(): string
@@ -45,9 +40,10 @@ final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePa
 
     public function isAvailable(PaymentContext $context): bool
     {
-        $invoiceSettings = $this->getSettings()['payment']['invoice'] ?? [];
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        $site = $request instanceof ServerRequestInterface ? $request->getAttribute('site') : null;
 
-        return (bool)($invoiceSettings['enabled'] ?? true);
+        return !$site instanceof SiteInterface || (bool)$site->getSettings()->get('products.payment.invoice.enabled', true);
     }
 
     /**
@@ -80,17 +76,6 @@ final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePa
     public function refund(OrderData $order, Money $amount): PaymentResult
     {
         return PaymentResult::completed(PaymentStatus::REFUNDED, $order->invoiceNumber);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function getSettings(): array
-    {
-        return $this->settings ??= $this->configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'ProductsCore'
-        );
     }
 
     private function buildScope(Order $order): string
