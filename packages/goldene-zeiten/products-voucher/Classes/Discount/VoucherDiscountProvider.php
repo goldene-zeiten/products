@@ -88,24 +88,30 @@ final class VoucherDiscountProvider implements DiscountProviderInterface
 
     public function apply(Order $order, DiscountContext $context): void
     {
-        $vouchers = $this->resolve($context)->getAppliedVouchers();
+        $summary = $this->resolve($context);
+        $vouchers = $summary->getAppliedVouchers();
         if ($vouchers === []) {
             return;
         }
-        foreach ($vouchers as $voucher) {
+        foreach ($vouchers as $position => $voucher) {
             $this->redeemAtomically($voucher);
-            $this->voucherRedemptionRepository->add($this->buildRedemption($voucher, $order, $context));
+            $this->voucherRedemptionRepository->add($this->buildRedemption($voucher, $order, $context, $summary->getShare($position)));
         }
         $this->persistenceManager->persistAll();
-        foreach ($vouchers as $voucher) {
-            $this->eventDispatcher->dispatch(new VoucherRedeemedEvent($voucher, $order, $voucher->calculateDiscount($context->getGoodsTotal())));
+        foreach ($vouchers as $position => $voucher) {
+            $this->eventDispatcher->dispatch(new VoucherRedeemedEvent($voucher, $order, $summary->getShare($position)));
         }
     }
 
     private function resolve(DiscountContext $context): BasketDiscountSummary
     {
         try {
-            return $this->voucherService->resolveAllOrFail($this->voucherCheckoutState->getCodes($context->getRequest()), $context->getGoodsTotal(), $context->getFrontendUserUid());
+            return $this->voucherService->resolveAllOrFail(
+                $this->voucherCheckoutState->getCodes($context->getRequest()),
+                $context->getGoodsTotal(),
+                $context->getFrontendUserUid(),
+                $context->isGoodsAlreadyDiscounted()
+            );
         } catch (VoucherExceptionInterface $exception) {
             throw new VoucherRedemptionFailedException($exception->getMessage(), 1783426407, $exception);
         }
@@ -163,14 +169,14 @@ final class VoucherDiscountProvider implements DiscountProviderInterface
         }
     }
 
-    private function buildRedemption(Voucher $voucher, Order $order, DiscountContext $context): VoucherRedemption
+    private function buildRedemption(Voucher $voucher, Order $order, DiscountContext $context, Money $share): VoucherRedemption
     {
         $redemption = new VoucherRedemption();
         $redemption->setVoucherUid($voucher->getUid() ?? 0);
         $redemption->setVoucherCode($voucher->getCode());
         $redemption->setOrderUid($order->getUid() ?? 0);
         $redemption->setFrontendUser($context->getFrontendUserUid());
-        $redemption->setDiscountTotal($voucher->calculateDiscount($context->getGoodsTotal())->getCents());
+        $redemption->setDiscountTotal($share->getCents());
         $redemption->setRedeemedAt(new \DateTime());
 
         return $redemption;

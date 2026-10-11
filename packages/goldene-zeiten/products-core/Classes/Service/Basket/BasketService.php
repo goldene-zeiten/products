@@ -123,19 +123,16 @@ final class BasketService
     }
 
     /**
-     * Check if any line is already discounted (category/usergroup, not quantity-tiers).
+     * Whether any line is sold below its list price - by a category, customer or customer-group discount,
+     * or an active price period. Quantity tiers are list prices and do not count. Without a basket the
+     * customer's current basket is checked.
      */
-    public function isAlreadyDiscounted(ServerRequestInterface $request): bool
+    public function isAlreadyDiscounted(ServerRequestInterface $request, ?BasketViewModel $basketViewModel = null): bool
     {
-        foreach ($this->basketStorage->load($request)->getItems() as $item) {
-            $product = $this->productRepository->findByUid($item->getProductUid());
-            if (!$product instanceof Product) {
-                continue;
-            }
-            $article = $this->resolveArticle($item->getArticleUid());
-            $undiscounted = $this->graduatedPriceProvider->getUnitPrice($product, $article, $item->getQuantity(), $request);
-            $discounted = $this->priceProvider->getUnitPrice($product, $article, $item->getQuantity(), $request);
-            if ($undiscounted->getCents() !== $discounted->getCents()) {
+        foreach (($basketViewModel ?? $this->getBasketViewModel($request))->getItems() as $item) {
+            $listPrice = $this->graduatedPriceProvider->getQuantityPrice($item->getProduct(), $item->getArticle(), $item->getQuantity());
+            $price = $this->priceProvider->getUnitPrice($item->getProduct(), $item->getArticle(), $item->getQuantity(), $request);
+            if ($listPrice->getCents() !== $price->getCents()) {
                 return true;
             }
         }

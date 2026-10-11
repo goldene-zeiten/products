@@ -28,6 +28,19 @@ final class GraduatedPriceProvider implements PriceProviderInterface
 
     public function getUnitPrice(Product $product, ?Article $article, int $quantity, ?ServerRequestInterface $request = null): Money
     {
+        return $this->resolve($product, $article, $quantity, $request, true);
+    }
+
+    /**
+     * The list price for the quantity: quantity tiers apply, a price period - a time-boxed discount - does not.
+     */
+    public function getQuantityPrice(Product $product, ?Article $article, int $quantity): Money
+    {
+        return $this->resolve($product, $article, $quantity, null, false);
+    }
+
+    private function resolve(Product $product, ?Article $article, int $quantity, ?ServerRequestInterface $request, bool $withPeriods): Money
+    {
         $ownTiers = $article !== null && $article->getPriceTiers()->count() > 0;
         $ownPeriods = $article !== null && $article->getPricePeriods()->count() > 0;
         $inheritsProductPricing = $this->inheritsProductPricing($article);
@@ -36,7 +49,7 @@ final class GraduatedPriceProvider implements PriceProviderInterface
             $tierPrice = $this->findBestTier($ownTiers ? $article->getPriceTiers() : $product->getPriceTiers(), $quantity)?->getPrice();
             $candidates[] = $tierPrice !== null ? $this->withSurcharge($tierPrice, $article, !$ownTiers) : null;
         }
-        if ($ownPeriods || $inheritsProductPricing) {
+        if ($withPeriods && ($ownPeriods || $inheritsProductPricing)) {
             $periodPrice = $this->pricePeriodPriceProvider->findActivePeriodPrice($product, $article, $request);
             $candidates[] = $periodPrice !== null ? $this->withSurcharge($periodPrice, $article, !$ownPeriods) : null;
         }
