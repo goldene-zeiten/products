@@ -8,7 +8,7 @@ pages,,,,,,,,,
 ,7,1,1536,0,Checkout,/checkout,0,1,
 ,8,1,1792,0,Order History,/order-history,0,1,
 ,9,1,2048,0,Login,/login,0,1,
-,10,1,2304,0,Withdraw from contract,/cancel-order,0,175,nav-link-withdrawal
+,10,1,2304,0,Withdraw from contract here,/cancel-order,0,175,nav-link-withdrawal
 ,11,1,2560,0,Wishlist,/wishlist,0,1,
 ,12,1,2816,0,Recently Viewed,/recently-viewed,0,1,
 ,13,1,3072,0,Most Viewed,/most-viewed,0,1,
@@ -171,9 +171,13 @@ tx_products_domain_model_orderaddress,,,,,,,,,
 ,uid,pid,address_type,first_name,last_name,street,zip,city,country
 ,1,2,billing,Sam,Shopper,Shop Street 5,54321,Hamburg,DE
 
-tx_products_domain_model_order,,,,,,,,,,,,,
-,uid,pid,order_number,frontend_user,email,currency,total_gross,items,status,payment_status,order_date,billing_address,payment_method
-,1,2,ORD-EXPIRED-1,1,shopper1@example.com,EUR,8999,0,confirmed,paid,1700000000,1,invoice
+tx_products_domain_model_order,,,,,,,,,,,,,,,
+,uid,pid,order_number,frontend_user,email,currency,total_gross,items,status,payment_status,order_date,billing_address,payment_method,delivered_at,withdrawal_information_provided_at
+,1,2,ORD-EXPIRED-1,1,shopper1@example.com,EUR,8999,1,completed,paid,1700000000,1,invoice,1700500000,1700000000
+
+tx_products_domain_model_orderitem,,,,,,
+,uid,pid,parent_order,title,quantity,line_total_gross
+,1,2,1,Soundmax Headphones,1,8999
 
 tt_content,,,,,,,,
 ,uid,pid,sorting,deleted,colPos,CType,header,pi_flexform

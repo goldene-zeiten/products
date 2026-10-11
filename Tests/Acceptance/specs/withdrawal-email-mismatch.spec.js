@@ -23,7 +23,7 @@ test('a guest cannot cancel an order by entering a different email address', asy
   await page.getByRole('button', { name: 'Order with obligation to pay' }).click();
   await expect(page.getByText('Your order number is', { exact: false })).toBeVisible();
 
-  await page.getByRole('link', { name: 'Withdraw from contract here' }).click();
+  await page.locator('a.btn-outline-danger', { hasText: 'Withdraw from contract here' }).click();
   await expect(page.getByRole('heading', { name: 'Withdraw from contract' })).toBeVisible();
 
   await page.getByLabel('Confirm your email address').fill('someone-else@example.com');

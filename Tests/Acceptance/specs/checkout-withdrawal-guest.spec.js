@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('a guest cancels their own order via the thank-you page link', async ({ page }) => {
+test('a guest withdraws from their own order via the thank-you page link', async ({ page }) => {
   await page.goto('/product/black-denim-jeans');
   await page.getByRole('button', { name: 'Add to Basket' }).click();
 
@@ -25,15 +25,18 @@ test('a guest cancels their own order via the thank-you page link', async ({ pag
   const orderNumberText = await page.getByText('Your order number is', { exact: false }).textContent();
   const orderNumber = orderNumberText.replace('Your order number is', '').replace('.', '').trim();
 
-  await page.getByRole('link', { name: 'Withdraw from contract here' }).click();
+  await page.locator('a.btn-outline-danger', { hasText: 'Withdraw from contract here' }).click();
 
   await expect(page.getByRole('heading', { name: 'Withdraw from contract' })).toBeVisible();
   // The tokened link prefills the form (Art. 11a: the function must be easy to use)
   await expect(page.getByLabel('Order number')).toHaveValue(orderNumber);
+  await expect(page.getByLabel('Your name')).toHaveValue('With Draw');
   await expect(page.getByLabel('Confirm your email address')).toHaveValue('withdraw-guest@example.com');
+  // The items of the order are listed and selected by default (partial withdrawal is possible)
+  await expect(page.getByRole('checkbox', { name: /Black Denim Jeans/ })).toBeChecked();
   await page.getByLabel('Reason (optional)').fill('Changed my mind');
   await page.getByRole('button', { name: 'Confirm withdrawal' }).click();
 
-  await expect(page.getByRole('heading', { name: 'Order cancelled' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Withdrawal received' })).toBeVisible();
   await expect(page.getByText(orderNumber)).toBeVisible();
 });

@@ -32,7 +32,7 @@ test('digital content requires the express waiver at review and then loses the w
   await expect(page.getByText('Your order number is', { exact: false })).toBeVisible();
 
   // With the waiver given, the withdrawal right is gone: no function is offered
-  await expect(page.getByRole('link', { name: 'Withdraw from contract here' })).toHaveCount(0);
+  await expect(page.locator('a.btn-outline-danger', { hasText: 'Withdraw from contract here' })).toHaveCount(0);
   await expect(
     page.getByText('All items of this order are exempt from the statutory right of withdrawal', { exact: false }),
   ).toBeVisible();

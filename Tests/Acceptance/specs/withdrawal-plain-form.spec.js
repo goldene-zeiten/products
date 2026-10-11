@@ -29,28 +29,36 @@ test('a guest withdraws via the always-available footer navigation withdrawal pa
   // (Art. 11a: continuously available on the online interface)
   await page.goto('/');
   const footerLink = page.locator('#site-footer a.nav-link-withdrawal');
-  await expect(footerLink).toHaveText('Withdraw from contract');
+  await expect(footerLink).toHaveText('Withdraw from contract here');
   await footerLink.click();
 
   // Plain mode: no token, the customer identifies the order themselves
   await expect(page.getByRole('heading', { name: 'Withdraw from contract' })).toBeVisible();
   await expect(page.getByLabel('Order number')).toHaveValue('');
+  await page.getByLabel('Your name').fill('Plain Form');
   await page.getByLabel('Order number').fill(orderNumber);
   await page.getByLabel('Confirm your email address').fill('plain-withdraw@example.com');
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+  // Second step: the identified order's items can be picked; only now the confirmation is offered
+  await expect(page.getByRole('checkbox', { name: /Black Denim Jeans/ })).toBeChecked();
+  await expect(page.getByLabel('Your name')).toHaveValue('Plain Form');
   await page.getByLabel('Reason (optional)').fill('Found a better price');
   await page.getByRole('button', { name: 'Confirm withdrawal' }).click();
 
-  await expect(page.getByRole('heading', { name: 'Order cancelled' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Withdrawal received' })).toBeVisible();
   await expect(page.getByText(orderNumber)).toBeVisible();
+  await expect(page.getByText('We have sent an acknowledgement of receipt', { exact: false })).toBeVisible();
 });
 
 test('the plain form rejects an order number and email pair that does not match', async ({ page }) => {
   await page.goto('/cancel-order');
   await expect(page.getByRole('heading', { name: 'Withdraw from contract' })).toBeVisible();
 
+  await page.getByLabel('Your name').fill('Nobody');
   await page.getByLabel('Order number').fill('ORD-DOES-NOT-EXIST');
   await page.getByLabel('Confirm your email address').fill('nobody@example.com');
-  await page.getByRole('button', { name: 'Confirm withdrawal' }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
 
   await expect(
     page.getByText('The order number and email address did not match an order. Please check your input.'),

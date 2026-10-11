@@ -34,16 +34,17 @@ test('a personalized item order carries no withdrawal right (Art. 16(c))', async
   const orderNumber = orderNumberText.replace('Your order number is', '').replace('.', '').trim();
 
   // The withdrawal function is not offered for an order with nothing left to withdraw
-  await expect(page.getByRole('link', { name: 'Withdraw from contract here' })).toHaveCount(0);
+  await expect(page.locator('a.btn-outline-danger', { hasText: 'Withdraw from contract here' })).toHaveCount(0);
   await expect(
     page.getByText('All items of this order are exempt from the statutory right of withdrawal', { exact: false }),
   ).toBeVisible();
 
   // And the plain form refuses it as well
   await page.goto('/cancel-order');
+  await page.getByLabel('Your name').fill('Ruby Ring');
   await page.getByLabel('Order number').fill(orderNumber);
   await page.getByLabel('Confirm your email address').fill('ring-buyer@example.com');
-  await page.getByRole('button', { name: 'Confirm withdrawal' }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
 
-  await expect(page.getByText('This order can no longer be cancelled.')).toBeVisible();
+  await expect(page.getByText('This order can no longer be cancelled online.', { exact: false })).toBeVisible();
 });
