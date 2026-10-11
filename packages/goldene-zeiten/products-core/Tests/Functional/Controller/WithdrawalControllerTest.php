@@ -281,8 +281,13 @@ final class WithdrawalControllerTest extends AbstractFrontendTestCase
     {
         $queryParameters = ['tx_productscore_withdrawal[action]' => $action];
         foreach ($arguments as $name => $value) {
-            foreach (is_array($value) ? $value : [null => $value] as $index => $entry) {
-                $queryParameters[sprintf('tx_productscore_withdrawal[%s]', $name) . (is_array($value) ? sprintf('[%d]', $index) : '')] = $entry;
+            $key = sprintf('tx_productscore_withdrawal[%s]', $name);
+            if (!is_array($value)) {
+                $queryParameters[$key] = $value;
+                continue;
+            }
+            foreach ($value as $index => $entry) {
+                $queryParameters[$key . sprintf('[%d]', $index)] = $entry;
             }
         }
 
