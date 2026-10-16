@@ -1,3 +1,4 @@
+{namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
 <html>
 <head>
     <style>
@@ -18,32 +19,32 @@
 </table>
 
 <f:render partial="Invoice/AddressBlock" arguments="{order: order}" />
-<f:render partial="Invoice/LineItems" arguments="{order: order}" />
+<f:render partial="Invoice/LineItems" arguments="{order: order, moneyLocale: moneyLocale}" />
 
 <table style="width: 100%; margin-top: 12px;">
     <tr>
         <td style="width: 70%;"></td>
         <td style="text-align: right; padding: 2px;"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:subtotal_net" /></td>
-        <td style="text-align: right; padding: 2px; width: 100px;">{order.totalNet.decimalString} {order.currency}</td>
+        <td style="text-align: right; padding: 2px; width: 100px;"><p:format.money value="{order.totalNet}" currency="{order.currency}" locale="{moneyLocale}" /></td>
     </tr>
     <tr>
         <td></td>
         <td style="text-align: right; padding: 2px;"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:tax" /></td>
-        <td style="text-align: right; padding: 2px;">{order.totalTax.decimalString} {order.currency}</td>
+        <td style="text-align: right; padding: 2px;"><p:format.money value="{order.totalTax}" currency="{order.currency}" locale="{moneyLocale}" /></td>
     </tr>
     <f:if condition="{order.shippingLabel}">
         <f:then>
             <tr>
                 <td></td>
                 <td style="text-align: right; padding: 2px;"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:shipping" /></td>
-                <td style="text-align: right; padding: 2px;">{order.shippingTotal.decimalString} {order.currency}</td>
+                <td style="text-align: right; padding: 2px;"><p:format.money value="{order.shippingTotal}" currency="{order.currency}" locale="{moneyLocale}" /></td>
             </tr>
         </f:then>
     </f:if>
     <tr>
         <td></td>
         <td style="text-align: right; padding: 2px; border-top: 1px solid #000;"><strong><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:total_gross" /></strong></td>
-        <td style="text-align: right; padding: 2px; border-top: 1px solid #000;"><strong>{order.totalGross.decimalString} {order.currency}</strong></td>
+        <td style="text-align: right; padding: 2px; border-top: 1px solid #000;"><strong><p:format.money value="{order.totalGross}" currency="{order.currency}" locale="{moneyLocale}" /></strong></td>
     </tr>
 </table>
 

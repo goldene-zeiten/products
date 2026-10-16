@@ -97,13 +97,13 @@ final class CheckoutControllerTest extends AbstractFrontendTestCase
         $body = (string)$this->executeFrontendSubRequest($this->thankYouRequest(1, $hash))->getBody();
 
         // 105.16 goods + 5.95 shipping + 2.38 handling + 2.50 payment fee - 10.00 discount = 105.99
-        $this->assertMatchesRegularExpression('/order-summary-subtotal.*?105\.16 EUR/s', $body);
-        $this->assertMatchesRegularExpression('/order-summary-shipping.*?5\.95 EUR/s', $body);
-        $this->assertMatchesRegularExpression('/order-summary-handling-fee.*?2\.38 EUR/s', $body);
-        $this->assertMatchesRegularExpression('/order-summary-payment-fee.*?2\.50 EUR/s', $body);
-        $this->assertMatchesRegularExpression('/order-summary-discount.*?-10\.00 EUR/s', $body);
-        $this->assertMatchesRegularExpression('/order-summary-total.*?105\.99 EUR/s', $body);
-        $this->assertMatchesRegularExpression('/order-summary-vat.*?19.*?16\.91 EUR/s', $body);
+        $this->assertMatchesRegularExpression('/order-summary-subtotal.*?€105\.16/s', $body);
+        $this->assertMatchesRegularExpression('/order-summary-shipping.*?€5\.95/s', $body);
+        $this->assertMatchesRegularExpression('/order-summary-handling-fee.*?€2\.38/s', $body);
+        $this->assertMatchesRegularExpression('/order-summary-payment-fee.*?€2\.50/s', $body);
+        $this->assertMatchesRegularExpression('/order-summary-discount.*?-€10\.00/s', $body);
+        $this->assertMatchesRegularExpression('/order-summary-total.*?€105\.99/s', $body);
+        $this->assertMatchesRegularExpression('/order-summary-vat.*?19.*?€16\.91/s', $body);
     }
 
     private function thankYouRequest(int $order, ?string $hash): InternalRequest

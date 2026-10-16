@@ -1,3 +1,4 @@
+{namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
 <table style="width: 100%; border-collapse: collapse;">
     <thead>
         <tr>
@@ -21,8 +22,8 @@
                 </td>
                 <td style="padding: 4px; border-bottom: 1px solid #ddd;">{item.itemNumber}</td>
                 <td style="text-align: right; padding: 4px; border-bottom: 1px solid #ddd;">{item.quantity}</td>
-                <td style="text-align: right; padding: 4px; border-bottom: 1px solid #ddd;">{item.unitPriceGross.decimalString} {order.currency}</td>
-                <td style="text-align: right; padding: 4px; border-bottom: 1px solid #ddd;">{item.lineTotalGross.decimalString} {order.currency}</td>
+                <td style="text-align: right; padding: 4px; border-bottom: 1px solid #ddd;"><p:format.money value="{item.unitPriceGross}" currency="{order.currency}" locale="{moneyLocale}" /></td>
+                <td style="text-align: right; padding: 4px; border-bottom: 1px solid #ddd;"><p:format.money value="{item.lineTotalGross}" currency="{order.currency}" locale="{moneyLocale}" /></td>
             </tr>
         </f:for>
     </tbody>

@@ -33,6 +33,18 @@ final class OrderSettingsResolver
      * For notifications with no order/site context of their own (e.g. a low-stock warning) -
      * the first configured site's settings, same fallback `getSettings()` uses internally.
      */
+    /**
+     * Locale of the default language of the site the order was placed on, '' when that site is gone.
+     */
+    public function getLocale(Order $order): string
+    {
+        try {
+            return (string)$this->siteFinder->getSiteByIdentifier($order->getSiteIdentifier())->getDefaultLanguage()->getLocale();
+        } catch (SiteNotFoundException) {
+            return '';
+        }
+    }
+
     public function getDefaultSettings(): SettingsInterface
     {
         $sites = $this->siteFinder->getAllSites();

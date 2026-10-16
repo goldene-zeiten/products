@@ -1,6 +1,7 @@
 <html data-namespace-typo3-fluid="true"
       xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
-      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/Voucher/ViewHelpers">
+      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/Voucher/ViewHelpers"
+      xmlns:pc="http://typo3.org/ns/GoldeneZeiten/Products/Core/ViewHelpers">
 <f:comment>
     The voucher feature's own basket UI. It overrides the core basket's no-op voucher slot, and rides the
     core basket plugin, so the core knows nothing about vouchers. Its own labels resolve from this
@@ -25,11 +26,11 @@
                 <tbody>
                     <tr>
                         <th><f:translate key="voucher_discount" extensionName="ProductsVoucher" /></th>
-                        <td>&minus;{discountSummary.discountTotal.decimalString} {basket.currency}</td>
+                        <td>&minus;<pc:format.money value="{discountSummary.discountTotal}" currency="{basket.currency}" /></td>
                     </tr>
                     <tr>
                         <th><f:translate key="final_total" /></th>
-                        <td><strong>{discountSummary.finalTotal.decimalString} {basket.currency}</strong></td>
+                        <td><strong><pc:format.money value="{discountSummary.finalTotal}" currency="{basket.currency}" /></strong></td>
                     </tr>
                 </tbody>
             </table>

@@ -1,0 +1,8 @@
+<f:if condition="{address.company}">{address.company}
+</f:if><f:if condition="{address.salutation}">{address.salutation} </f:if>{address.firstName} {address.lastName}
+{address.street}<f:if condition="{address.houseNumber}"> {address.houseNumber}</f:if>
+{address.zip} {address.city}
+{address.country}
+<f:if condition="{address.telephone}">{address.telephone}
+</f:if><f:if condition="{address.vatId}"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:vat_id" />: {address.vatId}
+</f:if>

@@ -1,3 +1,4 @@
+{namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
 <div class="order-list">
     <h2><f:translate key="my_orders" /></h2>
     <f:if condition="{orders}">
@@ -17,7 +18,7 @@
                         <tr>
                             <td>{order.orderNumber}</td>
                             <td>{order.orderDate -> f:format.date(format: 'd.m.Y H:i')}</td>
-                            <td>{order.totalGross.decimalString} {order.currency}</td>
+                            <td><p:format.money value="{order.totalGross}" currency="{order.currency}" locale="{moneyLocale}" /></td>
                             <td>{order.status.value}</td>
                             <td>
                                 <f:link.action action="show" arguments="{order: order}" class="btn btn-sm btn-info"><f:translate key="details" /></f:link.action>

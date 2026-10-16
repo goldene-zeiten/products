@@ -199,3 +199,34 @@ Example listener:
             }
         }
     }
+
+BeforeOrderMailSentEvent
+------------------------
+
+Fires right before an order mail is sent: the confirmation, the merchant notification, the status
+change mail and both withdrawal mails. :php:`getTemplate()` tells them apart
+(``OrderConfirmation``, ``MerchantNotification``, ``OrderStatusChanged``, ``Withdrawal``,
+``WithdrawalAcknowledgement``). Listeners can assign further variables to the mail view, add
+attachments or recipients.
+
+Mutable: Yes (the :php:`FluidEmail` returned by :php:`getEmail()`)
+
+Example listener:
+
+..  code-block:: php
+
+    #[AsEventListener]
+    final class AddLoyaltyCodeToConfirmation
+    {
+        public function __invoke(BeforeOrderMailSentEvent $event): void
+        {
+            if ($event->getTemplate() !== 'OrderConfirmation') {
+                return;
+            }
+            $event->getEmail()->assign('loyaltyCode', $this->codeFor($event->getOrder()));
+        }
+    }
+
+Render the variable by overriding the mail template or the ``Email/OrderDetails`` partial through
+``products.email.templateRootPaths`` / ``products.email.partialRootPaths``.
+

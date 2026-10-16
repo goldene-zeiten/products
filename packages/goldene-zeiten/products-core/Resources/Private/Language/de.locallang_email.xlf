@@ -179,6 +179,34 @@
 				<source>Y-m-d H:i:s T</source>
 				<target>d.m.Y, H:i:s \U\h\r T</target>
 			</trans-unit>
+			<trans-unit id="billing_address" resname="billing_address">
+				<source>Billing address</source>
+				<target>Rechnungsadresse</target>
+			</trans-unit>
+			<trans-unit id="delivery_address" resname="delivery_address">
+				<source>Delivery address</source>
+				<target>Lieferadresse</target>
+			</trans-unit>
+			<trans-unit id="shipping_method" resname="shipping_method">
+				<source>Shipping method</source>
+				<target>Versandart</target>
+			</trans-unit>
+			<trans-unit id="payment_method" resname="payment_method">
+				<source>Payment method</source>
+				<target>Zahlungsart</target>
+			</trans-unit>
+			<trans-unit id="payment_instructions" resname="payment_instructions">
+				<source>Payment instructions</source>
+				<target>Zahlungshinweise</target>
+			</trans-unit>
+			<trans-unit id="customer_note" resname="customer_note">
+				<source>Your comment</source>
+				<target>Ihr Kommentar</target>
+			</trans-unit>
+			<trans-unit id="vat_id" resname="vat_id">
+				<source>VAT ID</source>
+				<target>USt-IdNr.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

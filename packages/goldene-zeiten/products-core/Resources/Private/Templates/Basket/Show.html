@@ -1,3 +1,4 @@
+{namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
 <div class="basket">
     <h2><f:translate key="shopping_basket" /></h2>
     <f:flashMessages />
@@ -41,8 +42,8 @@
                                     <f:form.submit value="{f:translate(key: 'update')}" />
                                 </f:form>
                             </td>
-                            <td>{item.unitPriceGross.decimalString} {basket.currency}</td>
-                            <td>{item.lineTotalGross.decimalString} {basket.currency}</td>
+                            <td><p:format.money value="{item.unitPriceGross}" currency="{basket.currency}" locale="{moneyLocale}" /></td>
+                            <td><p:format.money value="{item.lineTotalGross}" currency="{basket.currency}" locale="{moneyLocale}" /></td>
                             <td>
                                 <f:form action="remove" controller="Basket" requestToken="products/basket" class="d-inline">
                                     <f:form.hidden name="product" value="{item.product.uid}" />
@@ -60,24 +61,24 @@
                 <tfoot>
                     <tr>
                         <th colspan="3"><f:translate key="total_net" /></th>
-                        <td>{basket.totalNet.decimalString} {basket.currency}</td>
+                        <td><p:format.money value="{basket.totalNet}" currency="{basket.currency}" locale="{moneyLocale}" /></td>
                         <td></td>
                     </tr>
                     <tr>
                         <th colspan="3"><f:translate key="tax" /></th>
-                        <td>{basket.totalTax.decimalString} {basket.currency}</td>
+                        <td><p:format.money value="{basket.totalTax}" currency="{basket.currency}" locale="{moneyLocale}" /></td>
                         <td></td>
                     </tr>
                     <tr>
                         <th colspan="3"><f:translate key="total_gross" /></th>
-                        <td><strong>{basket.totalGross.decimalString} {basket.currency}</strong></td>
+                        <td><strong><p:format.money value="{basket.totalGross}" currency="{basket.currency}" locale="{moneyLocale}" /></strong></td>
                         <td></td>
                     </tr>
                     <f:if condition="{basket.depositTotal.cents} > 0">
                         <f:then>
                             <tr>
                                 <th colspan="3"><f:translate key="deposit_total" /></th>
-                                <td>{basket.depositTotal.decimalString} {basket.currency}</td>
+                                <td><p:format.money value="{basket.depositTotal}" currency="{basket.currency}" locale="{moneyLocale}" /></td>
                                 <td></td>
                             </tr>
                         </f:then>

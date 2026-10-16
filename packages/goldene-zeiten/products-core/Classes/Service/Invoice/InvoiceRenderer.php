@@ -31,7 +31,10 @@ final class InvoiceRenderer
             partialRootPaths: $this->settingsResolver->getPathsSetting($settings, 'products.invoice.partialRootPaths', self::DEFAULT_PARTIAL_ROOT_PATHS),
             layoutRootPaths: $this->settingsResolver->getPathsSetting($settings, 'products.invoice.layoutRootPaths', self::DEFAULT_LAYOUT_ROOT_PATHS),
         ));
-        $view->assign('order', $order);
+        $view->assignMultiple([
+            'order' => $order,
+            'moneyLocale' => $this->settingsResolver->getLocale($order),
+        ]);
 
         return $view->render('Invoice');
     }

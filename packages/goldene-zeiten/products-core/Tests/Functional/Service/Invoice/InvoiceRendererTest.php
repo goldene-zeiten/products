@@ -36,7 +36,7 @@ final class InvoiceRendererTest extends AbstractFrontendTestCase
         yield 'invoice and order numbers' => ['expectedSubstring1' => 'INV-1', 'expectedSubstring2' => 'ORD-1'];
         yield 'line item details' => ['expectedSubstring1' => 'Red Shoes', 'expectedSubstring2' => 'SHOE-RED'];
         yield 'billing address' => ['expectedSubstring1' => 'Jane', 'expectedSubstring2' => 'Shopper'];
-        yield 'grand total' => ['expectedSubstring1' => 'Sampletown', 'expectedSubstring2' => '100.00 EUR'];
+        yield 'grand total' => ['expectedSubstring1' => 'Sampletown', 'expectedSubstring2' => '€100.00'];
     }
 
     private function fetchOrder(): Order

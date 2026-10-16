@@ -158,6 +158,29 @@ An immutable value object returned by :php:`initiate()`, :php:`handleReturn()`, 
     Return this if the gateway rejects the payment synchronously, or if you detect a problem
     before contacting the gateway.
 
+Payment Instructions in the Order Mails
+=======================================
+
+A method whose customer still has to act after placing the order — prepayment, for example —
+additionally implements :php:`PaymentInstructionsProviderInterface`. The confirmation and merchant
+mails show the returned plain text below the payment method; an empty string shows nothing.
+
+..  code-block:: php
+
+    final class PrepaymentMethod implements PaymentMethodInterface, PaymentInstructionsProviderInterface
+    {
+        // ... PaymentMethodInterface methods
+
+        public function getPaymentInstructions(Order $order): string
+        {
+            return sprintf(
+                "Please transfer the total to IBAN %s, reference %s.",
+                $this->iban,
+                $order->getOrderNumber()
+            );
+        }
+    }
+
 Registration
 ============
 
