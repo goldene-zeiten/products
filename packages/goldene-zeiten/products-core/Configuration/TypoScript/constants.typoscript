@@ -109,6 +109,8 @@ products {
             enabled = 1
             # cat=products/payment; type=string; label=Invoice not with these shipping methods: Comma-separated shipping providers (e.g. pickup) or options (e.g. ups:express)
             excludedShipping =
+            # cat=products/payment; type=string; label=Invoice only for these customer groups: Comma-separated frontend user group uids; empty offers invoice to everyone
+            frontendUserGroups =
         }
     }
     shipping {

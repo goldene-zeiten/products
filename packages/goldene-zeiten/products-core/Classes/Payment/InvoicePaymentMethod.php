@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Core\Event\InvoiceNumberGeneratedEvent;
 use GoldeneZeiten\Products\Core\Service\Order\NumberRangeService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -25,7 +26,8 @@ final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePa
 {
     public function __construct(
         private readonly NumberRangeService $numberRangeService,
-        private readonly EventDispatcherInterface $eventDispatcher
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly Context $context
     ) {}
 
     public function getIdentifier(): string
@@ -48,7 +50,22 @@ final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePa
         }
         $settings = $site->getSettings();
         $excludedShipping = array_filter(array_map(trim(...), explode(',', (string)$settings->get('products.payment.invoice.excludedShipping', ''))));
-        return (bool)$settings->get('products.payment.invoice.enabled', true) && !$context->isShippedWithAnyOf($excludedShipping);
+        return (bool)$settings->get('products.payment.invoice.enabled', true)
+            && !$context->isShippedWithAnyOf($excludedShipping)
+            && $this->isCustomerAllowed((string)$settings->get('products.payment.invoice.frontendUserGroups', ''));
+    }
+
+    /**
+     * Invoice may be reserved for regular customers, i.e. members of chosen frontend user groups.
+     */
+    private function isCustomerAllowed(string $allowedGroups): bool
+    {
+        $allowed = array_map(intval(...), array_filter(array_map(trim(...), explode(',', $allowedGroups))));
+        if ($allowed === []) {
+            return true;
+        }
+        $customerGroups = $this->context->getPropertyFromAspect('frontend.user', 'groupIds', []);
+        return array_intersect($allowed, is_array($customerGroups) ? array_map(intval(...), $customerGroups) : []) !== [];
     }
 
     /**

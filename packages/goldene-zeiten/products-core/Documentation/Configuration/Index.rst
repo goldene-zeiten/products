@@ -248,6 +248,13 @@ from. Set it before creating any content.
         comma-separated, for which invoice is not offered - for example when orders collected in
         store are paid on collection.
 
+    ..  confval:: products.payment.invoice.frontendUserGroups
+        :type: string
+        :Default: (empty)
+
+        Frontend user group uids, comma-separated, whose members may pay by invoice - for example
+        regular customers. Empty offers invoice to everyone, guests included.
+
     ..  confval:: products.invoice.templateRootPaths
         :type: stringlist
         :Default: EXT:products_core/Resources/Private/Templates/Invoice/
