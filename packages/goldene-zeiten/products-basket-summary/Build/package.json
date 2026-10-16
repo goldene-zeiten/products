@@ -1,0 +1,17 @@
+{
+  "name": "products-basket-summary-build",
+  "description": "Build toolchain (TypeScript) for the goldene-zeiten/products-basket-summary TYPO3 extension.",
+  "private": true,
+  "license": "GPL-2.0-or-later",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "npm run build:js",
+    "build:js": "node build/build-js.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
