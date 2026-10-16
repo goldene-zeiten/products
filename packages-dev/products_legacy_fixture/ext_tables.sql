@@ -182,6 +182,8 @@ CREATE TABLE sys_products_orders (
 	email varchar(80) DEFAULT '' NOT NULL,
 	amount decimal(19,2) DEFAULT '0.00' NOT NULL,
 	pay_mode tinyint(3) DEFAULT '0' NOT NULL,
+	payment varchar(255) DEFAULT '' NOT NULL,
+	shipping varchar(255) DEFAULT '' NOT NULL,
 	tracking_code varchar(64) DEFAULT '' NOT NULL,
 	status tinyint(4) unsigned DEFAULT '0' NOT NULL,
 	status_log blob,

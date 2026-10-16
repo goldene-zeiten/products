@@ -50,6 +50,23 @@ final class LegacyMigrationConfiguration
     }
 
     /**
+     * A map of legacy TypoScript keys, e.g. `migration.orderPaymentMethods` = "10:cashondelivery, 90:paypal".
+     *
+     * @return array<int, string> legacy key => target, the target may contain further colons
+     */
+    public function getKeyMap(string $key): array
+    {
+        $map = [];
+        foreach ($this->getList($key) as $entry) {
+            [$legacyKey, $target] = array_map(trim(...), explode(':', $entry, 2)) + [1 => ''];
+            if (ctype_digit($legacyKey) && $target !== '') {
+                $map[(int)$legacyKey] = $target;
+            }
+        }
+        return $map;
+    }
+
+    /**
      * @return string[]
      */
     public function getList(string $key): array

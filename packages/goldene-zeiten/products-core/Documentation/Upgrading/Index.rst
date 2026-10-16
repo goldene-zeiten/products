@@ -87,6 +87,28 @@ Configuration`, tab :guilabel:`migration`) before running the product and articl
     The legacy shop used ``note2`` for meta keywords. The product wizard then takes it as the
     product's keywords where ``tt_products.keyword`` is empty, which it always migrates.
 
+..  confval:: migration.orderPaymentMethods
+    :name: upgrading-order-payment-methods
+    :type: string
+    :Default: (empty)
+
+    Maps the TypoScript keys of ``plugin.tt_products.payment`` to payment methods for the order
+    migration, e.g. ``10:cashondelivery, 20:prepayment, 30:cash, 40:invoice, 90:paypal``. tt_products
+    stores the key as the leading number of an order's ``payment`` text (``90: PayPal Gateway``).
+    Orders with an unmapped key become ``invoice`` and are reported.
+
+..  confval:: migration.orderShippingOptions
+    :name: upgrading-order-shipping-options
+    :type: string
+    :Default: (empty)
+
+    Maps the TypoScript keys of ``plugin.tt_products.shipping`` to a shipping provider and, optionally,
+    an option, e.g. ``10:tablerate:1, 20:pickup``. The legacy shipping title becomes the order's
+    shipping label. tt_products stores no pick-up branch, so ``pickup`` orders get none.
+
+The order migration skips abandoned checkouts - rows tt_products created when a checkout started that
+have no customer, no amount and no payment - and reports them.
+
 The same values can be set on the command line, for example:
 
 ..  code-block:: bash
