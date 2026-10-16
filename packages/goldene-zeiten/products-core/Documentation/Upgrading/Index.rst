@@ -112,6 +112,13 @@ Run the wizards in this order — each one links its rows back to the previous o
 Known limitations
 ==================
 
+*   **Variant, tag and free-text columns are not migrated, but reported.** The product text comes
+    from ``note``, the purchase price from ``directcost``; the variant columns (``color``, ``size``,
+    ``description``, ``material`` …), ``note2``, ``quality``, ``form`` and every other column
+    carrying data without a counterpart here are listed by the product and article wizards with the
+    number of affected records. Review that output before running the cleanup wizard, which drops
+    the columns with their tables.
+
 *   **Secondary thumbnails and slider images are not migrated.** Legacy ``smallimage`` (products,
     articles) and ``sliderimage`` (categories) are redundant pre-generated thumbnails of the main
     image; FAL generates thumbnails on demand, so only the main ``image`` (and, for products, the

@@ -34,6 +34,29 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
     private const LOCAL_TABLE = 'tx_products_domain_model_article';
     private const LOCAL_PRODUCT_TABLE = 'tx_products_domain_model_product';
 
+    /**
+     * Migrated here or by the media wizard (`image`); `smallimage` is reported by the media wizard.
+     *
+     * @var string[]
+     */
+    private const HANDLED_COLUMNS = [
+        'title',
+        'itemnumber',
+        'price',
+        'price2',
+        'inStock',
+        'basketminquantity',
+        'basketmaxquantity',
+        'weight',
+        'uid_product',
+        'config',
+        'config_type',
+        'image',
+        'image_uid',
+        'smallimage',
+        'smallimage_uid',
+    ];
+
     private OutputInterface $output;
 
     public function __construct(
@@ -44,6 +67,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
         private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
         private readonly LegacyArticleProductResolver $articleProductResolver,
         private readonly LegacyPriceMigrator $priceMigrator,
+        private readonly LegacyColumnReporter $columnReporter,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -93,6 +117,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
             }
         }
         $this->overlayMigrator->migrate($this->output, $this->overlayConfig(), $this->overlayValues(...));
+        $this->columnReporter->report(self::LEGACY_TABLE, self::HANDLED_COLUMNS, $this->output);
         return true;
     }
 
