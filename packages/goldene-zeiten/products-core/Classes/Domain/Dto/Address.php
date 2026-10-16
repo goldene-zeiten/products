@@ -19,7 +19,9 @@ final readonly class Address
         private string $zip = '',
         private string $city = '',
         private string $country = '',
-        private string $state = ''
+        private string $state = '',
+        private string $telephone = '',
+        private string $vatId = '',
     ) {}
 
     /**
@@ -41,6 +43,8 @@ final readonly class Address
             'city' => $this->city,
             'country' => $this->country,
             'state' => $this->state,
+            'telephone' => $this->telephone,
+            'vatId' => $this->vatId,
         ];
     }
 
@@ -59,6 +63,8 @@ final readonly class Address
         $this->city = (string)($data['city'] ?? '');
         $this->country = (string)($data['country'] ?? '');
         $this->state = (string)($data['state'] ?? '');
+        $this->telephone = (string)($data['telephone'] ?? '');
+        $this->vatId = (string)($data['vatId'] ?? '');
     }
 
     public function getEmail(): string
@@ -114,5 +120,15 @@ final readonly class Address
     public function getState(): string
     {
         return $this->state;
+    }
+
+    public function getTelephone(): string
+    {
+        return $this->telephone;
+    }
+
+    public function getVatId(): string
+    {
+        return $this->vatId;
     }
 }

@@ -207,6 +207,14 @@
 				<source>VAT ID</source>
 				<target>USt-IdNr.</target>
 			</trans-unit>
+			<trans-unit id="desired_delivery_date" resname="desired_delivery_date">
+				<source>Desired delivery date</source>
+				<target>Wunschliefertermin</target>
+			</trans-unit>
+			<trans-unit id="date_format" resname="date_format">
+				<source>Y-m-d</source>
+				<target>d.m.Y</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

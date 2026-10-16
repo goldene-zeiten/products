@@ -547,6 +547,86 @@
 				<source>Y-m-d H:i:s T</source>
 				<target>d.m.Y, H:i:s \U\h\r T</target>
 			</trans-unit>
+			<trans-unit id="salutation" resname="salutation">
+				<source>Salutation</source>
+				<target>Anrede</target>
+			</trans-unit>
+			<trans-unit id="select_salutation" resname="select_salutation">
+				<source>Please select</source>
+				<target>Bitte wählen</target>
+			</trans-unit>
+			<trans-unit id="salutation.mr" resname="salutation.mr">
+				<source>Mr</source>
+				<target>Herr</target>
+			</trans-unit>
+			<trans-unit id="salutation.ms" resname="salutation.ms">
+				<source>Ms</source>
+				<target>Frau</target>
+			</trans-unit>
+			<trans-unit id="salutation.diverse" resname="salutation.diverse">
+				<source>Mx</source>
+				<target>Divers</target>
+			</trans-unit>
+			<trans-unit id="salutation.company" resname="salutation.company">
+				<source>Company</source>
+				<target>Firma</target>
+			</trans-unit>
+			<trans-unit id="company" resname="company">
+				<source>Company</source>
+				<target>Firma</target>
+			</trans-unit>
+			<trans-unit id="telephone" resname="telephone">
+				<source>Phone</source>
+				<target>Telefon</target>
+			</trans-unit>
+			<trans-unit id="vat_id" resname="vat_id">
+				<source>VAT ID</source>
+				<target>USt-IdNr.</target>
+			</trans-unit>
+			<trans-unit id="customer_note" resname="customer_note">
+				<source>Comment / special requests</source>
+				<target>Kommentar / Sonderwünsche</target>
+			</trans-unit>
+			<trans-unit id="desired_delivery_date" resname="desired_delivery_date">
+				<source>Desired delivery date</source>
+				<target>Wunschliefertermin</target>
+			</trans-unit>
+			<trans-unit id="date_format" resname="date_format">
+				<source>Y-m-d</source>
+				<target>d.m.Y</target>
+			</trans-unit>
+			<trans-unit id="checkout_desired_delivery_date_invalid" resname="checkout_desired_delivery_date_invalid">
+				<source>Please choose a desired delivery date after today.</source>
+				<target>Bitte wählen Sie einen Wunschliefertermin nach dem heutigen Tag.</target>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_salutation" resname="checkout_address_error_salutation">
+				<source>Please choose a salutation.</source>
+				<target>Bitte wählen Sie eine Anrede.</target>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_company" resname="checkout_address_error_company">
+				<source>Please enter your company.</source>
+				<target>Bitte geben Sie Ihre Firma an.</target>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_telephone" resname="checkout_address_error_telephone">
+				<source>Please enter your phone number.</source>
+				<target>Bitte geben Sie Ihre Telefonnummer an.</target>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_vatId" resname="checkout_address_error_vatId">
+				<source>Please enter your VAT ID.</source>
+				<target>Bitte geben Sie Ihre USt-IdNr. an.</target>
+			</trans-unit>
+			<trans-unit id="legal_link_terms" resname="legal_link_terms">
+				<source>Terms and conditions</source>
+				<target>AGB</target>
+			</trans-unit>
+			<trans-unit id="legal_link_withdrawal" resname="legal_link_withdrawal">
+				<source>Withdrawal instructions</source>
+				<target>Widerrufsbelehrung</target>
+			</trans-unit>
+			<trans-unit id="legal_link_privacy" resname="legal_link_privacy">
+				<source>Privacy policy</source>
+				<target>Datenschutzerklärung</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

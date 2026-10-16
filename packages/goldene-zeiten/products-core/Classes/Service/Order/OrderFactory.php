@@ -114,6 +114,9 @@ final class OrderFactory
             $order->setDeliveryAddress($this->buildDeliveryAddress($details->getDeliveryAddress()));
         }
         $order->setGiftMessage($details->getGiftMessage());
+        $order->setCustomerNote($details->getCustomerNote());
+        $desiredDeliveryDate = $details->getDesiredDeliveryDate();
+        $order->setDesiredDeliveryDate($desiredDeliveryDate !== null ? \DateTime::createFromImmutable($desiredDeliveryDate) : null);
     }
 
     private function roundingMode(?Site $site): string
@@ -150,6 +153,8 @@ final class OrderFactory
         $orderAddress->setZip($address->getZip());
         $orderAddress->setCity($address->getCity());
         $orderAddress->setCountry($address->getCountry());
+        $orderAddress->setTelephone($address->getTelephone());
+        $orderAddress->setVatId($address->getVatId());
         return $orderAddress;
     }
 

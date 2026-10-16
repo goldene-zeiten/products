@@ -14,7 +14,9 @@ final readonly class CheckoutSelections
         private string $shippingOptionKey = '',
         private ?Address $deliveryAddress = null,
         private string $giftMessage = '',
-        private bool $withdrawalWaiverAccepted = false
+        private bool $withdrawalWaiverAccepted = false,
+        private string $customerNote = '',
+        private ?\DateTimeImmutable $desiredDeliveryDate = null,
     ) {}
 
     public function getShippingOptionKey(): string
@@ -35,5 +37,15 @@ final readonly class CheckoutSelections
     public function isWithdrawalWaiverAccepted(): bool
     {
         return $this->withdrawalWaiverAccepted;
+    }
+
+    public function getCustomerNote(): string
+    {
+        return $this->customerNote;
+    }
+
+    public function getDesiredDeliveryDate(): ?\DateTimeImmutable
+    {
+        return $this->desiredDeliveryDate;
     }
 }

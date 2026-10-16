@@ -1,0 +1,17 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
+<f:if condition="{settings.pids.termsPage} || {settings.pids.withdrawalInstructionsPage} || {settings.pids.privacyPage}">
+    <div class="checkout-legal-links small">
+        <f:if condition="{settings.pids.termsPage}">
+            <f:link.page pageUid="{settings.pids.termsPage}" target="_blank"><f:translate key="legal_link_terms" extensionName="ProductsCore" /></f:link.page>
+        </f:if>
+        <f:if condition="{settings.pids.withdrawalInstructionsPage}">
+            <f:link.page pageUid="{settings.pids.withdrawalInstructionsPage}" target="_blank"><f:translate key="legal_link_withdrawal" extensionName="ProductsCore" /></f:link.page>
+        </f:if>
+        <f:if condition="{settings.pids.privacyPage}">
+            <f:link.page pageUid="{settings.pids.privacyPage}" target="_blank"><f:translate key="legal_link_privacy" extensionName="ProductsCore" /></f:link.page>
+        </f:if>
+    </div>
+</f:if>
+</html>

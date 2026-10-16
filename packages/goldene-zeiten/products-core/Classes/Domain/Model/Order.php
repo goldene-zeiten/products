@@ -57,6 +57,7 @@ class Order extends AbstractEntity
     protected ObjectStorage $items;
     protected string $customerNote = '';
     protected string $giftMessage = '';
+    protected ?\DateTime $desiredDeliveryDate = null;
     protected ?\DateTime $termsAcceptedAt = null;
     protected ?\DateTime $withdrawalWaiverAcceptedAt = null;
     protected ?\DateTime $deliveredAt = null;
@@ -430,6 +431,16 @@ class Order extends AbstractEntity
     public function setCustomerNote(string $customerNote): void
     {
         $this->customerNote = $customerNote;
+    }
+
+    public function getDesiredDeliveryDate(): ?\DateTime
+    {
+        return $this->desiredDeliveryDate;
+    }
+
+    public function setDesiredDeliveryDate(?\DateTime $desiredDeliveryDate): void
+    {
+        $this->desiredDeliveryDate = $desiredDeliveryDate;
     }
 
     public function getGiftMessage(): string

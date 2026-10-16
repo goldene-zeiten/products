@@ -21,7 +21,9 @@ final readonly class PlacementDetails
         private ?ShippingSelection $shippingSelection = null,
         private ?Address $deliveryAddress = null,
         private string $giftMessage = '',
-        private bool $withdrawalWaiverAccepted = false
+        private bool $withdrawalWaiverAccepted = false,
+        private string $customerNote = '',
+        private ?\DateTimeImmutable $desiredDeliveryDate = null,
     ) {}
 
     public function getAdjustments(): AdjustmentCollection
@@ -47,5 +49,15 @@ final readonly class PlacementDetails
     public function isWithdrawalWaiverAccepted(): bool
     {
         return $this->withdrawalWaiverAccepted;
+    }
+
+    public function getCustomerNote(): string
+    {
+        return $this->customerNote;
+    }
+
+    public function getDesiredDeliveryDate(): ?\DateTimeImmutable
+    {
+        return $this->desiredDeliveryDate;
     }
 }

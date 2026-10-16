@@ -155,7 +155,9 @@ final class OrderCreationService
             $shippingSelection,
             $checkoutSelections->getDeliveryAddress(),
             $checkoutSelections->getGiftMessage(),
-            $checkoutSelections->isWithdrawalWaiverAccepted()
+            $checkoutSelections->isWithdrawalWaiverAccepted(),
+            $checkoutSelections->getCustomerNote(),
+            $checkoutSelections->getDesiredDeliveryDate(),
         );
 
         return new PlacementContext($details, $discountContext, $loyaltyContext, $frontendUser);
