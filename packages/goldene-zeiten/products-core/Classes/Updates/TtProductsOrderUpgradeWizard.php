@@ -158,7 +158,9 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
         )->executeStatement();
         $orderUid = (int)$this->connectionPool->getConnectionForTable(self::LOCAL_TABLE)->lastInsertId();
         $this->migrationHelper->recordMapping(self::LEGACY_TABLE, $legacyUid, self::LOCAL_TABLE, $orderUid);
-        $this->migrateItems($legacyUid, $orderUid, $pid);
+        if (!$this->migrateItems($legacyUid, $orderUid, $pid)) {
+            $this->migrateOrderDataItems($legacyUid, $legacyRow, $orderUid, $pid);
+        }
     }
 
     /**
@@ -407,7 +409,10 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
         return is_array($parsed) ? $parsed : null;
     }
 
-    private function migrateItems(int $legacyOrderUid, int $orderUid, int $pid): void
+    /**
+     * @return bool whether the order had lines in the mm table
+     */
+    private function migrateItems(int $legacyOrderUid, int $orderUid, int $pid): bool
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::LEGACY_MM_TABLE);
         $queryBuilder->getRestrictions()->removeAll();
@@ -415,9 +420,90 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
             ->andWhere($queryBuilder->expr()->eq('deleted', 0))
             ->andWhere($queryBuilder->expr()->eq('uid_local', $queryBuilder->createNamedParameter($legacyOrderUid)))
             ->executeQuery();
+        $found = false;
         while ($row = $result->fetchAssociative()) {
             $this->migrateItem($row, $orderUid, $pid);
+            $found = true;
         }
+        return $found;
+    }
+
+    /**
+     * tt_products 3.5 often writes no mm rows; the lines then live in orderData/itemArray, keyed by item
+     * number, with the product row in `rec`, the article in `rec/ext/tt_products_articles` and the prices
+     * actually charged next to it.
+     *
+     * @param array<string, mixed> $legacyRow
+     */
+    private function migrateOrderDataItems(int $legacyUid, array $legacyRow, int $orderUid, int $pid): void
+    {
+        $orderData = $this->parseSerializedBlob($legacyUid, $legacyRow['orderData'] ?? null, 'orderData') ?? [];
+        $itemArray = is_array($orderData['itemArray'] ?? null) ? $orderData['itemArray'] : [];
+        $itemArray = is_array($itemArray['tt_products'] ?? null) ? $itemArray['tt_products'] : $itemArray;
+        foreach ($itemArray as $lines) {
+            foreach (is_array($lines) ? $lines : [] as $line) {
+                if (is_array($line) && is_array($line['rec'] ?? null)) {
+                    $this->migrateOrderDataItem($legacyUid, $line, $orderUid, $pid);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $line
+     */
+    private function migrateOrderDataItem(int $legacyUid, array $line, int $orderUid, int $pid): void
+    {
+        $record = $line['rec'];
+        $productLocalUid = $this->migrationHelper->resolveLocalUid(self::LEGACY_PRODUCT_TABLE, (int)($record['uid'] ?? 0), self::LOCAL_PRODUCT_TABLE);
+        if ($productLocalUid === null || $productLocalUid === 0) {
+            $this->output->writeln(sprintf(
+                '<comment>sys_products_orders uid %d ordered missing product uid %d, line dropped.</comment>',
+                $legacyUid,
+                (int)($record['uid'] ?? 0)
+            ));
+            return;
+        }
+        $legacyArticleUid = (int)($record['ext']['tt_products_articles'][0]['uid'] ?? 0);
+        $articleLocalUid = $legacyArticleUid > 0
+            ? (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_ARTICLE_TABLE, $legacyArticleUid, self::LOCAL_ARTICLE_TABLE)
+            : 0;
+        $values = $this->orderDataItemValues($line, $articleLocalUid);
+        $values['options'] = (string)json_encode(new \stdClass());
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::LOCAL_ITEM_TABLE);
+        $queryBuilder->insert(self::LOCAL_ITEM_TABLE)->values([
+            'pid' => $pid,
+            'parent_order' => $orderUid,
+            'product' => $productLocalUid,
+            'article' => $articleLocalUid,
+            ...$values,
+        ])->executeStatement();
+    }
+
+    /**
+     * The charged prices carry float noise and are rounded to cents; net and VAT of the line follow its gross.
+     *
+     * @param array<string, mixed> $line
+     * @return array<string, mixed>
+     */
+    private function orderDataItemValues(array $line, int $articleLocalUid): array
+    {
+        $record = $line['rec'];
+        $article = $articleLocalUid !== 0 ? $this->fetchRow(self::LOCAL_ARTICLE_TABLE, $articleLocalUid, ['title', 'item_number']) : null;
+        $lineGross = (int)round((float)($line['totalTax'] ?? 0) * 100);
+        $lineNet = (int)round((float)($line['totalNoTax'] ?? 0) * 100);
+        return [
+            'title' => (string)($record['title'] ?? ''),
+            'article_title' => (string)($article['title'] ?? ''),
+            'item_number' => (string)($article['item_number'] ?? $record['itemnumber'] ?? ''),
+            'quantity' => (int)($line['count'] ?? 0),
+            'unit_price_net' => (int)round((float)($line['priceNoTax'] ?? 0) * 100),
+            'unit_price_gross' => (int)round((float)($line['priceTax'] ?? 0) * 100),
+            'tax_rate' => (float)($line['tax'] ?? 0) / 100,
+            'line_total_net' => $lineNet,
+            'line_total_tax' => $lineGross - $lineNet,
+            'line_total_gross' => $lineGross,
+        ];
     }
 
     /**

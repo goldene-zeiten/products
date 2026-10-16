@@ -1,0 +1,4 @@
+"tx_products_domain_model_orderitem",,,,,,,,,,,,,
+,"product","article","title","article_title","item_number","quantity","unit_price_net","unit_price_gross","tax_rate","line_total_net","line_total_tax","line_total_gross"
+,80,0,"Signet Ring","","RING-1",1,9227,10980,0.19,9227,1753,10980
+,81,90,"Wedding Band","Gold 585","BAND-1-GG",2,2102,2501,0.19,4203,799,5002
