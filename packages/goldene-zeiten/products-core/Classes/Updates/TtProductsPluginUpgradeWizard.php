@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Core\Updates;
 
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\CategoryMigrationPrerequisite;
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\ProductMigrationPrerequisite;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Database\Connection;
@@ -44,6 +45,7 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
     private const LOCAL_CATEGORY_TABLE = 'tx_products_domain_model_category';
     private const PRODUCT_SELECTION_CTYPES = ['productscore_productlist'];
     private const CATEGORY_SELECTION_CTYPES = ['productscore_productlist', 'productscore_categorylist'];
+    private const MIGRATED_FLEXFORM_FIELDS = ['display_mode', 'productSelection', 'categorySelection', 'fields'];
 
     private OutputInterface $output;
 
@@ -210,6 +212,7 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
             $this->reportUntouched($row);
             return [];
         }
+        $this->reportDroppedSettings($row);
         $selections = $this->resolveSelections($row);
         $parts = [];
         foreach ($targets as $sortingOffset => $target) {
@@ -439,6 +442,37 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
             $this->pageTitle((int)$row['pid']),
             (string)$row['list_type'],
             $modes === [] ? '(none selected)' : implode(', ', $modes)
+        ));
+    }
+
+    /**
+     * Lists FlexForm fields and the starting point (`pages`, the legacy `pid_list`) the new element
+     * does not take over, so the integrator can rebuild a filtered list, e.g. as a category selection.
+     *
+     * @param array<string, mixed> $row
+     */
+    private function reportDroppedSettings(array $row): void
+    {
+        $dropped = array_diff_key(
+            array_filter($this->parseFlexForm($row), static fn(string $value): bool => trim($value) !== ''),
+            array_flip(self::MIGRATED_FLEXFORM_FIELDS)
+        );
+        if (trim((string)($row['pages'] ?? '')) !== '') {
+            $dropped['pages'] = (string)$row['pages'];
+        }
+        if ($dropped === []) {
+            return;
+        }
+        $settings = [];
+        foreach ($dropped as $field => $value) {
+            $settings[] = sprintf('%s = "%s"', $field, OutputFormatter::escape($value));
+        }
+        $this->output->writeln(sprintf(
+            '<comment>tt_content uid %d on page %d ("%s") was migrated without these legacy settings: %s</comment>',
+            (int)$row['uid'],
+            (int)$row['pid'],
+            $this->pageTitle((int)$row['pid']),
+            implode(', ', $settings)
         ));
     }
 

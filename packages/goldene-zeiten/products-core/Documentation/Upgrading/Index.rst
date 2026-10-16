@@ -94,6 +94,13 @@ Run the wizards in this order — each one links its rows back to the previous o
     vouchers, the DAM and address-book families, the ``USER1``-``USER5`` hook slots) are left
     completely untouched and reported with their uid and page, for manual review.
 
+    Legacy settings the new elements have no equivalent for are reported per migrated element:
+    every non-empty FlexForm field besides the mode and the selections (``product_where``, ``myTS``,
+    ``template_suffix`` …) and the starting point (:sql:`tt_content.pages`). A list restricted that
+    way shows the whole catalog afterwards until it is rebuilt, typically as a category selection. A
+    ``pid_list`` set in TypoScript is not visible to the wizard at all; check the extension templates
+    of the list pages yourself.
+
     ..  warning::
         Run this wizard **before upgrading the site to TYPO3 v14.** TYPO3 v14 removes the
         :sql:`tt_content.list_type` column, and legacy ``tt_products`` never registered its
