@@ -54,5 +54,8 @@
     "branch-alias": {
       "dev-main": "1.0.x-dev"
     }
+  },
+  "suggest": {
+    "typo3/cms-seo": "Adds the canonical URL of product detail pages and an XML sitemap of the products"
   }
 }

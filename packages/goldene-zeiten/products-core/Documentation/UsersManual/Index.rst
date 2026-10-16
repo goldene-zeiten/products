@@ -57,6 +57,29 @@ title on its :rst:dir:`ProductDetail` page (the default, ``title``, does this) o
 page's own configured title is left alone (``none``). This only affects the single-product page's
 ``<title>`` tag, never listings or other pages.
 
+Search engines and social media
+-------------------------------
+
+The :guilabel:`SEO` tab of a product holds the texts search engines and social networks show:
+:guilabel:`SEO title` (the page title, instead of the title built by
+``products.seo.pageTitleMode``), :guilabel:`Meta description`, :guilabel:`Keywords`,
+:guilabel:`Hide from search engines (noindex)` and, for social media, the Open Graph title,
+description and image. Every field may stay empty:
+
+*   the description falls back to the product text, without markup and cut after about 150
+    characters;
+*   the Open Graph title falls back to the SEO title, then the product title; the Open Graph
+    description to the description; the image to the product's first image.
+
+An article has the same fields. A filled field overrides the product's value on that article's
+page; an empty one keeps the product's. The detail page also carries the product as schema.org
+``Product`` data (JSON-LD) with its price, currency and availability.
+
+With EXT:seo installed, a product detail page names its canonical URL - the product's URL, or the
+article's own URL when the article has an SEO title or meta description of its own - and the
+products appear in the XML sitemap (``/?type=1533906435&sitemap=products``, linked from the
+sitemap index). Products hidden from search engines are left out of it.
+
 Product lists: page size, order and page links
 ------------------------------------------------
 

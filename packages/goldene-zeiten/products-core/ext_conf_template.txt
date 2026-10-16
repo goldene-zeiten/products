@@ -12,3 +12,6 @@ migration.columnCategories =
 
 # cat=migration/catalog/30; type=string; label=Columns holding several values: Comma-separated columns from "Columns that become categories" whose values are lists separated by commas, semicolons or line breaks.
 migration.columnCategoriesMultiValue =
+
+# cat=migration/catalog/40; type=boolean; label=note2 holds keywords: The legacy shop used the second text field note2 for meta keywords. The product migration then takes them as the product keywords where tt_products.keyword is empty.
+migration.note2AsKeywords = 0

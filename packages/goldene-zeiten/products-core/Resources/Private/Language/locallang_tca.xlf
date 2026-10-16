@@ -747,6 +747,63 @@
 			<trans-unit id="tx_products_domain_model_product.withdrawal_exclusion.sealed_media" resname="tx_products_domain_model_product.withdrawal_exclusion.sealed_media">
 				<source>Sealed audio/video recording or software (Art. 16(i))</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.tab_seo" resname="tx_products_domain_model_product.tab_seo">
+				<source>SEO</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.palette_open_graph" resname="tx_products_domain_model_product.palette_open_graph">
+				<source>Social media (Open Graph)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.seo_title" resname="tx_products_domain_model_product.seo_title">
+				<source>SEO title</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.meta_description" resname="tx_products_domain_model_product.meta_description">
+				<source>Meta description</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.keywords" resname="tx_products_domain_model_product.keywords">
+				<source>Keywords</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.no_index" resname="tx_products_domain_model_product.no_index">
+				<source>Hide from search engines (noindex)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.og_title" resname="tx_products_domain_model_product.og_title">
+				<source>Open Graph title</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.og_description" resname="tx_products_domain_model_product.og_description">
+				<source>Open Graph description</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.og_image" resname="tx_products_domain_model_product.og_image">
+				<source>Open Graph image</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.tab_seo" resname="tx_products_domain_model_article.tab_seo">
+				<source>SEO</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.palette_open_graph" resname="tx_products_domain_model_article.palette_open_graph">
+				<source>Social media (Open Graph)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.seo_title" resname="tx_products_domain_model_article.seo_title">
+				<source>SEO title</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.meta_description" resname="tx_products_domain_model_article.meta_description">
+				<source>Meta description</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.keywords" resname="tx_products_domain_model_article.keywords">
+				<source>Keywords</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.no_index" resname="tx_products_domain_model_article.no_index">
+				<source>Hide from search engines (noindex)</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.og_title" resname="tx_products_domain_model_article.og_title">
+				<source>Open Graph title</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.og_description" resname="tx_products_domain_model_article.og_description">
+				<source>Open Graph description</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.og_image" resname="tx_products_domain_model_article.og_image">
+				<source>Open Graph image</source>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_article.seo_override.description" resname="tx_products_domain_model_article.seo_override.description">
+				<source>Leave empty to use the product's value.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

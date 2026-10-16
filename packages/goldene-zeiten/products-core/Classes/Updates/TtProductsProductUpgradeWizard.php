@@ -46,6 +46,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
         'subtitle',
         'slug',
         'note',
+        'keyword',
         'itemnumber',
         'ean',
         'price',
@@ -133,7 +134,11 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
         $this->overlayMigrator->migrate($this->output, $this->overlayConfig(), $this->overlayValues(...));
         $this->columnReporter->report(
             self::LEGACY_TABLE,
-            [...self::HANDLED_COLUMNS, ...array_keys($this->migrationConfiguration->getColumnCategories())],
+            [
+                ...self::HANDLED_COLUMNS,
+                ...array_keys($this->migrationConfiguration->getColumnCategories()),
+                ...($this->migrationConfiguration->getBool('note2AsKeywords') ? ['note2'] : []),
+            ],
             $this->output
         );
         return true;
@@ -186,6 +191,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
             'subtitle' => (string)($legacyRow['subtitle'] ?? ''),
             'slug' => (string)($legacyRow['slug'] ?? ''),
             'description' => (string)($legacyRow['note'] ?? ''),
+            'keywords' => $this->keywords($legacyRow),
             'item_number' => (string)$legacyRow['itemnumber'],
             'ean' => (string)$legacyRow['ean'],
             'price' => $this->priceMigrator->price($legacyRow),
@@ -200,6 +206,21 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
             'is_offer' => (int)$legacyRow['offer'] > 0 ? 1 : 0,
             'is_highlight' => (int)$legacyRow['highlight'] > 0 ? 1 : 0,
         ];
+    }
+
+    /**
+     * tt_products keeps keywords in `keyword`; some shops used `note2` for them instead, declared with
+     * `migration.note2AsKeywords`.
+     *
+     * @param array<string, mixed> $legacyRow
+     */
+    private function keywords(array $legacyRow): string
+    {
+        $keywords = trim((string)($legacyRow['keyword'] ?? ''));
+        if ($keywords === '' && $this->migrationConfiguration->getBool('note2AsKeywords')) {
+            $keywords = trim((string)($legacyRow['note2'] ?? ''));
+        }
+        return $keywords;
     }
 
     /**

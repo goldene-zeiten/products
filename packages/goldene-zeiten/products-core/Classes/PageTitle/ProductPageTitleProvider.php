@@ -37,8 +37,11 @@ final class ProductPageTitleProvider implements PageTitleProviderInterface
     public function getTitle(): string
     {
         $product = $this->currentProductHolder->getProduct();
-        if ($product === null) {
+        if ($product === null || $this->pageTitleMode === 'none') {
             return '';
+        }
+        if ($this->currentProductHolder->getSeoTitle() !== '') {
+            return $this->currentProductHolder->getSeoTitle();
         }
 
         return match ($this->pageTitleMode) {

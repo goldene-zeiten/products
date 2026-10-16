@@ -15,6 +15,8 @@ final class CurrentProductHolder
 {
     private ?Product $product = null;
 
+    private string $seoTitle = '';
+
     public function setProduct(Product $product): void
     {
         $this->product = $product;
@@ -23,5 +25,18 @@ final class CurrentProductHolder
     public function getProduct(): ?Product
     {
         return $this->product;
+    }
+
+    /**
+     * The SEO title the detail page resolved for the product or its selected article, '' for none.
+     */
+    public function setSeoTitle(string $seoTitle): void
+    {
+        $this->seoTitle = $seoTitle;
+    }
+
+    public function getSeoTitle(): string
+    {
+        return $this->seoTitle;
     }
 }

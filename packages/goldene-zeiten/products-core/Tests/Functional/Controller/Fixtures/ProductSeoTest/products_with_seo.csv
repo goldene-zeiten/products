@@ -1,0 +1,15 @@
+"tx_products_domain_model_taxclass",,,
+,"uid","title","code"
+,1,"Standard Tax","STANDARD"
+"tx_products_domain_model_product",,,,,,,,,,,,,,,
+,"uid","pid","title","slug","item_number","price","tax_class","description","seo_title","meta_description","keywords","no_index","og_title","og_description","articles"
+,1,2,"Engagement ring","engagement-ring","R1","535.28",1,"<p>Ring text</p>","Engagement ring in white gold","A white gold engagement ring with a brilliant.","ring, white gold",1,"The ring for the question","Say yes.",0
+,3,2,"Wedding ring","wedding-ring","R3","250.00",1,"<p>Text</p>","","A wedding ring.","ring, wedding",0,"","",2
+,2,2,"Plain ring","plain-ring","R2","99.00",1,"<p>A <strong>plain</strong> ring for every day. It is made of solid silver and polished by hand in our workshop, so every piece is a little different from the next one. Each ring comes in a small wooden box.</p>","","","",0,"","",0
+"tx_products_domain_model_article",,,,,,,,
+,"uid","pid","product","title","slug","price","price_mode","meta_description"
+,3,2,3,"Gold 750","gold-750","0.00","override","The engagement ring in 750 gold."
+,4,2,3,"Gold 585","gold-585","0.00","override",""
+"tt_content",,,,,,
+,"uid","pid","sorting","deleted","colPos","CType","header"
+,1,2,256,0,0,"productscore_productdetail","Product Detail"

@@ -18,6 +18,7 @@ CREATE TABLE tt_products (
 	bulkily int(11) DEFAULT '0' NOT NULL,
 	note text,
 	note2 text,
+	keyword mediumtext,
 	color mediumtext,
 	color2 mediumtext,
 	quality mediumtext,

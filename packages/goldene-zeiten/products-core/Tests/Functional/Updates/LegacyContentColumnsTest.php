@@ -101,6 +101,33 @@ final class LegacyContentColumnsTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function theLegacyKeywordsBecomeTheProductKeywords(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/LegacyContentColumnsTest/products_with_keywords.csv');
+        $subject = $this->get(TtProductsProductUpgradeWizard::class);
+        $subject->setOutput(new BufferedOutput());
+
+        $subject->executeUpdate();
+
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/LegacyContentColumnsTest/Result/products_keywords.csv');
+    }
+
+    #[Test]
+    public function note2BecomesTheKeywordsWhenTheShopUsedItThatWay(): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['products_core']['migration']['note2AsKeywords'] = '1';
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/LegacyContentColumnsTest/products_with_content_columns.csv');
+        $output = new BufferedOutput();
+        $subject = $this->get(TtProductsProductUpgradeWizard::class);
+        $subject->setOutput($output);
+
+        $subject->executeUpdate();
+
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/LegacyContentColumnsTest/Result/products_note2_keywords.csv');
+        $this->assertStringNotContainsString('data in "note2"', $output->fetch());
+    }
+
+    #[Test]
     public function aColumnConfiguredToBecomeCategoriesIsNotReported(): void
     {
         $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['products_core']['migration']['columnCategories'] = 'quality:Filter';
