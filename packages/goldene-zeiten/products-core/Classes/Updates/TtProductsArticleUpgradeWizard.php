@@ -42,6 +42,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
         private readonly LegacyOverlayMigrator $overlayMigrator,
         private readonly StorageFolderResolver $storageFolderResolver,
         private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
+        private readonly LegacyArticleProductResolver $articleProductResolver,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -110,26 +111,51 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
     }
 
     /**
+     * An article can only belong to one product; further products linking it are reported.
+     *
      * @param array<string, mixed> $legacyRow
      */
     private function migrateArticle(array $legacyRow, int $pid): void
     {
         $legacyUid = (int)$legacyRow['uid'];
-        $productLocalUid = $this->migrationHelper->resolveLocalUid(
-            self::LEGACY_PRODUCT_TABLE,
-            (int)$legacyRow['uid_product'],
-            self::LOCAL_PRODUCT_TABLE
-        );
-        if ($productLocalUid === null) {
-            $this->output->writeln(sprintf(
-                '<comment>tt_products_articles uid %d referenced missing product uid %d, skipped.</comment>',
-                $legacyUid,
-                (int)$legacyRow['uid_product']
-            ));
-            $this->migrationHelper->recordMapping(self::LEGACY_TABLE, $legacyUid, self::LOCAL_TABLE, 0);
+        $legacyProductUids = $this->articleProductResolver->resolve($legacyUid, (int)$legacyRow['uid_product']);
+        $legacyProductUid = array_shift($legacyProductUids);
+        $productLocalUid = $legacyProductUid === null
+            ? null
+            : $this->migrationHelper->resolveLocalUid(self::LEGACY_PRODUCT_TABLE, $legacyProductUid, self::LOCAL_PRODUCT_TABLE);
+        if ($legacyProductUid === null || $productLocalUid === null) {
+            $this->skipArticle($legacyUid, $legacyProductUid === null
+                ? 'has no product (neither uid_product nor a tt_products_products_mm_articles link)'
+                : sprintf('referenced missing product uid %d', $legacyProductUid));
             return;
         }
         $this->insertArticle($legacyRow, $pid, $legacyUid, $productLocalUid);
+        $this->reportFurtherProducts($legacyUid, $legacyProductUid, $legacyProductUids);
+    }
+
+    /**
+     * Recorded with local uid 0, so the row counts as handled and its overlays are skipped too.
+     */
+    private function skipArticle(int $legacyUid, string $reason): void
+    {
+        $this->output->writeln(sprintf('<comment>tt_products_articles uid %d %s, skipped.</comment>', $legacyUid, $reason));
+        $this->migrationHelper->recordMapping(self::LEGACY_TABLE, $legacyUid, self::LOCAL_TABLE, 0);
+    }
+
+    /**
+     * @param int[] $furtherLegacyProductUids
+     */
+    private function reportFurtherProducts(int $legacyUid, int $attachedLegacyProductUid, array $furtherLegacyProductUids): void
+    {
+        foreach ($furtherLegacyProductUids as $furtherLegacyProductUid) {
+            $this->output->writeln(sprintf(
+                '<comment>tt_products_articles uid %d is also linked to tt_products uid %d; it was migrated '
+                    . 'for tt_products uid %d only, create the variant for the other product manually.</comment>',
+                $legacyUid,
+                $furtherLegacyProductUid,
+                $attachedLegacyProductUid
+            ));
+        }
     }
 
     /**

@@ -1,0 +1,5 @@
+"tx_products_domain_model_article",,,
+,"uid","product","title"
+,1,80,"Linked through MM"
+,2,80,"Shared by two products"
+,3,81,"Linked through uid_product"

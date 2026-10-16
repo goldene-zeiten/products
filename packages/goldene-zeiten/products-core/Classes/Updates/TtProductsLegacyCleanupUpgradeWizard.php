@@ -46,6 +46,7 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
         'tt_products_cat_language',
         self::PRODUCT_TABLE,
         self::ARTICLE_TABLE,
+        'tt_products_products_mm_articles',
         'tt_products_articles_language',
         self::ORDER_TABLE,
         'sys_products_orders_mm_tt_products',

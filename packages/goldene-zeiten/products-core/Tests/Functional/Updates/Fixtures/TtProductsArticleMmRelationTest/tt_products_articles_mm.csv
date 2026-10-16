@@ -1,0 +1,20 @@
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,80,1,0,"Existing Product"
+,81,1,0,"Existing Product Two"
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",1,"tx_products_domain_model_product",80
+,"tt_products",2,"tx_products_domain_model_product",81
+"tt_products_articles",,,,,,,,,,
+,"uid","pid","deleted","hidden","title","itemnumber","price","inStock","weight","uid_product"
+,1,1,0,0,"Linked through MM","A1","9.99",1,"0.000000",0
+,2,1,0,0,"Shared by two products","A2","19.99",1,"0.000000",0
+,3,1,0,0,"Only a deleted link","A3","29.99",1,"0.000000",0
+,4,1,0,0,"Linked through uid_product","A4","39.99",1,"0.000000",2
+"tt_products_products_mm_articles",,,,,,
+,"uid","pid","deleted","uid_local","uid_foreign","sorting"
+,1,1,0,1,1,1
+,2,1,0,2,2,1
+,3,1,0,1,2,2
+,4,1,1,2,3,1
