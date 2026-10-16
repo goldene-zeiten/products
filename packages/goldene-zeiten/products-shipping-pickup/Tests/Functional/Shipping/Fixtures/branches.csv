@@ -1,0 +1,6 @@
+"tx_productsshippingpickup_domain_model_branch",,,,,,,,,,
+,"uid","pid","sorting","hidden","deleted","sys_language_uid","title","street","zip","city","opening_hours"
+,1,2,2,0,0,0,"Hamburg","Jungfernstieg 1","20354","Hamburg","Mon-Fri 10-18"
+,2,2,1,0,0,0,"Munich","Marienplatz 8","80331","München",""
+,3,2,3,1,0,0,"Closed","Somewhere 1","10115","Berlin",""
+,4,2,4,0,1,0,"Deleted","Elsewhere 2","10115","Berlin",""

@@ -31,6 +31,7 @@
     "goldene-zeiten/products-recently-viewed": "^1.0",
     "goldene-zeiten/products-search": "^1.0",
     "goldene-zeiten/products-shipping-dhl-express": "^1.0",
+    "goldene-zeiten/products-shipping-pickup": "^1.0",
     "goldene-zeiten/products-shipping-ups": "^1.0",
     "goldene-zeiten/products-solr": "^1.0",
     "goldene-zeiten/products-voucher": "^1.0",
@@ -59,7 +60,8 @@
       "GoldeneZeiten\\Products\\Express\\Paypal\\Tests\\": "packages/goldene-zeiten/products-express-paypal/Tests/",
       "GoldeneZeiten\\Products\\BasketSummary\\Tests\\": "packages/goldene-zeiten/products-basket-summary/Tests/",
       "GoldeneZeiten\\Products\\Personalization\\Tests\\": "packages/goldene-zeiten/products-personalization/Tests/",
-      "GoldeneZeiten\\Products\\Payment\\Offline\\Tests\\": "packages/goldene-zeiten/products-payment-offline/Tests/"
+      "GoldeneZeiten\\Products\\Payment\\Offline\\Tests\\": "packages/goldene-zeiten/products-payment-offline/Tests/",
+      "GoldeneZeiten\\Products\\Shipping\\Pickup\\Tests\\": "packages/goldene-zeiten/products-shipping-pickup/Tests/"
     }
   },
   "require-dev": {
@@ -103,7 +105,8 @@
           "goldene-zeiten/products-express-paypal": "1.0.0",
           "goldene-zeiten/products-basket-summary": "1.0.0",
           "goldene-zeiten/products-personalization": "1.0.0",
-          "goldene-zeiten/products-payment-offline": "1.0.0"
+          "goldene-zeiten/products-payment-offline": "1.0.0",
+          "goldene-zeiten/products-shipping-pickup": "1.0.0"
         }
       }
     }
