@@ -1,0 +1,8 @@
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products_articles",2,"tx_products_domain_model_article",0
+,"tt_products_articles",3,"tx_products_domain_model_article",0
+"tt_products_articles",,,,
+,"uid","pid","title","uid_product"
+,2,1,"Orphan One",0
+,3,1,"Orphan Two",0
