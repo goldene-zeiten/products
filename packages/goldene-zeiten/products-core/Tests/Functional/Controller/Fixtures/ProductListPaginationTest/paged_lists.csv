@@ -1,0 +1,11 @@
+"tt_content",,,,,,,,,,,,,
+,"uid","pid","sorting","deleted","hidden","colPos","CType","header","tx_products_list_mode","tx_products_category","tx_products_items_per_page","tx_products_pagination","tx_products_sorting"
+,200,2,256,0,0,0,"productscore_productlist","Paged by price","all","",2,1,"price_desc"
+,201,2,256,0,0,0,"productscore_productlist","First three by title","all","",3,0,"title"
+,202,2,256,0,0,0,"productscore_productlist","Everything","all","",0,0,""
+,203,2,256,0,0,0,"productscore_productlist","Paged by title","all","",2,1,"title"
+,210,2,256,0,0,0,"productscore_categorylist","Category paged by title","all","1",2,1,"title"
+"tx_products_product_category_mm",,,
+,"uid_local","uid_foreign","sorting"
+,2,1,2
+,3,1,3

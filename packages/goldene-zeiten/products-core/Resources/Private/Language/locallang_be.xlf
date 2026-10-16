@@ -312,6 +312,36 @@
 			<trans-unit id="plugin.withdrawal_instructions" resname="plugin.withdrawal_instructions">
 				<source>Withdrawal instructions and model form</source>
 			</trans-unit>
+			<trans-unit id="tt_content.palette.listing" resname="tt_content.palette.listing">
+				<source>Listing</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_items_per_page" resname="tt_content.tx_products_items_per_page">
+				<source>Products per page</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_items_per_page.description" resname="tt_content.tx_products_items_per_page.description">
+				<source>0 shows every product on one page.</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_pagination" resname="tt_content.tx_products_pagination">
+				<source>Link the further pages</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_sorting" resname="tt_content.tx_products_sorting">
+				<source>Sort order</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_sorting.manual" resname="tt_content.tx_products_sorting.manual">
+				<source>Manual (as sorted in the backend)</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_sorting.title" resname="tt_content.tx_products_sorting.title">
+				<source>Title</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_sorting.price_asc" resname="tt_content.tx_products_sorting.price_asc">
+				<source>Price, lowest first</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_sorting.price_desc" resname="tt_content.tx_products_sorting.price_desc">
+				<source>Price, highest first</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_sorting.newest" resname="tt_content.tx_products_sorting.newest">
+				<source>Newest first</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

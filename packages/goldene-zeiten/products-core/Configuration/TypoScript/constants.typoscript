@@ -128,6 +128,8 @@ products {
         enabled = 0
     }
     list {
+        # cat=products/discovery; type=int+; label=Page links shown around the current page in product lists
+        maximumNumberOfLinks = 5
         # cat=products/discovery; type=int; label=Number of days a product counts as "new" in the new-items listing
         newItemDays = 7
     }

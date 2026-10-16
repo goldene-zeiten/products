@@ -415,6 +415,46 @@
 				<source>Withdrawal instructions and model form</source>
 				<target>Widerrufsbelehrung und Muster-Widerrufsformular</target>
 			</trans-unit>
+			<trans-unit id="tt_content.palette.listing" resname="tt_content.palette.listing">
+				<source>Listing</source>
+				<target>Auflistung</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_items_per_page" resname="tt_content.tx_products_items_per_page">
+				<source>Products per page</source>
+				<target>Produkte pro Seite</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_items_per_page.description" resname="tt_content.tx_products_items_per_page.description">
+				<source>0 shows every product on one page.</source>
+				<target>0 zeigt alle Produkte auf einer Seite.</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_pagination" resname="tt_content.tx_products_pagination">
+				<source>Link the further pages</source>
+				<target>Weitere Seiten verlinken</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_sorting" resname="tt_content.tx_products_sorting">
+				<source>Sort order</source>
+				<target>Sortierung</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_sorting.manual" resname="tt_content.tx_products_sorting.manual">
+				<source>Manual (as sorted in the backend)</source>
+				<target>Manuell (wie im Backend sortiert)</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_sorting.title" resname="tt_content.tx_products_sorting.title">
+				<source>Title</source>
+				<target>Titel</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_sorting.price_asc" resname="tt_content.tx_products_sorting.price_asc">
+				<source>Price, lowest first</source>
+				<target>Preis aufsteigend</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_sorting.price_desc" resname="tt_content.tx_products_sorting.price_desc">
+				<source>Price, highest first</source>
+				<target>Preis absteigend</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_sorting.newest" resname="tt_content.tx_products_sorting.newest">
+				<source>Newest first</source>
+				<target>Neueste zuerst</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

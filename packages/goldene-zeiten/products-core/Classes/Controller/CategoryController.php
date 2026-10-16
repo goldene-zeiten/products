@@ -4,20 +4,23 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Controller;
 
+use GoldeneZeiten\Products\Core\Catalog\ProductListService;
+use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListCriteria;
+use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListSettings;
 use GoldeneZeiten\Products\Core\Domain\Model\Category;
 use GoldeneZeiten\Products\Core\Domain\Repository\CategoryRepository;
-use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Service\Category\CategoryTreeService;
 use GoldeneZeiten\Products\Core\Service\ContentElement\SelectedCategoriesResolver;
 use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 final class CategoryController extends ActionController
 {
     public function __construct(
         private readonly CategoryTreeService $categoryTreeService,
-        private readonly ProductRepository $productRepository,
+        private readonly ProductListService $productListService,
         private readonly CategoryRepository $categoryRepository,
         private readonly SelectedCategoriesResolver $selectedCategoriesResolver,
         private readonly ProductVisibilityResolver $productVisibilityResolver
@@ -39,7 +42,7 @@ final class CategoryController extends ActionController
     /**
      * Lists the routed category, or the first category selected in the content element.
      */
-    public function listAction(?Category $category = null): ResponseInterface
+    public function listAction(?Category $category = null, int $currentPage = 1): ResponseInterface
     {
         if ($category === null) {
             $selectedCategoryUids = $this->selectedCategoriesResolver->resolveUids($this->request);
@@ -50,10 +53,29 @@ final class CategoryController extends ActionController
         $this->view->assignMultiple([
             'category' => $category,
             'ancestorChain' => $category instanceof Category ? $this->categoryTreeService->getAncestorChain($category) : [],
-            'products' => $category instanceof Category
-                ? $this->productVisibilityResolver->filterVisible($this->productRepository->findByCategory($category), $this->request)
-                : [],
-        ]);
+        ] + $this->productVariables($category, $currentPage));
         return $this->htmlResponse();
+    }
+
+    /**
+     * The category's direct products, paged as the content element configures it.
+     *
+     * @return array<string, mixed>
+     */
+    private function productVariables(?Category $category, int $currentPage): array
+    {
+        if (!$category instanceof Category) {
+            return ['products' => []];
+        }
+        $settings = ProductListSettings::fromContentElement($this->request->getAttribute('currentContentObject')->data ?? []);
+        $criteria = new ProductListCriteria(categoryUids: [(int)$category->getUid()], sorting: $settings->sorting, respectStoragePage: false);
+        $paginator = $this->productListService->paginate($this->request, $criteria, $settings, $currentPage);
+        $site = $this->request->getAttribute('site');
+        return [
+            'products' => $this->productVisibilityResolver->filterVisible(iterator_to_array($paginator->getPaginatedItems(), false), $this->request),
+            'paginator' => $paginator,
+            'pagination' => $this->productListService->pagination($paginator, $site instanceof Site ? $site : null),
+            'showPagination' => $settings->pagination && $settings->isPaged() && $paginator->getNumberOfPages() > 1,
+        ];
     }
 }

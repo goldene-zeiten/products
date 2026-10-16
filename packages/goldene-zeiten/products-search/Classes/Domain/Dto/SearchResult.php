@@ -6,19 +6,20 @@ namespace GoldeneZeiten\Products\Search\Domain\Dto;
 
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
+use TYPO3\CMS\Core\Pagination\PaginationInterface;
+use TYPO3\CMS\Core\Pagination\PaginatorInterface;
 
+/**
+ * One page of a product search. Without a term nothing was searched and there is no paginator.
+ */
 #[Exclude]
 final readonly class SearchResult
 {
-    /**
-     * @param Product[] $products
-     */
     public function __construct(
-        private array $products,
         private string $term,
-        private int $currentPage,
-        private int $totalPages,
-        private int $totalCount
+        private ?PaginatorInterface $paginator,
+        private ?PaginationInterface $pagination,
+        private int $totalCount = 0,
     ) {}
 
     /**
@@ -26,7 +27,14 @@ final readonly class SearchResult
      */
     public function getProducts(): array
     {
-        return $this->products;
+        if ($this->paginator === null) {
+            return [];
+        }
+        $products = [];
+        foreach ($this->paginator->getPaginatedItems() as $product) {
+            $products[] = $product;
+        }
+        return $products;
     }
 
     public function getTerm(): string
@@ -36,17 +44,27 @@ final readonly class SearchResult
 
     public function getCurrentPage(): int
     {
-        return $this->currentPage;
+        return $this->paginator?->getCurrentPageNumber() ?? 1;
     }
 
     public function getTotalPages(): int
     {
-        return $this->totalPages;
+        return $this->paginator?->getNumberOfPages() ?? 0;
     }
 
     public function getTotalCount(): int
     {
         return $this->totalCount;
+    }
+
+    public function getPaginator(): ?PaginatorInterface
+    {
+        return $this->paginator;
+    }
+
+    public function getPagination(): ?PaginationInterface
+    {
+        return $this->pagination;
     }
 
     public function hasSearched(): bool
@@ -56,6 +74,6 @@ final readonly class SearchResult
 
     public function hasResults(): bool
     {
-        return $this->totalCount > 0;
+        return $this->getTotalCount() > 0;
     }
 }

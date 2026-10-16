@@ -79,6 +79,7 @@ plugin.tx_productscore {
             enabled = {$products.handling.enabled}
         }
         list {
+            maximumNumberOfLinks = {$products.list.maximumNumberOfLinks}
             newItemDays = {$products.list.newItemDays}
         }
         email {

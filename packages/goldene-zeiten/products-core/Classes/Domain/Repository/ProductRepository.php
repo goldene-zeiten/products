@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Domain\Repository;
 
+use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListCriteria;
 use GoldeneZeiten\Products\Core\Domain\Model\Category;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use TYPO3\CMS\Core\Database\Connection;
@@ -85,6 +86,16 @@ final class ProductRepository extends AbstractReadOnlyRepository
         $query->setOffset($offset);
         $query->setLimit($limit);
         return $query->execute();
+    }
+
+    /**
+     * Every product matching the term, for a paginator to slice.
+     *
+     * @return QueryResultInterface<int, Product>
+     */
+    public function findBySearchTerm(string $term, ?int $categoryUid): QueryResultInterface
+    {
+        return $this->buildSearchQuery($term, $categoryUid)->execute();
     }
 
     public function countSearchResults(string $term, ?int $categoryUid): int
@@ -189,4 +200,65 @@ final class ProductRepository extends AbstractReadOnlyRepository
         return $query->execute()->toArray();
     }
 
+    /**
+     * The query behind a product list. The "all" listing respects the configured storage page, like it
+     * always did; the other listings span every storage page.
+     *
+     * @return QueryInterface<Product>
+     */
+    public function createListQuery(ProductListCriteria $criteria): QueryInterface
+    {
+        $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage($criteria->mode === 'all' && $criteria->respectStoragePage);
+        $constraints = $this->modeConstraints($query, $criteria);
+        if ($criteria->productUids !== []) {
+            $constraints[] = $query->in('uid', $criteria->productUids);
+        }
+        if ($criteria->categoryUids !== []) {
+            $constraints[] = $query->logicalOr(...array_map(
+                static fn(int $categoryUid): ConstraintInterface => $query->contains('categories', $categoryUid),
+                $criteria->categoryUids
+            ));
+        }
+        if ($constraints !== []) {
+            $query->matching($query->logicalAnd(...$constraints));
+        }
+        $query->setOrderings($this->listOrderings($criteria));
+        return $query;
+    }
+
+    /**
+     * @param QueryInterface<Product> $query
+     * @return ConstraintInterface[]
+     */
+    private function modeConstraints(QueryInterface $query, ProductListCriteria $criteria): array
+    {
+        return match ($criteria->mode) {
+            'offers' => [$query->equals('isOffer', true)],
+            'highlights' => [$query->equals('isHighlight', true)],
+            'new' => [$query->greaterThanOrEqual('crdate', new \DateTime(sprintf('-%d days', $criteria->newItemDays)))],
+            'articles' => [$query->greaterThan('articles', 0)],
+            default => [],
+        };
+    }
+
+    /**
+     * "new" lists the newest products first unless the element asks for another order.
+     *
+     * @return array<non-empty-string, QueryInterface::ORDER_*>
+     */
+    private function listOrderings(ProductListCriteria $criteria): array
+    {
+        $sorting = $criteria->sorting === ProductListCriteria::SORTING_MANUAL && $criteria->mode === 'new'
+            ? ProductListCriteria::SORTING_NEWEST
+            : $criteria->sorting;
+        $primary = match ($sorting) {
+            ProductListCriteria::SORTING_TITLE => ['title' => QueryInterface::ORDER_ASCENDING],
+            ProductListCriteria::SORTING_PRICE_ASC => ['price' => QueryInterface::ORDER_ASCENDING],
+            ProductListCriteria::SORTING_PRICE_DESC => ['price' => QueryInterface::ORDER_DESCENDING],
+            ProductListCriteria::SORTING_NEWEST => ['crdate' => QueryInterface::ORDER_DESCENDING],
+            default => ['sorting' => QueryInterface::ORDER_ASCENDING],
+        };
+        return $primary + ['uid' => QueryInterface::ORDER_ASCENDING];
+    }
 }

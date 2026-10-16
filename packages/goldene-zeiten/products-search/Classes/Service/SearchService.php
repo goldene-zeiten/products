@@ -7,7 +7,9 @@ namespace GoldeneZeiten\Products\Search\Service;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Search\Domain\Dto\SearchResult;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Pagination\SlidingWindowPagination;
 use TYPO3\CMS\Core\Site\Entity\SiteInterface;
+use TYPO3\CMS\Extbase\Pagination\QueryResultPaginator;
 
 final class SearchService
 {
@@ -21,15 +23,14 @@ final class SearchService
     {
         $term = trim($term);
         if ($term === '') {
-            return new SearchResult([], '', 1, 0, 0);
+            return new SearchResult('', null, null);
         }
 
-        $page = max(1, $page);
         $perPage = $this->resultsPerPage($request);
-        $totalCount = $this->productRepository->countSearchResults($term, $categoryUid);
-        $products = iterator_to_array($this->productRepository->search($term, $categoryUid, ($page - 1) * $perPage, $perPage), false);
+        $products = $this->productRepository->findBySearchTerm($term, $categoryUid);
+        $paginator = new QueryResultPaginator($products, max(1, $page), $perPage);
 
-        return new SearchResult($products, $term, $page, max(1, (int)ceil($totalCount / $perPage)), $totalCount);
+        return new SearchResult($term, $paginator, new SlidingWindowPagination($paginator, 5), $products->count());
     }
 
     private function resultsPerPage(ServerRequestInterface $request): int

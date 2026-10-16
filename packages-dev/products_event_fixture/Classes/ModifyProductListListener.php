@@ -20,6 +20,6 @@ final class ModifyProductListListener
         if (!self::$enabled) {
             return;
         }
-        $event->setProducts([]);
+        $event->addConstraint($event->getQuery()->equals('uid', 0));
     }
 }

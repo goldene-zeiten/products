@@ -468,6 +468,13 @@ from. Set it before creating any content.
         Lets the customer enter a desired delivery date on the address step. It must lie after
         today and is shown on the review step, in the order mails and in the backend order.
 
+    ..  confval:: products.list.maximumNumberOfLinks
+        :type: int
+        :Default: 5
+
+        How many page numbers the page links of product lists, category lists and the product
+        search show around the current page.
+
     ..  confval:: products.withdrawal.assumedDeliveryDays
         :type: int
         :Default: 14
