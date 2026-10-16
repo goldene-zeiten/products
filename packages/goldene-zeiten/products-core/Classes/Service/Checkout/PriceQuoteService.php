@@ -40,6 +40,7 @@ final class PriceQuoteService
                 static fn(BasketViewItem $item): array => [
                     'productUid' => $item->getProduct()->getUid(),
                     'articleUid' => $item->getArticle()?->getUid(),
+                    'optionsKey' => $item->getOptionsKey(),
                     'quantity' => $item->getQuantity(),
                     'unitPriceNet' => $item->getUnitPriceNet()->getCents(),
                     'unitPriceGross' => $item->getUnitPriceGross()->getCents(),
@@ -72,10 +73,7 @@ final class PriceQuoteService
         }
 
         $liveFingerprint = self::fingerprint($liveBasketViewModel->getItems());
-        $quoteFingerprint = array_map(
-            static fn(array $line): string => self::fingerprintLine((int)$line['productUid'], $line['articleUid'] !== null ? (int)$line['articleUid'] : null, (int)$line['quantity']),
-            $quote['items']
-        );
+        $quoteFingerprint = array_map(self::fingerprintQuoteLine(...), $quote['items']);
         sort($liveFingerprint);
         sort($quoteFingerprint);
         if ($liveFingerprint !== $quoteFingerprint) {
@@ -128,14 +126,27 @@ final class PriceQuoteService
     private static function fingerprint(array $items): array
     {
         return array_map(
-            static fn(BasketViewItem $item): string => self::fingerprintLine((int)$item->getProduct()->getUid(), $item->getArticle()?->getUid(), $item->getQuantity()),
+            static fn(BasketViewItem $item): string => self::fingerprintLine((int)$item->getProduct()->getUid(), $item->getArticle()?->getUid(), $item->getOptionsKey(), $item->getQuantity()),
             $items
         );
     }
 
-    private static function fingerprintLine(int $productUid, ?int $articleUid, int $quantity): string
+    /**
+     * @param array<string, mixed> $line
+     */
+    private static function fingerprintQuoteLine(array $line): string
     {
-        return sprintf('%d:%s:%d', $productUid, $articleUid !== null ? (string)$articleUid : '', $quantity);
+        return self::fingerprintLine(
+            (int)$line['productUid'],
+            $line['articleUid'] !== null ? (int)$line['articleUid'] : null,
+            (string)($line['optionsKey'] ?? ''),
+            (int)$line['quantity']
+        );
+    }
+
+    private static function fingerprintLine(int $productUid, ?int $articleUid, string $optionsKey, int $quantity): string
+    {
+        return sprintf('%d:%s:%s:%d', $productUid, $articleUid !== null ? (string)$articleUid : '', $optionsKey, $quantity);
     }
 
     /**
@@ -145,14 +156,12 @@ final class PriceQuoteService
     {
         $quoteLinesByKey = [];
         foreach ($quote['items'] as $line) {
-            $key = self::fingerprintLine((int)$line['productUid'], $line['articleUid'] !== null ? (int)$line['articleUid'] : null, (int)$line['quantity']);
-            $quoteLinesByKey[$key] = $line;
+            $quoteLinesByKey[self::fingerprintQuoteLine($line)] = $line;
         }
 
         $items = [];
         foreach ($liveBasketViewModel->getItems() as $liveItem) {
-            $key = self::fingerprintLine((int)$liveItem->getProduct()->getUid(), $liveItem->getArticle()?->getUid(), $liveItem->getQuantity());
-            $line = $quoteLinesByKey[$key];
+            $line = $quoteLinesByKey[self::fingerprint([$liveItem])[0]];
             $items[] = new BasketViewItem(
                 $liveItem->getProduct(),
                 $liveItem->getArticle(),
@@ -162,7 +171,8 @@ final class PriceQuoteService
                 (float)$line['taxRate'],
                 Money::fromCents((int)$line['lineTotalNet']),
                 Money::fromCents((int)$line['lineTotalGross']),
-                Money::fromCents((int)$line['lineTotalTax'])
+                Money::fromCents((int)$line['lineTotalTax']),
+                $liveItem->getLineOptions()
             );
         }
 

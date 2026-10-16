@@ -1,0 +1,2 @@
+{namespace p=GoldeneZeiten\Products\Core\ViewHelpers}<f:for each="{options}" as="option">   {option.label -> f:format.raw()}: {option.valueLabel -> f:format.raw()}<f:if condition="{option.surcharge.cents} > 0"> (+ <p:format.money value="{option.surcharge}" currency="{currency}" locale="{moneyLocale}" />)</f:if>
+</f:for>

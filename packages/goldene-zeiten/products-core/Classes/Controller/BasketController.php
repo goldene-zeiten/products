@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Security\FrontendRequestTokenValidator;
 use GoldeneZeiten\Products\Core\Service\Basket\BasketService;
+use GoldeneZeiten\Products\Core\Service\Basket\Exception\LineItemOptionsRejectedException;
 use GoldeneZeiten\Products\Core\Service\Variant\ArticleVariantResolver;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
@@ -51,14 +52,19 @@ final class BasketController extends ActionController
 
     /**
      * @param int[] $attributeValues Selected variant attribute-value uids (ignored if $article is set).
+     * @param array<string, string> $options Option selections of the line, keyed by option identifier.
      */
-    public function addAction(int $product, ?int $article = null, int $quantity = 1, array $attributeValues = []): ResponseInterface
+    public function addAction(int $product, ?int $article = null, int $quantity = 1, array $attributeValues = [], array $options = []): ResponseInterface
     {
         if (($rejected = $this->rejectForgedRequest()) !== null) {
             return $rejected;
         }
         $article ??= $this->resolveArticleByAttributeValues($product, $attributeValues);
-        $this->basketService->add($this->request, $product, $article, $quantity);
+        try {
+            $this->basketService->add($this->request, $product, $article, $quantity, array_map('strval', $options));
+        } catch (LineItemOptionsRejectedException $exception) {
+            $this->addFlashMessage($exception->getMessage(), '', ContextualFeedbackSeverity::ERROR);
+        }
         return $this->redirect('show');
     }
 
@@ -78,21 +84,21 @@ final class BasketController extends ActionController
         return $resolvedArticle?->getUid();
     }
 
-    public function updateAction(int $product, ?int $article = null, int $quantity = 1): ResponseInterface
+    public function updateAction(int $product, ?int $article = null, int $quantity = 1, string $optionsKey = ''): ResponseInterface
     {
         if (($rejected = $this->rejectForgedRequest()) !== null) {
             return $rejected;
         }
-        $this->basketService->update($this->request, $product, $article, $quantity);
+        $this->basketService->update($this->request, $product, $article, $quantity, $optionsKey);
         return $this->redirect('show');
     }
 
-    public function removeAction(int $product, ?int $article = null): ResponseInterface
+    public function removeAction(int $product, ?int $article = null, string $optionsKey = ''): ResponseInterface
     {
         if (($rejected = $this->rejectForgedRequest()) !== null) {
             return $rejected;
         }
-        $this->basketService->remove($this->request, $product, $article);
+        $this->basketService->remove($this->request, $product, $article, $optionsKey);
         return $this->redirect('show');
     }
 }

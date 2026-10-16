@@ -28,6 +28,7 @@
                                         <br><small>{item.article.title}</small>
                                     </f:then>
                                 </f:if>
+                                <f:render partial="LineItem/Options" arguments="{options: item.lineOptions, currency: basket.currency, moneyLocale: moneyLocale}" />
                             </td>
                             <td>
                                 <f:form action="update" controller="Basket" requestToken="products/basket">
@@ -35,6 +36,11 @@
                                     <f:if condition="{item.article}">
                                         <f:then>
                                             <f:form.hidden name="article" value="{item.article.uid}" />
+                                        </f:then>
+                                    </f:if>
+                                    <f:if condition="{item.optionsKey}">
+                                        <f:then>
+                                            <f:form.hidden name="optionsKey" value="{item.optionsKey}" />
                                         </f:then>
                                     </f:if>
                                     <label for="products-basket-quantity-{itemIteration.index}" class="visually-hidden"><f:translate key="quantity_of" arguments="{0: item.product.title}" /></label>
@@ -50,6 +56,11 @@
                                     <f:if condition="{item.article}">
                                         <f:then>
                                             <f:form.hidden name="article" value="{item.article.uid}" />
+                                        </f:then>
+                                    </f:if>
+                                    <f:if condition="{item.optionsKey}">
+                                        <f:then>
+                                            <f:form.hidden name="optionsKey" value="{item.optionsKey}" />
                                         </f:then>
                                     </f:if>
                                     <f:form.submit value="{f:translate(key: 'remove')}" class="btn btn-danger btn-sm" />

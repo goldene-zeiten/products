@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Domain\Dto;
 
+use GoldeneZeiten\Products\Core\Domain\Enum\WithdrawalExclusion;
 use GoldeneZeiten\Products\Core\Domain\Model\Article;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
@@ -12,6 +13,9 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 #[Exclude]
 final readonly class BasketViewItem
 {
+    /**
+     * @param LineItemOption[] $lineOptions with gross surcharges, already part of the unit price
+     */
     public function __construct(
         private Product $product,
         private ?Article $article,
@@ -21,7 +25,8 @@ final readonly class BasketViewItem
         private float $taxRate,
         private Money $lineTotalNet,
         private Money $lineTotalGross,
-        private Money $lineTotalTax
+        private Money $lineTotalTax,
+        private array $lineOptions = []
     ) {}
 
     public function getProduct(): Product
@@ -67,6 +72,43 @@ final readonly class BasketViewItem
     public function getLineTotalTax(): Money
     {
         return $this->lineTotalTax;
+    }
+
+    /**
+     * @return LineItemOption[]
+     */
+    public function getLineOptions(): array
+    {
+        return $this->lineOptions;
+    }
+
+    /**
+     * Addresses this line in basket updates and removals, next to the product and article.
+     */
+    public function getOptionsKey(): string
+    {
+        $selections = [];
+        foreach ($this->lineOptions as $option) {
+            $selections[$option->getIdentifier()] = $option->getValue();
+        }
+        return BasketItem::optionsKeyOf($selections);
+    }
+
+    /**
+     * A personalizing option turns a product sold without an exemption into custom-made goods.
+     */
+    public function getWithdrawalExclusion(): WithdrawalExclusion
+    {
+        $exclusion = $this->product->getWithdrawalExclusion();
+        if ($exclusion !== WithdrawalExclusion::NONE) {
+            return $exclusion;
+        }
+        foreach ($this->lineOptions as $option) {
+            if ($option->isPersonalizing()) {
+                return WithdrawalExclusion::PERSONALIZED;
+            }
+        }
+        return $exclusion;
     }
 
     /**

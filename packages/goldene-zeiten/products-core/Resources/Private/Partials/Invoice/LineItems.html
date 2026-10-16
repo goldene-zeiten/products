@@ -19,6 +19,7 @@
                             <br><small>{item.articleTitle}</small>
                         </f:then>
                     </f:if>
+                    <f:render partial="LineItem/Options" arguments="{options: item.lineOptions, currency: order.currency, moneyLocale: moneyLocale}" />
                 </td>
                 <td style="padding: 4px; border-bottom: 1px solid #ddd;">{item.itemNumber}</td>
                 <td style="text-align: right; padding: 4px; border-bottom: 1px solid #ddd;">{item.quantity}</td>

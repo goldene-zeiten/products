@@ -6,6 +6,11 @@ namespace GoldeneZeiten\Products\Core\Domain\Dto;
 
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
+/**
+ * A line is one product and article with one set of option selections; the same product engraved
+ * differently is a line of its own. Lines are addressed by product, article and options key
+ * ({@see BasketItem::getOptionsKey()}), which is empty for a line without options.
+ */
 #[Exclude]
 final class Basket
 {
@@ -26,12 +31,12 @@ final class Basket
 
     public function addItem(BasketItem $item): void
     {
-        $identifier = $this->calculateIdentifier($item->getProductUid(), $item->getArticleUid());
+        $identifier = $this->identifierOf($item);
         $quantity = max(1, $item->getQuantity());
         if (isset($this->items[$identifier])) {
             $quantity += $this->items[$identifier]->getQuantity();
         }
-        $this->items[$identifier] = new BasketItem($item->getProductUid(), $item->getArticleUid(), $quantity);
+        $this->items[$identifier] = $item->withQuantity($quantity);
     }
 
     /**
@@ -39,22 +44,21 @@ final class Basket
      */
     public function replaceItem(BasketItem $item): void
     {
-        $identifier = $this->calculateIdentifier($item->getProductUid(), $item->getArticleUid());
-        $this->items[$identifier] = new BasketItem($item->getProductUid(), $item->getArticleUid(), max(1, $item->getQuantity()));
+        $this->items[$this->identifierOf($item)] = $item->withQuantity(max(1, $item->getQuantity()));
     }
 
-    public function getQuantity(int $productUid, ?int $articleUid): int
+    public function getQuantity(int $productUid, ?int $articleUid, string $optionsKey = ''): int
     {
-        return ($this->items[$this->calculateIdentifier($productUid, $articleUid)] ?? null)?->getQuantity() ?? 0;
+        return ($this->items[$this->calculateIdentifier($productUid, $articleUid, $optionsKey)] ?? null)?->getQuantity() ?? 0;
     }
 
     /**
      * Changes a line already in the basket; a line that was never added is left out, so it cannot skip
      * the checks adding performs.
      */
-    public function updateQuantity(int $productUid, ?int $articleUid, int $quantity): void
+    public function updateQuantity(int $productUid, ?int $articleUid, int $quantity, string $optionsKey = ''): void
     {
-        $identifier = $this->calculateIdentifier($productUid, $articleUid);
+        $identifier = $this->calculateIdentifier($productUid, $articleUid, $optionsKey);
         if (!isset($this->items[$identifier])) {
             return;
         }
@@ -62,13 +66,12 @@ final class Basket
             unset($this->items[$identifier]);
             return;
         }
-        $this->items[$identifier] = new BasketItem($productUid, $articleUid, $quantity);
+        $this->items[$identifier] = $this->items[$identifier]->withQuantity($quantity);
     }
 
-    public function removeItem(int $productUid, ?int $articleUid): void
+    public function removeItem(int $productUid, ?int $articleUid, string $optionsKey = ''): void
     {
-        $identifier = $this->calculateIdentifier($productUid, $articleUid);
-        unset($this->items[$identifier]);
+        unset($this->items[$this->calculateIdentifier($productUid, $articleUid, $optionsKey)]);
     }
 
     /**
@@ -93,9 +96,13 @@ final class Basket
         return $count;
     }
 
-    private function calculateIdentifier(int $productUid, ?int $articleUid): string
+    private function identifierOf(BasketItem $item): string
     {
-        return $productUid . ':' . ($articleUid ?? 0);
+        return $this->calculateIdentifier($item->getProductUid(), $item->getArticleUid(), $item->getOptionsKey());
     }
 
+    private function calculateIdentifier(int $productUid, ?int $articleUid, string $optionsKey): string
+    {
+        return $productUid . ':' . ($articleUid ?? 0) . ':' . $optionsKey;
+    }
 }
