@@ -1,0 +1,4 @@
+"tt_content",,,,,,,,,,
+,"uid","pid","sorting","deleted","colPos","CType","list_type","pages","pi_flexform"
+,100,2,256,0,0,"list","5","12,13","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""display_mode""><value index=""vDEF"">LIST</value></field><field index=""product_where""><value index=""vDEF"">quality LIKE '%Weißgold%'</value></field><field index=""template_suffix""><value index=""vDEF"">RINGS</value></field><field index=""myTS""><value index=""vDEF""></value></field></language></sheet></data></T3FlexForms>"
+,101,2,512,0,0,"list","5","","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""display_mode""><value index=""vDEF"">LIST</value></field></language></sheet></data></T3FlexForms>"
