@@ -1,0 +1,8 @@
+# cat=migration; type=string; label=tt_products option columns: Selection-list columns of tt_products that become required selection lists of the migrated products, as column:Label, comma-separated, e.g. "color:Ring size, size:Engraving font".
+migration.optionColumns =
+# cat=migration; type=string; label=Personalizing option columns: Option columns whose choices make the goods custom-made (no withdrawal right), e.g. "size" for engraving fonts. The choices named under "none" values stay withdrawable.
+migration.personalizingOptionColumns =
+# cat=migration; type=string; label="None" values: Choices meaning "no personalization", case-insensitive, comma-separated.
+migration.optionNoneValues = keine, ohne, none
+# cat=migration; type=string; label=Free text next to a column: Adds an optional free text option, which personalizes the goods, to every product with a value in the column, as column:Label, e.g. "size:Engraving text".
+migration.optionTextColumns =

@@ -1,0 +1,16 @@
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,80,2,0,"Ring A"
+,81,2,0,"Ring B"
+,82,2,0,"Chain"
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",1,"tx_products_domain_model_product",80
+,"tt_products",2,"tx_products_domain_model_product",81
+,"tt_products",3,"tx_products_domain_model_product",82
+"tt_products",,,,,,,,,,,,,,,,,
+,"uid","pid","deleted","hidden","title","itemnumber","price","inStock","basketminquantity","basketmaxquantity","taxcat_id","weight","color","color2","size"
+,1,2,0,0,"Ring A","RA","10.00",1,"0.00","0.00",1,"0.000000","48;50;52","","keine;Druckschrift;Schreibschrift"
+,2,2,0,0,"Ring B","RB","10.00",1,"0.00","0.00",1,"0.000000","54; 56 ;","",""
+,3,2,0,0,"Chain","CH","10.00",1,"0.00","0.00",1,"0.000000","","",""
+,4,2,1,0,"Deleted Ring","DR","10.00",1,"0.00","0.00",1,"0.000000","60","",""

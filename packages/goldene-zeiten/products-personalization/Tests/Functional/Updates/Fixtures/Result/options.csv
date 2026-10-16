@@ -1,0 +1,16 @@
+"tx_productspersonalization_domain_model_option",,,,,,,,,,,,
+,"uid","pid","product","sorting","type","title","identifier","required","personalizing","surcharge","max_length"
+,1,2,80,1,"select","Ring size","color",1,0,"0.00",0
+,2,2,81,1,"select","Ring size","color",1,0,"0.00",0
+,3,2,80,5,"select","Engraving font","size",1,0,"0.00",0
+,4,2,80,6,"text","Engraving text","size_text",0,1,"0.00",0
+"tx_productspersonalization_domain_model_optionitem",,,,,,,,
+,"uid","pid","parent_option","sorting","title","value","surcharge","personalizing"
+,1,2,1,1,"48","48","0.00",0
+,2,2,1,2,"50","50","0.00",0
+,3,2,1,3,"52","52","0.00",0
+,4,2,2,1,"54","54","0.00",0
+,5,2,2,2,"56","56","0.00",0
+,6,2,3,1,"keine","keine","0.00",0
+,7,2,3,2,"Druckschrift","Druckschrift","0.00",1
+,8,2,3,3,"Schreibschrift","Schreibschrift","0.00",1
