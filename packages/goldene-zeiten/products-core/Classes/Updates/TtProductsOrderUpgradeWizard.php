@@ -57,6 +57,7 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
         private readonly SiteFinder $siteFinder,
         private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
         private readonly ArticleMigrationPrerequisite $articleMigrationPrerequisite,
+        private readonly LegacyMigrationConfiguration $migrationConfiguration,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -71,8 +72,9 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
 
     public function getDescription(): string
     {
-        return 'Migrates legacy orders, their billing address and line items. All orders are mapped '
-            . 'to the "invoice" payment method (the only one this extension implements) and line item '
+        return 'Migrates legacy orders, their billing address and line items. Payment and shipping are '
+            . 'mapped through migration.orderPaymentMethods and migration.orderShippingOptions, unmapped '
+            . 'payments become "invoice", abandoned checkouts are skipped, and line item '
             . 'prices use the current catalog price, since historical prices are not reliably '
             . 'reconstructable from the legacy orderData blob.';
     }
@@ -140,6 +142,14 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
     private function migrateOrder(array $legacyRow, int $pid): void
     {
         $legacyUid = (int)$legacyRow['uid'];
+        if ($this->isAbandonedCheckout($legacyRow)) {
+            $this->output->writeln(sprintf(
+                '<comment>sys_products_orders uid %d is an abandoned checkout without customer, amount and payment, skipped.</comment>',
+                $legacyUid
+            ));
+            $this->migrationHelper->recordMapping(self::LEGACY_TABLE, $legacyUid, self::LOCAL_TABLE, 0);
+            return;
+        }
         $country = $this->resolveCountry($legacyUid, (string)$legacyRow['country']);
         $addressUid = $this->insertAddress($legacyRow, $pid, $country[0]);
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::LOCAL_TABLE);
@@ -168,7 +178,8 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
             'frontend_user' => (int)$legacyRow['feusers_uid'],
             'email' => (string)$legacyRow['email'],
             'billing_address' => $addressUid,
-            'payment_method' => $this->resolvePaymentMethod($legacyUid, (int)$legacyRow['pay_mode']),
+            'payment_method' => $this->resolvePaymentMethod($legacyUid, $legacyRow),
+            ...$this->resolveShipping($legacyRow),
             'payment_status' => $paymentStatus->value,
             'status' => $status->value,
             'invoice_number' => (string)$legacyRow['bill_no'],
@@ -235,18 +246,72 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
     }
 
     /**
-     * Only "invoice" is implemented; electronic gateways get a warning and map to it too.
+     * tt_products tells the TypoScript key of the payment by the leading number of its `payment` text,
+     * e.g. "90: PayPal Gateway"; `migration.orderPaymentMethods` maps it. Anything else becomes invoice.
+     *
+     * @param array<string, mixed> $legacyRow
      */
-    private function resolvePaymentMethod(int $legacyUid, int $legacyPayMode): string
+    private function resolvePaymentMethod(int $legacyUid, array $legacyRow): string
     {
-        if (!in_array($legacyPayMode, self::NON_ELECTRONIC_PAY_MODES, true)) {
-            $this->output->writeln(sprintf(
-                '<comment>sys_products_orders uid %d used electronic pay_mode %d, historic provider is only in legacy_order_data.</comment>',
-                $legacyUid,
-                $legacyPayMode
-            ));
+        $payment = trim((string)($legacyRow['payment'] ?? ''));
+        if ($payment === '') {
+            if (!in_array((int)$legacyRow['pay_mode'], self::NON_ELECTRONIC_PAY_MODES, true)) {
+                $this->output->writeln(sprintf(
+                    '<comment>sys_products_orders uid %d used electronic pay_mode %d, historic provider is only in legacy_order_data.</comment>',
+                    $legacyUid,
+                    (int)$legacyRow['pay_mode']
+                ));
+            }
+            return 'invoice';
         }
-        return 'invoice';
+        $method = $this->migrationConfiguration->getKeyMap('orderPaymentMethods')[$this->legacyKey($payment)] ?? null;
+        if ($method === null) {
+            $this->output->writeln(sprintf(
+                '<comment>sys_products_orders uid %d used payment "%s", which migration.orderPaymentMethods does not map; it becomes "invoice".</comment>',
+                $legacyUid,
+                $payment
+            ));
+            return 'invoice';
+        }
+        return $method;
+    }
+
+    /**
+     * The `shipping` text works like the payment's; `migration.orderShippingOptions` maps its key to a
+     * provider and, optionally, an option, e.g. "10:tablerate:1, 20:pickup". The legacy title is kept.
+     *
+     * @param array<string, mixed> $legacyRow
+     * @return array{shipping_provider: string, shipping_option: string, shipping_label: string}
+     */
+    private function resolveShipping(array $legacyRow): array
+    {
+        $shipping = trim((string)($legacyRow['shipping'] ?? ''));
+        $target = $shipping !== '' ? ($this->migrationConfiguration->getKeyMap('orderShippingOptions')[$this->legacyKey($shipping)] ?? '') : '';
+        if ($target === '') {
+            return ['shipping_provider' => '', 'shipping_option' => '', 'shipping_label' => ''];
+        }
+        [$provider, $option] = explode(':', $target, 2) + [1 => ''];
+        $label = trim(preg_replace('/^\d+\s*:/', '', $shipping) ?? $shipping);
+        return ['shipping_provider' => $provider, 'shipping_option' => $option, 'shipping_label' => $label];
+    }
+
+    private function legacyKey(string $text): int
+    {
+        return preg_match('/^(\d+)\s*:/', $text, $matches) === 1 ? (int)$matches[1] : -1;
+    }
+
+    /**
+     * tt_products creates the order row when a checkout starts; one never finished has no customer, no
+     * amount and no payment.
+     *
+     * @param array<string, mixed> $legacyRow
+     */
+    private function isAbandonedCheckout(array $legacyRow): bool
+    {
+        return trim((string)$legacyRow['email']) === ''
+            && trim((string)$legacyRow['last_name']) === ''
+            && (float)$legacyRow['amount'] === 0.0
+            && trim((string)($legacyRow['payment'] ?? '')) === '';
     }
 
     /**
