@@ -15,6 +15,48 @@ themselves entirely once the legacy tables are gone.
 ..  contents:: Table of contents
     :local:
 
+Before you start
+================
+
+Some legacy behaviour lives in TypoScript (:sql:`sys_template`), which the wizards cannot read. Declare
+it in the extension configuration of ``products_core`` (:guilabel:`Admin Tools > Settings > Extension
+Configuration`, tab :guilabel:`migration`) before running the product and article wizards:
+
+..  confval:: migration.legacyPrice2
+    :name: upgrading-legacy-price2
+    :type: options
+    :default: undecided
+
+    How the legacy shop used the ``price2`` column of products and articles. ``tt_products`` charges it
+    whenever ``plugin.tt_products.priceNoReseller = 2`` is set, falling back to ``price`` where
+    ``price2`` is empty.
+
+    ``selling``
+        ``priceNoReseller = 2`` was set for every visitor: ``price2`` becomes the price, ``price`` is
+        used only where ``price2`` is empty.
+    ``reseller``
+        ``priceNoReseller = 2`` was set inside a usergroup condition: ``price`` stays the price, and
+        ``price2`` becomes a price period of the frontend group set in
+        :confval:`upgrading-legacy-price2-fe-group`, without start or end date.
+    ``unused``
+        ``price2`` is ignored; the wizards report how many records carried one.
+    ``undecided``
+        The product and article wizards refuse to run while any record has a ``price2``.
+
+..  confval:: migration.legacyPrice2FeGroup
+    :name: upgrading-legacy-price2-fe-group
+    :type: int
+    :default: 0
+
+    Frontend group uid the ``price2`` price period applies to. Required when
+    :confval:`upgrading-legacy-price2` is ``reseller``.
+
+The same values can be set on the command line, for example:
+
+..  code-block:: bash
+
+    vendor/bin/typo3 configuration:set EXTENSIONS/products_core/migration/legacyPrice2 selling
+
 Run order
 =========
 

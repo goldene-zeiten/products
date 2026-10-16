@@ -43,6 +43,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
         private readonly LegacyOverlayMigrator $overlayMigrator,
         private readonly StorageFolderResolver $storageFolderResolver,
         private readonly CategoryMigrationPrerequisite $categoryMigrationPrerequisite,
+        private readonly LegacyPriceMigrator $priceMigrator,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -80,6 +81,9 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
                 '<error>tt_products_cat still has unmigrated rows; run the category migration '
                     . 'wizard (products_ttProductsCategoryMigration) first.</error>'
             );
+            return false;
+        }
+        if (!$this->priceMigrator->prepare(self::LEGACY_TABLE, $this->output)) {
             return false;
         }
         $pid = $this->storageFolderResolver->resolve();
@@ -121,6 +125,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
         $queryBuilder->insert(self::LOCAL_TABLE)->values($this->productValues($legacyRow, $pid, $legacyUid))->executeStatement();
         $localUid = (int)$this->connectionPool->getConnectionForTable(self::LOCAL_TABLE)->lastInsertId();
         $this->migrationHelper->recordMapping(self::LEGACY_TABLE, $legacyUid, self::LOCAL_TABLE, $localUid);
+        $this->priceMigrator->migrateResellerPrice($legacyRow, 'product', $localUid, $pid);
         $this->linkCategory($legacyUid, (int)($legacyRow['category'] ?? 0), $localUid);
     }
 
@@ -140,7 +145,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
             'description' => (string)($legacyRow['description'] ?? ''),
             'item_number' => (string)$legacyRow['itemnumber'],
             'ean' => (string)$legacyRow['ean'],
-            'price' => $this->formatPrice((string)$legacyRow['price']),
+            'price' => $this->priceMigrator->price($legacyRow),
             'tax_class' => $this->resolveTaxClass($legacyUid, (int)($legacyRow['taxcat_id'] ?? 0)),
             'in_stock' => (int)$legacyRow['inStock'],
             'basket_min_quantity' => (int)round((float)$legacyRow['basketminquantity']),
@@ -149,11 +154,6 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
             'is_offer' => (int)$legacyRow['offer'] > 0 ? 1 : 0,
             'is_highlight' => (int)$legacyRow['highlight'] > 0 ? 1 : 0,
         ];
-    }
-
-    private function formatPrice(string $legacyPrice): string
-    {
-        return number_format((float)$legacyPrice, 2, '.', '');
     }
 
     /**

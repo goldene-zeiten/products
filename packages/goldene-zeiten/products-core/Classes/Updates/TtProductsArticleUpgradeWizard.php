@@ -43,6 +43,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
         private readonly StorageFolderResolver $storageFolderResolver,
         private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
         private readonly LegacyArticleProductResolver $articleProductResolver,
+        private readonly LegacyPriceMigrator $priceMigrator,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -80,6 +81,9 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
                 '<error>tt_products still has unmigrated rows; run the product migration '
                     . 'wizard (products_ttProductsProductMigration) first.</error>'
             );
+            return false;
+        }
+        if (!$this->priceMigrator->prepare(self::LEGACY_TABLE, $this->output)) {
             return false;
         }
         $pid = $this->storageFolderResolver->resolve();
@@ -171,7 +175,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
             'product' => $productLocalUid,
             'title' => (string)$legacyRow['title'],
             'item_number' => (string)$legacyRow['itemnumber'],
-            'price' => $this->formatPrice((string)$legacyRow['price']),
+            'price' => $this->priceMigrator->price($legacyRow),
             'in_stock' => (int)$legacyRow['inStock'],
             'basket_min_quantity' => (int)round((float)($legacyRow['basketminquantity'] ?? 0)),
             'basket_max_quantity' => (int)round((float)($legacyRow['basketmaxquantity'] ?? 0)),
@@ -180,11 +184,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
         ])->executeStatement();
         $localUid = (int)$this->connectionPool->getConnectionForTable(self::LOCAL_TABLE)->lastInsertId();
         $this->migrationHelper->recordMapping(self::LEGACY_TABLE, $legacyUid, self::LOCAL_TABLE, $localUid);
-    }
-
-    private function formatPrice(string $legacyPrice): string
-    {
-        return number_format((float)$legacyPrice, 2, '.', '');
+        $this->priceMigrator->migrateResellerPrice($legacyRow, 'article', $localUid, $pid);
     }
 
     /**

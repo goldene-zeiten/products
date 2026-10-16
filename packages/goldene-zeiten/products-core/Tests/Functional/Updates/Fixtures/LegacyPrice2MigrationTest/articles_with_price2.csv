@@ -1,0 +1,10 @@
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,80,1,0,"Existing Product"
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",1,"tx_products_domain_model_product",80
+"tt_products_articles",,,,,,,,,,,
+,"uid","pid","deleted","hidden","title","itemnumber","price","price2","inStock","weight","uid_product"
+,1,1,0,0,"Gold 585","A1","100.00","180.00",1,"0.000000",1
+,2,1,0,0,"Silver","A2","50.00","0.00",1,"0.000000",1

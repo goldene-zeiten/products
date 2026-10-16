@@ -1,0 +1,7 @@
+"tx_products_domain_model_article",,,,
+,"uid","title","price","price_periods"
+,1,"Gold 585","100.00",1
+,2,"Silver","50.00",0
+"tx_products_domain_model_priceperiod",,,,,,,,
+,"uid","pid","product","article","fe_group","price","valid_from","valid_until"
+,1,0,0,1,7,"180.00",0,0
