@@ -10,6 +10,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Basket;
 use GoldeneZeiten\Products\Core\Domain\Dto\BasketItem;
 use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewItem;
 use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
+use GoldeneZeiten\Products\Core\Domain\Dto\LineItemOption;
 use GoldeneZeiten\Products\Core\Domain\Model\Article;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\Repository\ArticleRepository;
@@ -18,9 +19,11 @@ use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\VatBuckets;
 use GoldeneZeiten\Products\Core\Event\BasketUpdatedEvent;
 use GoldeneZeiten\Products\Core\Event\ModifyBasketItemEvent;
+use GoldeneZeiten\Products\Core\Event\ResolveLineItemOptionsEvent;
 use GoldeneZeiten\Products\Core\Pricing\GraduatedPriceProvider;
 use GoldeneZeiten\Products\Core\Pricing\PriceProviderInterface;
 use GoldeneZeiten\Products\Core\Pricing\VatSplitter;
+use GoldeneZeiten\Products\Core\Service\Basket\Exception\LineItemOptionsRejectedException;
 use GoldeneZeiten\Products\Core\Service\PriceRoundingService;
 use GoldeneZeiten\Products\Core\Service\TaxService;
 use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
@@ -44,7 +47,14 @@ final class BasketService
         private readonly VatSplitter $vatSplitter
     ) {}
 
-    public function add(ServerRequestInterface $request, int $productUid, ?int $articleUid, int $quantity): void
+    /**
+     * Option selections only reach the line as far as a listener of {@see ResolveLineItemOptionsEvent}
+     * resolves them; the same product with other selections is a line of its own.
+     *
+     * @param array<string, string> $selections option identifier => submitted value
+     * @throws LineItemOptionsRejectedException when a listener refuses the selections
+     */
+    public function add(ServerRequestInterface $request, int $productUid, ?int $articleUid, int $quantity, array $selections = []): void
     {
         $product = $this->findVisibleProduct($productUid, $request);
         if ($product === null) {
@@ -56,15 +66,34 @@ final class BasketService
             return;
         }
 
+        $item = new BasketItem($productUid, $articleUid, 0, $this->acceptedSelections($product, $article, $selections, $request));
         $basket = $this->basketStorage->load($request);
-        $lineQuantity = $basket->getQuantity($productUid, $articleUid) + max(1, $quantity);
+        $lineQuantity = $basket->getQuantity($productUid, $articleUid, $item->getOptionsKey()) + max(1, $quantity);
         $lineQuantity = $this->basketQuantityResolver->clamp($product, $article, $lineQuantity);
-        $basket->replaceItem(new BasketItem($productUid, $articleUid, $lineQuantity));
+        $basket->replaceItem($item->withQuantity($lineQuantity));
         $basket = $this->dispatchBasketUpdated($request, $basket);
         $this->basketStorage->save($request, $basket);
     }
 
-    public function update(ServerRequestInterface $request, int $productUid, ?int $articleUid, int $quantity): void
+    /**
+     * @param array<string, string> $selections
+     * @return array<string, string> the selections a listener resolved into options
+     */
+    private function acceptedSelections(Product $product, ?Article $article, array $selections, ServerRequestInterface $request): array
+    {
+        $event = new ResolveLineItemOptionsEvent($product, $article, $selections, $request);
+        $this->eventDispatcher->dispatch($event);
+        if ($event->isRejected()) {
+            throw new LineItemOptionsRejectedException($event->getRejectionReason(), 1792173011);
+        }
+        $accepted = [];
+        foreach ($event->getOptions() as $option) {
+            $accepted[$option->getIdentifier()] = $option->getValue();
+        }
+        return $accepted;
+    }
+
+    public function update(ServerRequestInterface $request, int $productUid, ?int $articleUid, int $quantity, string $optionsKey = ''): void
     {
         if ($quantity > 0) {
             $product = $this->productRepository->findByUid($productUid);
@@ -74,7 +103,7 @@ final class BasketService
         }
 
         $basket = $this->basketStorage->load($request);
-        $basket->updateQuantity($productUid, $articleUid, $quantity);
+        $basket->updateQuantity($productUid, $articleUid, $quantity, $optionsKey);
         $basket = $this->dispatchBasketUpdated($request, $basket);
         $this->basketStorage->save($request, $basket);
     }
@@ -108,10 +137,10 @@ final class BasketService
         return $article instanceof Article ? $article : null;
     }
 
-    public function remove(ServerRequestInterface $request, int $productUid, ?int $articleUid): void
+    public function remove(ServerRequestInterface $request, int $productUid, ?int $articleUid, string $optionsKey = ''): void
     {
         $basket = $this->basketStorage->load($request);
-        $basket->removeItem($productUid, $articleUid);
+        $basket->removeItem($productUid, $articleUid, $optionsKey);
         $basket = $this->dispatchBasketUpdated($request, $basket);
         $this->basketStorage->save($request, $basket);
     }
@@ -197,23 +226,30 @@ final class BasketService
     private function resolveItem(BasketItem $item, ProductsConfiguration $configuration, ServerRequestInterface $request, ?string $taxCountry): ?BasketViewItem
     {
         $product = $this->findVisibleProduct($item->getProductUid(), $request);
-        if ($product === null) {
+        $article = $this->resolveArticle($item->getArticleUid());
+        if ($product === null || !$this->isArticleOfProduct($product, $item->getArticleUid(), $article)) {
             return null;
         }
-
-        $article = $this->resolveArticle($item->getArticleUid());
-        if (!$this->isArticleOfProduct($product, $item->getArticleUid(), $article)) {
+        $options = $this->resolveOptions($item, $product, $article, $request);
+        if ($options === null) {
             return null;
         }
 
         $basePrice = $this->priceProvider->getUnitPrice($product, $article, $item->getQuantity(), $request);
         $taxRate = $this->taxService->getTaxRate($configuration, $product->getTaxClass(), $taxCountry);
-        $unitPriceGross = $configuration->getPricingMode() === 'gross' ? $basePrice : $basePrice->multiply(1 + $taxRate);
+        $grossPricing = $configuration->getPricingMode() === 'gross';
+        $unitPriceGross = $grossPricing ? $basePrice : $basePrice->multiply(1 + $taxRate);
+        $lineOptions = array_map(
+            static fn(LineItemOption $option): LineItemOption => $option->withSurcharge($grossPricing ? $option->getSurcharge() : $option->getSurcharge()->multiply(1 + $taxRate)),
+            $options
+        );
+        foreach ($lineOptions as $lineOption) {
+            $unitPriceGross = $unitPriceGross->add($lineOption->getSurcharge());
+        }
 
         // Net and VAT of the line derive from its gross, so rounding a unit's net never multiplies by the quantity.
         $lineTotalGross = $unitPriceGross->multiply($item->getQuantity());
         $lineTotalNet = $lineTotalGross->netFromGross($taxRate);
-
         $viewItem = new BasketViewItem(
             $product,
             $article,
@@ -223,11 +259,29 @@ final class BasketService
             $taxRate,
             $lineTotalNet,
             $lineTotalGross,
-            $lineTotalGross->subtract($lineTotalNet)
+            $lineTotalGross->subtract($lineTotalNet),
+            $lineOptions
         );
 
         $event = new ModifyBasketItemEvent($viewItem, $request);
         $this->eventDispatcher->dispatch($event);
         return $event->getViewItem();
+    }
+
+    /**
+     * @return LineItemOption[]|null null when the stored selections cannot all be sold anymore
+     */
+    private function resolveOptions(BasketItem $item, Product $product, ?Article $article, ServerRequestInterface $request): ?array
+    {
+        $event = new ResolveLineItemOptionsEvent($product, $article, $item->getSelections(), $request);
+        $this->eventDispatcher->dispatch($event);
+        $resolved = [];
+        foreach ($event->getOptions() as $option) {
+            $resolved[$option->getIdentifier()] = $option->getValue();
+        }
+        if ($event->isRejected() || BasketItem::optionsKeyOf($resolved) !== $item->getOptionsKey()) {
+            return null;
+        }
+        return $event->getOptions();
     }
 }

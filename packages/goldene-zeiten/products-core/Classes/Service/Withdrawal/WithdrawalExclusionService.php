@@ -23,7 +23,7 @@ final class WithdrawalExclusionService
     public function basketRequiresWaiver(BasketViewModel $basketViewModel): bool
     {
         foreach ($basketViewModel->getItems() as $viewItem) {
-            if ($viewItem->getProduct()->getWithdrawalExclusion()->requiresWaiverConsent()) {
+            if ($viewItem->getWithdrawalExclusion()->requiresWaiverConsent()) {
                 return true;
             }
         }
@@ -37,7 +37,7 @@ final class WithdrawalExclusionService
     public function basketContainsPersonalized(BasketViewModel $basketViewModel): bool
     {
         foreach ($basketViewModel->getItems() as $viewItem) {
-            if ($viewItem->getProduct()->getWithdrawalExclusion() === WithdrawalExclusion::PERSONALIZED) {
+            if ($viewItem->getWithdrawalExclusion() === WithdrawalExclusion::PERSONALIZED) {
                 return true;
             }
         }

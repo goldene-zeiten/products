@@ -35,7 +35,8 @@ final class BasketStorage
             $items[] = new BasketItem(
                 (int)($itemData['productUid'] ?? 0),
                 isset($itemData['articleUid']) ? (int)$itemData['articleUid'] : null,
-                (int)($itemData['quantity'] ?? 0)
+                (int)($itemData['quantity'] ?? 0),
+                array_map('strval', is_array($itemData['selections'] ?? null) ? $itemData['selections'] : [])
             );
         }
         return new Basket($items);
@@ -54,6 +55,7 @@ final class BasketStorage
                 'productUid' => $item->getProductUid(),
                 'articleUid' => $item->getArticleUid(),
                 'quantity' => $item->getQuantity(),
+                'selections' => $item->getSelections(),
             ];
         }
         $sessionData = ['items' => $itemsData];

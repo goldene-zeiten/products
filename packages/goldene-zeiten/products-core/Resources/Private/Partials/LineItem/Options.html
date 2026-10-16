@@ -1,0 +1,12 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/Core/ViewHelpers"
+>
+<f:if condition="{options}">
+    <ul class="line-item-options">
+        <f:for each="{options}" as="option">
+            <li>{option.label}: {option.valueLabel}<f:if condition="{option.surcharge.cents} > 0"> (+&nbsp;<p:format.money value="{option.surcharge}" currency="{currency}" locale="{moneyLocale}" />)</f:if></li>
+        </f:for>
+    </ul>
+</f:if>
+</html>

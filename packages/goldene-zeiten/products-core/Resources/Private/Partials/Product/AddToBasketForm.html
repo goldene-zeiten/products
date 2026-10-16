@@ -5,6 +5,7 @@
             <label for="products-quantity-{product.uid}" class="form-label"><f:translate key="quantity" extensionName="ProductsCore" /></label>
             <f:form.textfield name="quantity" value="1" type="number" id="products-quantity-{product.uid}" class="form-control" additionalAttributes="{min: 1}" />
         </div>
+        <f:render partial="Product/LineItemOptions" arguments="{product: product}" />
         <f:form.submit value="{f:translate(key: 'add_to_basket')}" class="btn btn-primary" />
     </f:form>
 </div>

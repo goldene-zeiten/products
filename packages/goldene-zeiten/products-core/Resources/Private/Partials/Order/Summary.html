@@ -24,6 +24,7 @@
                                 <br><small>{articleTitle}</small>
                             </f:then>
                         </f:if>
+                        <f:render partial="LineItem/Options" arguments="{options: item.lineOptions, currency: summary.currency, moneyLocale: moneyLocale}" />
                     </td>
                     <td>{item.quantity}</td>
                     <td><p:format.money value="{item.unitPriceGross}" currency="{summary.currency}" locale="{moneyLocale}" /></td>

@@ -2,7 +2,7 @@
 <f:translate key="order_summary" extensionName="ProductsCore" />
 
 <f:for each="{summary.items}" as="item">{item.quantity} x {f:if(condition: item.title, then: item.title, else: item.product.title)}<f:if condition="{item.articleTitle}"> ({item.articleTitle})</f:if>: <p:format.money value="{item.lineTotalGross}" currency="{summary.currency}" locale="{moneyLocale}" />
-</f:for>
+<f:render partial="LineItem/Options" arguments="{options: item.lineOptions, currency: summary.currency, moneyLocale: moneyLocale}" /></f:for>
 <f:translate key="summary_subtotal" extensionName="ProductsCore" />: <p:format.money value="{totals.itemsTotalGross}" currency="{summary.currency}" locale="{moneyLocale}" />
 <f:if condition="{totals.shippingTotal.cents} != 0"><f:translate key="summary_shipping" extensionName="ProductsCore" />: <p:format.money value="{totals.shippingTotal}" currency="{summary.currency}" locale="{moneyLocale}" />
 </f:if><f:if condition="{totals.handlingFeeTotal.cents} != 0"><f:translate key="summary_handling_fee" extensionName="ProductsCore" />: <p:format.money value="{totals.handlingFeeTotal}" currency="{summary.currency}" locale="{moneyLocale}" />

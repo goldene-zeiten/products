@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Domain\Model;
 
+use GoldeneZeiten\Products\Core\Domain\Dto\LineItemOption;
 use GoldeneZeiten\Products\Core\Domain\Enum\WithdrawalExclusion;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
@@ -193,6 +194,30 @@ class OrderItem extends AbstractEntity
     public function setOptions(array $options): void
     {
         $this->options = (string)json_encode($options);
+    }
+
+    /**
+     * The options the customer chose for this line, as they were sold.
+     *
+     * @return LineItemOption[]
+     */
+    public function getLineOptions(): array
+    {
+        $lineOptions = $this->getOptions()['lineOptions'] ?? [];
+        return is_array($lineOptions) ? array_map(LineItemOption::fromArray(...), array_values(array_filter($lineOptions, 'is_array'))) : [];
+    }
+
+    /**
+     * @param LineItemOption[] $lineOptions
+     */
+    public function setLineOptions(array $lineOptions): void
+    {
+        $options = $this->getOptions();
+        unset($options['lineOptions']);
+        if ($lineOptions !== []) {
+            $options['lineOptions'] = array_map(static fn(LineItemOption $option): array => $option->toArray(), $lineOptions);
+        }
+        $this->setOptions($options);
     }
 
     /**

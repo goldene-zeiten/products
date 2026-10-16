@@ -1,0 +1,23 @@
+{
+  "name": "goldene-zeiten/products-line-options-fixture",
+  "type": "typo3-cms-extension",
+  "description": "Resolves basket line options to prove EXT:products prices, stores and snapshots them.",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "typo3/cms-core": "^13.4 || ^14.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\LineOptionsFixture\\": "Classes/"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "products_line_options_fixture",
+      "version": "1.0.0",
+      "Package": {
+        "providesPackages": {}
+      }
+    }
+  }
+}
