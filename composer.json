@@ -24,6 +24,7 @@
     "goldene-zeiten/products-express-stripe": "^1.0",
     "goldene-zeiten/products-payment-amazon": "^1.0",
     "goldene-zeiten/products-payment-klarna": "^1.0",
+    "goldene-zeiten/products-payment-offline": "^1.0",
     "goldene-zeiten/products-payment-paypal": "^1.0",
     "goldene-zeiten/products-payment-stripe": "^1.0",
     "goldene-zeiten/products-personalization": "^1.0",
@@ -57,7 +58,8 @@
       "GoldeneZeiten\\Products\\Express\\Stripe\\Tests\\": "packages/goldene-zeiten/products-express-stripe/Tests/",
       "GoldeneZeiten\\Products\\Express\\Paypal\\Tests\\": "packages/goldene-zeiten/products-express-paypal/Tests/",
       "GoldeneZeiten\\Products\\BasketSummary\\Tests\\": "packages/goldene-zeiten/products-basket-summary/Tests/",
-      "GoldeneZeiten\\Products\\Personalization\\Tests\\": "packages/goldene-zeiten/products-personalization/Tests/"
+      "GoldeneZeiten\\Products\\Personalization\\Tests\\": "packages/goldene-zeiten/products-personalization/Tests/",
+      "GoldeneZeiten\\Products\\Payment\\Offline\\Tests\\": "packages/goldene-zeiten/products-payment-offline/Tests/"
     }
   },
   "require-dev": {
@@ -100,7 +102,8 @@
           "goldene-zeiten/products-express-stripe": "1.0.0",
           "goldene-zeiten/products-express-paypal": "1.0.0",
           "goldene-zeiten/products-basket-summary": "1.0.0",
-          "goldene-zeiten/products-personalization": "1.0.0"
+          "goldene-zeiten/products-personalization": "1.0.0",
+          "goldene-zeiten/products-payment-offline": "1.0.0"
         }
       }
     }

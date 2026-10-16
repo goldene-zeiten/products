@@ -44,6 +44,9 @@ jobs:
           - package: products-personalization
             directory: packages/goldene-zeiten/products-personalization
             repository: products-personalization
+          - package: products-payment-offline
+            directory: packages/goldene-zeiten/products-payment-offline
+            repository: products-payment-offline
           - package: products-wishlist
             directory: packages/goldene-zeiten/products-wishlist
             repository: products-wishlist

@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-payment-offline
+label: 'Products Offline Payment'
+dependencies:
+  - goldene-zeiten/products-core

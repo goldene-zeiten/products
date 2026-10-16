@@ -1,0 +1,12 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  GoldeneZeiten\Products\Payment\Offline\:
+    resource: '../Classes/*'
+
+  # Only collected through the payment method tag, which inlines it; the tests fetch it directly.
+  GoldeneZeiten\Products\Payment\Offline\Payment\PrepaymentPaymentMethod:
+    public: true
