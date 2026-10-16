@@ -12,6 +12,8 @@ use Doctrine\DBAL\Types\IntegerType;
 use Doctrine\DBAL\Types\SmallIntType;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\TextType;
+use GoldeneZeiten\Products\Core\Event\CollectMigratedLegacyColumnsEvent;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -19,7 +21,8 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 /**
  * Reports every column of a legacy table that carries data although no wizard migrates it, so the
  * integrator learns about content the cleanup would drop. Columns are read from the live schema, which
- * covers columns other extensions added to the legacy table as well.
+ * covers columns other extensions added to the legacy table as well; columns another extension migrates are
+ * named through {@see CollectMigratedLegacyColumnsEvent}.
  */
 final class LegacyColumnReporter
 {
@@ -53,7 +56,10 @@ final class LegacyColumnReporter
         't3ver_label',
     ];
 
-    public function __construct(private readonly ConnectionPool $connectionPool) {}
+    public function __construct(
+        private readonly ConnectionPool $connectionPool,
+        private readonly EventDispatcherInterface $eventDispatcher
+    ) {}
 
     /**
      * @param string[] $handledColumns columns a wizard migrates or deliberately reports itself
@@ -79,7 +85,9 @@ final class LegacyColumnReporter
      */
     private function candidateColumns(string $legacyTable, array $handledColumns): array
     {
-        $skippedColumns = array_map(strtolower(...), array_merge(self::SYSTEM_COLUMNS, $handledColumns));
+        $event = new CollectMigratedLegacyColumnsEvent($legacyTable);
+        $this->eventDispatcher->dispatch($event);
+        $skippedColumns = array_map(strtolower(...), array_merge(self::SYSTEM_COLUMNS, $handledColumns, $event->getColumns()));
         $columns = $this->connectionPool->getConnectionForTable($legacyTable)
             ->createSchemaManager()
             ->introspectTable($legacyTable)

@@ -21,6 +21,7 @@ CREATE TABLE tt_products (
 	keyword mediumtext,
 	color mediumtext,
 	color2 mediumtext,
+	size mediumtext,
 	quality mediumtext,
 	form mediumtext,
 	description mediumtext,

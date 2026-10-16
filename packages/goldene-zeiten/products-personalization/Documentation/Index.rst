@@ -46,3 +46,4 @@ from a list, an engraving as free text, each with an optional surcharge.
     Installation/Index
     Editor/Index
     Configuration/Index
+    Migration/Index
