@@ -41,6 +41,9 @@ jobs:
           - package: products-basket-summary
             directory: packages/goldene-zeiten/products-basket-summary
             repository: products-basket-summary
+          - package: products-personalization
+            directory: packages/goldene-zeiten/products-personalization
+            repository: products-personalization
           - package: products-wishlist
             directory: packages/goldene-zeiten/products-wishlist
             repository: products-wishlist

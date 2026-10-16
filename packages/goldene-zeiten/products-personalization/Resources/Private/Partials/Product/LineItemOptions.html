@@ -1,0 +1,36 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/Core/ViewHelpers"
+      xmlns:pp="http://typo3.org/ns/GoldeneZeiten/Products/Personalization/ViewHelpers"
+>
+<f:for each="{pp:options(product: product, article: article)}" as="option">
+    <f:variable name="fieldId" value="products-option-{product.uid}-{article.uid}-{option.identifier}" />
+    <div class="mb-3 products-personalization-option">
+        <label for="{fieldId}" class="form-label">
+            {option.title}<f:if condition="{option.required}"> *</f:if>
+            <f:if condition="{option.surcharge.cents} > 0"> (+&nbsp;<p:format.money value="{option.surcharge}" />)</f:if>
+        </label>
+        <f:if condition="{option.text}">
+            <f:then>
+                <f:if condition="{option.maxLength} > 0">
+                    <f:then>
+                        <f:form.textfield name="options[{option.identifier}]" id="{fieldId}" class="form-control" required="{option.required}" maxlength="{option.maxLength}" />
+                        <div class="form-text"><f:translate key="option.max_length" arguments="{0: option.maxLength}" extensionName="ProductsPersonalization" /></div>
+                    </f:then>
+                    <f:else>
+                        <f:form.textfield name="options[{option.identifier}]" id="{fieldId}" class="form-control" required="{option.required}" />
+                    </f:else>
+                </f:if>
+            </f:then>
+            <f:else>
+                <f:form.select name="options[{option.identifier}]" id="{fieldId}" class="form-select" required="{option.required}">
+                    <f:form.select.option value=""><f:translate key="option.choose" extensionName="ProductsPersonalization" /></f:form.select.option>
+                    <f:for each="{option.items}" as="item">
+                        <f:form.select.option value="{item.value}">{item.title}<f:if condition="{item.surcharge.cents} > 0"> (+ <p:format.money value="{item.surcharge}" />)</f:if></f:form.select.option>
+                    </f:for>
+                </f:form.select>
+            </f:else>
+        </f:if>
+    </div>
+</f:for>
+</html>

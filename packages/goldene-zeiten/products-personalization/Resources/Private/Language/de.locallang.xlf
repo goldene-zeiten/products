@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_personalization/Resources/Private/Language/de.locallang.xlf" date="2026-10-16T00:00:00Z" product-name="products_personalization">
+        <header/>
+        <body>
+            <trans-unit id="option.choose" resname="option.choose">
+                <source>Please choose</source>
+                <target>Bitte wählen</target>
+            </trans-unit>
+            <trans-unit id="option.max_length" resname="option.max_length">
+                <source>At most %d characters.</source>
+                <target>Höchstens %d Zeichen.</target>
+            </trans-unit>
+            <trans-unit id="selection.required" resname="selection.required">
+                <source>Please fill in "%s".</source>
+                <target>Bitte füllen Sie „%s“ aus.</target>
+            </trans-unit>
+            <trans-unit id="selection.too_long" resname="selection.too_long">
+                <source>"%s" is too long.</source>
+                <target>„%s“ ist zu lang.</target>
+            </trans-unit>
+            <trans-unit id="selection.invalid_characters" resname="selection.invalid_characters">
+                <source>"%s" contains characters that cannot be engraved. Please use letters, digits, spaces and . , - &amp; ' ! ? + only.</source>
+                <target>„%s“ enthält Zeichen, die nicht graviert werden können. Bitte verwenden Sie nur Buchstaben, Ziffern, Leerzeichen und . , - &amp; ' ! ? +.</target>
+            </trans-unit>
+            <trans-unit id="selection.unknown_choice" resname="selection.unknown_choice">
+                <source>The choice for "%s" is not available. Please choose again.</source>
+                <target>Die Auswahl für „%s“ ist nicht verfügbar. Bitte wählen Sie erneut.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
