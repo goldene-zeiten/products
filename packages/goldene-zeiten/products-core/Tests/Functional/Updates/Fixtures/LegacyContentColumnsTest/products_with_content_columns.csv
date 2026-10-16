@@ -1,0 +1,4 @@
+"tt_products",,,,,,,,,,,,,,,,,,,,,,,,,,,
+,"uid","pid","deleted","hidden","title","itemnumber","ean","price","category","inStock","basketminquantity","basketmaxquantity","taxcat_id","weight","offer","highlight","note","note2","description","directcost","deposit","bulkily","color","color2","quality"
+,1,1,0,0,"Engagement ring","R1","","228.75",0,1,"0.00","0.00",1,"0.000000",0,0,"<p>Ring text</p>","ring, gold","48;50;52","120.50","0.25",1,"48;50;52","","Weißgold"
+,2,1,0,0,"Plain ring","R2","","10.00",0,1,"0.00","0.00",1,"0.000000",0,0,"","","","0.00","0.00",0,"","",""

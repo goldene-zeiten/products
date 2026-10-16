@@ -1,0 +1,4 @@
+"tx_products_domain_model_product",,,,,,
+,"uid","title","description","direct_cost","deposit","bulky"
+,1,"Engagement ring","<p>Ring text</p>","120.50","0.25",1
+,2,"Plain ring","","0.00","0.00",0

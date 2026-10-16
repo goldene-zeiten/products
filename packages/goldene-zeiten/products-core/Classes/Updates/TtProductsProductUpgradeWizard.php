@@ -35,6 +35,42 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
     private const LOCAL_CATEGORY_MM_TABLE = 'tx_products_product_category_mm';
     private const LOCAL_TAXCLASS_TABLE = 'tx_products_domain_model_taxclass';
 
+    /**
+     * Migrated here, by the media wizard (`image`, `datasheet`, `download_uid`) or by the article
+     * wizard (`article_uid`); `smallimage` is reported by the media wizard.
+     *
+     * @var string[]
+     */
+    private const HANDLED_COLUMNS = [
+        'title',
+        'subtitle',
+        'slug',
+        'note',
+        'itemnumber',
+        'ean',
+        'price',
+        'price2',
+        'directcost',
+        'deposit',
+        'taxcat_id',
+        'inStock',
+        'basketminquantity',
+        'basketmaxquantity',
+        'weight',
+        'bulkily',
+        'offer',
+        'highlight',
+        'category',
+        'article_uid',
+        'image',
+        'image_uid',
+        'smallimage',
+        'smallimage_uid',
+        'datasheet',
+        'datasheet_uid',
+        'download_uid',
+    ];
+
     private OutputInterface $output;
 
     public function __construct(
@@ -44,6 +80,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
         private readonly StorageFolderResolver $storageFolderResolver,
         private readonly CategoryMigrationPrerequisite $categoryMigrationPrerequisite,
         private readonly LegacyPriceMigrator $priceMigrator,
+        private readonly LegacyColumnReporter $columnReporter,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -93,6 +130,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
             }
         }
         $this->overlayMigrator->migrate($this->output, $this->overlayConfig(), $this->overlayValues(...));
+        $this->columnReporter->report(self::LEGACY_TABLE, self::HANDLED_COLUMNS, $this->output);
         return true;
     }
 
@@ -142,15 +180,18 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
             'title' => (string)$legacyRow['title'],
             'subtitle' => (string)($legacyRow['subtitle'] ?? ''),
             'slug' => (string)($legacyRow['slug'] ?? ''),
-            'description' => (string)($legacyRow['description'] ?? ''),
+            'description' => (string)($legacyRow['note'] ?? ''),
             'item_number' => (string)$legacyRow['itemnumber'],
             'ean' => (string)$legacyRow['ean'],
             'price' => $this->priceMigrator->price($legacyRow),
+            'direct_cost' => number_format((float)($legacyRow['directcost'] ?? 0), 2, '.', ''),
+            'deposit' => number_format((float)($legacyRow['deposit'] ?? 0), 2, '.', ''),
             'tax_class' => $this->resolveTaxClass($legacyUid, (int)($legacyRow['taxcat_id'] ?? 0)),
             'in_stock' => (int)$legacyRow['inStock'],
             'basket_min_quantity' => (int)round((float)$legacyRow['basketminquantity']),
             'basket_max_quantity' => (int)round((float)$legacyRow['basketmaxquantity']),
             'weight' => (int)round((float)$legacyRow['weight']),
+            'bulky' => (int)($legacyRow['bulkily'] ?? 0) > 0 ? 1 : 0,
             'is_offer' => (int)$legacyRow['offer'] > 0 ? 1 : 0,
             'is_highlight' => (int)$legacyRow['highlight'] > 0 ? 1 : 0,
         ];
