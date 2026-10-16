@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Core\Updates\Prerequisites\OrderMigrationPrerequisite
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\ProductMigrationPrerequisite;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 // TODO: Migrate to TYPO3\CMS\Core\Attribute\UpgradeWizard once v13 support is dropped.
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
@@ -169,7 +170,37 @@ final class TtProductsLegacyCleanupUpgradeWizard implements UpgradeWizardInterfa
         if (!$this->migrationHelper->tablesExist($table)) {
             return;
         }
+        $this->reportSkippedRows($table);
         $this->connectionPool->getConnectionForTable($table)->createSchemaManager()->dropTable($table);
         $this->output->writeln(sprintf('<info>Dropped legacy table "%s".</info>', $table));
+    }
+
+    /**
+     * A wizard records a row it cannot migrate with local uid 0, which counts as handled.
+     */
+    private function reportSkippedRows(string $table): void
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_products_migration_map');
+        $result = $queryBuilder->select('legacy_uid')
+            ->from('tx_products_migration_map')
+            ->where(
+                $queryBuilder->expr()->eq('legacy_table', $queryBuilder->createNamedParameter($table)),
+                $queryBuilder->expr()->eq('local_uid', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
+            )
+            ->orderBy('legacy_uid')
+            ->executeQuery();
+        $legacyUids = [];
+        while ($row = $result->fetchAssociative()) {
+            $legacyUids[] = (int)$row['legacy_uid'];
+        }
+        if ($legacyUids === []) {
+            return;
+        }
+        $this->output->writeln(sprintf(
+            '<comment>%s: %d rows were skipped by the migration and are dropped without a counterpart (uids %s).</comment>',
+            $table,
+            count($legacyUids),
+            implode(', ', array_slice($legacyUids, 0, 50)) . (count($legacyUids) > 50 ? ', …' : '')
+        ));
     }
 }
