@@ -43,7 +43,12 @@ final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePa
         $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
         $site = $request instanceof ServerRequestInterface ? $request->getAttribute('site') : null;
 
-        return !$site instanceof SiteInterface || (bool)$site->getSettings()->get('products.payment.invoice.enabled', true);
+        if (!$site instanceof SiteInterface) {
+            return true;
+        }
+        $settings = $site->getSettings();
+        $excludedShipping = array_filter(array_map(trim(...), explode(',', (string)$settings->get('products.payment.invoice.excludedShipping', ''))));
+        return (bool)$settings->get('products.payment.invoice.enabled', true) && !$context->isShippedWithAnyOf($excludedShipping);
     }
 
     /**

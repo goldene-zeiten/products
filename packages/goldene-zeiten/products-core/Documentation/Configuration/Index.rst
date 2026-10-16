@@ -240,6 +240,14 @@ from. Set it before creating any content.
 
         Whether the invoice payment method is offered at checkout.
 
+    ..  confval:: products.payment.invoice.excludedShipping
+        :type: string
+        :Default: (empty)
+
+        Shipping providers (e.g. ``pickup``) or single shipping options (e.g. ``ups:express``),
+        comma-separated, for which invoice is not offered - for example when orders collected in
+        store are paid on collection.
+
     ..  confval:: products.invoice.templateRootPaths
         :type: stringlist
         :Default: EXT:products_core/Resources/Private/Templates/Invoice/

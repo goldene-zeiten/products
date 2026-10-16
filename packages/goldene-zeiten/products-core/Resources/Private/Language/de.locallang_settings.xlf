@@ -139,6 +139,14 @@
 				<source>Invoice payment enabled</source>
 				<target>Zahlung auf Rechnung aktiviert</target>
 			</trans-unit>
+			<trans-unit id="setting.products.payment.invoice.excludedShipping" resname="setting.products.payment.invoice.excludedShipping">
+				<source>Invoice not with these shipping methods</source>
+				<target>Rechnung nicht bei diesen Versandarten</target>
+			</trans-unit>
+			<trans-unit id="setting.products.payment.invoice.excludedShipping.description" resname="setting.products.payment.invoice.excludedShipping.description">
+				<source>Comma-separated shipping providers (e.g. "pickup") or single options (e.g. "ups:express") for which invoice is not offered.</source>
+				<target>Kommagetrennte Versandanbieter (z. B. „pickup“) oder einzelne Optionen (z. B. „ups:express“), bei denen Rechnung nicht angeboten wird.</target>
+			</trans-unit>
 			<trans-unit id="setting.products.shipping.enabled" resname="setting.products.shipping.enabled">
 				<source>Shipping cost calculation enabled</source>
 				<target>Berechnung der Versandkosten aktiviert</target>

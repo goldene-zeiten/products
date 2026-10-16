@@ -460,6 +460,6 @@ final class CheckoutController extends ActionController
         $address = $this->checkoutService->getAddress($this->request);
         $basket = $this->checkoutService->getBasketViewModel($this->request);
         $frontendUserUid = $this->frontendUserResolver->getUid($this->request);
-        return $this->paymentContextFactory->createFromBasket($basket, $address, $frontendUserUid);
+        return $this->paymentContextFactory->createFromBasket($basket, $address, $frontendUserUid, $this->checkoutService->getShippingOption($this->request));
     }
 }

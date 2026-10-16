@@ -244,6 +244,12 @@ settings:
     default: true
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.invoice.enabled'
     category: payment
+  products.payment.invoice.excludedShipping:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.invoice.excludedShipping'
+    description: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.invoice.excludedShipping.description'
+    category: payment
   products.shipping.enabled:
     type: bool
     default: false

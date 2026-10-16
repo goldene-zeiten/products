@@ -20,13 +20,14 @@ final class PaymentContextFactory
      * For the discovery phase, where no order exists yet: a method decides whether it may be offered and
      * what it would charge. There is nothing to hand a gateway yet, so the callback URLs stay empty.
      */
-    public function createFromBasket(BasketViewModel $basketViewModel, Address $address, int $frontendUserUid): PaymentContext
+    public function createFromBasket(BasketViewModel $basketViewModel, Address $address, int $frontendUserUid, string $shippingOptionKey = ''): PaymentContext
     {
         return new PaymentContext(
             $basketViewModel->getTotalGross(),
             $basketViewModel->getCurrency(),
             $address->getCountry(),
-            $frontendUserUid
+            $frontendUserUid,
+            shippingOptionKey: $shippingOptionKey
         );
     }
 
@@ -45,7 +46,8 @@ final class PaymentContextFactory
             $order->getFrontendUser(),
             $callbackUrls->getReturnUrl(),
             $callbackUrls->getCancelUrl(),
-            $callbackUrls->getWebhookUrl()
+            $callbackUrls->getWebhookUrl(),
+            $order->getShippingProvider() !== '' ? $order->getShippingProvider() . ':' . $order->getShippingOption() : ''
         );
     }
 }

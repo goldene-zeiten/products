@@ -16,6 +16,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\PlacementContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\PlacementDetails;
 use GoldeneZeiten\Products\Core\Domain\Dto\Loyalty\LoyaltyContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderTotals;
+use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingSelection;
 use GoldeneZeiten\Products\Core\Domain\Enum\AdjustmentType;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
@@ -30,6 +31,7 @@ use GoldeneZeiten\Products\Core\Event\LowStockThresholdReachedEvent;
 use GoldeneZeiten\Products\Core\Loyalty\LoyaltyRegistry;
 use GoldeneZeiten\Products\Core\Payment\PaymentContextFactory;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
+use GoldeneZeiten\Products\Core\Pricing\VatSplitter;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Core\Service\Shipping\HandlingFeeService;
 use GoldeneZeiten\Products\Core\Service\TaxService;
@@ -60,7 +62,8 @@ final class OrderCreationService
         private readonly ProductsConfigurationFactory $configurationFactory,
         private readonly TermsSnapshotService $termsSnapshotService,
         private readonly TaxService $taxService,
-        private readonly OrderTotalsCalculator $orderTotalsCalculator
+        private readonly OrderTotalsCalculator $orderTotalsCalculator,
+        private readonly VatSplitter $vatSplitter
     ) {}
 
     /**
@@ -145,9 +148,9 @@ final class OrderCreationService
         foreach ($this->loyaltyRegistry->collectRedemption($loyaltyContext) as $loyaltyAdjustment) {
             $adjustments = $adjustments->with($loyaltyAdjustment);
         }
-        $paymentFee = $paymentMethod !== null ? $this->paymentFee($paymentMethod, $basketViewModel, $address, $frontendUser) : null;
-        if ($paymentFee !== null) {
-            $adjustments = $adjustments->with($paymentFee->withTaxRate($ancillaryTaxRate()));
+        if ($paymentMethod !== null) {
+            $paymentContext = $this->paymentContextFactory->createFromBasket($basketViewModel, $address, $frontendUser, $shippingSelection->getKey());
+            $adjustments = $this->withPaymentFee($adjustments, $paymentMethod, $paymentContext, $basketViewModel, $ancillaryTaxRate);
         }
 
         $details = new PlacementDetails(
@@ -164,27 +167,37 @@ final class OrderCreationService
     }
 
     /**
-     * A payment method may charge a surcharge for paying that way. It is the last adjustment, so the fee
-     * applies to the total the customer actually owes after discounts.
+     * A payment method may charge a surcharge for paying that way, or grant a discount. It is the last
+     * adjustment, so it applies to the total the customer actually owes after discounts. A surcharge is
+     * ancillary to the delivery and carries its VAT; a discount lowers the price of the goods, so it is
+     * split across their rates like any other discount.
+     *
+     * @param \Closure(): float $ancillaryTaxRate
      */
-    private function paymentFee(
+    private function withPaymentFee(
+        AdjustmentCollection $adjustments,
         PaymentMethodInterface $paymentMethod,
+        PaymentContext $paymentContext,
         BasketViewModel $basketViewModel,
-        Address $address,
-        int $frontendUser
-    ): ?CheckoutAdjustment {
-        $paymentContext = $this->paymentContextFactory->createFromBasket($basketViewModel, $address, $frontendUser);
+        \Closure $ancillaryTaxRate
+    ): AdjustmentCollection {
         $fee = $paymentMethod->calculateFee($paymentContext);
         if ($fee === 0) {
-            return null;
+            return $adjustments;
         }
-
-        return new CheckoutAdjustment(
-            AdjustmentType::PAYMENT_FEE,
+        $adjustment = new CheckoutAdjustment(
+            $fee < 0 ? AdjustmentType::DISCOUNT : AdjustmentType::PAYMENT_FEE,
             'core.payment.' . $paymentMethod->getIdentifier(),
             $paymentMethod->getLabel(),
             Money::fromCents($fee)
         );
+        $parts = $fee < 0
+            ? $this->vatSplitter->splitAdjustment($adjustment, VatBuckets::fromBasket($basketViewModel))
+            : [$adjustment->withTaxRate($ancillaryTaxRate())];
+        foreach ($parts as $part) {
+            $adjustments = $adjustments->with($part);
+        }
+        return $adjustments;
     }
 
     /**

@@ -65,6 +65,7 @@ plugin.tx_productscore {
         payment {
             invoice {
                 enabled = {$products.payment.invoice.enabled}
+                excludedShipping = {$products.payment.invoice.excludedShipping}
             }
         }
         shipping {
