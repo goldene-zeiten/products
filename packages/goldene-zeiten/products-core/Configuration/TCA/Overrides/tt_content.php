@@ -166,6 +166,69 @@ defined('TYPO3') or die();
         'productscore_categorynavigation',
     );
 
+    $newColumnsArray = [
+        'tx_products_items_per_page' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_items_per_page',
+            'description' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_items_per_page.description',
+            'config' => [
+                'type' => 'number',
+                'range' => [
+                    'lower' => 0,
+                ],
+                'default' => 0,
+            ],
+        ],
+        'tx_products_pagination' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_pagination',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'default' => 1,
+            ],
+        ],
+        'tx_products_sorting' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_sorting',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'items' => [
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_sorting.manual',
+                        'value' => 'manual',
+                    ],
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_sorting.title',
+                        'value' => 'title',
+                    ],
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_sorting.price_asc',
+                        'value' => 'price_asc',
+                    ],
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_sorting.price_desc',
+                        'value' => 'price_desc',
+                    ],
+                    [
+                        'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_sorting.newest',
+                        'value' => 'newest',
+                    ],
+                ],
+                'default' => 'manual',
+            ],
+        ],
+    ];
+
+    ExtensionManagementUtility::addTCAcolumns('tt_content', $newColumnsArray);
+
+    ExtensionManagementUtility::addToAllTCAtypes(
+        'tt_content',
+        '--palette--;LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.palette.listing;productsListing',
+        'productscore_productlist,productscore_categorylist',
+    );
+    $GLOBALS['TCA']['tt_content']['palettes']['productsListing'] = [
+        'showitem' => 'tx_products_items_per_page, tx_products_pagination, tx_products_sorting',
+    ];
+
     $GLOBALS['TCA']['tt_content']['types']['productscore_productlist']['columnsOverrides']['records']['config']['allowed'] = 'tx_products_domain_model_product';
 
     ExtensionManagementUtility::addToAllTCAtypes(

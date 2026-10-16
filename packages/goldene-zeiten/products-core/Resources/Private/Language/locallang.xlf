@@ -216,15 +216,6 @@
 			<trans-unit id="details" resname="details">
 				<source>Details</source>
 			</trans-unit>
-			<trans-unit id="previous_page" resname="previous_page">
-				<source>Previous</source>
-			</trans-unit>
-			<trans-unit id="next_page" resname="next_page">
-				<source>Next</source>
-			</trans-unit>
-			<trans-unit id="page_of_pages" resname="page_of_pages">
-				<source>Page %1$d of %2$d</source>
-			</trans-unit>
 			<trans-unit id="choose_variant" resname="choose_variant">
 				<source>Choose a variant:</source>
 			</trans-unit>
@@ -470,6 +461,15 @@
 			</trans-unit>
 			<trans-unit id="legal_link_privacy" resname="legal_link_privacy">
 				<source>Privacy policy</source>
+			</trans-unit>
+			<trans-unit id="pagination" resname="pagination">
+				<source>Pages</source>
+			</trans-unit>
+			<trans-unit id="pagination_previous" resname="pagination_previous">
+				<source>Previous</source>
+			</trans-unit>
+			<trans-unit id="pagination_next" resname="pagination_next">
+				<source>Next</source>
 			</trans-unit>
 		</body>
 	</file>

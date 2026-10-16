@@ -287,18 +287,6 @@
 				<source>Details</source>
 				<target>Details</target>
 			</trans-unit>
-			<trans-unit id="previous_page" resname="previous_page">
-				<source>Previous</source>
-				<target>Zurück</target>
-			</trans-unit>
-			<trans-unit id="next_page" resname="next_page">
-				<source>Next</source>
-				<target>Weiter</target>
-			</trans-unit>
-			<trans-unit id="page_of_pages" resname="page_of_pages">
-				<source>Page %1$d of %2$d</source>
-				<target>Seite %1$d von %2$d</target>
-			</trans-unit>
 			<trans-unit id="choose_variant" resname="choose_variant">
 				<source>Choose a variant:</source>
 				<target>Bitte wählen Sie eine Variante:</target>
@@ -626,6 +614,18 @@
 			<trans-unit id="legal_link_privacy" resname="legal_link_privacy">
 				<source>Privacy policy</source>
 				<target>Datenschutzerklärung</target>
+			</trans-unit>
+			<trans-unit id="pagination" resname="pagination">
+				<source>Pages</source>
+				<target>Seiten</target>
+			</trans-unit>
+			<trans-unit id="pagination_previous" resname="pagination_previous">
+				<source>Previous</source>
+				<target>Zurück</target>
+			</trans-unit>
+			<trans-unit id="pagination_next" resname="pagination_next">
+				<source>Next</source>
+				<target>Weiter</target>
 			</trans-unit>
 		</body>
 	</file>

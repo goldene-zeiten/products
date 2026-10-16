@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Controller;
 
-use GoldeneZeiten\Products\Core\Catalog\ProductListModeRegistry;
+use GoldeneZeiten\Products\Core\Catalog\ProductListService;
 use GoldeneZeiten\Products\Core\Controller\Exception\ProductNotVisibleException;
 use GoldeneZeiten\Products\Core\Controller\Exception\ProductPathMismatchException;
-use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListContext;
+use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListCriteria;
+use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListSettings;
 use GoldeneZeiten\Products\Core\Domain\Model\Article;
 use GoldeneZeiten\Products\Core\Domain\Model\Category;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
-use GoldeneZeiten\Products\Core\Domain\Repository\ArticleRepository;
-use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Event\EnrichProductViewEvent;
-use GoldeneZeiten\Products\Core\Event\ModifyProductListEvent;
 use GoldeneZeiten\Products\Core\Event\ProductViewedEvent;
 use GoldeneZeiten\Products\Core\PageTitle\CurrentProductHolder;
 use GoldeneZeiten\Products\Core\Service\Category\CategoryTreeService;
@@ -23,6 +21,7 @@ use GoldeneZeiten\Products\Core\Service\ContentElement\SelectedCategoriesResolve
 use GoldeneZeiten\Products\Core\Service\Variant\ArticleVariantResolver;
 use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 final class ProductController extends ActionController
@@ -30,28 +29,24 @@ final class ProductController extends ActionController
     private const DEFAULT_NEW_ITEM_DAYS = 7;
 
     public function __construct(
-        private readonly ProductRepository $productRepository,
-        private readonly ArticleRepository $articleRepository,
         private readonly ArticleVariantResolver $articleVariantResolver,
         private readonly CurrentProductHolder $currentProductHolder,
         private readonly CategoryTreeService $categoryTreeService,
         private readonly RecordsFieldResolver $recordsFieldResolver,
         private readonly SelectedCategoriesResolver $selectedCategoriesResolver,
         private readonly ProductVisibilityResolver $productVisibilityResolver,
-        private readonly ProductListModeRegistry $productListModeRegistry
+        private readonly ProductListService $productListService,
     ) {}
 
-    public function listAction(): ResponseInterface
+    public function listAction(int $currentPage = 1): ResponseInterface
     {
-        $products = $this->resolveProductsForList();
-        $this->view->assignMultiple(['products' => $products] + $this->enrichViewVariables());
+        $this->view->assignMultiple($this->listVariables($currentPage) + $this->enrichViewVariables());
         return $this->htmlResponse();
     }
 
-    public function listByAjaxAction(): ResponseInterface
+    public function listByAjaxAction(int $currentPage = 1): ResponseInterface
     {
-        $products = $this->resolveProductsForList();
-        $this->view->assignMultiple(['products' => $products] + $this->enrichViewVariables());
+        $this->view->assignMultiple($this->listVariables($currentPage) + $this->enrichViewVariables());
         return $this->htmlResponse();
     }
 
@@ -126,78 +121,46 @@ final class ProductController extends ActionController
     }
 
     /**
-     * @return Product[]
+     * Visibility rules apply to the products of the current page; a hidden product leaves its place on
+     * that page empty rather than pulling the next one in.
+     *
+     * @return array<string, mixed>
      */
-    private function resolveProductsForList(): array
+    private function listVariables(int $currentPage): array
     {
-        $mode = (string)($this->request->getAttribute('currentContentObject')?->data['tx_products_list_mode'] ?? 'all');
-        $products = $this->resolveProducts($mode);
-        $selectedProductUids = $this->recordsFieldResolver->resolveUids($this->request, 'tx_products_domain_model_product');
-        if ($selectedProductUids !== []) {
-            $products = array_filter(
-                $products,
-                static fn(Product $product): bool => in_array($product->getUid() ?? 0, $selectedProductUids, true)
-            );
-        }
-        $selectedCategoryUids = $this->selectedCategoriesResolver->resolveUids($this->request);
-        if ($selectedCategoryUids !== []) {
-            $categorySubtreeUids = [];
-            foreach ($selectedCategoryUids as $categoryUid) {
-                $categorySubtreeUids = array_merge($categorySubtreeUids, $this->categoryTreeService->getSubtreeUids($categoryUid));
-            }
-            $categorySubtreeUids = array_unique($categorySubtreeUids);
-            $products = array_filter(
-                $products,
-                static function (Product $product) use ($categorySubtreeUids): bool {
-                    foreach ($product->getCategories() as $category) {
-                        if (in_array($category->getUid() ?? 0, $categorySubtreeUids, true)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            );
-        }
-        $event = new ModifyProductListEvent($products, $this->request);
-        $this->eventDispatcher->dispatch($event);
-        return $this->productVisibilityResolver->filterVisible($event->getProducts(), $this->request);
+        $contentElement = $this->request->getAttribute('currentContentObject')->data ?? [];
+        $settings = ProductListSettings::fromContentElement($contentElement);
+        $paginator = $this->productListService->paginate($this->request, $this->listCriteria($contentElement, $settings), $settings, $currentPage);
+        return [
+            'products' => $this->productVisibilityResolver->filterVisible(iterator_to_array($paginator->getPaginatedItems(), false), $this->request),
+            'paginator' => $paginator,
+            'pagination' => $this->productListService->pagination($paginator, $this->site()),
+            'showPagination' => $settings->pagination && $settings->isPaged() && $paginator->getNumberOfPages() > 1,
+        ];
     }
 
     /**
-     * @return Product[]
+     * @param array<string, mixed> $contentElement
      */
-    private function resolveProducts(string $mode): array
+    private function listCriteria(array $contentElement, ProductListSettings $settings): ProductListCriteria
     {
-        if ($this->productListModeRegistry->has($mode)) {
-            return $this->productListModeRegistry->findProducts($mode, new ProductListContext($this->request));
+        $categoryUids = [];
+        foreach ($this->selectedCategoriesResolver->resolveUids($this->request) as $categoryUid) {
+            $categoryUids = array_merge($categoryUids, $this->categoryTreeService->getSubtreeUids($categoryUid));
         }
-        $result = match ($mode) {
-            'offers' => $this->productRepository->findOffers(),
-            'highlights' => $this->productRepository->findHighlights(),
-            'new' => $this->productRepository->findNew($this->getNewItemDays()),
-            'articles' => $this->resolveProductsFromArticles(),
-            default => $this->productRepository->findAll(),
-        };
-        return is_array($result) ? $result : $result->toArray();
+        return new ProductListCriteria(
+            (string)($contentElement['tx_products_list_mode'] ?? 'all'),
+            $this->recordsFieldResolver->resolveUids($this->request, 'tx_products_domain_model_product'),
+            array_values(array_unique($categoryUids)),
+            $settings->sorting,
+            $this->getNewItemDays(),
+        );
     }
 
-    /**
-     * @return Product[]
-     */
-    private function resolveProductsFromArticles(): array
+    private function site(): ?Site
     {
-        $articles = $this->articleRepository->findAllFlat();
-        $productMap = [];
-        foreach ($articles as $article) {
-            $product = $article->getProduct();
-            if ($product instanceof Product) {
-                $uid = $product->getUid();
-                if ($uid !== null && !isset($productMap[$uid])) {
-                    $productMap[$uid] = $product;
-                }
-            }
-        }
-        return array_values($productMap);
+        $site = $this->request->getAttribute('site');
+        return $site instanceof Site ? $site : null;
     }
 
     private function getNewItemDays(): int

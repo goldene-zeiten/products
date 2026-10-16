@@ -4,41 +4,64 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Event;
 
-use GoldeneZeiten\Products\Core\Controller\ProductController;
+use GoldeneZeiten\Products\Core\Catalog\ProductListService;
+use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductListCriteria;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Extbase\Persistence\Generic\Qom\ConstraintInterface;
+use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
 /**
- * Lets integrators adjust the product list before rendering - filter/reorder the product list,
- * hide out-of-region items, pin promotions, or inject cross-sells.
- * Mutable via {@see ModifyProductListEvent::setProducts()}.
+ * Lets integrators narrow a built-in product list before it is queried and paged - hide out-of-region
+ * items or restrict a list to a brand. Build the constraint with {@see getQuery()} and hand it to
+ * {@see addConstraint()}; the list shows the products matching every added constraint. Because the
+ * constraints become part of the query, page counts stay right.
  *
- * @see ProductController::resolveProductsForList()
+ * Listings registered by an add-on through ProductListModeProviderInterface select their products
+ * themselves and do not dispatch this event.
+ *
+ * @see ProductListService::paginate()
  */
 final class ModifyProductListEvent
 {
     /**
-     * @param Product[] $products
+     * @var ConstraintInterface[]
+     */
+    private array $constraints = [];
+
+    /**
+     * @param QueryInterface<Product> $query
      */
     public function __construct(
-        private array $products,
-        private readonly ServerRequestInterface $request
+        private readonly QueryInterface $query,
+        private readonly ProductListCriteria $criteria,
+        private readonly ServerRequestInterface $request,
     ) {}
 
     /**
-     * @return Product[]
+     * @return QueryInterface<Product>
      */
-    public function getProducts(): array
+    public function getQuery(): QueryInterface
     {
-        return $this->products;
+        return $this->query;
+    }
+
+    public function getCriteria(): ProductListCriteria
+    {
+        return $this->criteria;
+    }
+
+    public function addConstraint(ConstraintInterface $constraint): void
+    {
+        $this->constraints[] = $constraint;
     }
 
     /**
-     * @param Product[] $products
+     * @return ConstraintInterface[]
      */
-    public function setProducts(array $products): void
+    public function getConstraints(): array
     {
-        $this->products = $products;
+        return $this->constraints;
     }
 
     public function getRequest(): ServerRequestInterface

@@ -57,6 +57,25 @@ title on its :rst:dir:`ProductDetail` page (the default, ``title``, does this) o
 page's own configured title is left alone (``none``). This only affects the single-product page's
 ``<title>`` tag, never listings or other pages.
 
+Product lists: page size, order and page links
+------------------------------------------------
+
+A :guilabel:`Product list` and a :guilabel:`Category list` content element have a
+:guilabel:`Listing` palette:
+
+:guilabel:`Products per page`
+    How many products one page shows. ``0`` shows the whole list on one page.
+:guilabel:`Link the further pages`
+    Shows page links below the list. Switched off, the element shows only the first page - a
+    "four highlights" teaser, for example.
+:guilabel:`Sort order`
+    Manual (the order in the backend), title, price ascending or descending, or newest first.
+    The :guilabel:`New items` list shows the newest first unless another order is chosen.
+
+Page links lead to speaking URLs: ``/page/2`` below a product list, ``/<category path>/page/2``
+on a category page. How many page numbers appear around the current one is set by
+:confval:`products.list.maximumNumberOfLinks`.
+
 Archiving old products
 ------------------------
 

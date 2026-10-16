@@ -10,6 +10,8 @@
 # by the ProductsCategoryPath aspect (Classes/Routing/Aspect/CategoryPathMapper.php). A
 # category's own segment is only present when it does not have "hide_in_slug_path" set.
 #
+# Paged lists: /{categoryPath}/page/{n} for a category listing and /page/{n} for a product list element.
+#
 # Product detail: /{category1}/{category2}/{category3}/{product}, at most three category
 # segments in front of the product. A category's own segment is only present when it does not
 # have "hide_in_slug_path" set - PersistedAliasMapper matches by slug value only.
@@ -32,15 +34,44 @@ routeEnhancers:
     plugin: CategoryList
     routes:
       -
+        routePath: '/{categoryPath}/page/{currentPage}'
+        _controller: 'Category::list'
+        _arguments:
+          categoryPath: category
+          currentPage: currentPage
+      -
         routePath: '/{categoryPath}'
         _controller: 'Category::list'
         _arguments:
           categoryPath: category
     requirements:
       categoryPath: '.+'
+      currentPage: '\d+'
     aspects:
       categoryPath:
         type: ProductsCategoryPath
+      currentPage:
+        type: StaticRangeMapper
+        start: '1'
+        end: '1000'
+
+  ProductsList:
+    type: Extbase
+    extension: ProductsCore
+    plugin: ProductList
+    routes:
+      -
+        routePath: '/page/{currentPage}'
+        _controller: 'Product::list'
+        _arguments:
+          currentPage: currentPage
+    requirements:
+      currentPage: '\d+'
+    aspects:
+      currentPage:
+        type: StaticRangeMapper
+        start: '1'
+        end: '1000'
 
   ProductsDetail:
     type: Extbase

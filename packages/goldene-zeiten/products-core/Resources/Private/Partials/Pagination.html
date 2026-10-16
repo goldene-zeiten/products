@@ -1,0 +1,36 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
+<nav class="products-pagination" aria-label="{f:translate(key: 'pagination', extensionName: 'ProductsCore')}">
+    <ul class="pagination">
+        <f:if condition="{pagination.previousPageNumber}">
+            <li class="page-item">
+                <f:link.action action="{action}" arguments="{currentPage: pagination.previousPageNumber}" addQueryString="untrusted" argumentsToBeExcludedFromQueryString="{0: 'cHash'}" class="page-link" additionalAttributes="{rel: 'prev'}"><f:translate key="pagination_previous" extensionName="ProductsCore" /></f:link.action>
+            </li>
+        </f:if>
+        <f:if condition="{pagination.hasLessPages}">
+            <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+        </f:if>
+        <f:for each="{pagination.allPageNumbers}" as="page">
+            <f:if condition="{page} == {paginator.currentPageNumber}">
+                <f:then>
+                    <li class="page-item active" aria-current="page"><span class="page-link">{page}</span></li>
+                </f:then>
+                <f:else>
+                    <li class="page-item">
+                        <f:link.action action="{action}" arguments="{currentPage: page}" addQueryString="untrusted" argumentsToBeExcludedFromQueryString="{0: 'cHash'}" class="page-link">{page}</f:link.action>
+                    </li>
+                </f:else>
+            </f:if>
+        </f:for>
+        <f:if condition="{pagination.hasMorePages}">
+            <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+        </f:if>
+        <f:if condition="{pagination.nextPageNumber}">
+            <li class="page-item">
+                <f:link.action action="{action}" arguments="{currentPage: pagination.nextPageNumber}" addQueryString="untrusted" argumentsToBeExcludedFromQueryString="{0: 'cHash'}" class="page-link" additionalAttributes="{rel: 'next'}"><f:translate key="pagination_next" extensionName="ProductsCore" /></f:link.action>
+            </li>
+        </f:if>
+    </ul>
+</nav>
+</html>

@@ -10,23 +10,28 @@ Events fired during catalog operations and category tree building.
 ModifyProductListEvent
 ----------------------
 
-Lets integrators adjust the product list before rendering - filter/reorder the product list,
-hide out-of-region items, pin promotions, or inject cross-sells.
+Lets integrators narrow a built-in product list before it is queried and paged - hide
+out-of-region items or restrict a list to a brand. Build a constraint with the list's query and
+add it; the list shows the products matching every added constraint. Because the constraints
+become part of the query, the page count stays right. :php:`getCriteria()` tells which list
+mode, selection and sorting the element uses.
 
-Mutable: Yes (via ``setProducts(Product[] $products)``)
+Listings an add-on registers through :php:`ProductListModeProviderInterface` select their
+products themselves and do not dispatch this event.
+
+Mutable: Yes (via ``addConstraint(ConstraintInterface $constraint)``)
 
 Example listener:
 
 ..  code-block:: php
 
     #[AsEventListener]
-    final class FilterProductsByRegion
+    final class OnlyProductsOfTheCurrentRegion
     {
         public function __invoke(ModifyProductListEvent $event): void
         {
-            $products = $event->getProducts();
-            // Filter, reorder, or inject products based on region, promotions, etc.
-            $event->setProducts($products);
+            $query = $event->getQuery();
+            $event->addConstraint($query->in('uid', $this->productUidsSoldIn($event->getRequest())));
         }
     }
 

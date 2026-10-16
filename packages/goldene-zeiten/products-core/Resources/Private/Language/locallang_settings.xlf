@@ -237,6 +237,9 @@
 			<trans-unit id="setting.products.checkout.desiredDeliveryDate" resname="setting.products.checkout.desiredDeliveryDate">
 				<source>Ask for a desired delivery date</source>
 			</trans-unit>
+			<trans-unit id="setting.products.list.maximumNumberOfLinks" resname="setting.products.list.maximumNumberOfLinks">
+				<source>Page links shown around the current page in product lists</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

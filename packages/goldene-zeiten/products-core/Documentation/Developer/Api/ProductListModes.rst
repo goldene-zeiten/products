@@ -33,6 +33,11 @@ The extension's own listings (all, offers, highlights, new, articles) are hardco
 content-element plugin and do not use this API. This is the seam for integrators to add more
 without touching core code.
 
+The built-in listings are one database query each, so they are paged in SQL and can be narrowed
+through :php:`ModifyProductListEvent`. A registered list mode returns its products as an array:
+the element's product and category selection is applied to it and it is paged in memory, so keep
+such a listing to a size that fits in memory.
+
 The bundled "affordable" listing (credit-points feature) itself is implemented as a registered
 list mode, so you can see the pattern in action: it supplies a label and filters products by
 whether the logged-in customer can afford them with their points.

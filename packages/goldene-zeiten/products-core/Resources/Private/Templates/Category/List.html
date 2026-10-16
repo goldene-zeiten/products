@@ -27,6 +27,9 @@
                     </div>
                 </f:for>
             </div>
+            <f:if condition="{showPagination}">
+                <f:render partial="Pagination" arguments="{paginator: paginator, pagination: pagination, action: 'list'}" />
+            </f:if>
         </f:then>
         <f:else>
             <p><f:translate key="no_products_found" /></p>

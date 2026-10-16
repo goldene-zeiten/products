@@ -19,7 +19,7 @@ final class SearchController extends ActionController
     /**
      * @param string[] $keywords values ticked in the keyfield multi-select
      */
-    public function searchAction(string $term = '', ?int $category = null, int $page = 1, array $keywords = []): ResponseInterface
+    public function searchAction(string $term = '', ?int $category = null, int $currentPage = 1, array $keywords = []): ResponseInterface
     {
         $browseMode = $this->request->getAttribute('currentContentObject')?->data['tx_products_search_browse_mode'] ?? 'text';
         $target = $this->request->getAttribute('currentContentObject')?->data['tx_products_search_target'] ?? 'products';
@@ -31,7 +31,7 @@ final class SearchController extends ActionController
             $this->view->assign('keyfieldSelected', $keywordValues);
             $this->view->assign('keyfieldResults', $this->facetedBrowseService->filterByValues($target, $field, $keywordValues));
         } elseif ($browseMode === 'text' || !in_array($browseMode, ['firstletter', 'year', 'field', 'lastentries'], true)) {
-            $this->view->assign('result', $this->searchService->search($term, $category, $page, $this->request));
+            $this->view->assign('result', $this->searchService->search($term, $category, $currentPage, $this->request));
         } else {
             $this->view->assign('browseGroups', $this->facetedBrowseService->browse($browseMode, $target, $field));
         }

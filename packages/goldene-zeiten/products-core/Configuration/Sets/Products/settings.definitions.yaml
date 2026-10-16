@@ -279,6 +279,11 @@ settings:
     default: false
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.handling.enabled'
     category: shipping
+  products.list.maximumNumberOfLinks:
+    type: int
+    default: 5
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.list.maximumNumberOfLinks'
+    category: discovery
   products.list.newItemDays:
     type: int
     default: 7

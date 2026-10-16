@@ -315,6 +315,10 @@
 				<source>Ask for a desired delivery date</source>
 				<target>Wunschliefertermin abfragen</target>
 			</trans-unit>
+			<trans-unit id="setting.products.list.maximumNumberOfLinks" resname="setting.products.list.maximumNumberOfLinks">
+				<source>Page links shown around the current page in product lists</source>
+				<target>Seitenlinks um die aktuelle Seite in Produktlisten</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
