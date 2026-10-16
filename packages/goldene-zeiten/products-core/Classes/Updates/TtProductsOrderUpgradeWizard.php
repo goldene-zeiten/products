@@ -461,15 +461,16 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
     {
         $record = $line['rec'];
         $productLocalUid = $this->migrationHelper->resolveLocalUid(self::LEGACY_PRODUCT_TABLE, (int)($record['uid'] ?? 0), self::LOCAL_PRODUCT_TABLE);
+        // The line carries everything an order item snapshots, so a product removed since does not lose it.
         if ($productLocalUid === null || $productLocalUid === 0) {
             $this->output->writeln(sprintf(
-                '<comment>sys_products_orders uid %d ordered missing product uid %d, line dropped.</comment>',
+                '<comment>sys_products_orders uid %d ordered product uid %d, which no longer exists; the line is kept without a product link.</comment>',
                 $legacyUid,
                 (int)($record['uid'] ?? 0)
             ));
-            return;
+            $productLocalUid = 0;
         }
-        $legacyArticleUid = (int)($record['ext']['tt_products_articles'][0]['uid'] ?? 0);
+        $legacyArticleUid = $productLocalUid !== 0 ? (int)($record['ext']['tt_products_articles'][0]['uid'] ?? 0) : 0;
         $articleLocalUid = $legacyArticleUid > 0
             ? (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_ARTICLE_TABLE, $legacyArticleUid, self::LOCAL_ARTICLE_TABLE)
             : 0;
@@ -529,12 +530,14 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
             (int)$legacyItemRow['uid_foreign'],
             self::LOCAL_PRODUCT_TABLE
         );
-        if ($productLocalUid === null) {
+        // An order must be kept as it was placed, so a line of a product removed since stays, unlinked.
+        if ($productLocalUid === null || $productLocalUid === 0) {
             $this->output->writeln(sprintf(
-                '<comment>sys_products_orders_mm_tt_products uid %d referenced missing product uid %d, item dropped.</comment>',
+                '<comment>sys_products_orders_mm_tt_products uid %d referenced missing product uid %d; the line is kept without a product link.</comment>',
                 (int)$legacyItemRow['uid'],
                 (int)$legacyItemRow['uid_foreign']
             ));
+            $this->insertItem($legacyItemRow, $orderUid, 0, 0, $pid);
             return;
         }
         $articleLocalUid = $this->resolveArticle((int)$legacyItemRow['uid'], (int)$legacyItemRow['tt_products_articles_uid']);

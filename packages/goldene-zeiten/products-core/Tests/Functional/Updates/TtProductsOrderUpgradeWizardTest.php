@@ -121,7 +121,7 @@ final class TtProductsOrderUpgradeWizardTest extends AbstractFunctionalTestCase
         $this->assertCSVDataSet(__DIR__ . '/Fixtures/Result/order_items_migrated.csv');
 
         $this->assertStringContainsString(
-            'sys_products_orders_mm_tt_products uid 2 referenced missing product uid 999, item dropped',
+            'sys_products_orders_mm_tt_products uid 2 referenced missing product uid 999; the line is kept without a product link.',
             $output->fetch()
         );
     }
