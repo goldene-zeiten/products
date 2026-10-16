@@ -1,0 +1,16 @@
+"tx_products_domain_model_category",,,,
+,"uid","title","slug","parent_category"
+,1,"Produkte","produkte",0
+,2,"Hersteller A","hersteller-a",1
+,3,"Kollektion X","kollektion-x",2
+,4,"Hersteller B","hersteller-b",1
+"tx_products_product_category_mm",,,
+,"uid_local","uid_foreign"
+,80,2
+,81,3
+,82,4
+"tx_products_domain_model_product",,,
+,"uid","title","categories"
+,80,"Ring A",1
+,81,"Ring X",1
+,82,"Ring B",1

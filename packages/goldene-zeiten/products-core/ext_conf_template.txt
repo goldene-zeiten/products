@@ -3,3 +3,6 @@ migration.legacyPrice2 = undecided
 
 # cat=migration/price/20; type=int+; label=tt_products price2 reseller group: Frontend group uid the price2 price period applies to. Required with "Reseller price".
 migration.legacyPrice2FeGroup = 0
+
+# cat=migration/catalog/10; type=boolean; label=Storage folders become categories: The legacy catalog is grouped by storage folders rather than tt_products_cat. The wizard "Turn the tt_products storage folders into categories" creates a category per folder holding products, nested like the folders, and assigns the products; legacy list elements selecting a starting point then select these categories.
+migration.storageFolderCategories = 0

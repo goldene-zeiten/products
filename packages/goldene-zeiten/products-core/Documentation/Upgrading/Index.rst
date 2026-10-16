@@ -51,6 +51,15 @@ Configuration`, tab :guilabel:`migration`) before running the product and articl
     Frontend group uid the ``price2`` price period applies to. Required when
     :confval:`upgrading-legacy-price2` is ``reseller``.
 
+..  confval:: migration.storageFolderCategories
+    :name: upgrading-storage-folder-categories
+    :type: bool
+    :Default: false
+
+    For a legacy catalog grouped by storage folders rather than :sql:`tt_products_cat`. Enables
+    the storage folder category wizard (see the run order) and makes the plugin wizard turn a
+    legacy element's starting point into a selection of those categories.
+
 The same values can be set on the command line, for example:
 
 ..  code-block:: bash
@@ -74,6 +83,12 @@ Run the wizards in this order — each one links its rows back to the previous o
     is read from ``uid_product`` and from :sql:`tt_products_products_mm_articles`, so every legacy
     article mode is covered. An article related to several products belongs to the first of them
     afterwards; the wizard reports every further product, whose variant has to be recreated by hand.
+#.  **Turn storage folders into categories** (``products_ttProductsStorageFolderCategories``,
+    only with :confval:`upgrading-storage-folder-categories`) — creates a category for every storage
+    folder holding ``tt_products`` records, titled and slugged like the folder and nested like the
+    folders up to the first page that is not a folder, and assigns every migrated product to the
+    category of its folder. Run it after the product wizard and before the plugin wizard, which
+    waits for it.
 #.  **Migrate orders** (``products_ttProductsOrderMigration``) — ``sys_products_orders`` and its
     line items, linked to the migrated products/articles.
 #.  **Migrate media** (``products_ttProductsMediaMigration``) — product/category/article images and
@@ -96,7 +111,9 @@ Run the wizards in this order — each one links its rows back to the previous o
 
     Legacy settings the new elements have no equivalent for are reported per migrated element:
     every non-empty FlexForm field besides the mode and the selections (``product_where``, ``myTS``,
-    ``template_suffix`` …) and the starting point (:sql:`tt_content.pages`). A list restricted that
+    ``template_suffix`` …) and a starting point (:sql:`tt_content.pages`) whose folder did not
+    become a category. A starting point whose folder did become a category is migrated into the
+    element's category selection. A list restricted that
     way shows the whole catalog afterwards until it is rebuilt, typically as a category selection. A
     ``pid_list`` set in TypoScript is not visible to the wizard at all; check the extension templates
     of the list pages yourself.

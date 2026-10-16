@@ -1,0 +1,21 @@
+"pages",,,,,,,
+,"uid","pid","sorting","deleted","doktype","title","slug"
+,10,1,256,0,254,"Produkte","/produkte"
+,11,10,256,0,254,"Hersteller A","/produkte/hersteller-a"
+,12,11,256,0,254,"Kollektion X","/produkte/hersteller-a/kollektion-x"
+,13,10,512,0,254,"Hersteller B","/produkte/hersteller-b"
+"tx_products_domain_model_product",,,,,
+,"uid","pid","hidden","title","categories"
+,80,2,0,"Ring A",0
+,81,2,0,"Ring X",0
+,82,2,0,"Ring B",0
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",1,"tx_products_domain_model_product",80
+,"tt_products",2,"tx_products_domain_model_product",81
+,"tt_products",3,"tx_products_domain_model_product",82
+"tt_products",,,,,,,,,,,,,,,,,,
+,"uid","pid","deleted","hidden","title","itemnumber","ean","price","category","inStock","basketminquantity","basketmaxquantity","taxcat_id","weight","offer","highlight"
+,1,11,0,0,"Ring A","RA","","10.00",0,1,"0.00","0.00",1,"0.000000",0,0
+,2,12,0,0,"Ring X","RX","","10.00",0,1,"0.00","0.00",1,"0.000000",0,0
+,3,13,0,0,"Ring B","RB","","10.00",0,1,"0.00","0.00",1,"0.000000",0,0
