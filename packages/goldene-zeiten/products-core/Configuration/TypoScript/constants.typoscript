@@ -107,6 +107,8 @@ products {
         invoice {
             # cat=products/payment; type=boolean; label=Invoice payment enabled
             enabled = 1
+            # cat=products/payment; type=string; label=Invoice not with these shipping methods: Comma-separated shipping providers (e.g. pickup) or options (e.g. ups:express)
+            excludedShipping =
         }
     }
     shipping {

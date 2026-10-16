@@ -27,7 +27,8 @@ interface PaymentMethodInterface
     public function getPriority(): int;
 
     /**
-     * A surcharge for paying this way, added to the order total as a payment-fee adjustment.
+     * A surcharge for paying this way, added to the order total as a payment-fee adjustment. A negative
+     * value is a discount for paying this way; it lowers the goods and is split across their VAT rates.
      *
      * @return int fee in cents
      */

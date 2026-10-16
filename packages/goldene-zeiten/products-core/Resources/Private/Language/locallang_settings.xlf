@@ -105,6 +105,12 @@
 			<trans-unit id="setting.products.payment.invoice.enabled" resname="setting.products.payment.invoice.enabled">
 				<source>Invoice payment enabled</source>
 			</trans-unit>
+			<trans-unit id="setting.products.payment.invoice.excludedShipping" resname="setting.products.payment.invoice.excludedShipping">
+				<source>Invoice not with these shipping methods</source>
+			</trans-unit>
+			<trans-unit id="setting.products.payment.invoice.excludedShipping.description" resname="setting.products.payment.invoice.excludedShipping.description">
+				<source>Comma-separated shipping providers (e.g. "pickup") or single options (e.g. "ups:express") for which invoice is not offered.</source>
+			</trans-unit>
 			<trans-unit id="setting.products.shipping.enabled" resname="setting.products.shipping.enabled">
 				<source>Shipping cost calculation enabled</source>
 			</trans-unit>

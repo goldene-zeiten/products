@@ -92,7 +92,7 @@ final class OrderPlacementService
         );
         $paymentMethod = $this->paymentMethodRegistry->getAvailableMethod(
             $paymentMethodIdentifier,
-            $this->paymentContextFactory->createFromBasket($basketViewModel, $address, $this->frontendUserResolver->getUid($request))
+            $this->paymentContextFactory->createFromBasket($basketViewModel, $address, $this->frontendUserResolver->getUid($request), $choices->getShippingOptionKey())
         );
         $this->dispatchBeforeOrderPlaced($request, $basketViewModel, $address, $paymentMethod);
 
