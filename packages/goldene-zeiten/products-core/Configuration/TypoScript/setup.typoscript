@@ -10,6 +10,9 @@ plugin.tx_productscore {
             orderHistoryPage = {$products.pids.orderHistoryPage}
             categoryPage = {$products.pids.categoryPage}
             withdrawalPage = {$products.pids.withdrawalPage}
+            termsPage = {$products.pids.termsPage}
+            withdrawalInstructionsPage = {$products.pids.withdrawalInstructionsPage}
+            privacyPage = {$products.pids.privacyPage}
         }
         pricing {
             mode = {$products.pricing.mode}
@@ -30,6 +33,15 @@ plugin.tx_productscore {
         checkout {
             withdrawalPeriodDays = {$products.checkout.withdrawalPeriodDays}
             priceQuoteValiditySeconds = {$products.checkout.priceQuoteValiditySeconds}
+            fields {
+                salutation = {$products.checkout.fields.salutation}
+                company = {$products.checkout.fields.company}
+                telephone = {$products.checkout.fields.telephone}
+                vatId = {$products.checkout.fields.vatId}
+            }
+            allowedCountries = {$products.checkout.allowedCountries}
+            salutations = {$products.checkout.salutations}
+            desiredDeliveryDate = {$products.checkout.desiredDeliveryDate}
         }
         withdrawal {
             assumedDeliveryDays = {$products.withdrawal.assumedDeliveryDays}

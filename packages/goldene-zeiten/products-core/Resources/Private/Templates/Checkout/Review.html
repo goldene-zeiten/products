@@ -6,21 +6,11 @@
     <div class="row">
         <div class="col-md-6">
             <h4><f:translate key="billing_address" /></h4>
-            <p>
-                {address.firstName} {address.lastName}<br>
-                {address.street}<br>
-                {address.zip} {address.city}<br>
-                {address.country}
-            </p>
+            <f:render partial="Order/Address" arguments="{address: address}" />
             <f:if condition="{deliveryAddress}">
                 <f:then>
                     <h4><f:translate key="delivery_address" /></h4>
-                    <p>
-                        {deliveryAddress.firstName} {deliveryAddress.lastName}<br>
-                        {deliveryAddress.street}<br>
-                        {deliveryAddress.zip} {deliveryAddress.city}<br>
-                        {deliveryAddress.country}
-                    </p>
+                    <f:render partial="Order/Address" arguments="{address: deliveryAddress}" />
                 </f:then>
             </f:if>
             <f:if condition="{giftMessage}">
@@ -28,6 +18,14 @@
                     <h4><f:translate key="gift_message" /></h4>
                     <p>{giftMessage}</p>
                 </f:then>
+            </f:if>
+            <f:if condition="{customerNote}">
+                <h4><f:translate key="customer_note" /></h4>
+                <p><f:format.nl2br>{customerNote}</f:format.nl2br></p>
+            </f:if>
+            <f:if condition="{desiredDeliveryDate}">
+                <h4><f:translate key="desired_delivery_date" /></h4>
+                <p><f:format.date date="{desiredDeliveryDate}" format="{f:translate(key: 'date_format')}" /></p>
             </f:if>
         </div>
         <div class="col-md-6">
@@ -56,6 +54,7 @@
             <div class="form-check mb-3">
                 <f:form.checkbox name="termsAccepted" value="1" class="form-check-input" id="termsAccepted" required="required" />
                 <label class="form-check-label" for="termsAccepted"><f:translate key="terms_accepted_label" /></label>
+                <f:render partial="Checkout/LegalLinks" arguments="{settings: settings}" />
             </div>
             <f:if condition="{withdrawalWaiverRequired}">
                 <div class="form-check mb-3">

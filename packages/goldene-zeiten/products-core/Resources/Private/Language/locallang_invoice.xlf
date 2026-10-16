@@ -51,6 +51,9 @@
 			<trans-unit id="footer_note" resname="footer_note">
 				<source>Thank you for your order.</source>
 			</trans-unit>
+			<trans-unit id="vat_id" resname="vat_id">
+				<source>VAT ID</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

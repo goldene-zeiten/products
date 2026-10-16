@@ -156,6 +156,12 @@
 			<trans-unit id="vat_id" resname="vat_id">
 				<source>VAT ID</source>
 			</trans-unit>
+			<trans-unit id="desired_delivery_date" resname="desired_delivery_date">
+				<source>Desired delivery date</source>
+			</trans-unit>
+			<trans-unit id="date_format" resname="date_format">
+				<source>Y-m-d</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

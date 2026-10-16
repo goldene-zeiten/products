@@ -74,6 +74,21 @@ settings:
     default: 0
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.withdrawalPage'
     category: storage
+  products.pids.termsPage:
+    type: int
+    default: 0
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.termsPage'
+    category: storage
+  products.pids.withdrawalInstructionsPage:
+    type: int
+    default: 0
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.withdrawalInstructionsPage'
+    category: storage
+  products.pids.privacyPage:
+    type: int
+    default: 0
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.pids.privacyPage'
+    category: storage
   products.pricing.mode:
     type: string
     default: 'gross'
@@ -178,6 +193,41 @@ settings:
     type: int
     default: 900
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.checkout.priceQuoteValiditySeconds'
+    category: order
+  products.checkout.fields.salutation:
+    type: string
+    default: 'optional'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.checkout.fields.salutation'
+    category: order
+  products.checkout.fields.company:
+    type: string
+    default: 'optional'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.checkout.fields.company'
+    category: order
+  products.checkout.fields.telephone:
+    type: string
+    default: 'optional'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.checkout.fields.telephone'
+    category: order
+  products.checkout.fields.vatId:
+    type: string
+    default: 'hidden'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.checkout.fields.vatId'
+    category: order
+  products.checkout.allowedCountries:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.checkout.allowedCountries'
+    category: order
+  products.checkout.salutations:
+    type: string
+    default: 'mr,ms,diverse'
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.checkout.salutations'
+    category: order
+  products.checkout.desiredDeliveryDate:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.checkout.desiredDeliveryDate'
     category: order
   products.stock.lowStockThreshold:
     type: int

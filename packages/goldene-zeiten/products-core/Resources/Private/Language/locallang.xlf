@@ -411,6 +411,66 @@
 			<trans-unit id="withdrawal_datetime_format" resname="withdrawal_datetime_format">
 				<source>Y-m-d H:i:s T</source>
 			</trans-unit>
+			<trans-unit id="salutation" resname="salutation">
+				<source>Salutation</source>
+			</trans-unit>
+			<trans-unit id="select_salutation" resname="select_salutation">
+				<source>Please select</source>
+			</trans-unit>
+			<trans-unit id="salutation.mr" resname="salutation.mr">
+				<source>Mr</source>
+			</trans-unit>
+			<trans-unit id="salutation.ms" resname="salutation.ms">
+				<source>Ms</source>
+			</trans-unit>
+			<trans-unit id="salutation.diverse" resname="salutation.diverse">
+				<source>Mx</source>
+			</trans-unit>
+			<trans-unit id="salutation.company" resname="salutation.company">
+				<source>Company</source>
+			</trans-unit>
+			<trans-unit id="company" resname="company">
+				<source>Company</source>
+			</trans-unit>
+			<trans-unit id="telephone" resname="telephone">
+				<source>Phone</source>
+			</trans-unit>
+			<trans-unit id="vat_id" resname="vat_id">
+				<source>VAT ID</source>
+			</trans-unit>
+			<trans-unit id="customer_note" resname="customer_note">
+				<source>Comment / special requests</source>
+			</trans-unit>
+			<trans-unit id="desired_delivery_date" resname="desired_delivery_date">
+				<source>Desired delivery date</source>
+			</trans-unit>
+			<trans-unit id="date_format" resname="date_format">
+				<source>Y-m-d</source>
+			</trans-unit>
+			<trans-unit id="checkout_desired_delivery_date_invalid" resname="checkout_desired_delivery_date_invalid">
+				<source>Please choose a desired delivery date after today.</source>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_salutation" resname="checkout_address_error_salutation">
+				<source>Please choose a salutation.</source>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_company" resname="checkout_address_error_company">
+				<source>Please enter your company.</source>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_telephone" resname="checkout_address_error_telephone">
+				<source>Please enter your phone number.</source>
+			</trans-unit>
+			<trans-unit id="checkout_address_error_vatId" resname="checkout_address_error_vatId">
+				<source>Please enter your VAT ID.</source>
+			</trans-unit>
+			<trans-unit id="legal_link_terms" resname="legal_link_terms">
+				<source>Terms and conditions</source>
+			</trans-unit>
+			<trans-unit id="legal_link_withdrawal" resname="legal_link_withdrawal">
+				<source>Withdrawal instructions</source>
+			</trans-unit>
+			<trans-unit id="legal_link_privacy" resname="legal_link_privacy">
+				<source>Privacy policy</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

@@ -723,6 +723,10 @@
 				<source>Order Items</source>
 				<target>Bestellpositionen</target>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.desired_delivery_date" resname="tx_products_domain_model_order.desired_delivery_date">
+				<source>Desired delivery date</source>
+				<target>Wunschliefertermin</target>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_order.customer_note" resname="tx_products_domain_model_order.customer_note">
 				<source>Customer Note</source>
 				<target>Kundennotiz</target>

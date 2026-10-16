@@ -7,6 +7,20 @@
             <f:form.textfield property="email" class="form-control" errorClass="is-invalid" type="email" id="email" />
             <f:render partial="Checkout/Address/FieldErrors" arguments="{property: 'address.email'}" />
         </div>
+        <f:if condition="{fields.fieldRequirements.salutation} != 'hidden'">
+            <div class="mb-3">
+                <label for="salutation" class="form-label"><f:translate key="salutation" /></label>
+                <f:form.select property="salutation" options="{salutationOptions}" prependOptionLabel="{f:translate(key: 'select_salutation')}" prependOptionValue="" required="{fields.fieldRequirements.salutation} == 'required'" class="form-select" errorClass="is-invalid" id="salutation" />
+                <f:render partial="Checkout/Address/FieldErrors" arguments="{property: 'address.salutation'}" />
+            </div>
+        </f:if>
+        <f:if condition="{fields.fieldRequirements.company} != 'hidden'">
+            <div class="mb-3">
+                <label for="company" class="form-label"><f:translate key="company" /></label>
+                <f:form.textfield property="company" required="{fields.fieldRequirements.company} == 'required'" class="form-control" errorClass="is-invalid" id="company" />
+                <f:render partial="Checkout/Address/FieldErrors" arguments="{property: 'address.company'}" />
+            </div>
+        </f:if>
         <div class="mb-3">
             <label for="firstName" class="form-label"><f:translate key="first_name" /></label>
             <f:form.textfield property="firstName" class="form-control" errorClass="is-invalid" id="firstName" />
@@ -36,10 +50,23 @@
         </div>
         <div class="mb-3">
             <label for="country" class="form-label"><f:translate key="country" /></label>
-            <f:variable name="countries" value="{DE: '{f:translate(key: \'germany\')}', AT: '{f:translate(key: \'austria\')}', CH: '{f:translate(key: \'switzerland\')}'}" />
-            <f:form.select property="country" options="{countries}" class="form-select" errorClass="is-invalid" id="country" />
+            <f:form.countrySelect property="country" onlyCountries="{fields.allowedCountries}" prioritizedCountries="{0: defaultCountry}" sortByOptionLabel="true" class="form-select" errorClass="is-invalid" id="country" />
             <f:render partial="Checkout/Address/FieldErrors" arguments="{property: 'address.country'}" />
         </div>
+        <f:if condition="{fields.fieldRequirements.telephone} != 'hidden'">
+            <div class="mb-3">
+                <label for="telephone" class="form-label"><f:translate key="telephone" /></label>
+                <f:form.textfield property="telephone" type="tel" required="{fields.fieldRequirements.telephone} == 'required'" class="form-control" errorClass="is-invalid" id="telephone" />
+                <f:render partial="Checkout/Address/FieldErrors" arguments="{property: 'address.telephone'}" />
+            </div>
+        </f:if>
+        <f:if condition="{fields.fieldRequirements.vatId} != 'hidden'">
+            <div class="mb-3">
+                <label for="vatId" class="form-label"><f:translate key="vat_id" /></label>
+                <f:form.textfield property="vatId" required="{fields.fieldRequirements.vatId} == 'required'" class="form-control" errorClass="is-invalid" id="vatId" />
+                <f:render partial="Checkout/Address/FieldErrors" arguments="{property: 'address.vatId'}" />
+            </div>
+        </f:if>
 
         <div class="form-check mb-3">
             <f:form.checkbox name="shipToDifferentAddress" value="1" checked="{shipToDifferentAddress}" class="form-check-input" id="shipToDifferentAddress" />
@@ -47,6 +74,18 @@
         </div>
         <div class="checkout-delivery-address">
             <h4><f:translate key="delivery_address" /></h4>
+            <f:if condition="{fields.fieldRequirements.salutation} != 'hidden'">
+                <div class="mb-3">
+                    <label for="deliverySalutation" class="form-label"><f:translate key="salutation" /></label>
+                    <f:form.select name="deliveryAddress[salutation]" value="{deliveryAddress.salutation}" options="{salutationOptions}" prependOptionLabel="{f:translate(key: 'select_salutation')}" prependOptionValue="" class="form-select" id="deliverySalutation" />
+                </div>
+            </f:if>
+            <f:if condition="{fields.fieldRequirements.company} != 'hidden'">
+                <div class="mb-3">
+                    <label for="deliveryCompany" class="form-label"><f:translate key="company" /></label>
+                    <f:form.textfield name="deliveryAddress[company]" value="{deliveryAddress.company}" class="form-control" id="deliveryCompany" />
+                </div>
+            </f:if>
             <div class="mb-3">
                 <label for="deliveryFirstName" class="form-label"><f:translate key="first_name" /></label>
                 <f:form.textfield name="deliveryAddress[firstName]" value="{deliveryAddress.firstName}" class="form-control" id="deliveryFirstName" />
@@ -71,9 +110,25 @@
             </div>
             <div class="mb-3">
                 <label for="deliveryCountry" class="form-label"><f:translate key="country" /></label>
-                <f:form.select name="deliveryAddress[country]" value="{deliveryAddress.country}" options="{countries}" class="form-select" id="deliveryCountry" />
+                <f:form.countrySelect name="deliveryAddress[country]" value="{deliveryAddress.country}" onlyCountries="{fields.allowedCountries}" prioritizedCountries="{0: defaultCountry}" sortByOptionLabel="true" class="form-select" id="deliveryCountry" />
             </div>
+            <f:if condition="{fields.fieldRequirements.telephone} != 'hidden'">
+                <div class="mb-3">
+                    <label for="deliveryTelephone" class="form-label"><f:translate key="telephone" /></label>
+                    <f:form.textfield name="deliveryAddress[telephone]" value="{deliveryAddress.telephone}" type="tel" class="form-control" id="deliveryTelephone" />
+                </div>
+            </f:if>
         </div>
+        <div class="mb-3">
+            <label for="customerNote" class="form-label"><f:translate key="customer_note" /></label>
+            <f:form.textarea name="customerNote" value="{customerNote}" class="form-control" id="customerNote" rows="3" />
+        </div>
+        <f:if condition="{fields.desiredDeliveryDateEnabled}">
+            <div class="mb-3">
+                <label for="desiredDeliveryDate" class="form-label"><f:translate key="desired_delivery_date" /></label>
+                <f:form.textfield name="desiredDeliveryDate" value="{desiredDeliveryDate}" type="date" additionalAttributes="{min: earliestDeliveryDate}" class="form-control" id="desiredDeliveryDate" />
+            </div>
+        </f:if>
         <div class="mb-3">
             <label for="giftMessage" class="form-label"><f:translate key="gift_message" /></label>
             <f:form.textarea name="giftMessage" value="{giftMessage}" class="form-control" id="giftMessage" rows="3" />

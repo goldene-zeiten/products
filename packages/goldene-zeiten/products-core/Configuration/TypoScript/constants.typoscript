@@ -18,6 +18,12 @@ products {
         categoryPage = 0
         # cat=products/storage; type=int; label=Order withdrawal/cancellation page UID
         withdrawalPage = 0
+        # cat=products/storage; type=int; label=Terms and conditions page UID, linked next to the terms checkbox
+        termsPage = 0
+        # cat=products/storage; type=int; label=Withdrawal instructions page UID, linked next to the terms checkbox
+        withdrawalInstructionsPage = 0
+        # cat=products/storage; type=int; label=Privacy policy page UID, linked next to the terms checkbox
+        privacyPage = 0
     }
     pricing {
         # cat=products/pricing; type=string; label=Pricing mode (gross|net)
@@ -50,6 +56,22 @@ products {
         withdrawalPeriodDays = 14
         # cat=products/order; type=int; label=How long a reviewed price quote remains valid before checkout forces a fresh review (seconds) - default 15 minutes
         priceQuoteValiditySeconds = 900
+        fields {
+            # cat=products/order; type=options[hidden,optional,required]; label=Salutation field in the checkout address
+            salutation = optional
+            # cat=products/order; type=options[hidden,optional,required]; label=Company field in the checkout address
+            company = optional
+            # cat=products/order; type=options[hidden,optional,required]; label=Phone field in the checkout address
+            telephone = optional
+            # cat=products/order; type=options[hidden,optional,required]; label=VAT ID field in the checkout address
+            vatId = hidden
+        }
+        # cat=products/order; type=string; label=Allowed countries in the checkout (comma-separated ISO codes, empty = all)
+        allowedCountries =
+        # cat=products/order; type=string; label=Salutations offered in the checkout (comma-separated keys: mr, ms, diverse, company)
+        salutations = mr,ms,diverse
+        # cat=products/order; type=boolean; label=Ask for a desired delivery date in the checkout
+        desiredDeliveryDate = 0
     }
     withdrawal {
         # cat=products/withdrawal; type=int; label=Days between shipping and delivery assumed while no delivery date is recorded

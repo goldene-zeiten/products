@@ -21,6 +21,8 @@ final class CheckoutService
     private const SESSION_KEY_SHIPPING_OPTION = 'tx_products_checkout_shipping_option';
     private const SESSION_KEY_DELIVERY_ADDRESS = 'tx_products_checkout_delivery_address';
     private const SESSION_KEY_GIFT_MESSAGE = 'tx_products_checkout_gift_message';
+    private const SESSION_KEY_CUSTOMER_NOTE = 'tx_products_checkout_customer_note';
+    private const SESSION_KEY_DESIRED_DELIVERY_DATE = 'tx_products_checkout_desired_delivery_date';
 
     public function __construct(
         private readonly BasketService $basketService,
@@ -79,7 +81,9 @@ final class CheckoutService
             street: $billingAddress->getStreet(),
             zip: $billingAddress->getZip(),
             city: $billingAddress->getCity(),
-            country: $billingAddress->getCountry()
+            country: $billingAddress->getCountry(),
+            telephone: $billingAddress->getTelephone(),
+            vatId: $billingAddress->getVatId(),
         );
     }
 
@@ -101,7 +105,8 @@ final class CheckoutService
             street: (string)($user['address'] ?? ''),
             zip: (string)($user['zip'] ?? ''),
             city: (string)($user['city'] ?? ''),
-            country: (string)($user['country'] ?? '')
+            country: (string)($user['country'] ?? ''),
+            telephone: (string)($user['telephone'] ?? ''),
         );
     }
 
@@ -190,6 +195,43 @@ final class CheckoutService
         return '';
     }
 
+    public function setCustomerNote(ServerRequestInterface $request, string $customerNote): void
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if ($frontendUser instanceof FrontendUserAuthentication) {
+            $frontendUser->setKey('ses', self::SESSION_KEY_CUSTOMER_NOTE, $customerNote);
+            $frontendUser->storeSessionData();
+        }
+    }
+
+    public function getCustomerNote(ServerRequestInterface $request): string
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if ($frontendUser instanceof FrontendUserAuthentication) {
+            return (string)$frontendUser->getKey('ses', self::SESSION_KEY_CUSTOMER_NOTE);
+        }
+        return '';
+    }
+
+    public function setDesiredDeliveryDate(ServerRequestInterface $request, ?\DateTimeImmutable $desiredDeliveryDate): void
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        if ($frontendUser instanceof FrontendUserAuthentication) {
+            $frontendUser->setKey('ses', self::SESSION_KEY_DESIRED_DELIVERY_DATE, $desiredDeliveryDate?->format('Y-m-d') ?? '');
+            $frontendUser->storeSessionData();
+        }
+    }
+
+    public function getDesiredDeliveryDate(ServerRequestInterface $request): ?\DateTimeImmutable
+    {
+        $frontendUser = $request->getAttribute('frontend.user');
+        $value = $frontendUser instanceof FrontendUserAuthentication
+            ? (string)$frontendUser->getKey('ses', self::SESSION_KEY_DESIRED_DELIVERY_DATE)
+            : '';
+        $date = $value !== '' ? \DateTimeImmutable::createFromFormat('!Y-m-d', $value) : false;
+        return $date instanceof \DateTimeImmutable ? $date : null;
+    }
+
     /**
      * The basket as the checkout will charge it: taxed in the country of the customer's billing address,
      * which is the country the order records as its tax country.
@@ -213,6 +255,8 @@ final class CheckoutService
             $frontendUser->setKey('ses', self::SESSION_KEY_SHIPPING_OPTION, null);
             $frontendUser->setKey('ses', self::SESSION_KEY_DELIVERY_ADDRESS, null);
             $frontendUser->setKey('ses', self::SESSION_KEY_GIFT_MESSAGE, null);
+            $frontendUser->setKey('ses', self::SESSION_KEY_CUSTOMER_NOTE, null);
+            $frontendUser->setKey('ses', self::SESSION_KEY_DESIRED_DELIVERY_DATE, null);
             $frontendUser->storeSessionData();
         }
         $this->priceQuoteService->clear($request);

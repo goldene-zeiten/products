@@ -7,6 +7,7 @@
             {order.billingAddress.street} {order.billingAddress.houseNumber}<br>
             {order.billingAddress.zip} {order.billingAddress.city}<br>
             {order.billingAddress.country}
+            <f:if condition="{order.billingAddress.vatId}"><br><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:vat_id" />: {order.billingAddress.vatId}</f:if>
         </td>
         <td style="width: 50%; vertical-align: top;">
             <f:if condition="{order.deliveryAddress}">

@@ -207,6 +207,36 @@
 			<trans-unit id="setting.products.withdrawal.instructionVariant" resname="setting.products.withdrawal.instructionVariant">
 				<source>Start of the withdrawal period the instructions state (goods, multipleGoods, lots, regularDelivery, digitalContent)</source>
 			</trans-unit>
+			<trans-unit id="setting.products.pids.termsPage" resname="setting.products.pids.termsPage">
+				<source>Terms and conditions page</source>
+			</trans-unit>
+			<trans-unit id="setting.products.pids.withdrawalInstructionsPage" resname="setting.products.pids.withdrawalInstructionsPage">
+				<source>Withdrawal instructions page</source>
+			</trans-unit>
+			<trans-unit id="setting.products.pids.privacyPage" resname="setting.products.pids.privacyPage">
+				<source>Privacy policy page</source>
+			</trans-unit>
+			<trans-unit id="setting.products.checkout.fields.salutation" resname="setting.products.checkout.fields.salutation">
+				<source>Salutation field (hidden, optional, required)</source>
+			</trans-unit>
+			<trans-unit id="setting.products.checkout.fields.company" resname="setting.products.checkout.fields.company">
+				<source>Company field (hidden, optional, required)</source>
+			</trans-unit>
+			<trans-unit id="setting.products.checkout.fields.telephone" resname="setting.products.checkout.fields.telephone">
+				<source>Phone field (hidden, optional, required)</source>
+			</trans-unit>
+			<trans-unit id="setting.products.checkout.fields.vatId" resname="setting.products.checkout.fields.vatId">
+				<source>VAT ID field (hidden, optional, required)</source>
+			</trans-unit>
+			<trans-unit id="setting.products.checkout.allowedCountries" resname="setting.products.checkout.allowedCountries">
+				<source>Allowed countries (comma-separated ISO codes, empty = all)</source>
+			</trans-unit>
+			<trans-unit id="setting.products.checkout.salutations" resname="setting.products.checkout.salutations">
+				<source>Salutations offered (comma-separated keys: mr, ms, diverse, company)</source>
+			</trans-unit>
+			<trans-unit id="setting.products.checkout.desiredDeliveryDate" resname="setting.products.checkout.desiredDeliveryDate">
+				<source>Ask for a desired delivery date</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

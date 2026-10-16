@@ -67,6 +67,10 @@
 				<source>Thank you for your order.</source>
 				<target>Vielen Dank für Ihre Bestellung.</target>
 			</trans-unit>
+			<trans-unit id="vat_id" resname="vat_id">
+				<source>VAT ID</source>
+				<target>USt-IdNr.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

@@ -11,6 +11,7 @@
 <f:if condition="{paymentInstructions}">
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:payment_instructions" />:
 {paymentInstructions}
+</f:if><f:if condition="{order.desiredDeliveryDate}"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:desired_delivery_date" />: <f:format.date date="{order.desiredDeliveryDate}" format="{f:translate(key: 'LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:date_format')}" />
 </f:if><f:if condition="{order.customerNote}">
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:customer_note" />:
 {order.customerNote}

@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Core\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Core\Domain\Dto\Address;
 use GoldeneZeiten\Products\Core\Domain\Dto\BasketViewModel;
 use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutChoices;
+use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutFieldConfiguration;
 use GoldeneZeiten\Products\Core\Domain\Dto\Checkout\CheckoutSelections;
 use GoldeneZeiten\Products\Core\Domain\Dto\Order\OrderTotals;
 use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentContext;
@@ -23,6 +24,7 @@ use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Core\Security\FrontendRequestTokenValidator;
 use GoldeneZeiten\Products\Core\Service\Checkout\AddressCompletenessChecker;
+use GoldeneZeiten\Products\Core\Service\Checkout\CheckoutFieldConfigurationFactory;
 use GoldeneZeiten\Products\Core\Service\Checkout\CheckoutService;
 use GoldeneZeiten\Products\Core\Service\Checkout\PriceQuoteService;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
@@ -41,6 +43,7 @@ use GoldeneZeiten\Products\Core\Shipping\ShippingQuoteService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Http\RedirectResponse;
+use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -77,6 +80,7 @@ final class CheckoutController extends ActionController
         private readonly PriceQuoteService $priceQuoteService,
         private readonly WithdrawalExclusionService $withdrawalExclusionService,
         private readonly AddressCompletenessChecker $addressCompletenessChecker,
+        private readonly CheckoutFieldConfigurationFactory $fieldConfigurationFactory,
         private readonly OrderCreationService $orderCreationService,
         private readonly ErrorController $errorController,
         private readonly FrontendRequestTokenValidator $requestTokenValidator
@@ -107,8 +111,33 @@ final class CheckoutController extends ActionController
             'deliveryAddress' => $deliveryAddress ?? new Address(),
             'shipToDifferentAddress' => $deliveryAddress !== null,
             'giftMessage' => $this->checkoutService->getGiftMessage($this->request),
+            'customerNote' => $this->checkoutService->getCustomerNote($this->request),
+            'desiredDeliveryDate' => $this->checkoutService->getDesiredDeliveryDate($this->request)?->format('Y-m-d') ?? '',
+            'earliestDeliveryDate' => (new \DateTimeImmutable('tomorrow'))->format('Y-m-d'),
+            'fields' => $this->fieldConfiguration(),
+            'defaultCountry' => $this->configurationFactory->create($this->request)->getDefaultCountry(),
+            'salutationOptions' => $this->salutationOptions(),
         ]);
         return $this->htmlResponse();
+    }
+
+    private function fieldConfiguration(): CheckoutFieldConfiguration
+    {
+        $site = $this->request->getAttribute('site');
+        return $this->fieldConfigurationFactory->fromSite($site instanceof Site ? $site : null);
+    }
+
+    /**
+     * @return array<string, string> salutation key => label
+     */
+    private function salutationOptions(): array
+    {
+        $options = [];
+        foreach ($this->fieldConfiguration()->getSalutations() as $salutation) {
+            $label = $this->translate('salutation.' . $salutation);
+            $options[$salutation] = $label !== '' ? $label : $salutation;
+        }
+        return $options;
     }
 
     /**
@@ -124,14 +153,28 @@ final class CheckoutController extends ActionController
         }
     }
 
-    public function submitAddressAction(Address $address, bool $shipToDifferentAddress = false, ?Address $deliveryAddress = null, string $giftMessage = ''): ResponseInterface
-    {
-        if ($shipToDifferentAddress && !$this->addressCompletenessChecker->isComplete($deliveryAddress ?? new Address(), emailRequired: false)) {
+    /**
+     * Takes every field of the address form as its own argument, as Extbase maps them, hence more than
+     * five parameters.
+     */
+    public function submitAddressAction(
+        Address $address,
+        bool $shipToDifferentAddress = false,
+        ?Address $deliveryAddress = null,
+        string $giftMessage = '',
+        string $customerNote = '',
+        string $desiredDeliveryDate = '',
+    ): ResponseInterface {
+        $fields = $this->fieldConfiguration();
+        if ($shipToDifferentAddress && !$this->addressCompletenessChecker->isComplete($deliveryAddress ?? new Address(), false, $fields->forDeliveryAddress())) {
             $this->backToStep('address', $this->translate('checkout_delivery_address_incomplete'));
         }
+        $deliveryDate = $this->resolveDesiredDeliveryDate($desiredDeliveryDate, $fields);
         $this->checkoutService->setAddress($this->request, $address);
         $this->checkoutService->setDeliveryAddress($this->request, $shipToDifferentAddress ? $deliveryAddress : null);
         $this->checkoutService->setGiftMessage($this->request, $giftMessage);
+        $this->checkoutService->setCustomerNote($this->request, trim($customerNote));
+        $this->checkoutService->setDesiredDeliveryDate($this->request, $deliveryDate);
         $configuration = $this->configurationFactory->create($this->request);
         return $this->redirect($configuration->isShippingEnabled() ? 'shippingMethod' : 'payment');
     }
@@ -218,6 +261,21 @@ final class CheckoutController extends ActionController
         throw new PropagateResponseException($this->redirect($action), 1791662865);
     }
 
+    /**
+     * A desired delivery date is optional; when given it must be a real date after today.
+     */
+    private function resolveDesiredDeliveryDate(string $value, CheckoutFieldConfiguration $fields): ?\DateTimeImmutable
+    {
+        if (!$fields->isDesiredDeliveryDateEnabled() || trim($value) === '') {
+            return null;
+        }
+        $date = \DateTimeImmutable::createFromFormat('!Y-m-d', trim($value));
+        if (!$date instanceof \DateTimeImmutable || $date < new \DateTimeImmutable('tomorrow')) {
+            $this->backToStep('address', $this->translate('checkout_desired_delivery_date_invalid'));
+        }
+        return $date;
+    }
+
     private function translate(string $key): string
     {
         return (string)LocalizationUtility::translate($key, 'ProductsCore');
@@ -262,6 +320,8 @@ final class CheckoutController extends ActionController
             'shippingSelection' => $shippingSelection,
             'deliveryAddress' => $this->checkoutService->getDeliveryAddress($this->request),
             'giftMessage' => $this->checkoutService->getGiftMessage($this->request),
+            'customerNote' => $this->checkoutService->getCustomerNote($this->request),
+            'desiredDeliveryDate' => $this->checkoutService->getDesiredDeliveryDate($this->request),
             'withdrawalWaiverRequired' => $this->withdrawalExclusionService->basketRequiresWaiver($basket),
             'withdrawalExemptPersonalizedItems' => $this->withdrawalExclusionService->basketContainsPersonalized($basket),
         ] + $enrichEvent->getVariables());
@@ -326,7 +386,9 @@ final class CheckoutController extends ActionController
             $this->checkoutService->getDeliveryAddress($this->request),
             $this->checkoutService->getGiftMessage($this->request),
             $termsAccepted,
-            $withdrawalWaiverAccepted
+            $withdrawalWaiverAccepted,
+            $this->checkoutService->getCustomerNote($this->request),
+            $this->checkoutService->getDesiredDeliveryDate($this->request),
         );
 
         try {
