@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Updates;
 
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\CategoryMigrationPrerequisite;
+use GoldeneZeiten\Products\Core\Updates\Prerequisites\ColumnCategoryPrerequisite;
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\ProductMigrationPrerequisite;
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\StorageFolderCategoryPrerequisite;
 use Symfony\Component\Console\Formatter\OutputFormatter;
@@ -57,6 +58,9 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
         private readonly CategoryMigrationPrerequisite $categoryMigrationPrerequisite,
         private readonly StorageFolderCategoryPrerequisite $storageFolderCategoryPrerequisite,
+        private readonly ColumnCategoryPrerequisite $columnCategoryPrerequisite,
+        private readonly LegacyMigrationConfiguration $migrationConfiguration,
+        private readonly LegacyColumnCategories $columnCategories,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -123,6 +127,7 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
             CategoryMigrationPrerequisite::class,
             ProductMigrationPrerequisite::class,
             StorageFolderCategoryPrerequisite::class,
+            ColumnCategoryPrerequisite::class,
         ];
     }
 
@@ -135,6 +140,8 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
                 => $this->categoryMigrationPrerequisite,
             'The storage folders are not turned into categories yet; run the storage folder category wizard (products_ttProductsStorageFolderCategories) first.'
                 => $this->storageFolderCategoryPrerequisite,
+            'The grouping columns are not turned into categories yet; run the column category wizard (products_ttProductsColumnCategories) first.'
+                => $this->columnCategoryPrerequisite,
         ];
         foreach ($checks as $message => $prerequisite) {
             if (!$prerequisite->isFulfilled()) {
@@ -310,12 +317,37 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         }
         $categories = array_filter(array_unique(array_merge(
             explode(',', $this->remapUids((string)($flexForm['categorySelection'] ?? ''), self::LEGACY_CATEGORY_TABLE, self::LOCAL_CATEGORY_TABLE)),
-            array_values($this->startingPointCategories($row))
+            array_values($this->startingPointCategories($row)),
+            $this->productWhereCategories((string)($flexForm['product_where'] ?? '')) ?? []
         )));
         if ($categories !== []) {
             $selections['tx_products_category'] = implode(',', $categories);
         }
         return $selections;
+    }
+
+    /**
+     * The categories a product_where filter selects when it only matches values of columns that became
+     * categories - `quality LIKE '%White gold%'`, alternatives joined by OR. Null for anything else.
+     *
+     * @return string[]|null
+     */
+    private function productWhereCategories(string $productWhere): ?array
+    {
+        $columns = $this->migrationConfiguration->getColumnCategories();
+        if (trim($productWhere) === '' || $columns === []) {
+            return null;
+        }
+        $categories = [];
+        foreach (preg_split('/\s+OR\s+/i', trim($productWhere)) ?: [] as $condition) {
+            $matched = preg_match('/^\(?\s*`?([a-z0-9_]+)`?\s+(?:LIKE|=)\s+([\'"])%?([^%\'"]+)%?\2\s*\)?$/i', trim($condition), $parts);
+            $categoryUid = $matched === 1 && isset($columns[$parts[1]]) ? $this->columnCategories->findValueCategory($parts[1], trim($parts[3])) : null;
+            if ($categoryUid === null) {
+                return null;
+            }
+            $categories[] = (string)$categoryUid;
+        }
+        return $categories;
     }
 
     /**
@@ -482,10 +514,14 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
      */
     private function reportDroppedSettings(array $row): void
     {
+        $flexForm = $this->parseFlexForm($row);
         $dropped = array_diff_key(
-            array_filter($this->parseFlexForm($row), static fn(string $value): bool => trim($value) !== ''),
+            array_filter($flexForm, static fn(string $value): bool => trim($value) !== ''),
             array_flip(self::MIGRATED_FLEXFORM_FIELDS)
         );
+        if ($this->productWhereCategories((string)($flexForm['product_where'] ?? '')) !== null) {
+            unset($dropped['product_where']);
+        }
         $unmappedStartingPoints = array_diff($this->startingPoints($row), array_keys($this->startingPointCategories($row)));
         if ($unmappedStartingPoints !== []) {
             $dropped['pages'] = implode(',', $unmappedStartingPoints);
