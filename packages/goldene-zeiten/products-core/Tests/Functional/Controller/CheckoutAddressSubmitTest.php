@@ -56,12 +56,14 @@ final class CheckoutAddressSubmitTest extends AbstractFrontendTestCase
     #[Test]
     public function theContactFieldsTheCommentAndTheDesiredDateAreKeptForTheOrder(): void
     {
-        $this->executeFrontendSubRequest($this->submitAddressRequest(
+        $response = $this->executeFrontendSubRequest($this->submitAddressRequest(
             $this->address(telephone: '+49 30 123456'),
             customerNote: 'Engrave "Forever" inside the ring.',
             desiredDeliveryDate: '2030-12-23',
         ));
 
+        $this->assertSame(303, $response->getStatusCode());
+        $this->assertStringContainsString('tx_productscore_checkout[action]=payment', urldecode($response->getHeaderLine('location')));
         $address = unserialize($this->checkoutSessionValue('tx_products_checkout_address'), ['allowed_classes' => [Address::class]]);
         $this->assertInstanceOf(Address::class, $address);
         $this->assertSame('+49 30 123456', $address->getTelephone());

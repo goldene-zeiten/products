@@ -176,19 +176,19 @@ final class CheckoutController extends ActionController
         $this->checkoutService->setCustomerNote($this->request, trim($customerNote));
         $this->checkoutService->setDesiredDeliveryDate($this->request, $deliveryDate);
         $configuration = $this->configurationFactory->create($this->request);
-        return $this->redirect($configuration->isShippingEnabled() ? 'shippingMethod' : 'payment');
+        $this->propagate($this->redirect($configuration->isShippingEnabled() ? 'shippingMethod' : 'payment'));
     }
 
     public function shippingMethodAction(): ResponseInterface
     {
         $configuration = $this->configurationFactory->create($this->request);
         if (!$configuration->isShippingEnabled()) {
-            return $this->redirect('payment');
+            $this->propagate($this->redirect('payment'));
         }
         $options = $this->shippingQuoteService->getAvailableOptions($configuration, $this->shippingContext());
         if ($options === []) {
             $this->addFlashMessage($this->translate('checkout_no_shipping_available'), '', ContextualFeedbackSeverity::ERROR);
-            return $this->redirect('address');
+            $this->propagate($this->redirect('address'));
         }
         $this->view->assignMultiple([
             'shippingOptions' => $options,
@@ -205,7 +205,7 @@ final class CheckoutController extends ActionController
             $this->backToStep('shippingMethod', $this->translate('checkout_shipping_option_required'));
         }
         $this->checkoutService->setShippingOption($this->request, $shippingOption);
-        return $this->redirect('payment');
+        $this->propagate($this->redirect('payment'));
     }
 
     private function shippingContext(): ShippingContext
@@ -262,6 +262,15 @@ final class CheckoutController extends ActionController
     }
 
     /**
+     * The checkout plugin is uncached: a returned redirect would only be sent as a header beside the
+     * rendered page, so it is propagated as the response of the request instead.
+     */
+    private function propagate(ResponseInterface $response): never
+    {
+        throw new PropagateResponseException($response, 1792163431);
+    }
+
+    /**
      * A desired delivery date is optional; when given it must be a real date after today.
      */
     private function resolveDesiredDeliveryDate(string $value, CheckoutFieldConfiguration $fields): ?\DateTimeImmutable
@@ -297,7 +306,7 @@ final class CheckoutController extends ActionController
             $this->backToStep('payment', $this->translate('checkout_payment_method_required'));
         }
         $this->checkoutService->setPaymentMethod($this->request, $paymentMethod);
-        return $this->redirect('review');
+        $this->propagate($this->redirect('review'));
     }
 
     public function reviewAction(): ResponseInterface
@@ -398,13 +407,13 @@ final class CheckoutController extends ActionController
         }
 
         if ($result->requiresRedirect()) {
-            return new RedirectResponse($result->getRedirectUrl());
+            $this->propagate(new RedirectResponse($result->getRedirectUrl()));
         }
 
-        return $this->redirect('thankYou', null, null, [
+        $this->propagate($this->redirect('thankYou', null, null, [
             'order' => $result->getOrder()->getUid(),
             'hash' => $this->orderTokenService->generateToken($result->getOrder()),
-        ]);
+        ]));
     }
 
     /**
