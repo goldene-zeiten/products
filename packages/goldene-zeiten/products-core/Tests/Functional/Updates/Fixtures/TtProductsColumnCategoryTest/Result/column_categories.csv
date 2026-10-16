@@ -1,0 +1,20 @@
+"tx_products_domain_model_category",,,,
+,"uid","title","slug","parent_category"
+,1,"Hersteller","hersteller",0
+,2,"Davice","davice",1
+,3,"Viventy","viventy",1
+,4,"Filter","filter",0
+,5,"Weißgold","weissgold",4
+,6,"Gelbgold","gelbgold",4
+"tx_products_product_category_mm",,,
+,"uid_local","uid_foreign"
+,80,2
+,80,5
+,80,6
+,81,3
+,81,5
+"tx_products_domain_model_product",,,
+,"uid","title","categories"
+,80,"Ring A",3
+,81,"Ring B",2
+,82,"Ring C",0

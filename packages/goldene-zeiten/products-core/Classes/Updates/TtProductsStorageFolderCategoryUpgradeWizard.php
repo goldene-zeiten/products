@@ -40,6 +40,7 @@ final class TtProductsStorageFolderCategoryUpgradeWizard implements UpgradeWizar
         private readonly LegacyMigrationConfiguration $migrationConfiguration,
         private readonly StorageFolderResolver $storageFolderResolver,
         private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
+        private readonly LegacyCategoryAssigner $categoryAssigner,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -88,7 +89,7 @@ final class TtProductsStorageFolderCategoryUpgradeWizard implements UpgradeWizar
         foreach ($this->legacyProducts() as [$legacyProductUid, $folderUid]) {
             $productUid = $this->migrationHelper->resolveLocalUid('tt_products', $legacyProductUid, 'tx_products_domain_model_product');
             if ($productUid !== null && $productUid > 0) {
-                $this->assign($productUid, $this->categoryForFolder($folderUid, $pid));
+                $this->categoryAssigner->assign($productUid, $this->categoryForFolder($folderUid, $pid));
             }
         }
         return true;
@@ -134,7 +135,7 @@ final class TtProductsStorageFolderCategoryUpgradeWizard implements UpgradeWizar
             return false;
         }
         $categoryUid = $this->migrationHelper->resolveLocalUid('pages', $folderUid, 'tx_products_domain_model_category');
-        return $categoryUid === null || !$this->isAssigned($productUid, $categoryUid);
+        return $categoryUid === null || !$this->categoryAssigner->isAssigned($productUid, $categoryUid);
     }
 
     /**
@@ -174,32 +175,5 @@ final class TtProductsStorageFolderCategoryUpgradeWizard implements UpgradeWizar
             ->executeQuery()
             ->fetchAssociative();
         return is_array($page) ? $page : [];
-    }
-
-    private function isAssigned(int $productUid, int $categoryUid): bool
-    {
-        return $this->connectionPool->getConnectionForTable('tx_products_product_category_mm')->count('*', 'tx_products_product_category_mm', [
-            'uid_local' => $productUid,
-            'uid_foreign' => $categoryUid,
-        ]) > 0;
-    }
-
-    private function assign(int $productUid, int $categoryUid): void
-    {
-        if ($this->isAssigned($productUid, $categoryUid)) {
-            return;
-        }
-        $mm = $this->connectionPool->getConnectionForTable('tx_products_product_category_mm');
-        $assigned = $mm->count('*', 'tx_products_product_category_mm', ['uid_local' => $productUid]);
-        $mm->insert('tx_products_product_category_mm', [
-            'uid_local' => $productUid,
-            'uid_foreign' => $categoryUid,
-            'sorting' => $assigned + 1,
-        ]);
-        $this->connectionPool->getConnectionForTable('tx_products_domain_model_product')->update(
-            'tx_products_domain_model_product',
-            ['categories' => $assigned + 1],
-            ['uid' => $productUid]
-        );
     }
 }

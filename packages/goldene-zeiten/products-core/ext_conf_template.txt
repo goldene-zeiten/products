@@ -6,3 +6,9 @@ migration.legacyPrice2FeGroup = 0
 
 # cat=migration/catalog/10; type=boolean; label=Storage folders become categories: The legacy catalog is grouped by storage folders rather than tt_products_cat. The wizard "Turn the tt_products storage folders into categories" creates a category per folder holding products, nested like the folders, and assigns the products; legacy list elements selecting a starting point then select these categories.
 migration.storageFolderCategories = 0
+
+# cat=migration/catalog/20; type=string; label=Columns that become categories: Comma-separated "column:Title" pairs of tt_products columns the legacy shop grouped products by, e.g. "form:Manufacturer, quality:Tags". The wizard "Turn tt_products grouping columns into categories" creates a root category "Title" per column with a child per distinct value; legacy list elements filtering such a column with product_where then select these categories.
+migration.columnCategories =
+
+# cat=migration/catalog/30; type=string; label=Columns holding several values: Comma-separated columns from "Columns that become categories" whose values are lists separated by commas, semicolons or line breaks.
+migration.columnCategoriesMultiValue =

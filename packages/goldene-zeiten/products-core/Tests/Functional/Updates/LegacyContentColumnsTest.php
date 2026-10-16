@@ -101,6 +101,20 @@ final class LegacyContentColumnsTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function aColumnConfiguredToBecomeCategoriesIsNotReported(): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['products_core']['migration']['columnCategories'] = 'quality:Filter';
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/LegacyContentColumnsTest/products_with_content_columns.csv');
+        $output = new BufferedOutput();
+        $subject = $this->get(TtProductsProductUpgradeWizard::class);
+        $subject->setOutput($output);
+
+        $subject->executeUpdate();
+
+        $this->assertStringNotContainsString('data in "quality"', $output->fetch());
+    }
+
+    #[Test]
     public function articleColumnsCarryingUnmigratedDataAreReported(): void
     {
         $this->importCSVDataSet(__DIR__ . '/Fixtures/LegacyContentColumnsTest/articles_with_content_columns.csv');

@@ -33,6 +33,31 @@ final class LegacyMigrationConfiguration
     }
 
     /**
+     * `migration.columnCategories`, e.g. "form:Manufacturer, quality:Tags".
+     *
+     * @return array<string, string> legacy column => title of its root category
+     */
+    public function getColumnCategories(): array
+    {
+        $columns = [];
+        foreach ($this->getList('columnCategories') as $entry) {
+            [$column, $title] = array_map(trim(...), explode(':', $entry, 2)) + [1 => ''];
+            if ($column !== '') {
+                $columns[$column] = $title !== '' ? $title : $column;
+            }
+        }
+        return $columns;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getList(string $key): array
+    {
+        return array_values(array_filter(array_map(trim(...), explode(',', $this->getString($key)))));
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function all(): array

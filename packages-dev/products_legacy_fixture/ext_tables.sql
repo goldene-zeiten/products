@@ -21,6 +21,7 @@ CREATE TABLE tt_products (
 	color mediumtext,
 	color2 mediumtext,
 	quality mediumtext,
+	form mediumtext,
 	description mediumtext,
 	category int(11) unsigned DEFAULT '0' NOT NULL,
 	inStock int(11) DEFAULT '1' NOT NULL,

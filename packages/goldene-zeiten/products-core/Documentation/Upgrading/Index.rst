@@ -60,6 +60,25 @@ Configuration`, tab :guilabel:`migration`) before running the product and articl
     the storage folder category wizard (see the run order) and makes the plugin wizard turn a
     legacy element's starting point into a selection of those categories.
 
+..  confval:: migration.columnCategories
+    :name: upgrading-column-categories
+    :type: string
+    :Default: (empty)
+
+    Comma-separated ``column:Title`` pairs of ``tt_products`` columns the legacy shop grouped
+    products by, e.g. ``form:Hersteller, quality:Filter``. Each column becomes a root category
+    ``Title`` with one child per distinct value (the first spelling wins, regardless of case), and
+    the plugin wizard turns a ``product_where`` filter like ``quality LIKE '%Weißgold%'`` - plain
+    ``LIKE``/``=`` matches joined by ``OR`` - into a selection of those categories.
+
+..  confval:: migration.columnCategoriesMultiValue
+    :name: upgrading-column-categories-multi-value
+    :type: string
+    :Default: (empty)
+
+    Columns of :confval:`upgrading-column-categories` holding several values, separated by commas,
+    semicolons or line breaks.
+
 The same values can be set on the command line, for example:
 
 ..  code-block:: bash
@@ -89,6 +108,10 @@ Run the wizards in this order — each one links its rows back to the previous o
     folders up to the first page that is not a folder, and assigns every migrated product to the
     category of its folder. Run it after the product wizard and before the plugin wizard, which
     waits for it.
+#.  **Turn grouping columns into categories** (``products_ttProductsColumnCategories``, only with
+    :confval:`upgrading-column-categories`) — builds the category trees of the configured columns
+    and assigns the migrated products. Run it after the product wizard and before the plugin
+    wizard, which waits for it.
 #.  **Migrate orders** (``products_ttProductsOrderMigration``) — ``sys_products_orders`` and its
     line items, linked to the migrated products/articles.
 #.  **Migrate media** (``products_ttProductsMediaMigration``) — product/category/article images and

@@ -81,6 +81,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
         private readonly CategoryMigrationPrerequisite $categoryMigrationPrerequisite,
         private readonly LegacyPriceMigrator $priceMigrator,
         private readonly LegacyColumnReporter $columnReporter,
+        private readonly LegacyMigrationConfiguration $migrationConfiguration,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -130,7 +131,11 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
             }
         }
         $this->overlayMigrator->migrate($this->output, $this->overlayConfig(), $this->overlayValues(...));
-        $this->columnReporter->report(self::LEGACY_TABLE, self::HANDLED_COLUMNS, $this->output);
+        $this->columnReporter->report(
+            self::LEGACY_TABLE,
+            [...self::HANDLED_COLUMNS, ...array_keys($this->migrationConfiguration->getColumnCategories())],
+            $this->output
+        );
         return true;
     }
 
