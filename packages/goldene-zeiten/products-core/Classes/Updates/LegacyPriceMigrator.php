@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Updates;
 
 use Symfony\Component\Console\Output\OutputInterface;
-use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
@@ -19,7 +17,7 @@ final class LegacyPriceMigrator
 {
     public function __construct(
         private readonly ConnectionPool $connectionPool,
-        private readonly ExtensionConfiguration $extensionConfiguration,
+        private readonly LegacyMigrationConfiguration $migrationConfiguration,
     ) {}
 
     /**
@@ -113,26 +111,13 @@ final class LegacyPriceMigrator
 
     private function usage(): LegacyPrice2Usage
     {
-        return LegacyPrice2Usage::tryFrom((string)($this->migrationConfiguration()['legacyPrice2'] ?? ''))
+        return LegacyPrice2Usage::tryFrom($this->migrationConfiguration->getString('legacyPrice2'))
             ?? LegacyPrice2Usage::Undecided;
     }
 
     private function resellerGroup(): int
     {
-        return max(0, (int)($this->migrationConfiguration()['legacyPrice2FeGroup'] ?? 0));
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function migrationConfiguration(): array
-    {
-        try {
-            $configuration = $this->extensionConfiguration->get('products_core', 'migration');
-        } catch (ExtensionConfigurationPathDoesNotExistException) {
-            return [];
-        }
-        return is_array($configuration) ? $configuration : [];
+        return max(0, $this->migrationConfiguration->getInt('legacyPrice2FeGroup'));
     }
 
     private function format(float $price): string

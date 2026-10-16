@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Core\Updates;
 
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\CategoryMigrationPrerequisite;
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\ProductMigrationPrerequisite;
+use GoldeneZeiten\Products\Core\Updates\Prerequisites\StorageFolderCategoryPrerequisite;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
@@ -55,6 +56,7 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         private readonly LegacyPluginModeMap $modeMap,
         private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
         private readonly CategoryMigrationPrerequisite $categoryMigrationPrerequisite,
+        private readonly StorageFolderCategoryPrerequisite $storageFolderCategoryPrerequisite,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -120,24 +122,25 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
             DatabaseUpdatedPrerequisite::class,
             CategoryMigrationPrerequisite::class,
             ProductMigrationPrerequisite::class,
+            StorageFolderCategoryPrerequisite::class,
         ];
     }
 
     private function prerequisitesFulfilled(): bool
     {
-        if (!$this->productMigrationPrerequisite->isFulfilled()) {
-            $this->output->writeln(
-                '<error>tt_products still has unmigrated rows; run the product migration '
-                    . 'wizard (products_ttProductsProductMigration) first.</error>'
-            );
-            return false;
-        }
-        if (!$this->categoryMigrationPrerequisite->isFulfilled()) {
-            $this->output->writeln(
-                '<error>tt_products_cat still has unmigrated rows; run the category migration '
-                    . 'wizard (products_ttProductsCategoryMigration) first.</error>'
-            );
-            return false;
+        $checks = [
+            'tt_products still has unmigrated rows; run the product migration wizard (products_ttProductsProductMigration) first.'
+                => $this->productMigrationPrerequisite,
+            'tt_products_cat still has unmigrated rows; run the category migration wizard (products_ttProductsCategoryMigration) first.'
+                => $this->categoryMigrationPrerequisite,
+            'The storage folders are not turned into categories yet; run the storage folder category wizard (products_ttProductsStorageFolderCategories) first.'
+                => $this->storageFolderCategoryPrerequisite,
+        ];
+        foreach ($checks as $message => $prerequisite) {
+            if (!$prerequisite->isFulfilled()) {
+                $this->output->writeln('<error>' . $message . '</error>');
+                return false;
+            }
         }
         return true;
     }
@@ -305,15 +308,41 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         if ($products !== '') {
             $selections['records'] = $products;
         }
-        $categories = $this->remapUids(
-            (string)($flexForm['categorySelection'] ?? ''),
-            self::LEGACY_CATEGORY_TABLE,
-            self::LOCAL_CATEGORY_TABLE
-        );
-        if ($categories !== '') {
-            $selections['tx_products_category'] = $categories;
+        $categories = array_filter(array_unique(array_merge(
+            explode(',', $this->remapUids((string)($flexForm['categorySelection'] ?? ''), self::LEGACY_CATEGORY_TABLE, self::LOCAL_CATEGORY_TABLE)),
+            array_values($this->startingPointCategories($row))
+        )));
+        if ($categories !== []) {
+            $selections['tx_products_category'] = implode(',', $categories);
         }
         return $selections;
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     * @return int[] the page uids of the element's starting point
+     */
+    private function startingPoints(array $row): array
+    {
+        return array_values(array_filter(array_map('intval', explode(',', (string)($row['pages'] ?? '')))));
+    }
+
+    /**
+     * The categories the storage folder wizard created for the element's starting point.
+     *
+     * @param array<string, mixed> $row
+     * @return array<int, string> page uid => category uid
+     */
+    private function startingPointCategories(array $row): array
+    {
+        $categories = [];
+        foreach ($this->startingPoints($row) as $pageUid) {
+            $categoryUid = $this->migrationHelper->resolveLocalUid('pages', $pageUid, self::LOCAL_CATEGORY_TABLE);
+            if ($categoryUid !== null && $categoryUid > 0) {
+                $categories[$pageUid] = (string)$categoryUid;
+            }
+        }
+        return $categories;
     }
 
     /**
@@ -457,8 +486,9 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
             array_filter($this->parseFlexForm($row), static fn(string $value): bool => trim($value) !== ''),
             array_flip(self::MIGRATED_FLEXFORM_FIELDS)
         );
-        if (trim((string)($row['pages'] ?? '')) !== '') {
-            $dropped['pages'] = (string)$row['pages'];
+        $unmappedStartingPoints = array_diff($this->startingPoints($row), array_keys($this->startingPointCategories($row)));
+        if ($unmappedStartingPoints !== []) {
+            $dropped['pages'] = implode(',', $unmappedStartingPoints);
         }
         if ($dropped === []) {
             return;
