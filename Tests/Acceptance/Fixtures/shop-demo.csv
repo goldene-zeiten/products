@@ -210,3 +210,7 @@ tx_productspersonalization_domain_model_optionitem,,,,,,
 ,1,2,1,1,52,52,0.00
 ,2,2,1,2,54,54,0.00
 ,3,2,1,3,64 (oversize),64,15.00
+
+tx_productsshippingpickup_domain_model_branch,,,,,,,
+,uid,pid,sorting,title,street,zip,city,opening_hours
+,1,2,1,Hamburg,Jungfernstieg 1,20354,Hamburg,Mon-Fri 10-18

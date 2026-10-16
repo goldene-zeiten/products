@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="EXT:products_shipping_pickup/Resources/Private/Language/locallang_tca.xlf" date="2026-10-16T00:00:00Z" product-name="products_shipping_pickup">
+        <header/>
+        <body>
+            <trans-unit id="tx_productsshippingpickup_domain_model_branch" resname="tx_productsshippingpickup_domain_model_branch">
+                <source>Pick-up branch</source>
+            </trans-unit>
+            <trans-unit id="tx_productsshippingpickup_domain_model_branch.title" resname="tx_productsshippingpickup_domain_model_branch.title">
+                <source>Name</source>
+            </trans-unit>
+            <trans-unit id="tx_productsshippingpickup_domain_model_branch.street" resname="tx_productsshippingpickup_domain_model_branch.street">
+                <source>Street</source>
+            </trans-unit>
+            <trans-unit id="tx_productsshippingpickup_domain_model_branch.zip" resname="tx_productsshippingpickup_domain_model_branch.zip">
+                <source>ZIP</source>
+            </trans-unit>
+            <trans-unit id="tx_productsshippingpickup_domain_model_branch.city" resname="tx_productsshippingpickup_domain_model_branch.city">
+                <source>City</source>
+            </trans-unit>
+            <trans-unit id="tx_productsshippingpickup_domain_model_branch.country" resname="tx_productsshippingpickup_domain_model_branch.country">
+                <source>Country</source>
+            </trans-unit>
+            <trans-unit id="tx_productsshippingpickup_domain_model_branch.country.description" resname="tx_productsshippingpickup_domain_model_branch.country.description">
+                <source>Two-letter ISO code, e.g. DE.</source>
+            </trans-unit>
+            <trans-unit id="tx_productsshippingpickup_domain_model_branch.opening_hours" resname="tx_productsshippingpickup_domain_model_branch.opening_hours">
+                <source>Opening hours</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

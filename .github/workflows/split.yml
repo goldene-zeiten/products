@@ -47,6 +47,9 @@ jobs:
           - package: products-payment-offline
             directory: packages/goldene-zeiten/products-payment-offline
             repository: products-payment-offline
+          - package: products-shipping-pickup
+            directory: packages/goldene-zeiten/products-shipping-pickup
+            repository: products-shipping-pickup
           - package: products-wishlist
             directory: packages/goldene-zeiten/products-wishlist
             repository: products-wishlist

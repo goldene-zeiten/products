@@ -30,6 +30,17 @@ settings:
       enabled: true
     shipping:
       enabled: true
+    # Offline payment of products-payment-offline, tied to pick-up in store of products-shipping-pickup.
+    payment:
+      invoice:
+        excludedShipping: pickup
+      prepayment:
+        enabled: true
+        accountHolder: 'Products Acceptance'
+        iban: 'DE02 1203 0000 0000 2020 51'
+      cash:
+        enabled: true
+        discountPercent: '3'
     wishlist:
       enabled: true
     # PaymentUrlFactory reads the checkout page from Site Settings to build the redirect return/cancel

@@ -1,0 +1,12 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  GoldeneZeiten\Products\Shipping\Pickup\:
+    resource: '../Classes/*'
+
+  # Only collected through the shipping provider tag, which inlines it; the tests fetch it directly.
+  GoldeneZeiten\Products\Shipping\Pickup\Shipping\PickupShippingProvider:
+    public: true
