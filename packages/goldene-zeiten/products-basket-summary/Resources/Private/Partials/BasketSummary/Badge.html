@@ -1,0 +1,15 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
+<f:asset.script identifier="products-basket-summary" src="EXT:products_basket_summary/Resources/Public/JavaScript/frontend/basket-summary.js" type="module" />
+<products-basket-summary endpoint="/products/basket-summary" class="products-basket-summary">
+    <f:link.page pageUid="{basketPage}" class="products-basket-summary__link" title="{total}">
+        <span class="products-basket-summary__label"><f:translate key="LLL:EXT:products_basket_summary/Resources/Private/Language/locallang.xlf:basket" /></span>
+        <f:if condition="{count}">
+            <f:then><span class="products-basket-summary__count badge bg-danger" data-basket-count="">{count}</span></f:then>
+            <f:else><span class="products-basket-summary__count badge bg-danger" data-basket-count="" hidden="hidden">0</span></f:else>
+        </f:if>
+        <span class="visually-hidden" data-basket-total="">{total}</span>
+    </f:link.page>
+</products-basket-summary>
+</html>

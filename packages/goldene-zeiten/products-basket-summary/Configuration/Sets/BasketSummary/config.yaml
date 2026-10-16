@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-basket-summary
+label: 'Products Basket Summary'
+dependencies:
+  - goldene-zeiten/products-core

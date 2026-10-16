@@ -1,0 +1,33 @@
+# The basket badge for the page header. The cache-safe variant renders an empty badge that fills itself in the
+# browser; use it on cached pages:  page.10.variables.basket < lib.productsBasketSummary
+lib.productsBasketSummary = FLUIDTEMPLATE
+lib.productsBasketSummary {
+    templateName = Badge
+    templateRootPaths.0 = EXT:products_basket_summary/Resources/Private/Partials/BasketSummary/
+    partialRootPaths.0 = EXT:products_basket_summary/Resources/Private/Partials/
+    variables {
+        count = TEXT
+        count.value = 0
+        total = TEXT
+        total.value =
+        basketPage = TEXT
+        basketPage.value = {$products.pids.basketPage}
+    }
+}
+
+# The same badge rendered on the server with the visitor's current count and total. It makes the page part it
+# sits in uncached; prefer lib.productsBasketSummary on cached pages.
+lib.productsBasketSummaryUncached = USER_INT
+lib.productsBasketSummaryUncached {
+    userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+    extensionName = ProductsBasketSummary
+    pluginName = Summary
+}
+
+plugin.tx_productsbasketsummary {
+    view {
+        templateRootPaths.0 = EXT:products_basket_summary/Resources/Private/Templates/
+        partialRootPaths.0 = EXT:products_basket_summary/Resources/Private/Partials/
+    }
+    settings < plugin.tx_productscore.settings
+}
