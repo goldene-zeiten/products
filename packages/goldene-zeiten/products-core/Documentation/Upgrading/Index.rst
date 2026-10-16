@@ -70,7 +70,10 @@ Run the wizards in this order — each one links its rows back to the previous o
 #.  **Migrate products** (``products_ttProductsProductMigration``) — ``tt_products`` and its
     ``tt_products_language`` translations, linked to the migrated categories and tax classes.
 #.  **Migrate articles** (``products_ttProductsArticleMigration``) — ``tt_products_articles`` and
-    its ``tt_products_articles_language`` translations, linked to the migrated products.
+    its ``tt_products_articles_language`` translations, linked to the migrated products. The product
+    is read from ``uid_product`` and from :sql:`tt_products_products_mm_articles`, so every legacy
+    article mode is covered. An article related to several products belongs to the first of them
+    afterwards; the wizard reports every further product, whose variant has to be recreated by hand.
 #.  **Migrate orders** (``products_ttProductsOrderMigration``) — ``sys_products_orders`` and its
     line items, linked to the migrated products/articles.
 #.  **Migrate media** (``products_ttProductsMediaMigration``) — product/category/article images and
