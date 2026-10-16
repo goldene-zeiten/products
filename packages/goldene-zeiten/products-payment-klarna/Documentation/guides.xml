@@ -5,7 +5,7 @@
     <extension class="\T3Docs\Typo3DocsTheme\DependencyInjection\Typo3DocsThemeExtension"
                project-home="https://extensions.typo3.org/extension/products_payment_klarna/"
                typo3-core-preferred="13"
-               interlink-shortcode="products_payment_klarna"
+               interlink-shortcode="goldene-zeiten/products-payment-klarna"
     />
     <project title="Products Klarna Payment"
              release="1.0"
