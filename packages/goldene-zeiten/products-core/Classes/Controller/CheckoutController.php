@@ -20,6 +20,7 @@ use GoldeneZeiten\Products\Core\Event\EnrichCheckoutReviewEvent;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotAvailableException;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException;
 use GoldeneZeiten\Products\Core\Payment\PaymentContextFactory;
+use GoldeneZeiten\Products\Core\Payment\PaymentInstructionsResolver;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodInterface;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Core\Security\FrontendRequestTokenValidator;
@@ -79,6 +80,7 @@ final class CheckoutController extends ActionController
         private readonly ProductsConfigurationFactory $configurationFactory,
         private readonly PriceQuoteService $priceQuoteService,
         private readonly WithdrawalExclusionService $withdrawalExclusionService,
+        private readonly PaymentInstructionsResolver $paymentInstructionsResolver,
         private readonly AddressCompletenessChecker $addressCompletenessChecker,
         private readonly CheckoutFieldConfigurationFactory $fieldConfigurationFactory,
         private readonly OrderCreationService $orderCreationService,
@@ -451,6 +453,7 @@ final class CheckoutController extends ActionController
             'withdrawalHash' => $this->withdrawalTokenService->generateToken($orderObject),
             'orderHash' => $this->orderTokenService->generateToken($orderObject),
             'withdrawalExcluded' => $this->withdrawalExclusionService->isFullyExcluded($orderObject),
+            'paymentInstructions' => $this->paymentInstructionsResolver->resolve($orderObject),
         ]);
         return $this->htmlResponse();
     }

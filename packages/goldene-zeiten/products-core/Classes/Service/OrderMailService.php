@@ -14,7 +14,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\ShippingPoint;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Event\BeforeOrderMailSentEvent;
 use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException;
-use GoldeneZeiten\Products\Core\Payment\PaymentInstructionsProviderInterface;
+use GoldeneZeiten\Products\Core\Payment\PaymentInstructionsResolver;
 use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Core\Service\Exception\AgbFileNotFoundException;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoicePdfService;
@@ -56,6 +56,7 @@ final class OrderMailService
         private readonly WithdrawalInstructionsBuilder $instructionsBuilder,
         private readonly ConnectionPool $connectionPool,
         private readonly PaymentMethodRegistry $paymentMethodRegistry,
+        private readonly PaymentInstructionsResolver $paymentInstructionsResolver,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
@@ -351,9 +352,7 @@ final class OrderMailService
         }
         return [
             'paymentMethodLabel' => $paymentMethod->getLabel(),
-            'paymentInstructions' => $paymentMethod instanceof PaymentInstructionsProviderInterface
-                ? $paymentMethod->getPaymentInstructions($order)
-                : '',
+            'paymentInstructions' => $this->paymentInstructionsResolver->resolve($order),
         ];
     }
 
