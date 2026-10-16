@@ -6,7 +6,7 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 (static function (): void {
     ExtensionManagementUtility::addStaticFile(
-        'products',
+        'products_core',
         'Configuration/TypoScript',
         'ProductsCore'
     );
