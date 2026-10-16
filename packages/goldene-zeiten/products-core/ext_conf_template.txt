@@ -1,0 +1,5 @@
+# cat=migration/price/10; type=options[Decide before migrating=undecided,Not used=unused,Selling price for every visitor=selling,Reseller price of one frontend group=reseller]; label=tt_products price2: How the legacy shop used price2. "Selling price" matches plugin.tt_products.priceNoReseller = 2 set for everyone (price2 is charged, price only where price2 is empty); "Reseller price" matches priceNoReseller = 2 inside a usergroup condition and migrates price2 as a price period of that group. The product and article migrations refuse to run while any record has a price2 and this is still undecided.
+migration.legacyPrice2 = undecided
+
+# cat=migration/price/20; type=int+; label=tt_products price2 reseller group: Frontend group uid the price2 price period applies to. Required with "Reseller price".
+migration.legacyPrice2FeGroup = 0

@@ -1,0 +1,7 @@
+"tx_products_domain_model_product",,,,
+,"uid","title","price","price_periods"
+,1,"Engagement ring","228.75",1
+,2,"Ring without price2","10.00",0
+"tx_products_domain_model_priceperiod",,,,,,,,
+,"uid","pid","product","article","fe_group","price","valid_from","valid_until"
+,1,0,1,0,7,"535.28",0,0
