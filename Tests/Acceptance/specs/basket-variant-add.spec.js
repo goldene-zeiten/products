@@ -9,8 +9,11 @@ test('adding a variant article puts that article - not the base product - in the
   await expect(page.getByText('€10.00')).toBeVisible();
   await expect(page.getByText('In Stock (999)')).toBeVisible();
 
-  await page.locator('.variant-attribute-select').selectOption({ label: 'Large' });
-  await page.getByRole('button', { name: 'Update' }).click();
+  // The variant chooser submits itself on change; the "Update" button is the no-JavaScript fallback.
+  await Promise.all([
+    page.waitForNavigation(),
+    page.locator('.variant-attribute-select').selectOption({ label: 'Large' }),
+  ]);
 
   await expect(page.getByText('€28.00')).toBeVisible();
   await expect(page.getByText('In Stock (4)')).toBeVisible();
