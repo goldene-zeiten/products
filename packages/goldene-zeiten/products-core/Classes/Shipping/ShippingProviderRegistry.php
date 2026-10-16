@@ -19,7 +19,9 @@ use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
  *
  * A {@see FallbackShippingProviderInterface} carrier (the shop's own manual shipping) is only offered when
  * no real carrier can serve the basket, so a carrier extension takes over automatically once installed and
- * the manual shipping fills back in for anything that carrier refuses.
+ * the manual shipping fills back in for anything that carrier refuses. A
+ * {@see SupplementaryShippingProviderInterface} provider, such as collecting in store, is offered next to
+ * either of them.
  */
 final class ShippingProviderRegistry
 {
@@ -43,7 +45,7 @@ final class ShippingProviderRegistry
 
     /**
      * Discovery phase: every option a real carrier can serve for this basket, or - only when none can - the
-     * options of the shop's own fallback carrier.
+     * options of the shop's own fallback carrier; the supplementary options follow either.
      *
      * @return ShippingOption[]
      */
@@ -53,6 +55,7 @@ final class ShippingProviderRegistry
         if ($options === []) {
             $options = $this->quoteFrom($this->providersOfKind(fallback: true), $context);
         }
+        $options = [...$options, ...$this->quoteFrom($this->supplementaryProviders(), $context)];
 
         $event = new ShippingOptionsCollectedEvent($context, $options);
         $this->eventDispatcher->dispatch($event);
@@ -77,7 +80,8 @@ final class ShippingProviderRegistry
     }
 
     /**
-     * The registered carriers of one kind: the real carriers, or the fallback ones.
+     * The registered carriers of one kind: the real carriers, or the fallback ones. Supplementary
+     * providers are neither.
      *
      * @return ShippingProviderInterface[]
      */
@@ -85,7 +89,19 @@ final class ShippingProviderRegistry
     {
         return array_filter(
             $this->providers,
-            static fn(ShippingProviderInterface $provider): bool => ($provider instanceof FallbackShippingProviderInterface) === $fallback
+            static fn(ShippingProviderInterface $provider): bool => !$provider instanceof SupplementaryShippingProviderInterface
+                && ($provider instanceof FallbackShippingProviderInterface) === $fallback
+        );
+    }
+
+    /**
+     * @return ShippingProviderInterface[]
+     */
+    private function supplementaryProviders(): array
+    {
+        return array_filter(
+            $this->providers,
+            static fn(ShippingProviderInterface $provider): bool => $provider instanceof SupplementaryShippingProviderInterface
         );
     }
 

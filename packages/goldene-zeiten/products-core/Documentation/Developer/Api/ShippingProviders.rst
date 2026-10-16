@@ -179,6 +179,21 @@ throws:
 **Empty keys are not an error.** An empty key means the customer has not chosen yet, or shipping
 is disabled. :php:`resolveSelection()` returns a "no shipping" selection in that case.
 
+Fallback and Supplementary Providers
+====================================
+
+:php:`FallbackShippingProviderInterface`
+    Marks the shop's own manual shipping, such as the built-in table rates. Its options are only
+    offered when no real carrier can serve the basket, so a carrier extension takes over once
+    installed.
+
+:php:`SupplementaryShippingProviderInterface`
+    Marks a provider whose options come in addition to the carriers, such as collecting the order in
+    store (``goldene-zeiten/products-shipping-pickup``). Its options always follow those of whatever
+    carries the basket - a real carrier or the fallback - and never replace them.
+
+Both interfaces extend :php:`ShippingProviderInterface`, so such a provider registers like any other.
+
 Money: Carrier Rate vs Shop Surcharge
 ======================================
 
