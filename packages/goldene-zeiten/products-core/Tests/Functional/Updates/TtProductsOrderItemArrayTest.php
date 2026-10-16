@@ -31,4 +31,18 @@ final class TtProductsOrderItemArrayTest extends AbstractFunctionalTestCase
 
         $this->assertCSVDataSet(__DIR__ . '/Fixtures/TtProductsOrderItemArrayTest/items.csv');
     }
+
+    #[Test]
+    public function aLineOfAProductRemovedSinceIsKeptAndReported(): void
+    {
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsOrderItemArrayTest/orders.csv');
+        $output = new BufferedOutput();
+        $subject = $this->get(TtProductsOrderUpgradeWizard::class);
+        $subject->setOutput($output);
+
+        $subject->executeUpdate();
+
+        $this->assertStringContainsString('sys_products_orders uid 12 ordered product uid 55, which no longer exists; the line is kept without a product link.', $output->fetch());
+    }
 }
