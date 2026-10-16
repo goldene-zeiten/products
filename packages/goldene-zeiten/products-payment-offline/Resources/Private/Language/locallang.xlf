@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="EXT:products_payment_offline/Resources/Private/Language/locallang.xlf" date="2026-10-16T00:00:00Z" product-name="products_payment_offline">
+        <header/>
+        <body>
+            <trans-unit id="payment_method_prepayment" resname="payment_method_prepayment">
+                <source>Prepayment (bank transfer)</source>
+            </trans-unit>
+            <trans-unit id="payment_method_cashondelivery" resname="payment_method_cashondelivery">
+                <source>Cash on delivery</source>
+            </trans-unit>
+            <trans-unit id="payment_method_cash" resname="payment_method_cash">
+                <source>Cash on pick-up</source>
+            </trans-unit>
+            <trans-unit id="prepayment.instructions" resname="prepayment.instructions" xml:space="preserve">
+                <source>Please transfer %1$s to the following account and quote your order number %3$s as reference:
+%2$s
+We ship your order as soon as the payment has arrived.</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

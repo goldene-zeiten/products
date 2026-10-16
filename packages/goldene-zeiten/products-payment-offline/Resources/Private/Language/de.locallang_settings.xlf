@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_payment_offline/Resources/Private/Language/de.locallang_settings.xlf" date="2026-10-16T00:00:00Z" product-name="products_payment_offline">
+        <header/>
+        <body>
+            <trans-unit id="category.paymentOffline" resname="category.paymentOffline">
+                <source>Offline payment</source>
+                <target>Offline-Zahlung</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.enabled" resname="setting.products.payment.prepayment.enabled">
+                <source>Offer prepayment</source>
+                <target>Vorkasse anbieten</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.enabled.description" resname="setting.products.payment.prepayment.enabled.description">
+                <source>The customer transfers the amount before the order ships.</source>
+                <target>Der Kunde überweist den Betrag, bevor die Bestellung versendet wird.</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.accountHolder" resname="setting.products.payment.prepayment.accountHolder">
+                <source>Account holder</source>
+                <target>Kontoinhaber</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.accountHolder.description" resname="setting.products.payment.prepayment.accountHolder.description">
+                <source>Shown in the payment instructions.</source>
+                <target>Wird in der Zahlungsanweisung angezeigt.</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.iban" resname="setting.products.payment.prepayment.iban">
+                <source>IBAN</source>
+                <target>IBAN</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.iban.description" resname="setting.products.payment.prepayment.iban.description">
+                <source>Prepayment is only offered when an IBAN is set.</source>
+                <target>Vorkasse wird nur angeboten, wenn eine IBAN gesetzt ist.</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.bic" resname="setting.products.payment.prepayment.bic">
+                <source>BIC</source>
+                <target>BIC</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.bic.description" resname="setting.products.payment.prepayment.bic.description">
+                <source>Optional.</source>
+                <target>Optional.</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.bankName" resname="setting.products.payment.prepayment.bankName">
+                <source>Bank</source>
+                <target>Bank</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.bankName.description" resname="setting.products.payment.prepayment.bankName.description">
+                <source>Optional.</source>
+                <target>Optional.</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.discountPercent" resname="setting.products.payment.prepayment.discountPercent">
+                <source>Prepayment discount (%)</source>
+                <target>Skonto bei Vorkasse (%)</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.discountPercent.description" resname="setting.products.payment.prepayment.discountPercent.description">
+                <source>Discount on the goods for paying in advance, e.g. 2; 0 grants none.</source>
+                <target>Rabatt auf die Waren für Zahlung im Voraus, z. B. 2; 0 gewährt keinen.</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cashOnDelivery.enabled" resname="setting.products.payment.cashOnDelivery.enabled">
+                <source>Offer cash on delivery</source>
+                <target>Nachnahme anbieten</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cashOnDelivery.enabled.description" resname="setting.products.payment.cashOnDelivery.enabled.description">
+                <source>The carrier collects the amount on delivery.</source>
+                <target>Der Zusteller kassiert den Betrag bei der Lieferung.</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cashOnDelivery.fee" resname="setting.products.payment.cashOnDelivery.fee">
+                <source>Cash on delivery fee</source>
+                <target>Nachnahmegebühr</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cashOnDelivery.fee.description" resname="setting.products.payment.cashOnDelivery.fee.description">
+                <source>Gross, e.g. 4.40.</source>
+                <target>Brutto, z. B. 4.40.</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cashOnDelivery.excludedShipping" resname="setting.products.payment.cashOnDelivery.excludedShipping">
+                <source>Not with these shipping methods</source>
+                <target>Nicht bei diesen Versandarten</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cashOnDelivery.excludedShipping.description" resname="setting.products.payment.cashOnDelivery.excludedShipping.description">
+                <source>Comma-separated shipping providers or options without a carrier, e.g. "pickup".</source>
+                <target>Kommagetrennte Versandanbieter oder -optionen ohne Zusteller, z. B. „pickup“.</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cash.enabled" resname="setting.products.payment.cash.enabled">
+                <source>Offer cash on pick-up</source>
+                <target>Barzahlung bei Abholung anbieten</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cash.enabled.description" resname="setting.products.payment.cash.enabled.description">
+                <source>The customer pays in store when collecting the order.</source>
+                <target>Der Kunde bezahlt bei Abholung im Geschäft.</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cash.shipping" resname="setting.products.payment.cash.shipping">
+                <source>Only with these shipping methods</source>
+                <target>Nur bei diesen Versandarten</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cash.shipping.description" resname="setting.products.payment.cash.shipping.description">
+                <source>Comma-separated shipping providers or options meaning collection in store, e.g. "pickup".</source>
+                <target>Kommagetrennte Versandanbieter oder -optionen für die Abholung, z. B. „pickup“.</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cash.discountPercent" resname="setting.products.payment.cash.discountPercent">
+                <source>Cash discount (%)</source>
+                <target>Barzahlungsrabatt (%)</target>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cash.discountPercent.description" resname="setting.products.payment.cash.discountPercent.description">
+                <source>Discount on the goods for paying cash, e.g. 3; 0 grants none.</source>
+                <target>Rabatt auf die Waren für Barzahlung, z. B. 3; 0 gewährt keinen.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

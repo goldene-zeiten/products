@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf" date="2026-10-16T00:00:00Z" product-name="products_payment_offline">
+        <header/>
+        <body>
+            <trans-unit id="category.paymentOffline" resname="category.paymentOffline">
+                <source>Offline payment</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.enabled" resname="setting.products.payment.prepayment.enabled">
+                <source>Offer prepayment</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.enabled.description" resname="setting.products.payment.prepayment.enabled.description">
+                <source>The customer transfers the amount before the order ships.</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.accountHolder" resname="setting.products.payment.prepayment.accountHolder">
+                <source>Account holder</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.accountHolder.description" resname="setting.products.payment.prepayment.accountHolder.description">
+                <source>Shown in the payment instructions.</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.iban" resname="setting.products.payment.prepayment.iban">
+                <source>IBAN</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.iban.description" resname="setting.products.payment.prepayment.iban.description">
+                <source>Prepayment is only offered when an IBAN is set.</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.bic" resname="setting.products.payment.prepayment.bic">
+                <source>BIC</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.bic.description" resname="setting.products.payment.prepayment.bic.description">
+                <source>Optional.</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.bankName" resname="setting.products.payment.prepayment.bankName">
+                <source>Bank</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.bankName.description" resname="setting.products.payment.prepayment.bankName.description">
+                <source>Optional.</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.discountPercent" resname="setting.products.payment.prepayment.discountPercent">
+                <source>Prepayment discount (%)</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.prepayment.discountPercent.description" resname="setting.products.payment.prepayment.discountPercent.description">
+                <source>Discount on the goods for paying in advance, e.g. 2; 0 grants none.</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cashOnDelivery.enabled" resname="setting.products.payment.cashOnDelivery.enabled">
+                <source>Offer cash on delivery</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cashOnDelivery.enabled.description" resname="setting.products.payment.cashOnDelivery.enabled.description">
+                <source>The carrier collects the amount on delivery.</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cashOnDelivery.fee" resname="setting.products.payment.cashOnDelivery.fee">
+                <source>Cash on delivery fee</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cashOnDelivery.fee.description" resname="setting.products.payment.cashOnDelivery.fee.description">
+                <source>Gross, e.g. 4.40.</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cashOnDelivery.excludedShipping" resname="setting.products.payment.cashOnDelivery.excludedShipping">
+                <source>Not with these shipping methods</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cashOnDelivery.excludedShipping.description" resname="setting.products.payment.cashOnDelivery.excludedShipping.description">
+                <source>Comma-separated shipping providers or options without a carrier, e.g. "pickup".</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cash.enabled" resname="setting.products.payment.cash.enabled">
+                <source>Offer cash on pick-up</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cash.enabled.description" resname="setting.products.payment.cash.enabled.description">
+                <source>The customer pays in store when collecting the order.</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cash.shipping" resname="setting.products.payment.cash.shipping">
+                <source>Only with these shipping methods</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cash.shipping.description" resname="setting.products.payment.cash.shipping.description">
+                <source>Comma-separated shipping providers or options meaning collection in store, e.g. "pickup".</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cash.discountPercent" resname="setting.products.payment.cash.discountPercent">
+                <source>Cash discount (%)</source>
+            </trans-unit>
+            <trans-unit id="setting.products.payment.cash.discountPercent.description" resname="setting.products.payment.cash.discountPercent.description">
+                <source>Discount on the goods for paying cash, e.g. 3; 0 grants none.</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

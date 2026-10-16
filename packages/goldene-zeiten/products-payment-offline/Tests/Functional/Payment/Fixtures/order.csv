@@ -1,0 +1,7 @@
+"pages",,,,
+,"uid","pid","title","slug"
+,1,0,"Root","/"
+,2,1,"Shop","/shop"
+"tx_products_domain_model_order",,,,,,,,,
+,"uid","pid","order_number","site_identifier","currency","total_gross","status","payment_status","payment_method"
+,1,2,"ORD-1042","products","EUR",105250,"new","open","prepayment"

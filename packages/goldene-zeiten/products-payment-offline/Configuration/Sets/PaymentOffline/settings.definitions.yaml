@@ -1,0 +1,78 @@
+categories:
+  paymentOffline:
+    label: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:category.paymentOffline'
+    parent: products
+
+settings:
+  products.payment.prepayment.enabled:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.prepayment.enabled'
+    description: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.prepayment.enabled.description'
+    category: paymentOffline
+  products.payment.prepayment.accountHolder:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.prepayment.accountHolder'
+    description: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.prepayment.accountHolder.description'
+    category: paymentOffline
+  products.payment.prepayment.iban:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.prepayment.iban'
+    description: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.prepayment.iban.description'
+    category: paymentOffline
+  products.payment.prepayment.bic:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.prepayment.bic'
+    description: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.prepayment.bic.description'
+    category: paymentOffline
+  products.payment.prepayment.bankName:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.prepayment.bankName'
+    description: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.prepayment.bankName.description'
+    category: paymentOffline
+  products.payment.prepayment.discountPercent:
+    type: string
+    default: '0'
+    label: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.prepayment.discountPercent'
+    description: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.prepayment.discountPercent.description'
+    category: paymentOffline
+  products.payment.cashOnDelivery.enabled:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.cashOnDelivery.enabled'
+    description: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.cashOnDelivery.enabled.description'
+    category: paymentOffline
+  products.payment.cashOnDelivery.fee:
+    type: string
+    default: '0.00'
+    label: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.cashOnDelivery.fee'
+    description: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.cashOnDelivery.fee.description'
+    category: paymentOffline
+  products.payment.cashOnDelivery.excludedShipping:
+    type: string
+    default: 'pickup'
+    label: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.cashOnDelivery.excludedShipping'
+    description: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.cashOnDelivery.excludedShipping.description'
+    category: paymentOffline
+  products.payment.cash.enabled:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.cash.enabled'
+    description: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.cash.enabled.description'
+    category: paymentOffline
+  products.payment.cash.shipping:
+    type: string
+    default: 'pickup'
+    label: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.cash.shipping'
+    description: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.cash.shipping.description'
+    category: paymentOffline
+  products.payment.cash.discountPercent:
+    type: string
+    default: '0'
+    label: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.cash.discountPercent'
+    description: 'LLL:EXT:products_payment_offline/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.cash.discountPercent.description'
+    category: paymentOffline
