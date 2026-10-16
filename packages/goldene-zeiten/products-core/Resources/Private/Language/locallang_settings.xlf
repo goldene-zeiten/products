@@ -111,6 +111,12 @@
 			<trans-unit id="setting.products.payment.invoice.excludedShipping.description" resname="setting.products.payment.invoice.excludedShipping.description">
 				<source>Comma-separated shipping providers (e.g. "pickup") or single options (e.g. "ups:express") for which invoice is not offered.</source>
 			</trans-unit>
+			<trans-unit id="setting.products.payment.invoice.frontendUserGroups" resname="setting.products.payment.invoice.frontendUserGroups">
+				<source>Invoice only for these customer groups</source>
+			</trans-unit>
+			<trans-unit id="setting.products.payment.invoice.frontendUserGroups.description" resname="setting.products.payment.invoice.frontendUserGroups.description">
+				<source>Comma-separated frontend user group uids, e.g. for regular customers; empty offers invoice to everyone, guests included.</source>
+			</trans-unit>
 			<trans-unit id="setting.products.shipping.enabled" resname="setting.products.shipping.enabled">
 				<source>Shipping cost calculation enabled</source>
 			</trans-unit>

@@ -250,6 +250,12 @@ settings:
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.invoice.excludedShipping'
     description: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.invoice.excludedShipping.description'
     category: payment
+  products.payment.invoice.frontendUserGroups:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.invoice.frontendUserGroups'
+    description: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.payment.invoice.frontendUserGroups.description'
+    category: payment
   products.shipping.enabled:
     type: bool
     default: false
