@@ -103,6 +103,20 @@ EOF
 cd "${INSTANCE_PATH}"
 composer install --no-progress --no-interaction
 
+# php -S hands every request to its router script, static files included. Serve existing files - the
+# published /_assets/ of every package above all - as they are and give everything else to TYPO3.
+cat > public/router.php <<'EOF'
+<?php
+
+$path = (string)parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+if ($path !== '/' && is_file(__DIR__ . $path)) {
+    return false;
+}
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+$_SERVER['SCRIPT_FILENAME'] = __DIR__ . '/index.php';
+require __DIR__ . '/index.php';
+EOF
+
 mkdir -p config/system
 cat > config/system/additional.php <<'EOF'
 <?php
