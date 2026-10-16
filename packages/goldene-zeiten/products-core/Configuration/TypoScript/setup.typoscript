@@ -145,3 +145,26 @@ products_invoice {
 
 # Cache lifetime configuration for price periods
 config.cache.all = tx_products_domain_model_priceperiod:{$products.pids.storageFolder}
+
+# The product detail pages in the XML sitemap of EXT:seo (/?type=1533906435&tx_seo[config]=products). Without
+# EXT:seo this configuration is never read. Products hidden from search engines are left out.
+plugin.tx_seo.config.xmlSitemap.sitemaps.products {
+    provider = TYPO3\CMS\Seo\XmlSitemap\RecordsXmlSitemapDataProvider
+    config {
+        table = tx_products_domain_model_product
+        sortField = sorting
+        lastModifiedField = tstamp
+        additionalWhere = {#no_index} = 0
+        pid = {$products.pids.storageFolder}
+        url {
+            pageId = {$products.pids.detailPage}
+            fieldToParameterMap {
+                uid = tx_productscore_productdetail[product]
+            }
+            additionalGetParameters {
+                tx_productscore_productdetail.controller = Product
+                tx_productscore_productdetail.action = show
+            }
+        }
+    }
+}

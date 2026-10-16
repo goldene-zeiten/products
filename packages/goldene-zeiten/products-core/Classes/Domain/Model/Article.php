@@ -13,6 +13,8 @@ use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 #[Exclude]
 class Article extends AbstractEntity
 {
+    use SeoFieldsTrait;
+
     protected ?Product $product = null;
     protected string $title = '';
     protected string $slug = '';
@@ -66,6 +68,7 @@ class Article extends AbstractEntity
         $this->priceTiers = new ObjectStorage();
         $this->pricePeriods = new ObjectStorage();
         $this->attributeValues = new ObjectStorage();
+        $this->ogImage = new ObjectStorage();
     }
 
     public function getProduct(): ?Product

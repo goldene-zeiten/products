@@ -15,6 +15,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Event\EnrichProductViewEvent;
 use GoldeneZeiten\Products\Core\Event\ProductViewedEvent;
 use GoldeneZeiten\Products\Core\PageTitle\CurrentProductHolder;
+use GoldeneZeiten\Products\Core\Seo\ProductHeadRenderer;
 use GoldeneZeiten\Products\Core\Service\Category\CategoryTreeService;
 use GoldeneZeiten\Products\Core\Service\ContentElement\RecordsFieldResolver;
 use GoldeneZeiten\Products\Core\Service\ContentElement\SelectedCategoriesResolver;
@@ -36,6 +37,7 @@ final class ProductController extends ActionController
         private readonly SelectedCategoriesResolver $selectedCategoriesResolver,
         private readonly ProductVisibilityResolver $productVisibilityResolver,
         private readonly ProductListService $productListService,
+        private readonly ProductHeadRenderer $productHeadRenderer,
     ) {}
 
     public function listAction(int $currentPage = 1): ResponseInterface
@@ -83,13 +85,15 @@ final class ProductController extends ActionController
         }
 
         $this->currentProductHolder->setProduct($product);
+        $selectedArticle ??= $this->articleVariantResolver->resolve($product, array_map('intval', $attributeValues));
+        $this->productHeadRenderer->render($product, $selectedArticle, $this->request);
         $this->eventDispatcher->dispatch(new ProductViewedEvent($product, $this->request));
         $this->view->assignMultiple([
             'product' => $product,
             'variantAttributes' => $product->getVariantAttributes(),
             'relatedProducts' => $this->productVisibilityResolver->filterVisible($product->getRelatedProducts()->toArray(), $this->request),
             'accessoryProducts' => $this->productVisibilityResolver->filterVisible($product->getAccessoryProducts()->toArray(), $this->request),
-            'selectedArticle' => $selectedArticle ?? $this->articleVariantResolver->resolve($product, array_map('intval', $attributeValues)),
+            'selectedArticle' => $selectedArticle,
         ] + $this->enrichViewVariables());
         return $this->htmlResponse();
     }

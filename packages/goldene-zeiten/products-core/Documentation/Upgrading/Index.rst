@@ -79,6 +79,14 @@ Configuration`, tab :guilabel:`migration`) before running the product and articl
     Columns of :confval:`upgrading-column-categories` holding several values, separated by commas,
     semicolons or line breaks.
 
+..  confval:: migration.note2AsKeywords
+    :name: upgrading-note2-as-keywords
+    :type: bool
+    :Default: false
+
+    The legacy shop used ``note2`` for meta keywords. The product wizard then takes it as the
+    product's keywords where ``tt_products.keyword`` is empty, which it always migrates.
+
 The same values can be set on the command line, for example:
 
 ..  code-block:: bash

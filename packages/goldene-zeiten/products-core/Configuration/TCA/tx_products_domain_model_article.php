@@ -20,9 +20,16 @@ return [
         'iconfile' => 'EXT:products_core/Resources/Public/Icons/Article.svg',
     ],
     'types' => [
-        '1' => ['showitem' => '--div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_general, product, title, slug, --palette--;;identifiers, attribute_values, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_prices, --palette--;;pricing, price_tiers, price_periods, --linebreak--, --palette--;;unitPricing, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_stock, --palette--;;stock, --palette--;;basketLimits, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_shipping, --palette--;;shipping, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_media, images, downloads, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => '--div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_general, product, title, slug, --palette--;;identifiers, attribute_values, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_prices, --palette--;;pricing, price_tiers, price_periods, --linebreak--, --palette--;;unitPricing, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_stock, --palette--;;stock, --palette--;;basketLimits, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_shipping, --palette--;;shipping, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_media, images, downloads, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.tab_seo, --palette--;;seo, --palette--;;openGraph, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
     ],
     'palettes' => [
+        'seo' => [
+            'showitem' => 'seo_title, --linebreak--, meta_description, --linebreak--, keywords, --linebreak--, no_index',
+        ],
+        'openGraph' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.palette_open_graph',
+            'showitem' => 'og_title, --linebreak--, og_description, --linebreak--, og_image',
+        ],
         'identifiers' => [
             'showitem' => 'item_number, ean',
         ],
@@ -351,6 +358,71 @@ return [
                 'type' => 'file',
                 'allowed' => 'pdf,doc,docx,xls,xlsx,zip,txt',
                 'maxitems' => 20,
+            ],
+        ],
+        'seo_title' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.seo_title',
+            'description' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.seo_override.description',
+            'config' => [
+                'type' => 'input',
+                'size' => 50,
+                'max' => 255,
+                'eval' => 'trim',
+            ],
+        ],
+        'meta_description' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.meta_description',
+            'description' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.seo_override.description',
+            'config' => [
+                'type' => 'text',
+                'rows' => 3,
+                'eval' => 'trim',
+            ],
+        ],
+        'keywords' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.keywords',
+            'description' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.seo_override.description',
+            'config' => [
+                'type' => 'text',
+                'rows' => 2,
+                'eval' => 'trim',
+            ],
+        ],
+        'no_index' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.no_index',
+            'description' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.seo_override.description',
+            'config' => [
+                'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'default' => 0,
+            ],
+        ],
+        'og_title' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.og_title',
+            'description' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.seo_override.description',
+            'config' => [
+                'type' => 'input',
+                'size' => 50,
+                'max' => 255,
+                'eval' => 'trim',
+            ],
+        ],
+        'og_description' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.og_description',
+            'description' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.seo_override.description',
+            'config' => [
+                'type' => 'text',
+                'rows' => 3,
+                'eval' => 'trim',
+            ],
+        ],
+        'og_image' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.og_image',
+            'description' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_article.seo_override.description',
+            'config' => [
+                'type' => 'file',
+                'allowed' => 'common-image-types',
+                'maxitems' => 1,
             ],
         ],
     ],
