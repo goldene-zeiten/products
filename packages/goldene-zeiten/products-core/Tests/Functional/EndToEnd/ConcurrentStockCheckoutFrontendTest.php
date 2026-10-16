@@ -103,15 +103,7 @@ final class ConcurrentStockCheckoutFrontendTest extends AbstractFrontendTestCase
         $firstResponse = $this->executeFrontendSubRequest($firstRequest);
         $secondResponse = $this->executeFrontendSubRequest($secondRequest);
 
-        // Extbase's redirect() always returns a >=300 response, but core only propagates that
-        // status out of a frontend-plugin cObject into the PSR-7 response the test harness
-        // captures from TYPO3 v14 onwards (via the "frontend.response.data" request attribute).
-        // TYPO3 v13 instead relays it through a bare header() call, which is invisible to
-        // executeFrontendSubRequest()'s in-process dispatch, so v13 always reports 200 here
-        // regardless of what the controller actually returned.
-        // @todo Remove this switch once TYPO3 13 support is dropped and always assert 303.
-        $expectedStatusCode = $this->coreVersionSuffix() === 'v13' ? 200 : 303;
-        $this->assertSame($expectedStatusCode, $firstResponse->getStatusCode());
+        $this->assertSame(303, $firstResponse->getStatusCode());
         // A rejected placement sends the customer back to a checkout step as a propagated response, which
         // is the response of the request on every core version.
         $this->assertSame(303, $secondResponse->getStatusCode());
