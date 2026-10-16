@@ -2,6 +2,12 @@
     <h2><f:translate key="thank_you_order" /></h2>
     <p><f:translate key="order_number_is" arguments="{0: order.orderNumber}" /></p>
     <p><f:translate key="confirmation_email_sent" /></p>
+    <f:if condition="{paymentInstructions}">
+        <div class="payment-instructions alert alert-info">
+            <h3 class="h5"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:payment_instructions" /></h3>
+            <p><f:format.nl2br>{paymentInstructions}</f:format.nl2br></p>
+        </div>
+    </f:if>
     
     <div class="mt-4">
         <f:render partial="Order/Summary" arguments="{summary: order, totals: order}" />

@@ -1,0 +1,4 @@
+"tx_products_domain_model_order",,,,,,,,,,
+,"uid","pid","deleted","order_number","email","currency","total_gross","status","payment_status","payment_method"
+,1,2,0,"ORD-7","buyer@example.com","EUR",1999,"new","open","fixture-instructions"
+,2,2,0,"ORD-8","buyer@example.com","EUR",1999,"new","open","invoice"
