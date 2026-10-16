@@ -1,0 +1,4 @@
+# The option fields are rendered inside the core add-to-basket forms, from the no-op partial stub
+# "Product/LineItemOptions". This path wins over the core partials, so the fields appear only when the
+# extension is installed.
+plugin.tx_productscore.view.partialRootPaths.130 = EXT:products_personalization/Resources/Private/Partials/

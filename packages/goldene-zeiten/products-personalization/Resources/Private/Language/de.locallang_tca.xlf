@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_personalization/Resources/Private/Language/de.locallang_tca.xlf" date="2026-10-16T00:00:00Z" product-name="products_personalization">
+        <header/>
+        <body>
+            <trans-unit id="tx_productspersonalization_domain_model_option" resname="tx_productspersonalization_domain_model_option">
+                <source>Personalization option</source>
+                <target>Personalisierungsoption</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.type" resname="tx_productspersonalization_domain_model_option.type">
+                <source>Kind</source>
+                <target>Art</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.type.select" resname="tx_productspersonalization_domain_model_option.type.select">
+                <source>Selection list (e.g. ring size)</source>
+                <target>Auswahlliste (z. B. Ringgröße)</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.type.text" resname="tx_productspersonalization_domain_model_option.type.text">
+                <source>Free text (e.g. engraving)</source>
+                <target>Freitext (z. B. Gravur)</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.title" resname="tx_productspersonalization_domain_model_option.title">
+                <source>Label</source>
+                <target>Bezeichnung</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.identifier" resname="tx_productspersonalization_domain_model_option.identifier">
+                <source>Identifier</source>
+                <target>Kennung</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.identifier.description" resname="tx_productspersonalization_domain_model_option.identifier.description">
+                <source>Unique per product, e.g. "engraving". An article option with the same identifier replaces the product option.</source>
+                <target>Eindeutig je Produkt, z. B. „engraving“. Eine Artikeloption mit derselben Kennung ersetzt die Produktoption.</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.required" resname="tx_productspersonalization_domain_model_option.required">
+                <source>Required</source>
+                <target>Pflichtangabe</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.personalizing" resname="tx_productspersonalization_domain_model_option.personalizing">
+                <source>Makes the item personalized</source>
+                <target>Macht den Artikel personalisiert</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.personalizing.description" resname="tx_productspersonalization_domain_model_option.personalizing.description">
+                <source>Goods made to the customer's specification carry no right of withdrawal (Art. 16(c) Directive 2011/83/EU).</source>
+                <target>Nach Kundenspezifikation angefertigte Waren sind vom Widerrufsrecht ausgenommen (Art. 16 lit. c Richtlinie 2011/83/EU).</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.surcharge" resname="tx_productspersonalization_domain_model_option.surcharge">
+                <source>Surcharge</source>
+                <target>Aufpreis</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.surcharge.description" resname="tx_productspersonalization_domain_model_option.surcharge.description">
+                <source>Per unit, net or gross like the product prices.</source>
+                <target>Je Stück, netto oder brutto wie die Produktpreise.</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.max_length" resname="tx_productspersonalization_domain_model_option.max_length">
+                <source>Maximum length (0 = unlimited)</source>
+                <target>Maximale Länge (0 = unbegrenzt)</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.character_set" resname="tx_productspersonalization_domain_model_option.character_set">
+                <source>Allowed characters</source>
+                <target>Erlaubte Zeichen</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.character_set.any" resname="tx_productspersonalization_domain_model_option.character_set.any">
+                <source>Any</source>
+                <target>Alle</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.character_set.engraving" resname="tx_productspersonalization_domain_model_option.character_set.engraving">
+                <source>Engravable: letters, digits, spaces and . , - &amp; ' ! ? +</source>
+                <target>Gravierbar: Buchstaben, Ziffern, Leerzeichen und . , - &amp; ' ! ? +</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.items" resname="tx_productspersonalization_domain_model_option.items">
+                <source>Choices</source>
+                <target>Auswahlmöglichkeiten</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem" resname="tx_productspersonalization_domain_model_optionitem">
+                <source>Choice</source>
+                <target>Auswahlmöglichkeit</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem.title" resname="tx_productspersonalization_domain_model_optionitem.title">
+                <source>Label</source>
+                <target>Bezeichnung</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem.value" resname="tx_productspersonalization_domain_model_optionitem.value">
+                <source>Value</source>
+                <target>Wert</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem.value.description" resname="tx_productspersonalization_domain_model_optionitem.value.description">
+                <source>Identifies the choice in baskets and orders; keep it when renaming the label.</source>
+                <target>Kennzeichnet die Auswahl in Warenkörben und Bestellungen; bei Umbenennung der Bezeichnung beibehalten.</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem.personalizing" resname="tx_productspersonalization_domain_model_optionitem.personalizing">
+                <source>Makes the item personalized</source>
+                <target>Macht den Artikel personalisiert</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem.personalizing.description" resname="tx_productspersonalization_domain_model_optionitem.personalizing.description">
+                <source>Set it for choices that make the goods custom-made, e.g. an engraving font; leave it off for "no engraving" or a regular size.</source>
+                <target>Für Auswahlen setzen, die die Ware individuell anfertigen lassen, z. B. eine Gravurschrift; für „keine Gravur“ oder eine reguläre Größe nicht setzen.</target>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem.surcharge" resname="tx_productspersonalization_domain_model_optionitem.surcharge">
+                <source>Surcharge</source>
+                <target>Aufpreis</target>
+            </trans-unit>
+            <trans-unit id="tx_products_domain_model_product.tab_personalization" resname="tx_products_domain_model_product.tab_personalization">
+                <source>Personalization</source>
+                <target>Personalisierung</target>
+            </trans-unit>
+            <trans-unit id="tx_products_domain_model_product.personalization_options" resname="tx_products_domain_model_product.personalization_options">
+                <source>Options</source>
+                <target>Optionen</target>
+            </trans-unit>
+            <trans-unit id="tx_products_domain_model_product.personalization_options.description" resname="tx_products_domain_model_product.personalization_options.description">
+                <source>Choices the customer makes when adding the product to the basket, e.g. ring size or engraving.</source>
+                <target>Angaben, die der Kunde beim Hinzufügen zum Warenkorb macht, z. B. Ringgröße oder Gravur.</target>
+            </trans-unit>
+            <trans-unit id="tx_products_domain_model_article.tab_personalization" resname="tx_products_domain_model_article.tab_personalization">
+                <source>Personalization</source>
+                <target>Personalisierung</target>
+            </trans-unit>
+            <trans-unit id="tx_products_domain_model_article.personalization_options" resname="tx_products_domain_model_article.personalization_options">
+                <source>Options</source>
+                <target>Optionen</target>
+            </trans-unit>
+            <trans-unit id="tx_products_domain_model_article.personalization_options.description" resname="tx_products_domain_model_article.personalization_options.description">
+                <source>Added to the product options; an option with the same identifier replaces the product option.</source>
+                <target>Ergänzt die Produktoptionen; eine Option mit derselben Kennung ersetzt die Produktoption.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

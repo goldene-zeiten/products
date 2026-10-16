@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-personalization
+label: 'Products Personalization'
+dependencies:
+  - goldene-zeiten/products-core

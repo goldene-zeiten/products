@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="EXT:products_personalization/Resources/Private/Language/locallang_tca.xlf" date="2026-10-16T00:00:00Z" product-name="products_personalization">
+        <header/>
+        <body>
+            <trans-unit id="tx_productspersonalization_domain_model_option" resname="tx_productspersonalization_domain_model_option">
+                <source>Personalization option</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.type" resname="tx_productspersonalization_domain_model_option.type">
+                <source>Kind</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.type.select" resname="tx_productspersonalization_domain_model_option.type.select">
+                <source>Selection list (e.g. ring size)</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.type.text" resname="tx_productspersonalization_domain_model_option.type.text">
+                <source>Free text (e.g. engraving)</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.title" resname="tx_productspersonalization_domain_model_option.title">
+                <source>Label</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.identifier" resname="tx_productspersonalization_domain_model_option.identifier">
+                <source>Identifier</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.identifier.description" resname="tx_productspersonalization_domain_model_option.identifier.description">
+                <source>Unique per product, e.g. "engraving". An article option with the same identifier replaces the product option.</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.required" resname="tx_productspersonalization_domain_model_option.required">
+                <source>Required</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.personalizing" resname="tx_productspersonalization_domain_model_option.personalizing">
+                <source>Makes the item personalized</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.personalizing.description" resname="tx_productspersonalization_domain_model_option.personalizing.description">
+                <source>Goods made to the customer's specification carry no right of withdrawal (Art. 16(c) Directive 2011/83/EU).</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.surcharge" resname="tx_productspersonalization_domain_model_option.surcharge">
+                <source>Surcharge</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.surcharge.description" resname="tx_productspersonalization_domain_model_option.surcharge.description">
+                <source>Per unit, net or gross like the product prices.</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.max_length" resname="tx_productspersonalization_domain_model_option.max_length">
+                <source>Maximum length (0 = unlimited)</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.character_set" resname="tx_productspersonalization_domain_model_option.character_set">
+                <source>Allowed characters</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.character_set.any" resname="tx_productspersonalization_domain_model_option.character_set.any">
+                <source>Any</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.character_set.engraving" resname="tx_productspersonalization_domain_model_option.character_set.engraving">
+                <source>Engravable: letters, digits, spaces and . , - &amp; ' ! ? +</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_option.items" resname="tx_productspersonalization_domain_model_option.items">
+                <source>Choices</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem" resname="tx_productspersonalization_domain_model_optionitem">
+                <source>Choice</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem.title" resname="tx_productspersonalization_domain_model_optionitem.title">
+                <source>Label</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem.value" resname="tx_productspersonalization_domain_model_optionitem.value">
+                <source>Value</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem.value.description" resname="tx_productspersonalization_domain_model_optionitem.value.description">
+                <source>Identifies the choice in baskets and orders; keep it when renaming the label.</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem.personalizing" resname="tx_productspersonalization_domain_model_optionitem.personalizing">
+                <source>Makes the item personalized</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem.personalizing.description" resname="tx_productspersonalization_domain_model_optionitem.personalizing.description">
+                <source>Set it for choices that make the goods custom-made, e.g. an engraving font; leave it off for "no engraving" or a regular size.</source>
+            </trans-unit>
+            <trans-unit id="tx_productspersonalization_domain_model_optionitem.surcharge" resname="tx_productspersonalization_domain_model_optionitem.surcharge">
+                <source>Surcharge</source>
+            </trans-unit>
+            <trans-unit id="tx_products_domain_model_product.tab_personalization" resname="tx_products_domain_model_product.tab_personalization">
+                <source>Personalization</source>
+            </trans-unit>
+            <trans-unit id="tx_products_domain_model_product.personalization_options" resname="tx_products_domain_model_product.personalization_options">
+                <source>Options</source>
+            </trans-unit>
+            <trans-unit id="tx_products_domain_model_product.personalization_options.description" resname="tx_products_domain_model_product.personalization_options.description">
+                <source>Choices the customer makes when adding the product to the basket, e.g. ring size or engraving.</source>
+            </trans-unit>
+            <trans-unit id="tx_products_domain_model_article.tab_personalization" resname="tx_products_domain_model_article.tab_personalization">
+                <source>Personalization</source>
+            </trans-unit>
+            <trans-unit id="tx_products_domain_model_article.personalization_options" resname="tx_products_domain_model_article.personalization_options">
+                <source>Options</source>
+            </trans-unit>
+            <trans-unit id="tx_products_domain_model_article.personalization_options.description" resname="tx_products_domain_model_article.personalization_options.description">
+                <source>Added to the product options; an option with the same identifier replaces the product option.</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
