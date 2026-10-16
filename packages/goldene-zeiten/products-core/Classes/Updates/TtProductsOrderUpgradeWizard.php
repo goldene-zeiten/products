@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace GoldeneZeiten\Products\Core\Updates;
 
 use GoldeneZeiten\Products\Core\Backend\StorageFolderResolver;
+use GoldeneZeiten\Products\Core\Domain\Dto\LineItemOption;
 use GoldeneZeiten\Products\Core\Domain\Enum\OrderStatus;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
+use GoldeneZeiten\Products\Core\Domain\Enum\WithdrawalExclusion;
+use GoldeneZeiten\Products\Core\Event\CollectMigratedOrderItemOptionsEvent;
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\ArticleMigrationPrerequisite;
 use GoldeneZeiten\Products\Core\Updates\Prerequisites\ProductMigrationPrerequisite;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Country\Country;
@@ -58,6 +62,7 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
         private readonly ProductMigrationPrerequisite $productMigrationPrerequisite,
         private readonly ArticleMigrationPrerequisite $articleMigrationPrerequisite,
         private readonly LegacyMigrationConfiguration $migrationConfiguration,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -469,7 +474,15 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
             ? (int)$this->migrationHelper->resolveLocalUid(self::LEGACY_ARTICLE_TABLE, $legacyArticleUid, self::LOCAL_ARTICLE_TABLE)
             : 0;
         $values = $this->orderDataItemValues($line, $articleLocalUid);
-        $values['options'] = (string)json_encode(new \stdClass());
+        $optionsEvent = new CollectMigratedOrderItemOptionsEvent($record);
+        $this->eventDispatcher->dispatch($optionsEvent);
+        $lineOptions = array_map(static fn(LineItemOption $option): array => $option->toArray(), $optionsEvent->getOptions());
+        $values['options'] = (string)json_encode($lineOptions !== [] ? ['lineOptions' => $lineOptions] : new \stdClass());
+        foreach ($optionsEvent->getOptions() as $option) {
+            if ($option->isPersonalizing()) {
+                $values['withdrawal_exclusion'] = WithdrawalExclusion::PERSONALIZED->value;
+            }
+        }
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::LOCAL_ITEM_TABLE);
         $queryBuilder->insert(self::LOCAL_ITEM_TABLE)->values([
             'pid' => $pid,

@@ -41,3 +41,4 @@ For details on implementing each provider type, see :ref:`developer-api`.
     Invoice
     Voucher
     Export
+    Migration

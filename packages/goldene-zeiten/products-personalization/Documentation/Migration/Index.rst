@@ -59,3 +59,12 @@ the product migration.
 Review the migrated options afterwards: surcharges, ring sizes that are made to measure (mark their choices
 as personalizing) and the length of engraving texts cannot be read from tt_products. Customers of
 tt_products often typed the engraving text into the order comment; migrated orders keep it there.
+
+Legacy orders
+=============
+
+The order migration of products_core takes the lines of a tt_products order from its order data, where
+the product row carries the values the customer chose. The columns of
+:confval:`migration-optionColumns` become the options of the migrated line, so the order still names
+the ordered size or engraving font; a choice of a :confval:`migration-personalizingOptionColumns`
+column that is no "none" value marks the line as exempt from withdrawal.

@@ -1,0 +1,10 @@
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,80,2,0,"Ring A"
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",1,"tx_products_domain_model_product",80
+"sys_products_orders",,,,,,,,,,,,,,,,
+,"uid","pid","crdate","deleted","first_name","last_name","address","zip","city","country","email","payment","status","orderData","agb","amount"
+,10,1,1700000000,0,"Jane","Doe","Main St 1","12345","Berlin","Germany","jane@example.com","90: PayPal",0,"a:2:{s:9:""itemArray"";a:1:{s:11:""tt_products"";a:1:{s:2:""RA"";a:1:{i:0;a:7:{s:3:""rec"";a:6:{s:3:""uid"";s:1:""1"";s:5:""title"";s:6:""Ring A"";s:10:""itemnumber"";s:2:""RA"";s:5:""color"";s:2:""52"";s:6:""color2"";s:0:"""";s:4:""size"";s:5:""keine"";}s:5:""count"";i:1;s:3:""tax"";d:19.0;s:8:""priceTax"";d:10.0;s:10:""priceNoTax"";d:8.403361344538;s:8:""totalTax"";d:10.0;s:10:""totalNoTax"";d:8.403361344538;}}}}s:7:""version"";s:5:""3.5.2"";}",1,"10.00"
+,11,1,1700000001,0,"John","Smith","Side St 2","54321","Munich","Germany","john@example.com","90: PayPal",0,"a:2:{s:9:""itemArray"";a:1:{s:11:""tt_products"";a:1:{s:2:""RA"";a:1:{i:0;a:7:{s:3:""rec"";a:6:{s:3:""uid"";s:1:""1"";s:5:""title"";s:6:""Ring A"";s:10:""itemnumber"";s:2:""RA"";s:5:""color"";s:2:""52"";s:6:""color2"";s:0:"""";s:4:""size"";s:12:""Druckschrift"";}s:5:""count"";i:1;s:3:""tax"";d:19.0;s:8:""priceTax"";d:10.0;s:10:""priceNoTax"";d:8.403361344538;s:8:""totalTax"";d:10.0;s:10:""totalNoTax"";d:8.403361344538;}}}}s:7:""version"";s:5:""3.5.2"";}",1,"10.00"
