@@ -1,0 +1,25 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
+<f:render partial="Order/Summary" arguments="{summary: order, totals: order, moneyLocale: moneyLocale}" />
+<f:if condition="{order.billingAddress}">
+    <h3><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:billing_address" /></h3>
+    <f:render partial="Order/Address" arguments="{address: order.billingAddress}" />
+</f:if>
+<f:if condition="{order.deliveryAddress}">
+    <h3><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:delivery_address" /></h3>
+    <f:render partial="Order/Address" arguments="{address: order.deliveryAddress}" />
+</f:if>
+<p>
+    <f:if condition="{order.shippingLabel}"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:shipping_method" />: {order.shippingLabel}<br></f:if>
+    <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:payment_method" />: {paymentMethodLabel}
+</p>
+<f:if condition="{paymentInstructions}">
+    <h3><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:payment_instructions" /></h3>
+    <p><f:format.nl2br>{paymentInstructions}</f:format.nl2br></p>
+</f:if>
+<f:if condition="{order.customerNote}">
+    <h3><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:customer_note" /></h3>
+    <p><f:format.nl2br>{order.customerNote}</f:format.nl2br></p>
+</f:if>
+</html>

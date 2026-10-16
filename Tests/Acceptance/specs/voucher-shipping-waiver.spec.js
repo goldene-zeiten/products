@@ -34,7 +34,7 @@ test('a free-shipping voucher waives the actual shipping cost even though the re
 
   // The review still shows the carrier's nominal rate - the free-shipping voucher offsets the cost,
   // it does not hide what shipping charged.
-  await expect(page.getByText(/Standard Shipping\s*-\s*4\.99/)).toBeVisible();
+  await expect(page.getByText(/Standard Shipping\s*-\s*€4\.99/)).toBeVisible();
 
   await page.locator('#termsAccepted').check();
   await page.getByRole('button', { name: 'Order with obligation to pay' }).click();

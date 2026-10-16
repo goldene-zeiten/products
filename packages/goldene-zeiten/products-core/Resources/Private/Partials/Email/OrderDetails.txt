@@ -1,0 +1,17 @@
+<f:render partial="Order/Summary" arguments="{summary: order, totals: order, moneyLocale: moneyLocale}" />
+<f:if condition="{order.billingAddress}">
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:billing_address" />:
+<f:render partial="Order/Address" arguments="{address: order.billingAddress}" />
+</f:if><f:if condition="{order.deliveryAddress}">
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:delivery_address" />:
+<f:render partial="Order/Address" arguments="{address: order.deliveryAddress}" />
+</f:if>
+<f:if condition="{order.shippingLabel}"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:shipping_method" />: {order.shippingLabel}
+</f:if><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:payment_method" />: {paymentMethodLabel}
+<f:if condition="{paymentInstructions}">
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:payment_instructions" />:
+{paymentInstructions}
+</f:if><f:if condition="{order.customerNote}">
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:customer_note" />:
+{order.customerNote}
+</f:if>

@@ -1,3 +1,4 @@
+{namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
 <div class="checkout-shipping-method">
     <h2><f:translate key="checkout_shipping_method" /></h2>
     <f:flashMessages />
@@ -6,7 +7,7 @@
             <div class="form-check">
                 <f:form.radio name="shippingOption" value="{option.key}" checked="{f:if(condition: '\'{selectedShippingOption}\' == \'{option.key}\'', then: '1')}" class="form-check-input" id="shipping-option-{option.key}" required="required" />
                 <label class="form-check-label" for="shipping-option-{option.key}">
-                    {option.label} - {option.cost.decimalString}
+                    {option.label} - <p:format.money value="{option.cost}" currency="{currency}" locale="{moneyLocale}" />
                     <f:if condition="{option.deliveryEstimate}">
                         <f:then><span class="text-muted">({option.deliveryEstimate})</span></f:then>
                     </f:if>

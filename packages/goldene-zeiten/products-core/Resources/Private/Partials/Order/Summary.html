@@ -1,15 +1,16 @@
 <html data-namespace-typo3-fluid="true"
       xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/Core/ViewHelpers"
 >
 <div class="order-summary">
-    <h3><f:translate key="order_summary" /></h3>
+    <h3><f:translate key="order_summary" extensionName="ProductsCore" /></h3>
     <table class="table">
         <thead>
             <tr>
-                <th><f:translate key="product" /></th>
-                <th><f:translate key="quantity" /></th>
-                <th><f:translate key="price" /></th>
-                <th><f:translate key="total" /></th>
+                <th><f:translate key="product" extensionName="ProductsCore" /></th>
+                <th><f:translate key="quantity" extensionName="ProductsCore" /></th>
+                <th><f:translate key="price" extensionName="ProductsCore" /></th>
+                <th><f:translate key="total" extensionName="ProductsCore" /></th>
             </tr>
         </thead>
         <tbody>
@@ -25,8 +26,8 @@
                         </f:if>
                     </td>
                     <td>{item.quantity}</td>
-                    <td>{item.unitPriceGross.decimalString} {summary.currency}</td>
-                    <td>{item.lineTotalGross.decimalString} {summary.currency}</td>
+                    <td><p:format.money value="{item.unitPriceGross}" currency="{summary.currency}" locale="{moneyLocale}" /></td>
+                    <td><p:format.money value="{item.lineTotalGross}" currency="{summary.currency}" locale="{moneyLocale}" /></td>
                 </tr>
             </f:for>
         </tbody>
@@ -34,72 +35,72 @@
             <f:if condition="{totals}">
                 <f:then>
                     <tr class="order-summary-subtotal">
-                        <th colspan="3"><f:translate key="summary_subtotal" /></th>
-                        <td>{totals.itemsTotalGross.decimalString} {summary.currency}</td>
+                        <th colspan="3"><f:translate key="summary_subtotal" extensionName="ProductsCore" /></th>
+                        <td><p:format.money value="{totals.itemsTotalGross}" currency="{summary.currency}" locale="{moneyLocale}" /></td>
                     </tr>
                     <f:if condition="{totals.shippingTotal.cents} != 0">
                         <tr class="order-summary-shipping">
-                            <th colspan="3"><f:translate key="summary_shipping" /></th>
-                            <td>{totals.shippingTotal.decimalString} {summary.currency}</td>
+                            <th colspan="3"><f:translate key="summary_shipping" extensionName="ProductsCore" /></th>
+                            <td><p:format.money value="{totals.shippingTotal}" currency="{summary.currency}" locale="{moneyLocale}" /></td>
                         </tr>
                     </f:if>
                     <f:if condition="{totals.handlingFeeTotal.cents} != 0">
                         <tr class="order-summary-handling-fee">
-                            <th colspan="3"><f:translate key="summary_handling_fee" /></th>
-                            <td>{totals.handlingFeeTotal.decimalString} {summary.currency}</td>
+                            <th colspan="3"><f:translate key="summary_handling_fee" extensionName="ProductsCore" /></th>
+                            <td><p:format.money value="{totals.handlingFeeTotal}" currency="{summary.currency}" locale="{moneyLocale}" /></td>
                         </tr>
                     </f:if>
                     <f:if condition="{totals.paymentFeeTotal.cents} != 0">
                         <tr class="order-summary-payment-fee">
-                            <th colspan="3"><f:translate key="summary_payment_fee" /></th>
-                            <td>{totals.paymentFeeTotal.decimalString} {summary.currency}</td>
+                            <th colspan="3"><f:translate key="summary_payment_fee" extensionName="ProductsCore" /></th>
+                            <td><p:format.money value="{totals.paymentFeeTotal}" currency="{summary.currency}" locale="{moneyLocale}" /></td>
                         </tr>
                     </f:if>
                     <f:if condition="{totals.depositTotal.cents} != 0">
                         <tr class="order-summary-deposit">
-                            <th colspan="3"><f:translate key="deposit_total" /></th>
-                            <td>{totals.depositTotal.decimalString} {summary.currency}</td>
+                            <th colspan="3"><f:translate key="deposit_total" extensionName="ProductsCore" /></th>
+                            <td><p:format.money value="{totals.depositTotal}" currency="{summary.currency}" locale="{moneyLocale}" /></td>
                         </tr>
                     </f:if>
                     <f:if condition="{totals.discountTotal.cents} != 0">
                         <tr class="order-summary-discount">
-                            <th colspan="3"><f:translate key="summary_discount" /></th>
-                            <td>-{totals.discountTotal.decimalString} {summary.currency}</td>
+                            <th colspan="3"><f:translate key="summary_discount" extensionName="ProductsCore" /></th>
+                            <td>-<p:format.money value="{totals.discountTotal}" currency="{summary.currency}" locale="{moneyLocale}" /></td>
                         </tr>
                     </f:if>
                     <f:if condition="{totals.roundingDifference.cents} != 0">
                         <tr class="order-summary-rounding">
-                            <th colspan="3"><f:translate key="summary_rounding" /></th>
-                            <td>{totals.roundingDifference.decimalString} {summary.currency}</td>
+                            <th colspan="3"><f:translate key="summary_rounding" extensionName="ProductsCore" /></th>
+                            <td><p:format.money value="{totals.roundingDifference}" currency="{summary.currency}" locale="{moneyLocale}" /></td>
                         </tr>
                     </f:if>
                     <tr class="order-summary-total">
-                        <th colspan="3"><f:translate key="total_gross" /></th>
-                        <td><strong>{totals.totalGross.decimalString} {summary.currency}</strong></td>
+                        <th colspan="3"><f:translate key="total_gross" extensionName="ProductsCore" /></th>
+                        <td><strong><p:format.money value="{totals.totalGross}" currency="{summary.currency}" locale="{moneyLocale}" /></strong></td>
                     </tr>
                     <f:for each="{totals.vatLines}" as="vatLine">
                         <tr class="order-summary-vat">
-                            <th colspan="3"><f:translate key="summary_vat_included" arguments="{0: vatLine.percent}" /></th>
-                            <td>{vatLine.tax.decimalString} {summary.currency}</td>
+                            <th colspan="3"><f:translate key="summary_vat_included" arguments="{0: vatLine.percent}" extensionName="ProductsCore" /></th>
+                            <td><p:format.money value="{vatLine.tax}" currency="{summary.currency}" locale="{moneyLocale}" /></td>
                         </tr>
                     </f:for>
                     <tr class="order-summary-net">
-                        <th colspan="3"><f:translate key="total_net" /></th>
-                        <td>{totals.totalNet.decimalString} {summary.currency}</td>
+                        <th colspan="3"><f:translate key="total_net" extensionName="ProductsCore" /></th>
+                        <td><p:format.money value="{totals.totalNet}" currency="{summary.currency}" locale="{moneyLocale}" /></td>
                     </tr>
                 </f:then>
                 <f:else>
                     <tr>
-                        <th colspan="3"><f:translate key="total_net" /></th>
-                        <td>{summary.totalNet.decimalString} {summary.currency}</td>
+                        <th colspan="3"><f:translate key="total_net" extensionName="ProductsCore" /></th>
+                        <td><p:format.money value="{summary.totalNet}" currency="{summary.currency}" locale="{moneyLocale}" /></td>
                     </tr>
                     <tr>
-                        <th colspan="3"><f:translate key="tax" /></th>
-                        <td>{summary.totalTax.decimalString} {summary.currency}</td>
+                        <th colspan="3"><f:translate key="tax" extensionName="ProductsCore" /></th>
+                        <td><p:format.money value="{summary.totalTax}" currency="{summary.currency}" locale="{moneyLocale}" /></td>
                     </tr>
                     <tr>
-                        <th colspan="3"><f:translate key="total_gross" /></th>
-                        <td><strong>{summary.totalGross.decimalString} {summary.currency}</strong></td>
+                        <th colspan="3"><f:translate key="total_gross" extensionName="ProductsCore" /></th>
+                        <td><strong><p:format.money value="{summary.totalGross}" currency="{summary.currency}" locale="{moneyLocale}" /></strong></td>
                     </tr>
                 </f:else>
             </f:if>

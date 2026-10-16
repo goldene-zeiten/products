@@ -1,3 +1,4 @@
+{namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
 <div class="checkout-review">
     <h2><f:translate key="checkout_review" /></h2>
     <f:flashMessages />
@@ -35,7 +36,7 @@
             <f:if condition="{shippingSelection.option}">
                 <f:then>
                     <h4><f:translate key="checkout_shipping_method" /></h4>
-                    <p>{shippingSelection.label} - {shippingSelection.total.decimalString}</p>
+                    <p>{shippingSelection.label} - <p:format.money value="{shippingSelection.total}" currency="{basket.currency}" locale="{moneyLocale}" /></p>
                 </f:then>
             </f:if>
         </div>

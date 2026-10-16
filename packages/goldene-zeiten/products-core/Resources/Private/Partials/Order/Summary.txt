@@ -1,0 +1,15 @@
+{namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
+<f:translate key="order_summary" extensionName="ProductsCore" />
+
+<f:for each="{summary.items}" as="item">{item.quantity} x {f:if(condition: item.title, then: item.title, else: item.product.title)}<f:if condition="{item.articleTitle}"> ({item.articleTitle})</f:if>: <p:format.money value="{item.lineTotalGross}" currency="{summary.currency}" locale="{moneyLocale}" />
+</f:for>
+<f:translate key="summary_subtotal" extensionName="ProductsCore" />: <p:format.money value="{totals.itemsTotalGross}" currency="{summary.currency}" locale="{moneyLocale}" />
+<f:if condition="{totals.shippingTotal.cents} != 0"><f:translate key="summary_shipping" extensionName="ProductsCore" />: <p:format.money value="{totals.shippingTotal}" currency="{summary.currency}" locale="{moneyLocale}" />
+</f:if><f:if condition="{totals.handlingFeeTotal.cents} != 0"><f:translate key="summary_handling_fee" extensionName="ProductsCore" />: <p:format.money value="{totals.handlingFeeTotal}" currency="{summary.currency}" locale="{moneyLocale}" />
+</f:if><f:if condition="{totals.paymentFeeTotal.cents} != 0"><f:translate key="summary_payment_fee" extensionName="ProductsCore" />: <p:format.money value="{totals.paymentFeeTotal}" currency="{summary.currency}" locale="{moneyLocale}" />
+</f:if><f:if condition="{totals.depositTotal.cents} != 0"><f:translate key="deposit_total" extensionName="ProductsCore" />: <p:format.money value="{totals.depositTotal}" currency="{summary.currency}" locale="{moneyLocale}" />
+</f:if><f:if condition="{totals.discountTotal.cents} != 0"><f:translate key="summary_discount" extensionName="ProductsCore" />: -<p:format.money value="{totals.discountTotal}" currency="{summary.currency}" locale="{moneyLocale}" />
+</f:if><f:if condition="{totals.roundingDifference.cents} != 0"><f:translate key="summary_rounding" extensionName="ProductsCore" />: <p:format.money value="{totals.roundingDifference}" currency="{summary.currency}" locale="{moneyLocale}" />
+</f:if><f:translate key="total_gross" extensionName="ProductsCore" />: <p:format.money value="{totals.totalGross}" currency="{summary.currency}" locale="{moneyLocale}" />
+<f:for each="{totals.vatLines}" as="vatLine"><f:translate key="summary_vat_included" arguments="{0: vatLine.percent}" extensionName="ProductsCore" />: <p:format.money value="{vatLine.tax}" currency="{summary.currency}" locale="{moneyLocale}" />
+</f:for><f:translate key="total_net" extensionName="ProductsCore" />: <p:format.money value="{totals.totalNet}" currency="{summary.currency}" locale="{moneyLocale}" />

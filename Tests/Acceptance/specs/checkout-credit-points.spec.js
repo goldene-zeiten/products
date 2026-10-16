@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * Parses "12.34 EUR" (or "1,234.56 EUR") out of a summary table row's text content, given the
+ * Parses "€12.34" (or "€1,234.56") out of a summary table row's text content, given the
  * row's leading label (e.g. "Total Gross").
  */
 async function rowValue(page, label) {
   const text = await page.locator('tr', { hasText: label }).textContent();
-  const match = text.match(/([\d.,]+)\s*EUR/);
+  const match = text.match(/€\s*([\d.,]+)/);
   return parseFloat(match[1].replace(',', ''));
 }
 
@@ -70,7 +70,7 @@ test('spending credit points reduces the order total, and points earned from the
   const vatRows = page.locator('tr.order-summary-vat');
   let totalVat = 0;
   for (let index = 0; index < (await vatRows.count()); index++) {
-    const match = (await vatRows.nth(index).textContent()).match(/([\d.,]+)\s*EUR/);
+    const match = (await vatRows.nth(index).textContent()).match(/€\s*([\d.,]+)/);
     totalVat += parseFloat(match[1].replace(',', ''));
   }
   expect(Math.round((totalNet + totalVat) * 100)).toBe(Math.round(totalGross * 100));

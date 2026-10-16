@@ -150,6 +150,7 @@ final class CheckoutController extends ActionController
         $this->view->assignMultiple([
             'shippingOptions' => $options,
             'selectedShippingOption' => $this->selectedShippingOption($options),
+            'currency' => $configuration->getCurrency(),
         ]);
         return $this->htmlResponse();
     }

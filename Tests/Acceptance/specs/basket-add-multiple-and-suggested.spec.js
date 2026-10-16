@@ -26,5 +26,5 @@ test('user searches a product, adds it twice, then adds a suggested product from
   await expect(caseRow.locator('input[name="tx_productscore_basket[quantity]"]')).toHaveValue('1');
 
   // 2 x 499.00 + 19.99 = 1017.99
-  await expect(page.getByText('1017.99', { exact: false }).first()).toBeVisible();
+  await expect(page.getByText('1,017.99', { exact: false }).first()).toBeVisible();
 });

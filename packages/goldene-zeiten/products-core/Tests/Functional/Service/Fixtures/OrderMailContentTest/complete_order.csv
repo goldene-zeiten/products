@@ -1,0 +1,11 @@
+"tx_products_domain_model_orderaddress",,,,,,,,,,,,,,
+,"uid","pid","address_type","company","salutation","first_name","last_name","street","house_number","zip","city","country","telephone","vat_id"
+,1,2,"billing","Goldschmiede Muster","Ms","Jane","Shopper","Main Street","1","12345","Sampletown","DE","+49 30 123456","DE123456789"
+,2,2,"delivery","","Mr","John","Receiver","Harbour Road","7","54321","Portcity","AT","",""
+"tx_products_domain_model_order",,,,,,,,,,,,,,,,,,,,,
+,"uid","pid","order_number","invoice_number","email","currency","total_net","total_tax","total_gross","billing_address","delivery_address","site_identifier","status","payment_status","payment_method","shipping_label","shipping_total","payment_fee_total","tax_breakdown","customer_note"
+,1,2,"ORD-77","INV-77","shopper@example.com","EUR",88445,16805,105250,1,2,"products","confirmed","pending","fixture-surcharge","Express delivery",500,250,"{""19"":16805}","Please wrap it as a gift."
+"tx_products_domain_model_orderitem",,,,,,,,,,
+,"uid","pid","parent_order","title","article_title","item_number","quantity","unit_price_gross","line_total_gross","tax_rate"
+,1,2,1,"Engagement Ring","Gold 585","RING-585",1,99500,99500,19
+,2,2,1,"Ring Box","","BOX-1",2,2500,5000,19

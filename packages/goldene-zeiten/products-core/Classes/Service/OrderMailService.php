@@ -12,6 +12,10 @@ use GoldeneZeiten\Products\Core\Domain\Model\OrderItem;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\Model\ShippingPoint;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
+use GoldeneZeiten\Products\Core\Event\BeforeOrderMailSentEvent;
+use GoldeneZeiten\Products\Core\Payment\Exception\PaymentMethodNotFoundException;
+use GoldeneZeiten\Products\Core\Payment\PaymentInstructionsProviderInterface;
+use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Core\Service\Exception\AgbFileNotFoundException;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoicePdfService;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceRenderer;
@@ -19,6 +23,7 @@ use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalExclusionService;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalInstructionsBuilder;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalSettingsFactory;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalUrlFactory;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mime\Address;
 use TYPO3\CMS\Core\Database\Connection;
@@ -49,7 +54,9 @@ final class OrderMailService
         private readonly WithdrawalExclusionService $withdrawalExclusionService,
         private readonly WithdrawalSettingsFactory $withdrawalSettingsFactory,
         private readonly WithdrawalInstructionsBuilder $instructionsBuilder,
-        private readonly ConnectionPool $connectionPool
+        private readonly ConnectionPool $connectionPool,
+        private readonly PaymentMethodRegistry $paymentMethodRegistry,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
     public function sendOrderConfirmation(Order $order): void
@@ -58,7 +65,7 @@ final class OrderMailService
         $this->assignWithdrawalVariables($email, $order);
         $this->attachInvoice($email, $order);
         $this->attachAgb($email, $order);
-        $this->mailer->send($email);
+        $this->send($email, $order, 'OrderConfirmation');
         $this->recordWithdrawalInformation($order);
     }
 
@@ -117,7 +124,7 @@ final class OrderMailService
     {
         $recipients = $this->resolveMerchantRecipients($order);
         foreach ($recipients as $recipient) {
-            $this->mailer->send($this->buildEmail($order, 'MerchantNotification', self::LANGUAGE_FILE . 'merchant_notification_subject', $recipient));
+            $this->send($this->buildEmail($order, 'MerchantNotification', self::LANGUAGE_FILE . 'merchant_notification_subject', $recipient), $order, 'MerchantNotification');
         }
     }
 
@@ -212,7 +219,7 @@ final class OrderMailService
 
         $email = $this->buildEmail($order, 'OrderStatusChanged', self::LANGUAGE_FILE . 'order_status_changed_subject', $order->getEmail());
         $email->assignMultiple(['previousStatus' => $previousStatus, 'newStatus' => $newStatus]);
-        $this->mailer->send($email);
+        $this->send($email, $order, 'OrderStatusChanged');
     }
 
     /**
@@ -234,7 +241,7 @@ final class OrderMailService
                 'awaitingReturn' => $order->getStatus() === OrderStatus::WITHDRAWN,
                 'withdrawalExcludedItems' => $this->withdrawalExclusionService->excludedItems($order),
             ]);
-            $this->mailer->send($email);
+            $this->send($email, $order, 'Withdrawal');
         }
     }
 
@@ -264,7 +271,7 @@ final class OrderMailService
                 $this->withdrawalUrlFactory->createFunctionUrlFor($order)
             ),
         ]);
-        $this->mailer->send($email);
+        $this->send($email, $order, 'WithdrawalAcknowledgement');
     }
 
     /**
@@ -318,9 +325,42 @@ final class OrderMailService
             ->subject((string)LocalizationUtility::translate($subjectKey, 'ProductsCore', [$order->getOrderNumber()]))
             ->format(FluidEmail::FORMAT_BOTH)
             ->setTemplate($template)
-            ->assign('order', $order);
+            ->assignMultiple([
+                'order' => $order,
+                'moneyLocale' => $this->settingsResolver->getLocale($order),
+                ...$this->paymentVariables($order),
+            ]);
 
         return $email;
+    }
+
+    /**
+     * A migrated order may name a payment method that is no longer installed; its identifier is shown then.
+     *
+     * @return array{paymentMethodLabel: string, paymentInstructions: string}
+     */
+    private function paymentVariables(Order $order): array
+    {
+        try {
+            $paymentMethod = $this->paymentMethodRegistry->get($order->getPaymentMethod());
+        } catch (PaymentMethodNotFoundException) {
+            return [
+                'paymentMethodLabel' => $order->getPaymentMethod(),
+                'paymentInstructions' => '',
+            ];
+        }
+        return [
+            'paymentMethodLabel' => $paymentMethod->getLabel(),
+            'paymentInstructions' => $paymentMethod instanceof PaymentInstructionsProviderInterface
+                ? $paymentMethod->getPaymentInstructions($order)
+                : '',
+        ];
+    }
+
+    private function send(FluidEmail $email, Order $order, string $template): void
+    {
+        $this->eventDispatcher->dispatch(new BeforeOrderMailSentEvent($email, $order, $template));
+        $this->mailer->send($email);
     }
 
     /**

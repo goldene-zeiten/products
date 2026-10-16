@@ -1,10 +1,11 @@
+{namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_merchant_intro" />
 
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:order_number" />: {order.orderNumber}
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_customer_name" />: {statement.name}
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:customer_email" />: {statement.email}
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_submitted_at" />: {submittedAt}
-<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:order_total" />: {order.totalGross.decimalString} {order.currency}
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:order_total" />: <p:format.money value="{order.totalGross}" currency="{order.currency}" locale="{moneyLocale}" />
 
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_items_heading" />:
 <f:for each="{withdrawnItems}" as="withdrawnItem">- {withdrawnItem.title} (x {withdrawnItem.quantity})

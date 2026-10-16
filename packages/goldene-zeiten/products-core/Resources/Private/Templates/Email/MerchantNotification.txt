@@ -2,4 +2,5 @@
 
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:order_number" />: {order.orderNumber}
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:customer_email" />: {order.email}
-<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:order_total" />: {order.totalGross.decimalString} {order.currency}
+
+<f:render partial="Email/OrderDetails" arguments="{_all}" />

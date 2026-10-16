@@ -1,0 +1,13 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+>
+<address class="order-address">
+    <f:if condition="{address.company}">{address.company}<br></f:if>
+    <f:if condition="{address.salutation}">{address.salutation} </f:if>{address.firstName} {address.lastName}<br>
+    {address.street}<f:if condition="{address.houseNumber}"> {address.houseNumber}</f:if><br>
+    {address.zip} {address.city}<br>
+    {address.country}
+    <f:if condition="{address.telephone}"><br>{address.telephone}</f:if>
+    <f:if condition="{address.vatId}"><br><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:vat_id" />: {address.vatId}</f:if>
+</address>
+</html>
