@@ -12,7 +12,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * The category trees built from legacy grouping columns ({@see LegacyMigrationConfiguration::getColumnCategories()}):
  * a root category per column, recorded in the migration map, and one child per distinct value, found by its
- * title regardless of case.
+ * title regardless of case and accents - as the legacy shop's collation compared them.
  */
 final class LegacyColumnCategories
 {
@@ -38,6 +38,24 @@ final class LegacyColumnCategories
 
     public function findValueCategory(string $column, string $value): ?int
     {
+        return $this->findValueCategoryRow($column, $value)['uid'] ?? null;
+    }
+
+    /**
+     * The title of the category the value belongs to, when it is spelled differently; null for a new value or the
+     * same spelling.
+     */
+    public function mergedSpelling(string $column, string $value): ?string
+    {
+        $title = $this->findValueCategoryRow($column, $value)['title'] ?? null;
+        return $title !== null && $title !== $value ? $title : null;
+    }
+
+    /**
+     * @return array{uid: int, title: string}|null
+     */
+    private function findValueCategoryRow(string $column, string $value): ?array
+    {
         $rootUid = $this->migrationHelper->resolveLocalUid($this->mapKey($column), 0, 'tx_products_domain_model_category');
         if ($rootUid === null) {
             return null;
@@ -51,12 +69,22 @@ final class LegacyColumnCategories
                 $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
             )
             ->executeQuery();
+        $key = $this->comparisonKey($value);
         while ($row = $result->fetchAssociative()) {
-            if (mb_strtolower((string)$row['title']) === mb_strtolower($value)) {
-                return (int)$row['uid'];
+            if ($this->comparisonKey((string)$row['title']) === $key) {
+                return ['uid' => (int)$row['uid'], 'title' => (string)$row['title']];
             }
         }
         return null;
+    }
+
+    /**
+     * "Rosègold" and "roségold" are the same value: lower case, accents dropped.
+     */
+    private function comparisonKey(string $title): string
+    {
+        $decomposed = \Normalizer::normalize(mb_strtolower($title), \Normalizer::FORM_D);
+        return preg_replace('/\p{Mn}+/u', '', $decomposed === false ? mb_strtolower($title) : $decomposed) ?? $title;
     }
 
     public function valueCategory(string $column, string $rootTitle, string $value, int $pid): int
