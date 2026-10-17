@@ -17,6 +17,9 @@ final class LegacyMigrationHelper
 
     private const MAP_TABLE = 'tx_products_migration_map';
 
+    /** Legacy timestamps below 2000-01-01 are placeholders such as 1 and count as missing. */
+    private const MIN_LEGACY_TIMESTAMP = 946684800;
+
     public function __construct(private readonly ConnectionPool $connectionPool) {}
 
     public function tablesExist(string ...$legacyTables): bool
@@ -87,15 +90,24 @@ final class LegacyMigrationHelper
      */
     public function timestamps(array $legacyRow): array
     {
-        $tstamp = (int)($legacyRow['tstamp'] ?? 0);
+        $tstamp = $this->plausibleLegacyTimestamp($legacyRow['tstamp'] ?? 0);
         if ($tstamp === 0) {
-            $tstamp = (int)($legacyRow['crdate'] ?? 0);
+            $tstamp = $this->plausibleLegacyTimestamp($legacyRow['crdate'] ?? 0);
         }
         if ($tstamp === 0) {
             $tstamp = (int)($GLOBALS['EXEC_TIME'] ?? time());
         }
-        $crdate = (int)($legacyRow['crdate'] ?? 0);
+        $crdate = $this->plausibleLegacyTimestamp($legacyRow['crdate'] ?? 0);
         return ['tstamp' => $tstamp, 'crdate' => $crdate !== 0 ? $crdate : $tstamp];
+    }
+
+    /**
+     * Returns 0 for a legacy timestamp that is missing or implausibly old, so the next fallback applies.
+     */
+    private function plausibleLegacyTimestamp(mixed $value): int
+    {
+        $timestamp = (int)$value;
+        return $timestamp < self::MIN_LEGACY_TIMESTAMP ? 0 : $timestamp;
     }
 
     /**

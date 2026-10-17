@@ -78,4 +78,37 @@ final class TtProductsMigratedTimestampsTest extends AbstractFunctionalTestCase
 
         $this->assertSame(['tstamp' => 1700000000, 'crdate' => 1700000000], $timestamps);
     }
+
+    /**
+     * @param array<string, int> $legacyRow
+     * @param array{tstamp: int, crdate: int} $expected
+     */
+    #[Test]
+    #[DataProvider('legacyTimestampProvider')]
+    public function timestampsIgnorePlaceholderValuesBeforeTheYear2000(array $legacyRow, array $expected): void
+    {
+        $execTime = $GLOBALS['EXEC_TIME'];
+        $GLOBALS['EXEC_TIME'] = 1700000000;
+
+        $timestamps = $this->get(LegacyMigrationHelper::class)->timestamps($legacyRow);
+        $GLOBALS['EXEC_TIME'] = $execTime;
+
+        $this->assertSame($expected, $timestamps);
+    }
+
+    public static function legacyTimestampProvider(): \Generator
+    {
+        yield 'placeholder tstamp and empty crdate fall back to the current time' => [
+            'legacyRow' => ['tstamp' => 1, 'crdate' => 0],
+            'expected' => ['tstamp' => 1700000000, 'crdate' => 1700000000],
+        ];
+        yield 'placeholder tstamp takes a real crdate' => [
+            'legacyRow' => ['tstamp' => 1, 'crdate' => 1600000100],
+            'expected' => ['tstamp' => 1600000100, 'crdate' => 1600000100],
+        ];
+        yield 'placeholder crdate falls back to a real tstamp' => [
+            'legacyRow' => ['tstamp' => 1600000500, 'crdate' => 5],
+            'expected' => ['tstamp' => 1600000500, 'crdate' => 1600000500],
+        ];
+    }
 }
