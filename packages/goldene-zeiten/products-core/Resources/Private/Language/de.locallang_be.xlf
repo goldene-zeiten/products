@@ -323,6 +323,14 @@
 				<source>Category Restriction</source>
 				<target>Kategorie-Einschränkung</target>
 			</trans-unit>
+			<trans-unit id="tt_content.tx_products_filter_categories" resname="tt_content.tx_products_filter_categories">
+				<source>Filter categories</source>
+				<target>Filterkategorien</target>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_filter_categories.description" resname="tt_content.tx_products_filter_categories.description">
+				<source>Only lists products that are also in every one of these categories (or one of their subcategories), e.g. "Champagne gold" within "Engagement rings".</source>
+				<target>Listet nur Produkte, die zusätzlich in jeder dieser Kategorien (oder einer ihrer Unterkategorien) sind, z. B. „Champagnergold“ innerhalb von „Verlobungsringe“.</target>
+			</trans-unit>
 			<trans-unit id="pages.doktype.withdrawal" resname="pages.doktype.withdrawal">
 				<source>Withdrawal page</source>
 				<target>Widerrufsseite</target>

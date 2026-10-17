@@ -82,6 +82,15 @@ article's own URL when the article has an SEO title or meta description of its o
 products appear in the XML sitemap (``/?type=1533906435&sitemap=products``, linked from the
 sitemap index). Products hidden from search engines are left out of it.
 
+Product lists: categories and filter categories
+-----------------------------------------------
+
+A :guilabel:`Product list` shows the products of any of its :guilabel:`Category Restriction` categories,
+including their subcategories. :guilabel:`Filter categories` narrow that list down: a product is only listed
+when it is also in every filter category (or one of its subcategories). "Engagement rings" as category and
+"Champagne gold" as filter category list the engagement rings in champagne gold, not every engagement ring
+and every champagne gold product.
+
 Product lists: page size, order and page links
 ------------------------------------------------
 

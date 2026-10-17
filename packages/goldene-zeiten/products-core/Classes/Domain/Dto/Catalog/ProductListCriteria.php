@@ -23,6 +23,7 @@ final readonly class ProductListCriteria
     /**
      * @param int[] $productUids empty: no restriction
      * @param int[] $categoryUids empty: no restriction
+     * @param int[][] $requiredCategoryGroups a product must be in at least one category of every group
      */
     public function __construct(
         public string $mode = 'all',
@@ -31,5 +32,6 @@ final readonly class ProductListCriteria
         public string $sorting = self::SORTING_MANUAL,
         public int $newItemDays = 7,
         public bool $respectStoragePage = true,
+        public array $requiredCategoryGroups = [],
     ) {}
 }

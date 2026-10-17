@@ -243,6 +243,12 @@
 			<trans-unit id="tt_content.tx_products_category" resname="tt_content.tx_products_category">
 				<source>Category Restriction</source>
 			</trans-unit>
+			<trans-unit id="tt_content.tx_products_filter_categories" resname="tt_content.tx_products_filter_categories">
+				<source>Filter categories</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_filter_categories.description" resname="tt_content.tx_products_filter_categories.description">
+				<source>Only lists products that are also in every one of these categories (or one of their subcategories), e.g. "Champagne gold" within "Engagement rings".</source>
+			</trans-unit>
 			<trans-unit id="pages.doktype.withdrawal" resname="pages.doktype.withdrawal">
 				<source>Withdrawal page</source>
 			</trans-unit>

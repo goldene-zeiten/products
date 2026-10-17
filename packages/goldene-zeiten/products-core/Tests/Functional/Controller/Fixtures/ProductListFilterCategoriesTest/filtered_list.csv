@@ -1,0 +1,20 @@
+"tx_products_domain_model_category",,,,,
+,"uid","pid","title","slug","parent_category"
+,71,2,"Rings","rings",0
+,72,2,"Engagement rings","engagement-rings",71
+,73,2,"Champagne gold","champagne-gold",0
+"tx_products_domain_model_product",,,,,,,
+,"uid","pid","title","slug","price","tax_class","categories"
+,81,2,"Champagne engagement ring","champagne-engagement-ring","100.00",1,2
+,82,2,"Plain engagement ring","plain-engagement-ring","100.00",1,1
+,83,2,"Champagne pendant","champagne-pendant","100.00",1,1
+"tx_products_product_category_mm",,,
+,"uid_local","uid_foreign","sorting"
+,81,72,1
+,81,73,2
+,82,72,1
+,83,73,1
+"tt_content",,,,,,,,,,,,,
+,"uid","pid","sorting","deleted","hidden","colPos","CType","header","tx_products_list_mode","tx_products_category","tx_products_filter_categories","tx_products_items_per_page","tx_products_sorting"
+,710,2,256,0,0,0,"productscore_productlist","Rings in champagne gold","all","71","73",0,"title"
+,711,2,256,0,1,0,"productscore_productlist","All rings","all","71","",0,"title"

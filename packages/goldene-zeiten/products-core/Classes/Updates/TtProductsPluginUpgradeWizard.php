@@ -315,6 +315,32 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
     }
 
     /**
+     * tt_products listed the products of its folders that also matched product_where: the folders become the
+     * list's categories, the product_where categories filter categories on top. A product_where without folders
+     * selects its categories itself.
+     *
+     * @param array<string, mixed> $row
+     * @param array<string, mixed> $flexForm
+     * @return array<string, string>
+     */
+    private function categorySelections(array $row, array $flexForm): array
+    {
+        $folderCategories = array_values(array_filter(array_unique(array_merge(
+            explode(',', $this->remapUids((string)($flexForm['categorySelection'] ?? ''), self::LEGACY_CATEGORY_TABLE, self::LOCAL_CATEGORY_TABLE)),
+            array_values($this->startingPointCategories($row)),
+            array_values($this->pidListCategories($row))
+        ))));
+        $filterCategories = array_values(array_filter(array_unique($this->productWhereCategories((string)($flexForm['product_where'] ?? '')) ?? [])));
+        if ($folderCategories === []) {
+            return $filterCategories !== [] ? ['tx_products_category' => implode(',', $filterCategories)] : [];
+        }
+        return array_filter([
+            'tx_products_category' => implode(',', $folderCategories),
+            'tx_products_filter_categories' => implode(',', $filterCategories),
+        ]);
+    }
+
+    /**
      * @param array<string, mixed> $row
      * @return array<string, string> tt_content column => value
      */
@@ -330,15 +356,7 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         if ($products !== '') {
             $selections['records'] = $products;
         }
-        $categories = array_filter(array_unique(array_merge(
-            explode(',', $this->remapUids((string)($flexForm['categorySelection'] ?? ''), self::LEGACY_CATEGORY_TABLE, self::LOCAL_CATEGORY_TABLE)),
-            array_values($this->startingPointCategories($row)),
-            array_values($this->pidListCategories($row)),
-            $this->productWhereCategories((string)($flexForm['product_where'] ?? '')) ?? []
-        )));
-        if ($categories !== []) {
-            $selections['tx_products_category'] = implode(',', $categories);
-        }
+        $selections += $this->categorySelections($row, $flexForm);
         $limit = $this->pageTemplateSettings->getLimit((int)$row['pid']);
         if ($limit > 0) {
             $selections['tx_products_items_per_page'] = (string)$limit;
@@ -495,8 +513,8 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
     }
 
     /**
-     * A selection only travels to a CType that actually renders it - `records` exists on the product
-     * list alone, the category tree on both list elements.
+     * A selection only travels to a CType that actually renders it - `records` and the filter categories exist
+     * on the product list alone, the category tree on both list elements.
      *
      * @param array{ctype: string, fields: array<string, string>} $target
      * @param array<string, string> $selections
@@ -505,8 +523,10 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
     private function targetValues(array $target, array $selections): array
     {
         $values = $target['fields'];
-        if (isset($selections['records']) && in_array($target['ctype'], self::PRODUCT_SELECTION_CTYPES, true)) {
-            $values['records'] = $selections['records'];
+        foreach (['records', 'tx_products_filter_categories'] as $field) {
+            if (isset($selections[$field]) && in_array($target['ctype'], self::PRODUCT_SELECTION_CTYPES, true)) {
+                $values[$field] = $selections[$field];
+            }
         }
         foreach (['tx_products_category', 'tx_products_items_per_page', 'tx_products_sorting'] as $field) {
             if (isset($selections[$field]) && in_array($target['ctype'], self::CATEGORY_SELECTION_CTYPES, true)) {

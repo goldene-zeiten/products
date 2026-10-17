@@ -23,6 +23,7 @@ use GoldeneZeiten\Products\Core\Service\Variant\ArticleVariantResolver;
 use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 final class ProductController extends ActionController
@@ -152,12 +153,17 @@ final class ProductController extends ActionController
         foreach ($this->selectedCategoriesResolver->resolveUids($this->request) as $categoryUid) {
             $categoryUids = array_merge($categoryUids, $this->categoryTreeService->getSubtreeUids($categoryUid));
         }
+        $filterGroups = [];
+        foreach (GeneralUtility::intExplode(',', (string)($contentElement['tx_products_filter_categories'] ?? ''), true) as $filterCategoryUid) {
+            $filterGroups[] = $this->categoryTreeService->getSubtreeUids($filterCategoryUid);
+        }
         return new ProductListCriteria(
             (string)($contentElement['tx_products_list_mode'] ?? 'all'),
             $this->recordsFieldResolver->resolveUids($this->request, 'tx_products_domain_model_product'),
             array_values(array_unique($categoryUids)),
             $settings->sorting,
             $this->getNewItemDays(),
+            requiredCategoryGroups: $filterGroups,
         );
     }
 

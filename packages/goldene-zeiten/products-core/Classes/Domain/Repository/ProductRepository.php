@@ -214,10 +214,10 @@ final class ProductRepository extends AbstractReadOnlyRepository
         if ($criteria->productUids !== []) {
             $constraints[] = $query->in('uid', $criteria->productUids);
         }
-        if ($criteria->categoryUids !== []) {
+        foreach (array_filter([$criteria->categoryUids, ...$criteria->requiredCategoryGroups]) as $categoryUids) {
             $constraints[] = $query->logicalOr(...array_map(
                 static fn(int $categoryUid): ConstraintInterface => $query->contains('categories', $categoryUid),
-                $criteria->categoryUids
+                $categoryUids
             ));
         }
         if ($constraints !== []) {
