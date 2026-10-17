@@ -45,7 +45,7 @@
                                     </f:if>
                                     <label for="products-basket-quantity-{itemIteration.index}" class="visually-hidden"><f:translate key="quantity_of" arguments="{0: item.product.title}" /></label>
                                     <f:form.textfield name="quantity" value="{item.quantity}" size="3" id="products-basket-quantity-{itemIteration.index}" />
-                                    <f:form.submit value="{f:translate(key: 'update')}" />
+                                    <f:form.submit value="{f:translate(key: 'update')}" class="btn btn-secondary btn-sm" />
                                 </f:form>
                             </td>
                             <td><p:format.money value="{item.unitPriceGross}" currency="{basket.currency}" locale="{moneyLocale}" /></td>
