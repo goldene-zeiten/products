@@ -1,0 +1,12 @@
+"tx_products_domain_model_attribute",,,
+,"uid","pid","title"
+,1,2,"Material / Legierung"
+"tx_products_domain_model_attributevalue",,,,
+,"uid","pid","attribute","value"
+,1,2,1,"333 Gelbgold"
+,2,2,1,"585 Gelbgold"
+"tx_products_article_attributevalue_mm",,,
+,"uid_local","uid_foreign","sorting"
+,90,1,1
+,91,2,1
+,92,2,1

@@ -21,3 +21,6 @@ migration.orderPaymentMethods =
 
 # cat=migration/orders/20; type=string; label=Shipping of legacy orders: Comma-separated "key:provider[:option]" pairs mapping the TypoScript keys of plugin.tt_products.shipping to shipping, e.g. "10:tablerate:1, 20:pickup". The legacy shipping title is kept as label; unmapped orders get no shipping.
 migration.orderShippingOptions =
+
+# cat=migration/catalog/50; type=string; label=Article columns that become attributes: Comma-separated "column:Title" pairs of tt_products_articles columns that told the articles of a product apart, e.g. "material:Material". The wizard "Turn tt_products article columns into attributes" creates an attribute "Title" per column with a value per distinct entry and links the migrated articles, so the article switch can offer them.
+migration.articleAttributeColumns =
