@@ -483,7 +483,7 @@ IMAGE_SELENIUM="docker.io/selenium/standalone-chrome:4.0.0-20211102"
 IMAGE_NODEJS="ghcr.io/typo3/core-testing-nodejs24:1.1"
 # Version must match package.json's "@playwright/test" exactly - the image only bundles browser
 # binaries for that one Playwright version.
-IMAGE_PLAYWRIGHT="mcr.microsoft.com/playwright:v1.61.1-noble"
+IMAGE_PLAYWRIGHT="mcr.microsoft.com/playwright:v1.64.1-noble"
 IMAGE_MARIADB="docker.io/mariadb:${DBMS_VERSION}"
 IMAGE_MYSQL="docker.io/mysql:${DBMS_VERSION}"
 IMAGE_POSTGRES="docker.io/postgres:${DBMS_VERSION}-alpine"
