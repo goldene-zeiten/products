@@ -272,6 +272,11 @@ strategies:
 -   Check the order's current payment status. If already paid, return success. If already
     failed, return failure.
 
+The shop records every completed, pending or failed result on the order's payment transaction itself: the row
+the payment started with ends in the reported state and carries the result's external ID (e.g. the capture ID),
+and a replayed result with the same external ID updates that row instead of adding one. A payment method does not
+write transactions of its own.
+
 **Critical Security Notice: Verify with the Gateway**
 
 The signed token on the callback URL only proves the URL was issued by this shop for this
