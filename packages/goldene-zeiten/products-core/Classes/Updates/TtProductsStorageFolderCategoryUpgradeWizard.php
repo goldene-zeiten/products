@@ -151,7 +151,10 @@ final class TtProductsStorageFolderCategoryUpgradeWizard implements UpgradeWizar
         $parent = $this->fetchPage((int)($folder['pid'] ?? 0));
         $parentCategoryUid = (int)($parent['doktype'] ?? 0) === self::SYSFOLDER ? $this->categoryForFolder((int)$parent['uid'], $pid) : 0;
         $connection = $this->connectionPool->getConnectionForTable('tx_products_domain_model_category');
+        $now = (int)($GLOBALS['EXEC_TIME'] ?? time());
         $connection->insert('tx_products_domain_model_category', [
+            'tstamp' => $now,
+            'crdate' => $now,
             'pid' => $pid,
             'title' => (string)($folder['title'] ?? ''),
             'slug' => basename((string)($folder['slug'] ?? '')),
