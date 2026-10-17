@@ -1,0 +1,3 @@
+SITE-LAYOUT-START
+<f:render section="Main" />
+SITE-LAYOUT-END

@@ -1,3 +1,6 @@
+<html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
+<f:layout name="Email/Default" />
+<f:section name="Main">
 <h1><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_heading" /></h1>
 <p><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:hello" /></p>
 <p><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_intro" /></p>
@@ -50,3 +53,5 @@
 </f:if>
 <f:render partial="Withdrawal/ModelForm" arguments="{instructions: instructions}" />
 <f:render partial="Email/Signature" arguments="{_all}" />
+</f:section>
+</html>

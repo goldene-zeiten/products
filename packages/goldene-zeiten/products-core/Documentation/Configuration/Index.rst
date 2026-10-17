@@ -240,6 +240,15 @@ from. Set it before creating any content.
         Override any of the three email path settings from your own extension to replace the
         shipped order confirmation and merchant notification templates.
 
+        Every order mail is wrapped in the shared layout ``Email/Default``, which renders the
+        partials ``Email/Header`` and ``Email/Footer`` around the mail body. To add a header or
+        footer, override just that partial (or the layout) in your own path; the mail templates
+        need not be copied. All partials receive the ``trader`` variable (name, address, email,
+        phone from ``products.withdrawal.trader.*``) and the ``order``. The withdrawal button in
+        the order confirmation carries the class ``products-mail-withdrawal-button`` next to its
+        inline default style; restyle it by overriding the template or by adding a ``<style>``
+        rule with ``!important`` for that class in your layout or header partial.
+
     ..  confval:: products.payment.invoice.enabled
         :type: bool
         :Default: true

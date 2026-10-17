@@ -1,7 +1,9 @@
-<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:order_status_changed" />
+<f:layout name="Email/Default" />
+<f:section name="Main"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:order_status_changed" />
 
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:hello" />
 
 <f:format.raw><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:status_changed_from_to" arguments="{0: order.orderNumber, 1: previousStatusLabel, 2: newStatusLabel}" /></f:format.raw>
 
 <f:render partial="Email/Signature" arguments="{_all}" />
+</f:section>
