@@ -1,0 +1,1 @@
+<f:comment>Shown above every order mail. A site overrides Email/Header in its own partialRootPaths entry.</f:comment>

@@ -356,6 +356,7 @@ final class OrderMailService
             ->assignMultiple([
                 'order' => $order,
                 'moneyLocale' => $this->settingsResolver->getLocale($order),
+                'trader' => $this->withdrawalSettingsFactory->fromSettings($settings)->trader,
                 ...$this->paymentVariables($order),
             ]);
 

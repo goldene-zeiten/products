@@ -1,0 +1,1 @@
+<f:render partial="Email/Header" arguments="{_all}" /><f:render section="Main" /><f:render partial="Email/Footer" arguments="{_all}" />

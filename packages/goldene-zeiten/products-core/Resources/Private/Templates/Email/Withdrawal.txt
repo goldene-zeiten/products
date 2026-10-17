@@ -1,5 +1,6 @@
 {namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
-<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_merchant_intro" />
+<f:layout name="Email/Default" />
+<f:section name="Main"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_merchant_intro" />
 
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:order_number" />: {order.orderNumber}
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_customer_name" />: {statement.name}
@@ -23,3 +24,4 @@
 <f:for each="{withdrawalExcludedItems}" as="excludedItem">- {excludedItem.title}
 </f:for>
 </f:if>
+</f:section>

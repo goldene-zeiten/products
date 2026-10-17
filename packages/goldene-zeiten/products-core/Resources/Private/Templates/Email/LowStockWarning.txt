@@ -1,4 +1,6 @@
-<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:low_stock_warning_intro" />
+<f:layout name="Email/Default" />
+<f:section name="Main"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:low_stock_warning_intro" />
 
 {title}
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:remaining_stock" arguments="{0: newStock}" />
+</f:section>

@@ -1,4 +1,5 @@
-<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_heading" />
+<f:layout name="Email/Default" />
+<f:section name="Main"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_acknowledgement_heading" />
 
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:hello" />
 
@@ -50,3 +51,4 @@
 <f:render partial="Withdrawal/ModelForm" arguments="{instructions: instructions}" />
 
 <f:render partial="Email/Signature" arguments="{_all}" />
+</f:section>

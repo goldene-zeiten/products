@@ -1,4 +1,7 @@
+<html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
 {namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
+<f:layout name="Email/Default" />
+<f:section name="Main">
 <h1><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_merchant_intro" /></h1>
 <p>
     <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:order_number" />: {order.orderNumber}<br>
@@ -25,3 +28,5 @@
         <f:for each="{withdrawalExcludedItems}" as="excludedItem">- {excludedItem.title}<br></f:for>
     </p>
 </f:if>
+</f:section>
+</html>
