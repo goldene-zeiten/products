@@ -39,8 +39,26 @@ final class LegacyMigrationConfiguration
      */
     public function getColumnCategories(): array
     {
+        return $this->getTitledColumns('columnCategories');
+    }
+
+    /**
+     * `migration.articleAttributeColumns`, e.g. "material:Material".
+     *
+     * @return array<string, string> legacy article column => title of its attribute
+     */
+    public function getArticleAttributeColumns(): array
+    {
+        return $this->getTitledColumns('articleAttributeColumns');
+    }
+
+    /**
+     * @return array<string, string> column => title, the column itself when no title is given
+     */
+    private function getTitledColumns(string $key): array
+    {
         $columns = [];
-        foreach ($this->getList('columnCategories') as $entry) {
+        foreach ($this->getList($key) as $entry) {
             [$column, $title] = array_map(trim(...), explode(':', $entry, 2)) + [1 => ''];
             if ($column !== '') {
                 $columns[$column] = $title !== '' ? $title : $column;

@@ -1,0 +1,22 @@
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,80,2,0,"Ring"
+"tx_products_domain_model_article",,,,,
+,"uid","pid","hidden","product","title"
+,90,2,0,80,"Ring 333"
+,91,2,0,80,"Ring 585"
+,92,2,0,80,"Ring 585 bis"
+,93,2,0,80,"Ring plain"
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",1,"tx_products_domain_model_product",80
+,"tt_products_articles",1,"tx_products_domain_model_article",90
+,"tt_products_articles",2,"tx_products_domain_model_article",91
+,"tt_products_articles",3,"tx_products_domain_model_article",92
+,"tt_products_articles",4,"tx_products_domain_model_article",93
+"tt_products_articles",,,,,,,,,,,
+,"uid","pid","deleted","hidden","title","itemnumber","price","inStock","weight","uid_product","material"
+,1,2,0,0,"Ring 333","R-333","10.00",1,"0.000000",1,"333 Gelbgold"
+,2,2,0,0,"Ring 585","R-585","20.00",1,"0.000000",1,"585 Gelbgold"
+,3,2,0,0,"Ring 585 bis","R-585B","20.00",1,"0.000000",1," 585 Gelbgold "
+,4,2,0,0,"Ring plain","R-0","5.00",1,"0.000000",1,""
