@@ -66,6 +66,28 @@ final class OrderMailLayoutTest extends AbstractFrontendTestCase
         $this->assertStringContainsString('SITE-LAYOUT-END', (string)$email->getTextBody());
     }
 
+    #[Test]
+    public function theDefaultFooterPrintsTheShopsVatId(): void
+    {
+        $this->writeSiteConfiguration(
+            'products',
+            $this->buildSiteConfiguration(1, additionalRootConfiguration: [
+                'dependencies' => ['goldene-zeiten/products-core', 'goldene-zeiten/frontend-test'],
+                'settings' => ['products' => [
+                    'email' => ['merchantRecipient' => 'merchant@example.com'],
+                    'invoice' => ['vatId' => 'DE987654321'],
+                ]],
+            ]),
+            [$this->buildDefaultLanguageConfiguration('en', '/')]
+        );
+
+        $this->get(OrderMailService::class)->sendOrderConfirmation($this->fetchOrder());
+
+        $email = TestMailer::getSentEmails()[0];
+        $this->assertStringContainsString('DE987654321', (string)$email->getHtmlBody());
+        $this->assertStringContainsString('DE987654321', (string)$email->getTextBody());
+    }
+
     /**
      * @param array<string, mixed> $email
      * @param array<string, string> $trader

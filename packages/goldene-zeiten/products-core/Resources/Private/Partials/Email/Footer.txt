@@ -4,3 +4,7 @@
 {trader.name}<f:for each="{trader.addressLines}" as="line">
 {line}</f:for>
 </f:if>
+<f:if condition="{vatId}">
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:seller_vat_id" />: {vatId}</f:if>
+<f:if condition="{taxNumber}">
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:seller_tax_number" />: {taxNumber}</f:if>
