@@ -12,6 +12,7 @@ test.describe('User views the home page product list', () => {
     await expect(page).toHaveURL(/\/product\//);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     // Product detail uses the €-symbol format, unlike basket/checkout's "EUR" text.
-    await expect(page.getByText(/€\d+\.\d{2}/)).toBeVisible();
+    // Scoped to the product's price: the header basket badge carries a visually hidden total in the same format.
+    await expect(page.locator('.price', { hasText: /€\d+\.\d{2}/ }).first()).toBeVisible();
   });
 });
