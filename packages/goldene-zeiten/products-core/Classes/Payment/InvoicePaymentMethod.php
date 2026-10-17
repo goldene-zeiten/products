@@ -10,9 +10,6 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Payment\PaymentResult;
 use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
-use GoldeneZeiten\Products\Core\Event\InvoiceNumberGeneratedEvent;
-use GoldeneZeiten\Products\Core\Service\Order\NumberRangeService;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Site\Entity\SiteInterface;
@@ -25,8 +22,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePaymentMethodInterface
 {
     public function __construct(
-        private readonly NumberRangeService $numberRangeService,
-        private readonly EventDispatcherInterface $eventDispatcher,
         private readonly Context $context
     ) {}
 
@@ -83,11 +78,7 @@ final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePa
 
     public function initiate(Order $order, PaymentContext $context): PaymentResult
     {
-        $invoiceNumber = (string)$this->numberRangeService->next($this->buildScope($order));
-        $order->setInvoiceNumber($invoiceNumber);
-        $this->eventDispatcher->dispatch(new InvoiceNumberGeneratedEvent($order, $invoiceNumber));
-
-        return PaymentResult::completed(PaymentStatus::PENDING, $invoiceNumber);
+        return PaymentResult::completed(PaymentStatus::PENDING, $order->getInvoiceNumber());
     }
 
     public function cancel(OrderData $order): PaymentResult
@@ -98,11 +89,5 @@ final class InvoicePaymentMethod implements PaymentMethodInterface, RefundablePa
     public function refund(OrderData $order, Money $amount): PaymentResult
     {
         return PaymentResult::completed(PaymentStatus::REFUNDED, $order->invoiceNumber);
-    }
-
-    private function buildScope(Order $order): string
-    {
-        $siteIdentifier = $order->getSiteIdentifier() !== '' ? $order->getSiteIdentifier() : 'default';
-        return sprintf('invoice:%s:%s', $siteIdentifier, (new \DateTimeImmutable())->format('Y'));
     }
 }

@@ -11,8 +11,9 @@ InvoiceNumberGeneratedEvent
 ---------------------------
 
 Notifies integrators when an invoice number has been assigned — log it, sync it with an
-accounting system, or publish it to external services. This fires when invoice payment method
-is initiated.
+accounting system, or publish it to external services. Every order gets its invoice number when
+it is created, whatever it is paid with. The order is not stored yet at that point; listen to
+:php:`AfterOrderPlacedEvent` for the stored order.
 
 Mutable: No
 

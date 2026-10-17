@@ -80,6 +80,48 @@ final class OrderFactoryTest extends AbstractFunctionalTestCase
         yield 'notRoundedWithoutSite' => ['roundingMode' => null, 'expectedCents' => 920];
     }
 
+    #[Test]
+    #[DataProvider('paymentMethodProvider')]
+    public function everyOrderGetsAnInvoiceNumber(string $paymentMethod): void
+    {
+        $order = $this->subject()->create(
+            new ServerRequest('http://localhost/'),
+            $this->basketViewModel('9.20'),
+            $this->address(),
+            $paymentMethod,
+            $this->placementDetails()
+        );
+
+        $this->assertSame('1', $order->getInvoiceNumber());
+    }
+
+    /**
+     * @return \Generator<string, array<string, string>>
+     */
+    public static function paymentMethodProvider(): \Generator
+    {
+        yield 'invoice' => ['paymentMethod' => 'invoice'];
+        yield 'prepayment' => ['paymentMethod' => 'prepayment'];
+        yield 'gateway payment' => ['paymentMethod' => 'paypal'];
+    }
+
+    #[Test]
+    public function consecutiveOrdersGetConsecutiveInvoiceNumbers(): void
+    {
+        $numbers = [];
+        foreach (['invoice', 'prepayment', 'cash'] as $paymentMethod) {
+            $numbers[] = $this->subject()->create(
+                new ServerRequest('http://localhost/'),
+                $this->basketViewModel('9.20'),
+                $this->address(),
+                $paymentMethod,
+                $this->placementDetails()
+            )->getInvoiceNumber();
+        }
+
+        $this->assertSame(['1', '2', '3'], $numbers);
+    }
+
     private function subject(): OrderFactory
     {
         return $this->get(OrderFactory::class);

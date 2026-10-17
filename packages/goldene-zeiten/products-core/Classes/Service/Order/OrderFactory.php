@@ -14,6 +14,7 @@ use GoldeneZeiten\Products\Core\Domain\Enum\PaymentStatus;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Model\OrderAddress;
 use GoldeneZeiten\Products\Core\Domain\Model\OrderItem;
+use GoldeneZeiten\Products\Core\Event\InvoiceNumberGeneratedEvent;
 use GoldeneZeiten\Products\Core\Event\MapBillingToDeliveryAddressEvent;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\Core\Service\PriceRoundingService;
@@ -63,7 +64,18 @@ final class OrderFactory
         }
         $order->setItems($this->buildOrderItems($basketViewModel, $order));
         $this->applyWithdrawalWaiver($order, $details);
+        $this->assignInvoiceNumber($order);
         return $order;
+    }
+
+    /**
+     * Every order is invoiced, whatever it is paid with, so the confirmation can carry its invoice.
+     */
+    private function assignInvoiceNumber(Order $order): void
+    {
+        $scope = sprintf('invoice:%s:%s', $order->getSiteIdentifier(), (new \DateTimeImmutable())->format('Y'));
+        $order->setInvoiceNumber((string)$this->numberRangeService->next($scope));
+        $this->eventDispatcher->dispatch(new InvoiceNumberGeneratedEvent($order, $order->getInvoiceNumber()));
     }
 
     /**
