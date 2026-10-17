@@ -41,6 +41,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
      */
     private const HANDLED_COLUMNS = [
         'title',
+        'slug',
         'itemnumber',
         'price',
         'price2',
@@ -204,6 +205,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
             'sys_language_uid' => 0,
             'product' => $productLocalUid,
             'title' => (string)$legacyRow['title'],
+            'slug' => (string)($legacyRow['slug'] ?? ''),
             'item_number' => (string)$legacyRow['itemnumber'],
             'price' => $this->priceMigrator->price($legacyRow),
             'in_stock' => (int)$legacyRow['inStock'],
