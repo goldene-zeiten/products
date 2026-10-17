@@ -69,7 +69,9 @@ Configuration`, tab :guilabel:`migration`) before running the product and articl
     products by, e.g. ``form:Hersteller, quality:Filter``. Each column becomes a root category
     ``Title`` with one child per distinct value (the first spelling wins, regardless of case), and
     the plugin wizard turns a ``product_where`` filter like ``quality LIKE '%Weißgold%'`` - plain
-    ``LIKE``/``=`` matches joined by ``OR`` - into a selection of those categories.
+    ``LIKE``/``=`` matches joined by ``OR`` - into a selection of those categories. A list that also
+    selects folders (starting point, ``pid_list``) keeps the folders as its categories and gets the
+    ``product_where`` categories as filter categories, so it lists the folder products that match.
 
 ..  confval:: migration.columnCategoriesMultiValue
     :name: upgrading-column-categories-multi-value

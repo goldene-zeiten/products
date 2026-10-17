@@ -151,6 +151,25 @@ defined('TYPO3') or die();
                 'minitems' => 0,
                 'default' => '',
             ],
+        ],
+        'tx_products_filter_categories' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_filter_categories',
+            'description' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:tt_content.tx_products_filter_categories.description',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectTree',
+                'foreign_table' => 'tx_products_domain_model_category',
+                'treeConfig' => [
+                    'parentField' => 'parent_category',
+                    'appearance' => [
+                        'showHeader' => true,
+                    ],
+                ],
+                'size' => 8,
+                'maxitems' => 20,
+                'minitems' => 0,
+                'default' => '',
+            ],
         ], ];
 
     ExtensionManagementUtility::addTCAcolumns('tt_content', $newColumnsArray);
@@ -233,7 +252,7 @@ defined('TYPO3') or die();
 
     ExtensionManagementUtility::addToAllTCAtypes(
         'tt_content',
-        'records, tx_products_category',
+        'records, tx_products_category, tx_products_filter_categories',
         'productscore_productlist',
     );
     ExtensionManagementUtility::addToAllTCAtypes(
