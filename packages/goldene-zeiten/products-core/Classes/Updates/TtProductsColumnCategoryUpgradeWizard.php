@@ -78,8 +78,16 @@ final class TtProductsColumnCategoryUpgradeWizard implements UpgradeWizardInterf
             return false;
         }
         $pid = $this->storageFolderResolver->resolve();
+        $merged = [];
         foreach ($this->assignments() as [$productUid, $column, $rootTitle, $value]) {
+            $spelling = $this->columnCategories->mergedSpelling($column, $value);
+            if ($spelling !== null) {
+                $merged[sprintf('tt_products.%s "%s" was merged into the category "%s".', $column, $value, $spelling)] = true;
+            }
             $this->categoryAssigner->assign($productUid, $this->columnCategories->valueCategory($column, $rootTitle, $value, $pid));
+        }
+        foreach (array_keys($merged) as $message) {
+            $this->output->writeln('<comment>' . $message . '</comment>');
         }
         return true;
     }

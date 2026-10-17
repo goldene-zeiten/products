@@ -67,7 +67,8 @@ Configuration`, tab :guilabel:`migration`) before running the product and articl
 
     Comma-separated ``column:Title`` pairs of ``tt_products`` columns the legacy shop grouped
     products by, e.g. ``form:Hersteller, quality:Filter``. Each column becomes a root category
-    ``Title`` with one child per distinct value (the first spelling wins, regardless of case), and
+    ``Title`` with one child per distinct value (the first spelling wins, regardless of case and
+    accents, like the legacy collation compared them; every merged spelling is reported), and
     the plugin wizard turns a ``product_where`` filter like ``quality LIKE '%Weißgold%'`` - plain
     ``LIKE``/``=`` matches joined by ``OR`` - into a selection of those categories. A list that also
     selects folders (starting point, ``pid_list``) keeps the folders as its categories and gets the
