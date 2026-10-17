@@ -99,6 +99,18 @@ final class OrderMailLanguageTest extends AbstractFrontendTestCase
         $this->assertStringContainsString('Versendet', (string)$emails[1]->getTextBody());
     }
 
+    #[Test]
+    public function theWithdrawalInstructionsSpeakTheLanguageOfTheOrder(): void
+    {
+        $subject = $this->get(OrderMailService::class);
+
+        $subject->sendOrderConfirmation($this->fetchOrder(0));
+
+        $body = (string)TestMailer::getSentEmails()[0]->getTextBody();
+        $this->assertStringContainsString('Muster-Widerrufsbelehrung', $body);
+        $this->assertStringNotContainsString('Model instructions on withdrawal', $body);
+    }
+
     private function fetchOrder(int $languageId): Order
     {
         $this->getConnectionPool()->getConnectionForTable('tx_products_domain_model_order')
