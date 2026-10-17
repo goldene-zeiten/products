@@ -96,6 +96,8 @@ plugin.tx_productscore {
         }
         invoice {
             pageType = {$products.invoice.pageType}
+            vatId = {$products.invoice.vatId}
+            taxNumber = {$products.invoice.taxNumber}
         }
         seo {
             pageTitleMode = {$products.seo.pageTitleMode}

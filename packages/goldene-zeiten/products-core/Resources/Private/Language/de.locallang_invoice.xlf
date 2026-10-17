@@ -71,6 +71,58 @@
 				<source>VAT ID</source>
 				<target>USt-IdNr.</target>
 			</trans-unit>
+			<trans-unit id="invoice_date" resname="invoice_date">
+				<source>Invoice date</source>
+				<target>Rechnungsdatum</target>
+			</trans-unit>
+			<trans-unit id="date_of_supply" resname="date_of_supply">
+				<source>Date of supply</source>
+				<target>Liefer-/Leistungsdatum</target>
+			</trans-unit>
+			<trans-unit id="date_of_supply_invoice_date" resname="date_of_supply_invoice_date">
+				<source>corresponds to the invoice date</source>
+				<target>entspricht dem Rechnungsdatum</target>
+			</trans-unit>
+			<trans-unit id="seller_vat_id" resname="seller_vat_id">
+				<source>VAT ID</source>
+				<target>USt-IdNr.</target>
+			</trans-unit>
+			<trans-unit id="seller_tax_number" resname="seller_tax_number">
+				<source>Tax number</source>
+				<target>Steuernummer</target>
+			</trans-unit>
+			<trans-unit id="goods_total" resname="goods_total">
+				<source>Goods</source>
+				<target>Waren</target>
+			</trans-unit>
+			<trans-unit id="handling_fee" resname="handling_fee">
+				<source>Handling</source>
+				<target>Bearbeitungsgebühr</target>
+			</trans-unit>
+			<trans-unit id="payment_fee" resname="payment_fee">
+				<source>Payment fee</source>
+				<target>Zahlungsgebühr</target>
+			</trans-unit>
+			<trans-unit id="deposit" resname="deposit">
+				<source>Deposit</source>
+				<target>Pfand</target>
+			</trans-unit>
+			<trans-unit id="discount" resname="discount">
+				<source>Discount</source>
+				<target>Rabatt</target>
+			</trans-unit>
+			<trans-unit id="rounding" resname="rounding">
+				<source>Rounding</source>
+				<target>Rundung</target>
+			</trans-unit>
+			<trans-unit id="vat_included" resname="vat_included">
+				<source>incl. %s %% VAT</source>
+				<target>enthaltene MwSt. %s %%</target>
+			</trans-unit>
+			<trans-unit id="total_net_amount" resname="total_net_amount">
+				<source>Total net</source>
+				<target>Gesamt netto</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

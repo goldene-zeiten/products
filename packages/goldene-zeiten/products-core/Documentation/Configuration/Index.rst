@@ -255,6 +255,20 @@ from. Set it before creating any content.
         Frontend user group uids, comma-separated, whose members may pay by invoice - for example
         regular customers. Empty offers invoice to everyone, guests included.
 
+    ..  confval:: products.invoice.vatId
+        :type: string
+        :Default: (empty)
+
+        VAT ID of the seller, printed on every invoice. The seller's name and address come from
+        :confval:`products.withdrawal.trader.name` and ``products.withdrawal.trader.address``; § 14 UStG
+        requires the VAT ID or the tax number.
+
+    ..  confval:: products.invoice.taxNumber
+        :type: string
+        :Default: (empty)
+
+        Tax number of the seller, printed on every invoice when set.
+
     ..  confval:: products.invoice.templateRootPaths
         :type: stringlist
         :Default: EXT:products_core/Resources/Private/Templates/Invoice/

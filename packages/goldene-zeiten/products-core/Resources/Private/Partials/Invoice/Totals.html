@@ -1,0 +1,67 @@
+{namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
+<table style="width: 100%; margin-top: 12px;">
+    <tr>
+        <td style="width: 60%;"></td>
+        <td style="text-align: right; padding: 2px;"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:goods_total" /></td>
+        <td style="text-align: right; padding: 2px; width: 110px;"><p:format.money value="{order.itemsTotalGross}" currency="{order.currency}" locale="{moneyLocale}" /></td>
+    </tr>
+<f:if condition="{order.shippingLabel}">
+    <tr>
+        <td style="width: 60%;"></td>
+        <td style="text-align: right; padding: 2px;">{order.shippingLabel}</td>
+        <td style="text-align: right; padding: 2px; width: 110px;"><p:format.money value="{order.shippingTotal}" currency="{order.currency}" locale="{moneyLocale}" /></td>
+    </tr>
+</f:if>
+<f:if condition="{order.handlingFeeTotal.cents} != 0">
+    <tr>
+        <td style="width: 60%;"></td>
+        <td style="text-align: right; padding: 2px;"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:handling_fee" /></td>
+        <td style="text-align: right; padding: 2px; width: 110px;"><p:format.money value="{order.handlingFeeTotal}" currency="{order.currency}" locale="{moneyLocale}" /></td>
+    </tr>
+</f:if>
+<f:if condition="{order.paymentFeeTotal.cents} != 0">
+    <tr>
+        <td style="width: 60%;"></td>
+        <td style="text-align: right; padding: 2px;"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:payment_fee" /></td>
+        <td style="text-align: right; padding: 2px; width: 110px;"><p:format.money value="{order.paymentFeeTotal}" currency="{order.currency}" locale="{moneyLocale}" /></td>
+    </tr>
+</f:if>
+<f:if condition="{order.depositTotal.cents} != 0">
+    <tr>
+        <td style="width: 60%;"></td>
+        <td style="text-align: right; padding: 2px;"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:deposit" /></td>
+        <td style="text-align: right; padding: 2px; width: 110px;"><p:format.money value="{order.depositTotal}" currency="{order.currency}" locale="{moneyLocale}" /></td>
+    </tr>
+</f:if>
+<f:if condition="{order.discountTotal.cents} != 0">
+    <tr>
+        <td style="width: 60%;"></td>
+        <td style="text-align: right; padding: 2px;"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:discount" /></td>
+        <td style="text-align: right; padding: 2px; width: 110px;">-<p:format.money value="{order.discountTotal}" currency="{order.currency}" locale="{moneyLocale}" /></td>
+    </tr>
+</f:if>
+<f:if condition="{order.roundingDifference.cents} != 0">
+    <tr>
+        <td style="width: 60%;"></td>
+        <td style="text-align: right; padding: 2px;"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:rounding" /></td>
+        <td style="text-align: right; padding: 2px; width: 110px;"><p:format.money value="{order.roundingDifference}" currency="{order.currency}" locale="{moneyLocale}" /></td>
+    </tr>
+</f:if>
+    <tr>
+        <td style="width: 60%;"></td>
+        <td style="text-align: right; padding: 2px; border-top: 1px solid #000;"><strong><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:total_gross" /></strong></td>
+        <td style="text-align: right; padding: 2px; border-top: 1px solid #000; width: 110px;"><strong><p:format.money value="{order.totalGross}" currency="{order.currency}" locale="{moneyLocale}" /></strong></td>
+    </tr>
+<f:for each="{order.vatLines}" as="vatLine">
+    <tr>
+        <td style="width: 60%;"></td>
+        <td style="text-align: right; padding: 2px;"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:vat_included" arguments="{0: vatLine.percent}" /></td>
+        <td style="text-align: right; padding: 2px; width: 110px;"><p:format.money value="{vatLine.tax}" currency="{order.currency}" locale="{moneyLocale}" /></td>
+    </tr>
+</f:for>
+    <tr>
+        <td style="width: 60%;"></td>
+        <td style="text-align: right; padding: 2px;"><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:total_net_amount" /></td>
+        <td style="text-align: right; padding: 2px; width: 110px;"><p:format.money value="{order.totalNet}" currency="{order.currency}" locale="{moneyLocale}" /></td>
+    </tr>
+</table>
