@@ -253,8 +253,8 @@ final class OrderMailServiceTest extends AbstractFrontendTestCase
         $this->assertCount(1, $sentEmails);
         $this->assertSame('shopper@example.com', $sentEmails[0]->getTo()[0]->getAddress());
         $this->assertStringContainsString('ORD-1', (string)$sentEmails[0]->getSubject());
-        $this->assertStringContainsString('new', (string)$sentEmails[0]->getTextBody());
-        $this->assertStringContainsString('confirmed', (string)$sentEmails[0]->getTextBody());
+        $this->assertStringContainsString('New', (string)$sentEmails[0]->getTextBody());
+        $this->assertStringContainsString('Confirmed', (string)$sentEmails[0]->getTextBody());
     }
 
     #[Test]

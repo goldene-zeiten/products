@@ -13,8 +13,8 @@ use TYPO3\CMS\Core\Attribute\AsEventListener;
 
 /**
  * Sends the order status-changed email for an {@see OrderStatusChangedEvent}: loads the order for the
- * event's uid and hands it to {@see OrderMailService}. A withdrawal has its own acknowledgement, so the
- * move into the withdrawn status sends no second mail.
+ * event's uid and hands it to {@see OrderMailService}. A withdrawal has its own acknowledgement, and a placed
+ * order's confirmation mail goes out with its move from pending to confirmed, so neither sends a second mail.
  */
 #[AsEventListener]
 final class SendOrderStatusChangedEmailListener
@@ -27,7 +27,7 @@ final class SendOrderStatusChangedEmailListener
 
     public function __invoke(OrderStatusChangedEvent $event): void
     {
-        if ($event->getNewStatus() === OrderStatus::WITHDRAWN) {
+        if ($event->getNewStatus() === OrderStatus::WITHDRAWN || $this->isConfirmationOfAPlacedOrder($event)) {
             return;
         }
         $order = $this->orderRepository->findByUidIgnoringStoragePage($event->getOrderUid());
@@ -42,5 +42,10 @@ final class SendOrderStatusChangedEmailListener
                 ['exception' => $exception]
             );
         }
+    }
+
+    private function isConfirmationOfAPlacedOrder(OrderStatusChangedEvent $event): bool
+    {
+        return $event->getPreviousStatus() === OrderStatus::PENDING && $event->getNewStatus() === OrderStatus::CONFIRMED;
     }
 }

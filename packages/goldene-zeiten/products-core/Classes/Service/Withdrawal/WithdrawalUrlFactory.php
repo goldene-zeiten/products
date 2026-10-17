@@ -7,8 +7,6 @@ namespace GoldeneZeiten\Products\Core\Service\Withdrawal;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Core\Utility\HttpUtility;
-use TYPO3\CMS\Frontend\Page\CacheHashCalculator;
 
 /**
  * Builds the absolute prefilled-withdrawal-form URL that order mails carry as their withdrawal
@@ -22,8 +20,7 @@ final class WithdrawalUrlFactory
 
     public function __construct(
         private readonly SiteFinder $siteFinder,
-        private readonly WithdrawalTokenService $withdrawalTokenService,
-        private readonly CacheHashCalculator $cacheHashCalculator
+        private readonly WithdrawalTokenService $withdrawalTokenService
     ) {}
 
     /**
@@ -62,10 +59,7 @@ final class WithdrawalUrlFactory
                 'hash' => $this->withdrawalTokenService->generateToken($order),
             ],
         ];
-        $uri = $site->getRouter()->generateUri($pageId, $parameters);
-        $cacheHash = $this->cacheHashCalculator->generateForParameters(
-            HttpUtility::buildQueryString(array_merge(['id' => $pageId], $parameters))
-        );
-        return (string)$uri . ($uri->getQuery() === '' ? '?' : '&') . 'cHash=' . $cacheHash;
+        // The router signs the plugin arguments with their cHash itself.
+        return (string)$site->getRouter()->generateUri($pageId, $parameters);
     }
 }
