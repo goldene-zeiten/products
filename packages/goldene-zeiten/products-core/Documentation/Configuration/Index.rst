@@ -249,6 +249,9 @@ from. Set it before creating any content.
         inline default style; restyle it by overriding the template or by adding a ``<style>``
         rule with ``!important`` for that class in your layout or header partial.
 
+        The mails also receive ``vatId`` and ``taxNumber`` from ``products.invoice.vatId`` and
+        ``products.invoice.taxNumber``; the default footer prints them only when they are set.
+
     ..  confval:: products.payment.invoice.enabled
         :type: bool
         :Default: true

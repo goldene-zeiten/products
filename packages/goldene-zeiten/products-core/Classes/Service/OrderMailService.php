@@ -357,6 +357,8 @@ final class OrderMailService
                 'order' => $order,
                 'moneyLocale' => $this->settingsResolver->getLocale($order),
                 'trader' => $this->withdrawalSettingsFactory->fromSettings($settings)->trader,
+                'vatId' => $this->getSetting($settings, 'products.invoice.vatId', ''),
+                'taxNumber' => $this->getSetting($settings, 'products.invoice.taxNumber', ''),
                 ...$this->paymentVariables($order),
             ]);
 
