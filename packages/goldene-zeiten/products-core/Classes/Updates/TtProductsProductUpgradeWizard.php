@@ -199,6 +199,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
             'deposit' => number_format((float)($legacyRow['deposit'] ?? 0), 2, '.', ''),
             'tax_class' => $this->resolveTaxClass($legacyUid, (int)($legacyRow['taxcat_id'] ?? 0)),
             'in_stock' => (int)$legacyRow['inStock'],
+            'unlimited_stock' => $this->migrationConfiguration->getBool('unlimitedStock') ? 1 : 0,
             'basket_min_quantity' => (int)round((float)$legacyRow['basketminquantity']),
             'basket_max_quantity' => (int)round((float)$legacyRow['basketmaxquantity']),
             'weight' => (int)round((float)$legacyRow['weight']),

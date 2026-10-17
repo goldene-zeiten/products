@@ -209,6 +209,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
             'item_number' => (string)$legacyRow['itemnumber'],
             'price' => $this->priceMigrator->price($legacyRow),
             'in_stock' => (int)$legacyRow['inStock'],
+            'unlimited_stock' => $this->migrationConfiguration->getBool('unlimitedStock') ? 1 : 0,
             'basket_min_quantity' => (int)round((float)($legacyRow['basketminquantity'] ?? 0)),
             'basket_max_quantity' => (int)round((float)($legacyRow['basketmaxquantity'] ?? 0)),
             'price_mode' => $this->isAddedPrice((string)($legacyRow['config'] ?? '')) ? 'surcharge' : 'override',
