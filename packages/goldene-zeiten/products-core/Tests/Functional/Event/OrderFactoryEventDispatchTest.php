@@ -12,6 +12,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\AdjustmentCollection;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Service\Order\OrderFactory;
+use GoldeneZeiten\Products\EventFixture\InvoiceNumberGeneratedListener;
 use GoldeneZeiten\Products\EventFixture\MapBillingToDeliveryAddressListener;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -28,6 +29,7 @@ final class OrderFactoryEventDispatchTest extends AbstractFunctionalTestCase
         parent::setUp();
         MapBillingToDeliveryAddressListener::$enabled = false;
         MapBillingToDeliveryAddressListener::$invocationCount = 0;
+        InvoiceNumberGeneratedListener::$invoiceNumbers = [];
     }
 
     #[Test]
@@ -45,6 +47,20 @@ final class OrderFactoryEventDispatchTest extends AbstractFunctionalTestCase
 
         $this->assertGreaterThanOrEqual(1, MapBillingToDeliveryAddressListener::$invocationCount);
         $this->assertSame('EVENT-DELIVERY', $order->getDeliveryAddress()?->getFirstName());
+    }
+
+    #[Test]
+    public function invoiceNumberGeneratedEventCarriesTheNumberOfTheOrder(): void
+    {
+        $order = $this->subject()->create(
+            new ServerRequest('http://localhost/'),
+            $this->basketViewModel('9.20'),
+            $this->address(),
+            'prepayment',
+            $this->placementDetails()
+        );
+
+        $this->assertSame([$order->getInvoiceNumber()], InvoiceNumberGeneratedListener::$invoiceNumbers);
     }
 
     private function subject(): OrderFactory
