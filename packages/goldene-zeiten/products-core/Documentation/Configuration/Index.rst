@@ -74,6 +74,12 @@ from. Set it before creating any content.
 
         Page uid the checkout flow starts on.
 
+    ..  confval:: products.pids.shopPage
+        :type: int
+        :Default: 0
+
+        Where "Back to shop" on the thank-you page leads; the site's root page when empty.
+
     ..  confval:: products.pids.orderHistoryPage
         :type: int
         :Default: 0

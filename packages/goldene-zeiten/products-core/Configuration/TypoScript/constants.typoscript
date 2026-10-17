@@ -12,6 +12,8 @@ products {
         basketPage = 0
         # cat=products/storage; type=int; label=Checkout page UID
         checkoutPage = 0
+        # cat=products/storage; type=int; label=Shop page UID: Where "Back to shop" leads after an order; the site root when empty
+        shopPage = 0
         # cat=products/storage; type=int; label=Order history page UID
         orderHistoryPage = 0
         # cat=products/storage; type=int; label=Category navigation/listing page UID

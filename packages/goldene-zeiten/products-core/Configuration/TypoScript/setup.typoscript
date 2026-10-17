@@ -7,6 +7,7 @@ plugin.tx_productscore {
             detailPage = {$products.pids.detailPage}
             basketPage = {$products.pids.basketPage}
             checkoutPage = {$products.pids.checkoutPage}
+            shopPage = {$products.pids.shopPage}
             orderHistoryPage = {$products.pids.orderHistoryPage}
             categoryPage = {$products.pids.categoryPage}
             withdrawalPage = {$products.pids.withdrawalPage}

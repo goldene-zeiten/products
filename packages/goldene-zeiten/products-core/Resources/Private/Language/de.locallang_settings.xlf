@@ -171,6 +171,14 @@
 				<source>Printed on every invoice when set; § 14 UStG requires the VAT ID or the tax number.</source>
 				<target>Wird auf jeder Rechnung gedruckt, wenn gesetzt; § 14 UStG verlangt USt-IdNr. oder Steuernummer.</target>
 			</trans-unit>
+			<trans-unit id="setting.products.pids.shopPage" resname="setting.products.pids.shopPage">
+				<source>Shop page</source>
+				<target>Shop-Seite</target>
+			</trans-unit>
+			<trans-unit id="setting.products.pids.shopPage.description" resname="setting.products.pids.shopPage.description">
+				<source>Where "Back to shop" leads after an order; the site root when empty.</source>
+				<target>Ziel von „Zurück zum Shop“ nach einer Bestellung; leer führt zur Startseite.</target>
+			</trans-unit>
 			<trans-unit id="setting.products.shipping.enabled" resname="setting.products.shipping.enabled">
 				<source>Shipping cost calculation enabled</source>
 				<target>Berechnung der Versandkosten aktiviert</target>

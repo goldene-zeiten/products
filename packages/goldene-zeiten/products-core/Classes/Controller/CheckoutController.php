@@ -210,12 +210,19 @@ final class CheckoutController extends ActionController
         $this->propagate($this->redirect('payment'));
     }
 
+    private function site(): ?Site
+    {
+        $site = $this->request->getAttribute('site');
+        return $site instanceof Site ? $site : null;
+    }
+
     private function shippingContext(): ShippingContext
     {
         return $this->shippingContextFactory->createFromBasket(
             $this->checkoutService->getBasketViewModel($this->request),
             $this->checkoutService->getAddress($this->request),
-            $this->frontendUserResolver->getUid($this->request)
+            $this->frontendUserResolver->getUid($this->request),
+            $this->site()
         );
     }
 
@@ -454,6 +461,7 @@ final class CheckoutController extends ActionController
             'orderHash' => $this->orderTokenService->generateToken($orderObject),
             'withdrawalExcluded' => $this->withdrawalExclusionService->isFullyExcluded($orderObject),
             'paymentInstructions' => $this->paymentInstructionsResolver->resolve($orderObject),
+            'shopPage' => (int)($this->settings['pids']['shopPage'] ?? 0) ?: $this->site()?->getRootPageId(),
         ]);
         return $this->htmlResponse();
     }

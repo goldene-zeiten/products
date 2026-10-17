@@ -129,6 +129,12 @@
 			<trans-unit id="setting.products.invoice.taxNumber.description" resname="setting.products.invoice.taxNumber.description">
 				<source>Printed on every invoice when set; § 14 UStG requires the VAT ID or the tax number.</source>
 			</trans-unit>
+			<trans-unit id="setting.products.pids.shopPage" resname="setting.products.pids.shopPage">
+				<source>Shop page</source>
+			</trans-unit>
+			<trans-unit id="setting.products.pids.shopPage.description" resname="setting.products.pids.shopPage.description">
+				<source>Where "Back to shop" leads after an order; the site root when empty.</source>
+			</trans-unit>
 			<trans-unit id="setting.products.shipping.enabled" resname="setting.products.shipping.enabled">
 				<source>Shipping cost calculation enabled</source>
 			</trans-unit>
