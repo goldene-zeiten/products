@@ -134,6 +134,28 @@ final class OrderManagementModuleController
             'statusOptions' => OrderStatus::cases(),
             'statusLabels' => $this->statusLabels(),
             'detailUrl' => (string)$this->uriBuilder->buildUriFromRequest($request, []),
+        ] + $this->filterForm();
+    }
+
+    /**
+     * A GET form replaces the query string of its action, so the module route's own parameters - its token above
+     * all - travel as hidden fields; without them the backend answers with the whole backend inside the frame.
+     *
+     * @return array{filterUrl: string, filterParameters: array<string, string>}
+     */
+    private function filterForm(): array
+    {
+        $uri = $this->uriBuilder->buildUriFromRoute('products_order');
+        parse_str($uri->getQuery(), $query);
+        $parameters = [];
+        foreach ($query as $name => $value) {
+            if (is_string($value)) {
+                $parameters[(string)$name] = $value;
+            }
+        }
+        return [
+            'filterUrl' => $uri->getPath(),
+            'filterParameters' => $parameters,
         ];
     }
 
