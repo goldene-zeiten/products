@@ -208,7 +208,10 @@
             </f:if>
         </f:then>
         <f:else>
-            <form method="get" class="row row-cols-lg-auto g-2 align-items-center mb-3">
+            <form method="get" action="{filterUrl}" class="row row-cols-lg-auto g-2 align-items-center mb-3">
+                <f:for each="{filterParameters}" as="parameterValue" key="parameterName">
+                    <input type="hidden" name="{parameterName}" value="{parameterValue}" />
+                </f:for>
                 <div class="col-12">
                     <input type="text" name="orderNumber" value="{filter.orderNumber}" class="form-control" placeholder="{f:translate(key: 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.column.order_number')}" />
                 </div>
@@ -219,7 +222,10 @@
                     <select name="status" class="form-select">
                         <option value=""></option>
                         <f:for each="{statusOptions}" as="statusOption">
-                            <option value="{statusOption.value}" selected="{f:if(condition: '{statusOption.value} == {filter.status}', then: 'selected')}">{statusLabels.{statusOption.value}}</option>
+                            <f:if condition="{statusOption.value} == {filter.status}">
+                                <f:then><option value="{statusOption.value}" selected="selected">{statusLabels.{statusOption.value}}</option></f:then>
+                                <f:else><option value="{statusOption.value}">{statusLabels.{statusOption.value}}</option></f:else>
+                            </f:if>
                         </f:for>
                     </select>
                 </div>
