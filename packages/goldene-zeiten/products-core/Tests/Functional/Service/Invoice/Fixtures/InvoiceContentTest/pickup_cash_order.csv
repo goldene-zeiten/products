@@ -1,0 +1,9 @@
+"tx_products_domain_model_orderaddress",,,,,,,,,,
+,"uid","pid","address_type","first_name","last_name","street","house_number","zip","city","country"
+,1,2,"billing","Jane","Shopper","Main Street","1","12345","Sampletown","DE"
+"tx_products_domain_model_order",,,,,,,,,,,,,,,,,,,,,
+,"uid","pid","order_number","invoice_number","email","currency","order_date","total_net","total_tax","total_gross","discount_total","billing_address","site_identifier","status","payment_status","payment_method","shipping_label","shipping_total","tax_breakdown"
+,1,2,"ORD-1","INV-1","shopper@example.com","EUR",1792195200,203847,38731,242578,7502,1,"products","pending","pending","cash","Pick-up at Regensburg (Neupfarrplatz 1, 93047 Regensburg)",0,"{""19"":38731}"
+"tx_products_domain_model_orderitem",,,,,,,,,,
+,"uid","pid","parent_order","title","item_number","quantity","unit_price_gross","line_total_gross","tax_rate"
+,1,2,1,"Kuehnel Ring","K-514242",1,250080,250080,0.19

@@ -6,6 +6,7 @@ namespace GoldeneZeiten\Products\Core\Service\Invoice;
 
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Service\OrderSettingsResolver;
+use TYPO3\CMS\Core\Settings\SettingsInterface;
 use TYPO3\CMS\Core\View\ViewFactoryData;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
 
@@ -34,8 +35,20 @@ final class InvoiceRenderer
         $view->assignMultiple([
             'order' => $order,
             'moneyLocale' => $this->settingsResolver->getLocale($order),
+            'seller' => [
+                'name' => $this->setting($settings, 'products.withdrawal.trader.name'),
+                'address' => $this->setting($settings, 'products.withdrawal.trader.address'),
+                'vatId' => $this->setting($settings, 'products.invoice.vatId'),
+                'taxNumber' => $this->setting($settings, 'products.invoice.taxNumber'),
+            ],
         ]);
 
         return $view->render('Invoice');
+    }
+
+    private function setting(SettingsInterface $settings, string $path): string
+    {
+        $value = $settings->has($path) ? $settings->get($path) : '';
+        return is_scalar($value) ? trim((string)$value) : '';
     }
 }

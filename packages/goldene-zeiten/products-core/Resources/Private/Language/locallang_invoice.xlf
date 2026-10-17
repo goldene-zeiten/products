@@ -54,6 +54,45 @@
 			<trans-unit id="vat_id" resname="vat_id">
 				<source>VAT ID</source>
 			</trans-unit>
+			<trans-unit id="invoice_date" resname="invoice_date">
+				<source>Invoice date</source>
+			</trans-unit>
+			<trans-unit id="date_of_supply" resname="date_of_supply">
+				<source>Date of supply</source>
+			</trans-unit>
+			<trans-unit id="date_of_supply_invoice_date" resname="date_of_supply_invoice_date">
+				<source>corresponds to the invoice date</source>
+			</trans-unit>
+			<trans-unit id="seller_vat_id" resname="seller_vat_id">
+				<source>VAT ID</source>
+			</trans-unit>
+			<trans-unit id="seller_tax_number" resname="seller_tax_number">
+				<source>Tax number</source>
+			</trans-unit>
+			<trans-unit id="goods_total" resname="goods_total">
+				<source>Goods</source>
+			</trans-unit>
+			<trans-unit id="handling_fee" resname="handling_fee">
+				<source>Handling</source>
+			</trans-unit>
+			<trans-unit id="payment_fee" resname="payment_fee">
+				<source>Payment fee</source>
+			</trans-unit>
+			<trans-unit id="deposit" resname="deposit">
+				<source>Deposit</source>
+			</trans-unit>
+			<trans-unit id="discount" resname="discount">
+				<source>Discount</source>
+			</trans-unit>
+			<trans-unit id="rounding" resname="rounding">
+				<source>Rounding</source>
+			</trans-unit>
+			<trans-unit id="vat_included" resname="vat_included">
+				<source>incl. %s %% VAT</source>
+			</trans-unit>
+			<trans-unit id="total_net_amount" resname="total_net_amount">
+				<source>Total net</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

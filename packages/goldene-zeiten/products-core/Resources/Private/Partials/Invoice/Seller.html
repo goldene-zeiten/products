@@ -1,0 +1,9 @@
+{namespace p=GoldeneZeiten\Products\Core\ViewHelpers}
+<f:if condition="{seller.name}">
+    <div style="margin-bottom: 16px; font-size: 11px;">
+        <strong>{seller.name}</strong><br>
+        <f:format.nl2br>{seller.address}</f:format.nl2br>
+        <f:if condition="{seller.vatId}"><br><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:seller_vat_id" />: {seller.vatId}</f:if>
+        <f:if condition="{seller.taxNumber}"><br><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_invoice.xlf:seller_tax_number" />: {seller.taxNumber}</f:if>
+    </div>
+</f:if>

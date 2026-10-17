@@ -372,6 +372,18 @@ settings:
     default: 1729512001
     label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.invoice.pageType'
     category: invoice
+  products.invoice.vatId:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.invoice.vatId'
+    description: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.invoice.vatId.description'
+    category: invoice
+  products.invoice.taxNumber:
+    type: string
+    default: ''
+    label: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.invoice.taxNumber'
+    description: 'LLL:EXT:products_core/Resources/Private/Language/locallang_settings.xlf:setting.products.invoice.taxNumber.description'
+    category: invoice
   products.seo.pageTitleMode:
     type: string
     default: 'title'
