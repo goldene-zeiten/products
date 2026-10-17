@@ -109,6 +109,7 @@ final class TtProductsCategoryUpgradeWizard implements UpgradeWizardInterface, C
         $legacyUid = (int)$legacyRow['uid'];
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::LOCAL_TABLE);
         $queryBuilder->insert(self::LOCAL_TABLE)->values([
+            ...$this->migrationHelper->timestamps($legacyRow),
             'pid' => $pid,
             'hidden' => (int)$legacyRow['hidden'],
             'sys_language_uid' => 0,

@@ -108,7 +108,10 @@ final class LegacyColumnCategories
     {
         $slugHelper = GeneralUtility::makeInstance(SlugHelper::class, 'tx_products_domain_model_category', 'slug', []);
         $connection = $this->connectionPool->getConnectionForTable('tx_products_domain_model_category');
+        $now = (int)($GLOBALS['EXEC_TIME'] ?? time());
         $connection->insert('tx_products_domain_model_category', [
+            'tstamp' => $now,
+            'crdate' => $now,
             'pid' => $pid,
             'title' => $title,
             'slug' => $slugHelper->sanitize($title),
