@@ -1,0 +1,3 @@
+"tx_products_domain_model_paymenttransaction",,,,,,
+,"uid","order_uid","payment_method","state","external_id","amount"
+,1,1,"fixture-redirect","completed","CAPTURE-1",5000

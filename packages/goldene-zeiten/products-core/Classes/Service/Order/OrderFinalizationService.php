@@ -29,6 +29,7 @@ use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
  *   {@see AfterOrderFinalizedEvent}; every call clears the calling customer's basket and checkout.
  * - A failed payment cancels an order that is not paid yet and keeps the customer's basket for another try.
  * - Every call applies the reported payment status where the current one allows it.
+ * - Every outcome is recorded on the order's payment transaction {@see PaymentTransactionRecorder}.
  */
 final class OrderFinalizationService
 {
@@ -40,11 +41,15 @@ final class OrderFinalizationService
         private readonly CheckoutStateStore $checkoutStateStore,
         private readonly PersistenceManagerInterface $persistenceManager,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly PaymentTransactionRecorder $transactionRecorder
     ) {}
 
     public function finalize(Order $order, PaymentResult $paymentResult, ServerRequestInterface $request): void
     {
+        if (in_array($paymentResult->getState(), [PaymentResultState::COMPLETED, PaymentResultState::PENDING, PaymentResultState::FAILED], true)) {
+            $this->transactionRecorder->record($order, $paymentResult);
+        }
         match ($paymentResult->getState()) {
             PaymentResultState::COMPLETED, PaymentResultState::PENDING => $this->accept($order, $paymentResult, $request),
             PaymentResultState::FAILED => $this->reject($order, $paymentResult->getFailureReason()),
