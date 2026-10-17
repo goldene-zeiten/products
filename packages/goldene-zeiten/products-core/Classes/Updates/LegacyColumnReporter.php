@@ -56,6 +56,15 @@ final class LegacyColumnReporter
         't3ver_label',
     ];
 
+    /**
+     * Values meaning "nothing set" although they are no column default, e.g. a unit factor of 1.
+     *
+     * @var array<string, string[]>
+     */
+    private const NEUTRAL_VALUES = [
+        'unit_factor' => ['1'],
+    ];
+
     public function __construct(
         private readonly ConnectionPool $connectionPool,
         private readonly EventDispatcherInterface $eventDispatcher
@@ -101,25 +110,32 @@ final class LegacyColumnReporter
     private function countRowsWithData(string $legacyTable, Column $column): int
     {
         $type = $column->getType();
-        $emptyValue = match (true) {
-            $type instanceof StringType, $type instanceof TextType => '',
-            $type instanceof IntegerType, $type instanceof SmallIntType, $type instanceof BigIntType,
-            $type instanceof DecimalType, $type instanceof FloatType => 0,
-            default => null,
-        };
-        if ($emptyValue === null) {
-            return 0;
-        }
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($legacyTable);
         $queryBuilder->getRestrictions()->removeAll();
+        $hasData = match (true) {
+            // An empty string, and the "0" of an unrestricted access group or an unset option, are no data.
+            $type instanceof StringType, $type instanceof TextType => $queryBuilder->expr()->notIn(
+                $column->getName(),
+                $queryBuilder->createNamedParameter(
+                    ['', '0', ...self::NEUTRAL_VALUES[strtolower($column->getName())] ?? []],
+                    Connection::PARAM_STR_ARRAY
+                )
+            ),
+            $type instanceof IntegerType, $type instanceof SmallIntType, $type instanceof BigIntType,
+            $type instanceof DecimalType, $type instanceof FloatType => $queryBuilder->expr()->neq(
+                $column->getName(),
+                $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)
+            ),
+            default => null,
+        };
+        if ($hasData === null) {
+            return 0;
+        }
         return (int)$queryBuilder->count('uid')
             ->from($legacyTable)
             ->where(
                 $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
-                $queryBuilder->expr()->neq(
-                    $column->getName(),
-                    $queryBuilder->createNamedParameter($emptyValue, is_int($emptyValue) ? Connection::PARAM_INT : Connection::PARAM_STR)
-                )
+                $hasData
             )
             ->executeQuery()
             ->fetchOne();

@@ -564,7 +564,7 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
     {
         $flexForm = $this->parseFlexForm($row);
         $dropped = array_diff_key(
-            array_filter($flexForm, static fn(string $value): bool => trim($value) !== ''),
+            array_filter($flexForm, static fn(string $value): bool => trim($value) !== '' && trim($value) !== '0'),
             array_flip(self::MIGRATED_FLEXFORM_FIELDS)
         );
         if ($this->productWhereCategories((string)($flexForm['product_where'] ?? '')) !== null) {
