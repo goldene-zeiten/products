@@ -30,14 +30,20 @@ export class CategoryTreeClient {
         url.searchParams.set('parent', parentIdentifier);
         return this.getJson(url, []);
     }
-    async filter(query) {
+    async filter(query, root = null) {
         const url = new URL(ajaxUrl('products_category_tree_filter'), window.location.href);
         url.searchParams.set('query', query);
+        if (root !== null) {
+            url.searchParams.set('root', root);
+        }
         return this.getJson(url, []);
     }
-    async fetchRootline(identifier) {
+    async fetchRootline(identifier, root = null) {
         const url = new URL(ajaxUrl('products_category_tree_rootline'), window.location.href);
         url.searchParams.set('identifier', identifier);
+        if (root !== null) {
+            url.searchParams.set('root', root);
+        }
         return this.getJson(url, []);
     }
     async reorder(identifier, beforeIdentifier) {

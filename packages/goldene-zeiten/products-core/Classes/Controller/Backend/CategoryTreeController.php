@@ -68,7 +68,7 @@ final class CategoryTreeController
         if ($query === '') {
             return new JsonResponse([]);
         }
-        $mounts = $this->mountResolver->resolveMountUids($this->getBackendUser());
+        $mounts = $this->scopeToRoot($request, $this->mountResolver->resolveMountUids($this->getBackendUser()));
         $matches = [
             ...$this->buildCategoryMatches($query, $mounts),
             ...$this->buildProductMatches($query, $mounts),
@@ -117,7 +117,27 @@ final class CategoryTreeController
         if (!$this->isAccessible($identifier['type'], $identifier['uid'], $mounts)) {
             return new JsonResponse([], 403);
         }
-        return new JsonResponse($this->buildAncestorIdentifiers($identifier['type'], $identifier['uid'], $mounts));
+        $scope = $this->scopeToRoot($request, $mounts);
+        if (!$this->isAccessible($identifier['type'], $identifier['uid'], $scope)) {
+            return new JsonResponse([]);
+        }
+        return new JsonResponse($this->buildAncestorIdentifiers($identifier['type'], $identifier['uid'], $scope));
+    }
+
+    /**
+     * The tree shows one root category at a time when there are several; a `root` parameter narrows a search or
+     * rootline to it like a category mount, so a product linked into several roots is placed under the shown one.
+     *
+     * @param int[]|null $mounts
+     * @return int[]|null
+     */
+    private function scopeToRoot(ServerRequestInterface $request, ?array $mounts): ?array
+    {
+        $root = $this->parseIdentifier((string)($request->getQueryParams()['root'] ?? ''));
+        if ($root === null || $root['type'] !== 'category' || !$this->accessGuard->isCategoryAccessible($root['uid'], $mounts)) {
+            return $mounts;
+        }
+        return [$root['uid']];
     }
 
     /**

@@ -209,7 +209,7 @@ export class ProductsCategoryTree extends LitElement {
     if (!this.selected) {
       return;
     }
-    const ancestors = await this.client.fetchRootline(this.selected);
+    const ancestors = await this.client.fetchRootline(this.selected, this.viewRoot?.identifier ?? null);
     for (const ancestor of ancestors) {
       await this.ensureChildrenLoaded(ancestor);
       this.expanded.add(ancestor);
@@ -245,7 +245,10 @@ export class ProductsCategoryTree extends LitElement {
    * A record selected under another root - e.g. reopened from the module state - brings its root into view.
    */
   private async showRootOf(identifier: string): Promise<void> {
-    if (this.viewRoot === null) {
+    if (this.viewRoot === null || identifier === this.viewRoot.identifier) {
+      return;
+    }
+    if ((await this.client.fetchRootline(identifier, this.viewRoot.identifier)).length > 0) {
       return;
     }
     const rootline = await this.client.fetchRootline(identifier);
@@ -336,7 +339,9 @@ export class ProductsCategoryTree extends LitElement {
       this.searchMatches = [];
       return;
     }
-    const matches = (await this.client.filter(query)).filter((match) => this.isInViewRoot(match));
+    const matches = (await this.client.filter(query, this.viewRoot?.identifier ?? null)).filter((match) =>
+      this.isInViewRoot(match),
+    );
     for (const match of matches) {
       for (const ancestor of match.ancestors) {
         await this.ensureChildrenLoaded(ancestor);
@@ -781,7 +786,8 @@ export class ProductsCategoryTree extends LitElement {
     if (this.viewRoot === null) {
       return nothing;
     }
-    return html`<div class="px-2 pt-2">
+    // Core's navigation CSS stretches every div directly inside .tree; the selector keeps its own height.
+    return html`<div class="px-2 pt-2" style="flex:0 0 auto">
       <label for="productsTreeRootSelector" class="visually-hidden">${label('root_selector', 'Root category')}</label>
       <select
         id="productsTreeRootSelector"
