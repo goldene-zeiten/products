@@ -48,6 +48,20 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
     private const PRODUCT_SELECTION_CTYPES = ['productscore_productlist'];
     private const CATEGORY_SELECTION_CTYPES = ['productscore_productlist', 'productscore_categorylist'];
     private const MIGRATED_FLEXFORM_FIELDS = ['display_mode', 'productSelection', 'categorySelection', 'fields'];
+    /**
+     * `conf.tt_products.ALL.orderBy` => tx_products_sorting; uid order stays the list's default order.
+     */
+    private const SORTINGS = [
+        'uid' => '',
+        'uid asc' => '',
+        'title' => 'title',
+        'title asc' => 'title',
+        'price' => 'price_asc',
+        'price asc' => 'price_asc',
+        'price desc' => 'price_desc',
+        'crdate desc' => 'newest',
+        'tstamp desc' => 'newest',
+    ];
 
     private OutputInterface $output;
 
@@ -61,6 +75,7 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         private readonly ColumnCategoryPrerequisite $columnCategoryPrerequisite,
         private readonly LegacyMigrationConfiguration $migrationConfiguration,
         private readonly LegacyColumnCategories $columnCategories,
+        private readonly LegacyPageTemplateSettings $pageTemplateSettings,
     ) {}
 
     public function setOutput(OutputInterface $output): void
@@ -318,12 +333,43 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         $categories = array_filter(array_unique(array_merge(
             explode(',', $this->remapUids((string)($flexForm['categorySelection'] ?? ''), self::LEGACY_CATEGORY_TABLE, self::LOCAL_CATEGORY_TABLE)),
             array_values($this->startingPointCategories($row)),
+            array_values($this->pidListCategories($row)),
             $this->productWhereCategories((string)($flexForm['product_where'] ?? '')) ?? []
         )));
         if ($categories !== []) {
             $selections['tx_products_category'] = implode(',', $categories);
         }
+        $limit = $this->pageTemplateSettings->getLimit((int)$row['pid']);
+        if ($limit > 0) {
+            $selections['tx_products_items_per_page'] = (string)$limit;
+        }
+        $sorting = self::SORTINGS[strtolower(preg_replace('/\s+/', ' ', $this->pageTemplateSettings->getOrderBy((int)$row['pid'])) ?? '')] ?? '';
+        if ($sorting !== '') {
+            $selections['tx_products_sorting'] = $sorting;
+        }
         return $selections;
+    }
+
+    /**
+     * The categories the folders of `plugin.tt_products.pid_list` became - only for an element without a
+     * starting point of its own, which tt_products preferred over pid_list.
+     *
+     * @param array<string, mixed> $row
+     * @return array<int, string> folder uid => category uid
+     */
+    private function pidListCategories(array $row): array
+    {
+        if ($this->startingPoints($row) !== []) {
+            return [];
+        }
+        $categories = [];
+        foreach ($this->pageTemplateSettings->getPidList((int)$row['pid']) as $folderUid) {
+            $categoryUid = $this->migrationHelper->resolveLocalUid('pages', $folderUid, self::LOCAL_CATEGORY_TABLE);
+            if ($categoryUid !== null && $categoryUid > 0) {
+                $categories[$folderUid] = (string)$categoryUid;
+            }
+        }
+        return $categories;
     }
 
     /**
@@ -462,8 +508,10 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         if (isset($selections['records']) && in_array($target['ctype'], self::PRODUCT_SELECTION_CTYPES, true)) {
             $values['records'] = $selections['records'];
         }
-        if (isset($selections['tx_products_category']) && in_array($target['ctype'], self::CATEGORY_SELECTION_CTYPES, true)) {
-            $values['tx_products_category'] = $selections['tx_products_category'];
+        foreach (['tx_products_category', 'tx_products_items_per_page', 'tx_products_sorting'] as $field) {
+            if (isset($selections[$field]) && in_array($target['ctype'], self::CATEGORY_SELECTION_CTYPES, true)) {
+                $values[$field] = $selections[$field];
+            }
         }
         return $values;
     }
@@ -525,6 +573,16 @@ final class TtProductsPluginUpgradeWizard implements UpgradeWizardInterface, Cha
         $unmappedStartingPoints = array_diff($this->startingPoints($row), array_keys($this->startingPointCategories($row)));
         if ($unmappedStartingPoints !== []) {
             $dropped['pages'] = implode(',', $unmappedStartingPoints);
+        }
+        $unmappedPidList = $this->startingPoints($row) === []
+            ? array_diff($this->pageTemplateSettings->getPidList((int)$row['pid']), array_keys($this->pidListCategories($row)))
+            : [];
+        if ($unmappedPidList !== []) {
+            $dropped['pid_list'] = implode(',', $unmappedPidList);
+        }
+        $orderBy = $this->pageTemplateSettings->getOrderBy((int)$row['pid']);
+        if ($orderBy !== '' && !isset(self::SORTINGS[strtolower(preg_replace('/\s+/', ' ', $orderBy) ?? '')])) {
+            $dropped['orderBy'] = $orderBy;
         }
         if ($dropped === []) {
             return;
