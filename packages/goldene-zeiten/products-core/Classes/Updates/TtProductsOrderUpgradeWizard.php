@@ -155,7 +155,7 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
             $this->migrationHelper->recordMapping(self::LEGACY_TABLE, $legacyUid, self::LOCAL_TABLE, 0);
             return;
         }
-        $country = $this->resolveCountry($legacyUid, (string)$legacyRow['country']);
+        $country = $this->resolveCountry($legacyUid, (string)$legacyRow['country'], $this->billingCountryCode($legacyUid, $legacyRow));
         $addressUid = $this->insertAddress($legacyRow, $pid, $country[0]);
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::LOCAL_TABLE);
         $queryBuilder->insert(self::LOCAL_TABLE)->values(
@@ -324,8 +324,12 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
     /**
      * @return array{0: string, 1: string} [resolved ISO alpha-2 code, legacy free-text fallback]
      */
-    private function resolveCountry(int $legacyUid, string $legacyCountry): array
+    private function resolveCountry(int $legacyUid, string $legacyCountry, string $countryCode): array
     {
+        $byCode = $countryCode !== '' ? $this->countryProvider->getByIsoCode($countryCode) : null;
+        if ($byCode !== null) {
+            return [$byCode->getAlpha2IsoCode(), ''];
+        }
         $needle = trim($legacyCountry);
         if ($needle === '') {
             return ['', ''];
@@ -341,6 +345,19 @@ final class TtProductsOrderUpgradeWizard implements UpgradeWizardInterface, Chat
             $needle
         ));
         return ['', $needle];
+    }
+
+    /**
+     * The country name of an order is in the shop's language; its order data carries the ISO 3166 code of
+     * the billing address, which identifies the country in any language.
+     *
+     * @param array<string, mixed> $legacyRow
+     */
+    private function billingCountryCode(int $legacyUid, array $legacyRow): string
+    {
+        $orderData = $this->parseSerializedBlob($legacyUid, $legacyRow['orderData'] ?? null, 'orderData') ?? [];
+        $billing = is_array($orderData['billing'] ?? null) ? $orderData['billing'] : [];
+        return strtoupper(trim((string)($billing['country_code'] ?? '')));
     }
 
     private function countryMatches(Country $country, string $needle): bool
