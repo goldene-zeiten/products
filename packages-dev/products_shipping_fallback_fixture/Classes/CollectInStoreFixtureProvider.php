@@ -8,6 +8,7 @@ use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingContext;
 use GoldeneZeiten\Products\Core\Domain\Dto\Shipping\ShippingOption;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use GoldeneZeiten\Products\Core\Shipping\SupplementaryShippingProviderInterface;
+use TYPO3\CMS\Core\Site\Entity\Site;
 
 /**
  * Collecting in store, offered next to whatever carries the basket - it proves a supplementary provider
@@ -15,6 +16,11 @@ use GoldeneZeiten\Products\Core\Shipping\SupplementaryShippingProviderInterface;
  */
 final class CollectInStoreFixtureProvider implements SupplementaryShippingProviderInterface
 {
+    /**
+     * The site the last quote was asked for, for tests proving the context carries it.
+     */
+    public static ?Site $lastQuotedSite = null;
+
     public function getIdentifier(): string
     {
         return 'collect';
@@ -27,6 +33,7 @@ final class CollectInStoreFixtureProvider implements SupplementaryShippingProvid
 
     public function quote(ShippingContext $context): array
     {
+        self::$lastQuotedSite = $context->getSite();
         return [new ShippingOption('collect', 'shop', 'Collect in store', Money::fromCents(0))];
     }
 

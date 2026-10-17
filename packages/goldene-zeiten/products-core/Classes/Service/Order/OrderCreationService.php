@@ -39,6 +39,7 @@ use GoldeneZeiten\Products\Core\Shipping\ShippingContextFactory;
 use GoldeneZeiten\Products\Core\Shipping\ShippingQuoteService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
 
 final class OrderCreationService
@@ -127,7 +128,8 @@ final class OrderCreationService
     ): PlacementContext {
         $configuration = $this->configurationFactory->create($request);
         $frontendUser = $this->frontendUserResolver->getUid($request);
-        $shippingContext = $this->shippingContextFactory->createFromBasket($basketViewModel, $address, $frontendUser);
+        $site = $request->getAttribute('site');
+        $shippingContext = $this->shippingContextFactory->createFromBasket($basketViewModel, $address, $frontendUser, $site instanceof Site ? $site : null);
         $shippingSelection = $this->shippingQuoteService->resolveSelection($configuration, $shippingContext, $checkoutSelections->getShippingOptionKey(), $request);
         $handlingFeeCost = $this->handlingFeeService->resolveCost($configuration, $basketViewModel, $address->getCountry(), $request);
 

@@ -67,4 +67,28 @@ final class ThankYouPaymentInstructionsTest extends AbstractFrontendTestCase
         $this->assertStringContainsString('ORD-8', $body);
         $this->assertStringNotContainsString('payment-instructions', $body);
     }
+
+    #[Test]
+    public function backToTheShopLeadsToTheSiteWithoutAShopPage(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/checkout_content.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/order_with_instructions_payment.csv');
+        $order = $this->get(OrderRepository::class)->findByUidIgnoringStoragePage(2);
+        $this->assertNotNull($order);
+        $hash = $this->get(OrderTokenService::class)->generateToken($order);
+        $cHash = $this->get(CacheHashCalculator::class)->generateForParameters(
+            '&id=2&tx_productscore_checkout[action]=thankYou&tx_productscore_checkout[order]=2&tx_productscore_checkout[hash]=' . $hash
+        );
+
+        $response = $this->executeFrontendSubRequest((new InternalRequest('http://localhost/shop'))->withQueryParameters([
+            'tx_productscore_checkout[action]' => 'thankYou',
+            'tx_productscore_checkout[order]' => 2,
+            'tx_productscore_checkout[hash]' => $hash,
+            'cHash' => $cHash,
+        ]));
+
+        $body = (string)$response->getBody();
+        $this->assertMatchesRegularExpression('#<a [^>]*href="/"[^>]*>Back to Shop</a>#', $body);
+        $this->assertStringNotContainsString('tx_productscore_productlist', $body);
+    }
 }
