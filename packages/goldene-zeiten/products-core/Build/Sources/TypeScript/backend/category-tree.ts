@@ -97,6 +97,9 @@ export class ProductsCategoryTree extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
+    // The navigation frame is sized by a flex column; without a zero minimum height a tall tree stretches the
+    // whole backend instead of scrolling inside its container.
+    Object.assign(this.style, { display: 'flex', flexDirection: 'column', flex: '1 0 0', minHeight: '0' });
     this.expanded = this.state.getExpanded();
     document.addEventListener('typo3:datahandler:process', this.onDataHandlerProcess);
     void this.initialize();
@@ -723,14 +726,14 @@ export class ProductsCategoryTree extends LitElement {
   render(): TemplateResult {
     const rootDraft = this.newNodeDraft?.parentIdentifier === 'root' ? this.newNodeDraft : null;
     return html`
-      <div class="tree">
+      <div class="tree" style="min-height:0">
         <goldene-zeiten-products-tree-toolbar
           search-label="${label('search_placeholder', 'Search...')}"
           new-category-label="${label('new_category', 'New category')}"
           new-product-label="${label('new_product', 'New product')}"
           @tree-search="${(event: CustomEvent<string>) => this.onSearchInput(event)}"
         ></goldene-zeiten-products-tree-toolbar>
-        <div class="navigation-tree-container">
+        <div class="navigation-tree-container" style="min-height:0;overflow-y:auto">
           ${
             this.searchActive && this.searchMatches.length === 0
               ? html`<p class="text-body-secondary px-2">${label('no_results', 'No matches found.')}</p>`
