@@ -1,0 +1,6 @@
+"tx_products_domain_model_order",,,,,,,,,,
+,"uid","pid","deleted","order_number","email","currency","total_gross","payment_method","payment_status","status"
+,1,2,0,"ORD-TX-1","tx@example.com","EUR",5000,"fixture-redirect","open","new"
+"tx_products_domain_model_paymenttransaction",,,,,,,,
+,"uid","pid","order_uid","payment_method","state","external_id","amount","currency"
+,1,0,1,"fixture-redirect","redirect_required","",5000,"EUR"

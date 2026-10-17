@@ -21,6 +21,7 @@ use GoldeneZeiten\Products\Core\Service\PriceRoundingService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 final class OrderFactory
@@ -45,6 +46,8 @@ final class OrderFactory
         $order->setOrderDate(new \DateTime());
         $order->setTermsAcceptedAt(new \DateTime());
         $order->setSiteIdentifier($site instanceof Site ? $site->getIdentifier() : 'default');
+        $language = $request->getAttribute('language');
+        $order->setLanguageId($language instanceof SiteLanguage ? $language->getLanguageId() : 0);
         $order->setOrderNumber($this->generateOrderNumber($order->getSiteIdentifier(), $site));
         $order->setEmail($address->getEmail());
         $order->setPaymentMethod($paymentMethodIdentifier);

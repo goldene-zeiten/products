@@ -71,6 +71,7 @@ class Order extends AbstractEntity
      */
     protected ObjectStorage $termsDocument;
     protected string $siteIdentifier = '';
+    protected int $languageId = 0;
     /** @var string */
     protected string $legacyOrderData = '[]';
     protected string $legacyCountryName = '';
@@ -578,6 +579,19 @@ class Order extends AbstractEntity
     public function setSiteIdentifier(string $siteIdentifier): void
     {
         $this->siteIdentifier = $siteIdentifier;
+    }
+
+    /**
+     * The site language the order was placed in.
+     */
+    public function getLanguageId(): int
+    {
+        return $this->languageId;
+    }
+
+    public function setLanguageId(int $languageId): void
+    {
+        $this->languageId = $languageId;
     }
 
     /**
