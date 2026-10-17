@@ -20,7 +20,7 @@
             </f:then>
             <f:else>
                 <p class="card-text">
-                    <f:render partial="Product/Price" arguments="{price: '{p:pricing.displayPrice(product: product)}'}" />
+                    <f:render partial="Product/ListPrice" arguments="{product: product}" />
                 </p>
             </f:else>
         </f:if>

@@ -44,10 +44,10 @@ final class ProductVariantSwitchingTest extends AbstractFrontendTestCase
 
     public static function variantSelectionProvider(): \Generator
     {
-        yield 'no variant selected shows prompt instead of price' => [
+        yield 'no variant selected shows the prompt' => [
             'attributeValueUids' => [],
             'expectedString' => 'Please choose a variant',
-            'unexpectedStrings' => ['15.00', '20.00'],
+            'unexpectedStrings' => [],
         ];
 
         yield 'selecting the small variant shows its own price and stock' => [
@@ -62,6 +62,40 @@ final class ProductVariantSwitchingTest extends AbstractFrontendTestCase
             'unexpectedStrings' => ['15.00'],
             'expectedOutOfStockRegex' => '/out.of.stock|Out of Stock/i',
         ];
+    }
+
+    #[Test]
+    public function withoutAChosenVariantTheLowestVariantPriceIsShownAsFromPrice(): void
+    {
+        $body = (string)$this->executeFrontendSubRequest($this->requestFor())->getBody();
+
+        $this->assertMatchesRegularExpression('#<span class="price price-from">\s*From\s+[^<\d]*15\.00#', $body);
+        $this->assertDoesNotMatchRegularExpression('#<span class="price[^"]*">[^<]*20\.00#', $body);
+    }
+
+    #[Test]
+    public function withoutAChosenVariantTheStructuredDataOffersThePriceRangeOfTheVariants(): void
+    {
+        $body = (string)$this->executeFrontendSubRequest($this->requestFor())->getBody();
+
+        $this->assertSame(1, preg_match('#<script type="application/ld\+json">(.*?)</script>#s', $body, $match));
+        $offers = json_decode($match[1] ?? '', true)['offers'] ?? [];
+        $this->assertSame('AggregateOffer', $offers['@type'] ?? null);
+        $this->assertSame('15.00', $offers['lowPrice'] ?? null);
+        $this->assertSame('20.00', $offers['highPrice'] ?? null);
+        $this->assertSame(2, $offers['offerCount'] ?? null);
+        $this->assertSame('https://schema.org/InStock', $offers['availability'] ?? null);
+    }
+
+    #[Test]
+    public function aChosenVariantKeepsItsOwnOfferInTheStructuredData(): void
+    {
+        $body = (string)$this->executeFrontendSubRequest($this->requestFor([1]))->getBody();
+
+        $this->assertSame(1, preg_match('#<script type="application/ld\+json">(.*?)</script>#s', $body, $match));
+        $offers = json_decode($match[1] ?? '', true)['offers'] ?? [];
+        $this->assertSame('Offer', $offers['@type'] ?? null);
+        $this->assertSame('15.00', $offers['price'] ?? null);
     }
 
     #[Test]

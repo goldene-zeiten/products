@@ -11,6 +11,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Event\ModifyProductStructuredDataEvent;
 use GoldeneZeiten\Products\Core\PageTitle\CurrentProductHolder;
 use GoldeneZeiten\Products\Core\Pricing\PriceProviderInterface;
+use GoldeneZeiten\Products\Core\Pricing\VariantPriceRangeResolver;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\NormalizedParams;
@@ -29,6 +30,7 @@ final class ProductHeadRenderer
         private readonly MetaTagManagerRegistry $metaTagManagerRegistry,
         private readonly PageRenderer $pageRenderer,
         private readonly PriceProviderInterface $priceProvider,
+        private readonly VariantPriceRangeResolver $priceRangeResolver,
         private readonly ProductsConfigurationFactory $configurationFactory,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
@@ -72,19 +74,12 @@ final class ProductHeadRenderer
      */
     private function structuredData(Product $product, ?Article $article, ProductSeoMetadata $metadata, string $imageUrl, ServerRequestInterface $request): array
     {
-        $inStock = ($article ?? $product)->isUnlimitedStock() || ($article ?? $product)->getInStock() > 0;
         $data = [
             '@context' => 'https://schema.org',
             '@type' => 'Product',
             'name' => $product->getTitle(),
             'sku' => $article?->getItemNumber() ?: $product->getItemNumber(),
-            'offers' => [
-                '@type' => 'Offer',
-                'price' => $this->priceProvider->getUnitPrice($product, $article, 1, $request)->getDecimalString(),
-                'priceCurrency' => $this->configurationFactory->create($request)->getCurrency(),
-                'availability' => $inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-                'url' => (string)$request->getUri(),
-            ],
+            'offers' => $this->offers($product, $article, $request),
         ];
         if ($metadata->description !== '') {
             $data['description'] = $metadata->description;
@@ -93,6 +88,40 @@ final class ProductHeadRenderer
             $data['image'] = $imageUrl;
         }
         return $data;
+    }
+
+    /**
+     * Before a variant is chosen, a product priced through its variants offers their price range.
+     *
+     * @return array<string, mixed>
+     */
+    private function offers(Product $product, ?Article $article, ServerRequestInterface $request): array
+    {
+        $offer = [
+            'priceCurrency' => $this->configurationFactory->create($request)->getCurrency(),
+            'url' => (string)$request->getUri(),
+        ];
+        $priceRange = $article === null ? $this->priceRangeResolver->resolve($product, $request) : null;
+        if ($priceRange !== null) {
+            return [
+                '@type' => 'AggregateOffer',
+                'lowPrice' => $priceRange->getLowest()->getDecimalString(),
+                'highPrice' => $priceRange->getHighest()->getDecimalString(),
+                'offerCount' => $priceRange->getVariantCount(),
+                'availability' => $this->availability($priceRange->isAnyInStock()),
+            ] + $offer;
+        }
+        $inStock = ($article ?? $product)->isUnlimitedStock() || ($article ?? $product)->getInStock() > 0;
+        return [
+            '@type' => 'Offer',
+            'price' => $this->priceProvider->getUnitPrice($product, $article, 1, $request)->getDecimalString(),
+            'availability' => $this->availability($inStock),
+        ] + $offer;
+    }
+
+    private function availability(bool $inStock): string
+    {
+        return $inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock';
     }
 
     private function imageUrl(ProductSeoMetadata $metadata, ServerRequestInterface $request): string
