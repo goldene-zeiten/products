@@ -561,6 +561,9 @@
 			<trans-unit id="tx_products_domain_model_order.site_identifier" resname="tx_products_domain_model_order.site_identifier">
 				<source>Site Identifier</source>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.language_id" resname="tx_products_domain_model_order.language_id">
+				<source>Language (ID)</source>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_order.legacy_order_data" resname="tx_products_domain_model_order.legacy_order_data">
 				<source>Legacy Order Data</source>
 			</trans-unit>

@@ -747,6 +747,10 @@
 				<source>Site Identifier</source>
 				<target>Website-Kennung</target>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_order.language_id" resname="tx_products_domain_model_order.language_id">
+				<source>Language (ID)</source>
+				<target>Sprache (ID)</target>
+			</trans-unit>
 			<trans-unit id="tx_products_domain_model_order.legacy_order_data" resname="tx_products_domain_model_order.legacy_order_data">
 				<source>Legacy Order Data</source>
 				<target>Altdaten der Bestellung</target>

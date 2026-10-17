@@ -19,6 +19,7 @@ use GoldeneZeiten\Products\Core\Payment\PaymentMethodRegistry;
 use GoldeneZeiten\Products\Core\Service\Exception\AgbFileNotFoundException;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoicePdfService;
 use GoldeneZeiten\Products\Core\Service\Invoice\InvoiceRenderer;
+use GoldeneZeiten\Products\Core\Service\Mail\OrderLanguageResolver;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalExclusionService;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalInstructionsBuilder;
 use GoldeneZeiten\Products\Core\Service\Withdrawal\WithdrawalSettingsFactory;
@@ -58,6 +59,7 @@ final class OrderMailService
         private readonly PaymentMethodRegistry $paymentMethodRegistry,
         private readonly PaymentInstructionsResolver $paymentInstructionsResolver,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly OrderLanguageResolver $languageResolver,
     ) {}
 
     public function sendOrderConfirmation(Order $order): void
@@ -222,8 +224,8 @@ final class OrderMailService
         $email->assignMultiple([
             'previousStatus' => $previousStatus,
             'newStatus' => $newStatus,
-            'previousStatusLabel' => $this->statusLabel($previousStatus),
-            'newStatusLabel' => $this->statusLabel($newStatus),
+            'previousStatusLabel' => $this->statusLabel($previousStatus, $order),
+            'newStatusLabel' => $this->statusLabel($newStatus, $order),
         ]);
         $this->send($email, $order, 'OrderStatusChanged');
     }
@@ -296,7 +298,7 @@ final class OrderMailService
     private function formatSubmission(Order $order, WithdrawalStatement $statement): string
     {
         $withdrawalSettings = $this->withdrawalSettingsFactory->fromSettings($this->settingsResolver->getSettings($order));
-        $format = (string)LocalizationUtility::translate(self::LANGUAGE_FILE . 'withdrawal_datetime_format', 'ProductsCore');
+        $format = (string)LocalizationUtility::translate(self::LANGUAGE_FILE . 'withdrawal_datetime_format', 'ProductsCore', null, $this->locale($order));
         return $statement->submittedAt->setTimezone($withdrawalSettings->getDateTimeZone())->format($format !== '' ? $format : 'Y-m-d H:i:s T');
     }
 
@@ -319,7 +321,7 @@ final class OrderMailService
         $this->mailer->send($email);
     }
 
-    private function statusLabel(OrderStatus $status): string
+    private function statusLabel(OrderStatus $status, Order $order): string
     {
         $key = match ($status) {
             OrderStatus::NEW => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.status.new',
@@ -330,19 +332,23 @@ final class OrderMailService
             OrderStatus::COMPLETED => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.status.completed',
             OrderStatus::WITHDRAWN => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.status.withdrawn',
         };
-        return (string)(LocalizationUtility::translate($key) ?? $status->value);
+        return (string)(LocalizationUtility::translate($key, null, null, $this->locale($order)) ?? $status->value);
     }
 
     private function buildEmail(Order $order, string $template, string $subjectKey, string $recipient): FluidEmail
     {
         $settings = $this->settingsResolver->getSettings($order);
         $email = new FluidEmail($this->buildTemplatePaths($settings));
+        $request = $this->languageResolver->request($order);
+        if ($request !== null) {
+            $email->setRequest($request);
+        }
         $this->applySender($email, $settings);
         $this->applyBcc($email, $settings);
 
         $email
             ->to($recipient)
-            ->subject((string)LocalizationUtility::translate($subjectKey, 'ProductsCore', [$order->getOrderNumber()]))
+            ->subject((string)LocalizationUtility::translate($subjectKey, 'ProductsCore', [$order->getOrderNumber()], $this->locale($order)))
             ->format(FluidEmail::FORMAT_BOTH)
             ->setTemplate($template)
             ->assignMultiple([
@@ -373,6 +379,16 @@ final class OrderMailService
             'paymentMethodLabel' => $paymentMethod->getLabel(),
             'paymentInstructions' => $this->paymentInstructionsResolver->resolve($order),
         ];
+    }
+
+    /**
+     * The order's language for translations, as a string so that "de-DE" falls back to "de" labels; null keeps the
+     * current request's language.
+     */
+    private function locale(Order $order): ?string
+    {
+        $language = $this->languageResolver->resolve($order);
+        return $language !== null ? (string)$language->getLocale() : null;
     }
 
     private function send(FluidEmail $email, Order $order, string $template): void

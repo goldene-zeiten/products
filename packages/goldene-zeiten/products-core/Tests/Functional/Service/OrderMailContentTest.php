@@ -119,10 +119,10 @@ final class OrderMailContentTest extends AbstractFrontendTestCase
             'expectedContent' => 'Surcharge Fixture Payment',
         ];
         yield 'translated salutation' => [
-            'expectedContent' => 'Ms Jane Shopper',
+            'expectedContent' => 'Frau Jane Shopper',
         ];
         yield 'desired delivery date' => [
-            'expectedContent' => '2030-12-23',
+            'expectedContent' => '23.12.2030',
         ];
         yield 'customer note' => [
             'expectedContent' => 'Please wrap it as a gift.',
