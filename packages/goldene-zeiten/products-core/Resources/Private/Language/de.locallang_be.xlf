@@ -223,6 +223,10 @@
 				<source>Search categories, products, articles...</source>
 				<target>Kategorien, Produkte, Artikel durchsuchen...</target>
 			</trans-unit>
+			<trans-unit id="tree.root_selector" resname="tree.root_selector">
+				<source>Root category</source>
+				<target>Stammkategorie</target>
+			</trans-unit>
 			<trans-unit id="tree.no_results" resname="tree.no_results">
 				<source>No matches found.</source>
 				<target>Keine Treffer gefunden.</target>

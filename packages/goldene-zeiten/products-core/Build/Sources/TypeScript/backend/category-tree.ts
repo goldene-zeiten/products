@@ -56,11 +56,16 @@ function label(key: string, fallback: string): string {
 export class ProductsCategoryTree extends LitElement {
   static properties = {
     rootNodes: { state: true },
+    allRoots: { state: true },
     searchMatches: { state: true },
     searchActive: { state: true },
   };
 
   declare rootNodes: TreeNode[];
+  /**
+   * Every root category. With more than one, the tree shows one root at a time (`viewRoot`), chosen above it.
+   */
+  declare allRoots: TreeNode[];
   declare searchMatches: SearchMatch[];
   declare searchActive: boolean;
 
@@ -75,10 +80,12 @@ export class ProductsCategoryTree extends LitElement {
   private newNodeDraft: { type: NewNodeType; parentUid: number; parentIdentifier: string } | null = null;
   private shouldFocusDraftInput = false;
   private storageFolderPid = 0;
+  private viewRoot: TreeNode | null = null;
 
   constructor() {
     super();
     this.rootNodes = [];
+    this.allRoots = [];
     this.searchMatches = [];
     this.searchActive = false;
   }
@@ -157,6 +164,7 @@ export class ProductsCategoryTree extends LitElement {
     const state = ModuleStateStorage.current(MODULE_TYPE);
     if (state.identifier) {
       this.selected = state.identifier;
+      await this.showRootOf(state.identifier);
       await this.revealSelected();
       this.navigateContent(state.identifier);
     }
@@ -211,7 +219,48 @@ export class ProductsCategoryTree extends LitElement {
   }
 
   private async loadRoot(): Promise<void> {
-    this.rootNodes = await this.client.fetchNodes('root');
+    this.allRoots = await this.client.fetchNodes('root');
+    if (this.allRoots.length < 2) {
+      this.viewRoot = null;
+      this.rootNodes = this.allRoots;
+      return;
+    }
+    const wanted = this.viewRoot?.identifier ?? this.state.getRoot();
+    this.viewRoot = this.allRoots.find((root) => root.identifier === wanted) ?? this.allRoots[0];
+    this.rootNodes = [this.viewRoot];
+  }
+
+  private async switchRoot(identifier: string): Promise<void> {
+    const root = this.allRoots.find((candidate) => candidate.identifier === identifier);
+    if (!root || root.identifier === this.viewRoot?.identifier) {
+      return;
+    }
+    this.viewRoot = root;
+    this.rootNodes = [root];
+    this.state.setRoot(root.identifier);
+    await this.restoreExpandedState();
+  }
+
+  /**
+   * A record selected under another root - e.g. reopened from the module state - brings its root into view.
+   */
+  private async showRootOf(identifier: string): Promise<void> {
+    if (this.viewRoot === null) {
+      return;
+    }
+    const rootline = await this.client.fetchRootline(identifier);
+    const root = rootline[0] ?? identifier;
+    if (this.allRoots.some((candidate) => candidate.identifier === root)) {
+      await this.switchRoot(root);
+    }
+  }
+
+  private isInViewRoot(match: SearchMatch): boolean {
+    return (
+      this.viewRoot === null ||
+      match.identifier === this.viewRoot.identifier ||
+      match.ancestors.includes(this.viewRoot.identifier)
+    );
   }
 
   private async ensureChildrenLoaded(identifier: string, forceRefresh = false): Promise<TreeNode[]> {
@@ -287,7 +336,7 @@ export class ProductsCategoryTree extends LitElement {
       this.searchMatches = [];
       return;
     }
-    const matches = await this.client.filter(query);
+    const matches = (await this.client.filter(query)).filter((match) => this.isInViewRoot(match));
     for (const match of matches) {
       for (const ancestor of match.ancestors) {
         await this.ensureChildrenLoaded(ancestor);
@@ -388,17 +437,22 @@ export class ProductsCategoryTree extends LitElement {
 
   private onRootDragOver(event: DragEvent): void {
     const newNodeType = this.resolveNewNodeType(event.dataTransfer);
-    if (newNodeType && this.canDropNewNode(newNodeType, null)) {
+    if (newNodeType && this.canDropNewNode(newNodeType, this.viewRoot ? 'category' : null)) {
       event.preventDefault();
     }
   }
 
   private async onRootDrop(event: DragEvent): Promise<void> {
     const newNodeType = this.resolveNewNodeType(event.dataTransfer);
-    if (!newNodeType || !this.canDropNewNode(newNodeType, null)) {
+    if (!newNodeType || !this.canDropNewNode(newNodeType, this.viewRoot ? 'category' : null)) {
       return;
     }
     event.preventDefault();
+    if (this.viewRoot) {
+      // With one root in view, a new node dropped on the background belongs to that root.
+      await this.startNewNodeDraft(newNodeType, this.viewRoot.uid, this.viewRoot.identifier);
+      return;
+    }
     await this.startNewNodeDraft(newNodeType, 0, 'root');
   }
 
@@ -723,10 +777,33 @@ export class ProductsCategoryTree extends LitElement {
     }
   }
 
+  private renderRootSelector(): TemplateResult | typeof nothing {
+    if (this.viewRoot === null) {
+      return nothing;
+    }
+    return html`<div class="px-2 pt-2">
+      <label for="productsTreeRootSelector" class="visually-hidden">${label('root_selector', 'Root category')}</label>
+      <select
+        id="productsTreeRootSelector"
+        class="form-select form-select-sm"
+        data-tree-root-selector
+        @change="${(event: Event) => void this.switchRoot((event.target as HTMLSelectElement).value)}"
+      >
+        ${this.allRoots.map(
+          (root) =>
+            html`<option value="${root.identifier}" ?selected="${root.identifier === this.viewRoot?.identifier}">
+              ${root.title}
+            </option>`,
+        )}
+      </select>
+    </div>`;
+  }
+
   render(): TemplateResult {
     const rootDraft = this.newNodeDraft?.parentIdentifier === 'root' ? this.newNodeDraft : null;
     return html`
       <div class="tree" style="min-height:0">
+        ${this.renderRootSelector()}
         <goldene-zeiten-products-tree-toolbar
           search-label="${label('search_placeholder', 'Search...')}"
           new-category-label="${label('new_category', 'New category')}"

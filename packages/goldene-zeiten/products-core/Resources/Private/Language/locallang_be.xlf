@@ -168,6 +168,9 @@
 			<trans-unit id="tree.search_placeholder" resname="tree.search_placeholder">
 				<source>Search categories, products, articles...</source>
 			</trans-unit>
+			<trans-unit id="tree.root_selector" resname="tree.root_selector">
+				<source>Root category</source>
+			</trans-unit>
 			<trans-unit id="tree.no_results" resname="tree.no_results">
 				<source>No matches found.</source>
 			</trans-unit>

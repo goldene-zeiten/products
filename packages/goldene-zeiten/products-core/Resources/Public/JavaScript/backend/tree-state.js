@@ -8,6 +8,7 @@
  * Generated from Build/Sources/TypeScript - do not edit directly.
  */
 const EXPANDED_STORAGE_KEY = 'products-category-tree-expanded';
+const ROOT_STORAGE_KEY = 'products-category-tree-root';
 /**
  * Persists expand state in localStorage (survives browser restarts, like the
  * page tree). Selection state is a separate concern handled by TYPO3 core's
@@ -31,6 +32,25 @@ export class TreeState {
         }
         catch {
             // Storage unavailable (private browsing, quota) - expand state simply won't persist.
+        }
+    }
+    /**
+     * The root category the tree shows when the catalog has several roots.
+     */
+    getRoot() {
+        try {
+            return window.localStorage.getItem(ROOT_STORAGE_KEY);
+        }
+        catch {
+            return null;
+        }
+    }
+    setRoot(identifier) {
+        try {
+            window.localStorage.setItem(ROOT_STORAGE_KEY, identifier);
+        }
+        catch {
+            // Storage unavailable - the tree simply starts on the first root next time.
         }
     }
 }

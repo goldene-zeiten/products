@@ -25,6 +25,10 @@ menu entry :guilabel:`Products`.
 *   Use the tree on the left to navigate categories. Right-click (or the toolbar) offers
     :guilabel:`New category`, and dragging a category onto another re-parents it.
 *   Selecting a category shows its products on the right; selecting a product shows its articles.
+*   With several root categories - e.g. a shop tree next to manufacturer and filter categories - a select
+    above the tree chooses which root the tree shows; the choice is remembered. The search finds records under
+    that root only, and a new category or product dropped on the tree background goes into that root. Moving a
+    category to another root is done in its record form.
 *   Use the :guilabel:`New product in this category` / :guilabel:`New article for this product`
     actions to create records in place; editing opens the normal TYPO3 record edit form.
 
