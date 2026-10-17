@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Core\Domain\Model;
 
+use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\VariantAttribute;
 use GoldeneZeiten\Products\Core\Domain\Enum\WithdrawalExclusion;
 use GoldeneZeiten\Products\Core\Domain\ValueObject\Money;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
@@ -437,20 +438,29 @@ class Product extends AbstractEntity
     }
 
     /**
-     * @return Attribute[]
+     * The attributes the articles differ in, each with only the values the articles carry.
+     *
+     * @return VariantAttribute[]
      */
     public function getVariantAttributes(): array
     {
-        $seen = [];
+        $attributes = [];
+        $usedValueUids = [];
         foreach ($this->articles as $article) {
             foreach ($article->getAttributeValues() as $value) {
                 $attribute = $value->getAttribute();
                 if ($attribute?->getUid() !== null) {
-                    $seen[$attribute->getUid()] = $attribute;
+                    $attributes[$attribute->getUid()] = $attribute;
+                    $usedValueUids[$value->getUid()] = true;
                 }
             }
         }
-        return array_values($seen);
+        $variantAttributes = [];
+        foreach ($attributes as $attribute) {
+            $values = array_filter($attribute->getValues()->toArray(), static fn(AttributeValue $value): bool => isset($usedValueUids[$value->getUid()]));
+            $variantAttributes[] = new VariantAttribute($attribute, array_values($values));
+        }
+        return $variantAttributes;
     }
 
     /**
