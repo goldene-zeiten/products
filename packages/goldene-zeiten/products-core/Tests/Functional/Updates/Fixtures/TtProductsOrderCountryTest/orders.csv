@@ -1,0 +1,4 @@
+"sys_products_orders",,,,,,,,,,,,,,,,,
+,"uid","pid","crdate","deleted","first_name","last_name","address","zip","city","country","email","payment","status","orderData","agb","amount"
+,10,1,1700000000,0,"Jane","Doe","Main St 1","12345","Berlin","Deutschland","jane@example.com","90: PayPal",0,"a:3:{s:7:""billing"";a:1:{s:12:""country_code"";s:3:""DEU"";}s:8:""delivery"";a:1:{s:12:""country_code"";s:3:""AUT"";}s:7:""version"";s:5:""3.5.2"";}",1,"10.00"
+,11,1,1700000001,0,"John","Smith","Road 2","1010","Wien","Republik Kugelland","john@example.com","90: PayPal",0,"",1,"10.00"
