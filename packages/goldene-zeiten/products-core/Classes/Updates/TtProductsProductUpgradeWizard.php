@@ -184,6 +184,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
     private function productValues(array $legacyRow, int $pid, int $legacyUid): array
     {
         return [
+            ...$this->migrationHelper->timestamps($legacyRow),
             'pid' => $pid,
             'hidden' => (int)$legacyRow['hidden'],
             'sys_language_uid' => 0,

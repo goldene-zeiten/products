@@ -1,0 +1,18 @@
+"tx_products_domain_model_product",,,,,,,,,,,,,,,,,,
+,"uid","pid","hidden","title",,,,,,,,,,,,,,
+,80,1,0,"Existing Product",,,,,,,,,,,,,,
+"tx_products_migration_map",,,,,,,,,,,,,,,,,,
+,"legacy_table","legacy_uid","local_table","local_uid",,,,,,,,,,,,,,
+,"tt_products",1,"tx_products_domain_model_product",80,,,,,,,,,,,,,,
+"tt_products",,,,,,,,,,,,,,,,,,
+,"uid","pid","deleted","hidden","title","itemnumber","ean","price","category","inStock","basketminquantity","basketmaxquantity","taxcat_id","weight","offer","highlight","tstamp","crdate"
+,11,1,0,0,"Kept","P11","","10.00",0,1,"0.00","0.00",1,"0.000000",0,0,1600000500,1600000100
+,12,1,0,0,"Crdate missing","P12","","10.00",0,1,"0.00","0.00",1,"0.000000",0,0,1600000500,0
+"tt_products_articles",,,,,,,,,,,,,,,,,,
+,"uid","pid","deleted","hidden","title","itemnumber","price","inStock","weight","uid_product","basketminquantity","basketmaxquantity","tstamp","crdate",,,,
+,11,1,0,0,"Kept","A11","9.99",10,"250.000000",1,"2.000000","5.000000",1600000500,1600000100,,,,
+,12,1,0,0,"Crdate missing","A12","9.99",10,"250.000000",1,"2.000000","5.000000",1600000500,0,,,,
+"tt_products_cat",,,,,,,,,,,,,,,,,,
+,"uid","pid","deleted","hidden","title","slug","note","parent_category","tstamp","crdate",,,,,,,,
+,11,1,0,0,"Kept","/kept","",0,1600000500,1600000100,,,,,,,,
+,12,1,0,0,"Crdate missing","/missing","",0,1600000500,0,,,,,,,,

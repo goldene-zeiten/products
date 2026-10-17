@@ -1,0 +1,80 @@
+<?php
+
+declare(strict_types=1);
+
+namespace GoldeneZeiten\Products\Core\Tests\Functional\Updates;
+
+use GoldeneZeiten\Products\Core\Updates\LegacyMigrationHelper;
+use GoldeneZeiten\Products\Core\Updates\TtProductsArticleUpgradeWizard;
+use GoldeneZeiten\Products\Core\Updates\TtProductsCategoryUpgradeWizard;
+use GoldeneZeiten\Products\Core\Updates\TtProductsProductUpgradeWizard;
+use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use Symfony\Component\Console\Output\BufferedOutput;
+
+/**
+ * A migrated record keeps the age it had in tt_products: the product sitemap reports it as `lastmod`
+ * and the "new" list mode selects by `crdate`.
+ */
+final class TtProductsMigratedTimestampsTest extends AbstractFunctionalTestCase
+{
+    protected array $testExtensionsToLoad = [
+        'goldene-zeiten/products-legacy-fixture',
+    ];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsMigratedTimestampsTest/legacy_records.csv');
+    }
+
+    /**
+     * @param class-string $wizardClass
+     */
+    #[Test]
+    #[DataProvider('recordProvider')]
+    public function migratedRecordKeepsLegacyTimestamps(string $wizardClass, string $localTable, string $title, int $expectedTstamp, int $expectedCrdate): void
+    {
+        // Products wait for the categories and articles for the products, so each case migrates its prerequisites first.
+        foreach (array_unique([TtProductsCategoryUpgradeWizard::class, TtProductsProductUpgradeWizard::class, $wizardClass]) as $class) {
+            $wizard = $this->get($class);
+            $wizard->setOutput(new BufferedOutput());
+            $wizard->executeUpdate();
+        }
+
+        $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable($localTable);
+        $row = $queryBuilder->select('tstamp', 'crdate')
+            ->from($localTable)
+            ->where($queryBuilder->expr()->eq('title', $queryBuilder->createNamedParameter($title)))
+            ->executeQuery()
+            ->fetchAssociative();
+
+        $this->assertSame(['tstamp' => $expectedTstamp, 'crdate' => $expectedCrdate], array_map(intval(...), $row ?: []));
+    }
+
+    public static function recordProvider(): \Generator
+    {
+        $targets = [
+            'product' => [TtProductsProductUpgradeWizard::class, 'tx_products_domain_model_product'],
+            'article' => [TtProductsArticleUpgradeWizard::class, 'tx_products_domain_model_article'],
+            'category' => [TtProductsCategoryUpgradeWizard::class, 'tx_products_domain_model_category'],
+        ];
+        foreach ($targets as $name => [$wizardClass, $localTable]) {
+            yield $name . ' keeps tstamp and crdate' => [$wizardClass, $localTable, 'Kept', 1600000500, 1600000100];
+            yield $name . ' falls back to tstamp without crdate' => [$wizardClass, $localTable, 'Crdate missing', 1600000500, 1600000500];
+        }
+    }
+
+    #[Test]
+    public function timestampsFallBackToTheCurrentTimeWithoutAnyLegacyTimestamp(): void
+    {
+        $before = time();
+
+        $timestamps = $this->get(LegacyMigrationHelper::class)->timestamps(['tstamp' => 0, 'crdate' => 0]);
+
+        $this->assertGreaterThanOrEqual($before, $timestamps['tstamp']);
+        $this->assertSame($timestamps['tstamp'], $timestamps['crdate']);
+    }
+}

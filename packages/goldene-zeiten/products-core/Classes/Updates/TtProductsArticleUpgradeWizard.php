@@ -200,6 +200,7 @@ final class TtProductsArticleUpgradeWizard implements UpgradeWizardInterface, Ch
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::LOCAL_TABLE);
         $queryBuilder->insert(self::LOCAL_TABLE)->values([
+            ...$this->migrationHelper->timestamps($legacyRow),
             'pid' => $pid,
             'hidden' => (int)$legacyRow['hidden'],
             'sys_language_uid' => 0,

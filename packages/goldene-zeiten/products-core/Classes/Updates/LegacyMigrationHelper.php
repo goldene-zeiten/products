@@ -79,6 +79,26 @@ final class LegacyMigrationHelper
     }
 
     /**
+     * `tstamp` and `crdate` for a record migrated from a legacy row: the legacy values, `crdate` falling
+     * back to `tstamp`, both to the current time when the legacy row carries neither.
+     *
+     * @param array<string, mixed> $legacyRow
+     * @return array{tstamp: int, crdate: int}
+     */
+    public function timestamps(array $legacyRow): array
+    {
+        $tstamp = (int)($legacyRow['tstamp'] ?? 0);
+        if ($tstamp === 0) {
+            $tstamp = (int)($legacyRow['crdate'] ?? 0);
+        }
+        if ($tstamp === 0) {
+            $tstamp = (int)($GLOBALS['EXEC_TIME'] ?? time());
+        }
+        $crdate = (int)($legacyRow['crdate'] ?? 0);
+        return ['tstamp' => $tstamp, 'crdate' => $crdate !== 0 ? $crdate : $tstamp];
+    }
+
+    /**
      * Finds unmigrated legacy rows via NOT EXISTS subquery.
      */
     private function unmigratedQueryBuilder(string $legacyTable, string $localTable, bool $legacyTableHasDeletedColumn = true): QueryBuilder
