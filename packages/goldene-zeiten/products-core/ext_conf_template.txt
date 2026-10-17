@@ -24,3 +24,6 @@ migration.orderShippingOptions =
 
 # cat=migration/catalog/50; type=string; label=Article columns that become attributes: Comma-separated "column:Title" pairs of tt_products_articles columns that told the articles of a product apart, e.g. "material:Material". The wizard "Turn tt_products article columns into attributes" creates an attribute "Title" per column with a value per distinct entry and links the migrated articles, so the article switch can offer them.
 migration.articleAttributeColumns =
+
+# cat=migration/catalog/60; type=boolean; label=Stock was not tracked: The legacy shop never tracked stock (goods made to order, every row keeps the stock it was created with). Products and articles are then migrated as not stock-limited, so they do not sell out after their first sale.
+migration.unlimitedStock = 0

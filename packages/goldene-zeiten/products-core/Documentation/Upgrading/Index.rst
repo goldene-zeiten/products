@@ -91,6 +91,15 @@ Configuration`, tab :guilabel:`migration`) before running the product and articl
     so the article switch on the product page can offer them. The configured columns are no longer
     reported as unmigrated by the article wizard.
 
+..  confval:: migration.unlimitedStock
+    :name: upgrading-unlimited-stock
+    :type: bool
+    :Default: false
+
+    The legacy shop never tracked stock - every ``inStock`` keeps the value its row was created with,
+    typical for goods made to order. Products and articles are then migrated with
+    :guilabel:`Unlimited stock`, so they do not sell out after their first sale.
+
 ..  confval:: migration.note2AsKeywords
     :name: upgrading-note2-as-keywords
     :type: bool
