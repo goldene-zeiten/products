@@ -1,0 +1,10 @@
+"tx_products_domain_model_product",,,,,,,
+,"uid","pid","title","slug","price","tax_class","articles"
+,7,2,"Ring","ring","0.00",1,2
+"tx_products_domain_model_article",,,,,,
+,"uid","pid","product","title","price","in_stock"
+,71,2,7,"Ring silver","37.50",3
+,72,2,7,"Ring gold","42.00",1
+"tt_content",,,,,,,,,,,
+,"uid","pid","sorting","deleted","hidden","colPos","CType","header","tx_products_list_mode","tx_products_items_per_page","tx_products_sorting"
+,701,2,256,0,0,0,"productscore_productlist","Everything","all",0,"title"

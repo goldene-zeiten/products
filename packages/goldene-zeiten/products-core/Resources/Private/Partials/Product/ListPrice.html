@@ -1,0 +1,14 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/Core/ViewHelpers"
+>
+<f:variable name="priceRange" value="{p:pricing.variantPriceRange(product: product)}" />
+<f:if condition="{priceRange}">
+    <f:then>
+        <f:render partial="Product/FromPrice" arguments="{price: priceRange.lowest}" />
+    </f:then>
+    <f:else>
+        <f:render partial="Product/Price" arguments="{price: '{p:pricing.displayPrice(product: product)}'}" />
+    </f:else>
+</f:if>
+</html>

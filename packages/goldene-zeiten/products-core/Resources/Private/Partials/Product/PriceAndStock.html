@@ -6,7 +6,15 @@
 <f:variable name="displayedItemNumber" value="{f:if(condition: selectedArticle, then: selectedArticle.itemNumber, else: product.itemNumber)}" />
 <f:variable name="displayedStock" value="{f:if(condition: selectedArticle, then: selectedArticle.inStock, else: product.inStock)}" />
 <div data-product-price-and-stock>
-    <f:render partial="Product/Price" arguments="{price: displayedPrice}" />
+    <f:variable name="priceRange" value="{f:if(condition: selectedArticle, else: '{p:pricing.variantPriceRange(product: product)}')}" />
+    <f:if condition="{priceRange}">
+        <f:then>
+            <f:render partial="Product/FromPrice" arguments="{price: priceRange.lowest}" />
+        </f:then>
+        <f:else>
+            <f:render partial="Product/Price" arguments="{price: displayedPrice}" />
+        </f:else>
+    </f:if>
     <f:render partial="Product/PriceTiers" arguments="{priceTiers: product.priceTiers}" />
 
     <f:if condition="{product.articles}">

@@ -18,7 +18,7 @@ test('in ajax switch mode a variant change swaps price and stock in place withou
     }),
   );
   await page.goto('/product/variant-tee');
-  await expect(page.getByText('€10.00')).toBeVisible();
+  await expect(page.getByText('From €25.00')).toBeVisible();
 
   // The shop runs in the default "reload" mode; the selector reads the mode on every change.
   await page.locator('[data-product-variant-selector]').evaluate((container) => {

@@ -31,7 +31,9 @@ menu entry :guilabel:`Products`.
 Articles are purchasable variants of a product (e.g. a specific size or colour). A product with
 articles can only be ordered via one of its articles — the product itself is then just the shared
 catalog entry (title, description, categories); price, stock and EAN are set per article. A product
-without any articles is directly purchasable itself.
+without any articles is directly purchasable itself. Until a customer chooses an article, lists and the
+detail page show the price of the cheapest article as "From …", and the structured data for search engines
+offers the price range of all articles.
 
 A :guilabel:`Direct Cost` field on both products and articles records what the item costs the
 merchant — purely an internal reference for margin calculation, never shown to shoppers or on any
