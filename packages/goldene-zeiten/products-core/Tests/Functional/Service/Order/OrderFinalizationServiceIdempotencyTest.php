@@ -44,8 +44,8 @@ final class OrderFinalizationServiceIdempotencyTest extends AbstractFunctionalTe
         $subject->finalize($order, PaymentResult::completed(PaymentStatus::PAID), $this->request());
 
         $this->assertSame(OrderStatus::CONFIRMED, $order->getStatus());
-        // One finalization + one status-changed mail.
-        $this->assertCount(2, TestMailer::getSentEmails());
+        // The confirmation mail says the order is confirmed; no status-changed mail on top.
+        $this->assertCount(1, TestMailer::getSentEmails());
     }
 
     #[Test]
@@ -58,7 +58,7 @@ final class OrderFinalizationServiceIdempotencyTest extends AbstractFunctionalTe
         $subject->finalize($order, PaymentResult::completed(PaymentStatus::PAID), $this->request());
 
         $this->assertSame(OrderStatus::CONFIRMED, $order->getStatus());
-        $this->assertCount(2, TestMailer::getSentEmails());
+        $this->assertCount(1, TestMailer::getSentEmails());
     }
 
     private function fetchOrder(): Order

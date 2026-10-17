@@ -2,6 +2,6 @@
 
 <f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:hello" />
 
-<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:status_changed_from_to" arguments="{0: order.orderNumber, 1: previousStatus.value, 2: newStatus.value}" />
+<f:format.raw><f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:status_changed_from_to" arguments="{0: order.orderNumber, 1: previousStatusLabel, 2: newStatusLabel}" /></f:format.raw>
 
 <f:render partial="Email/Signature" arguments="{_all}" />

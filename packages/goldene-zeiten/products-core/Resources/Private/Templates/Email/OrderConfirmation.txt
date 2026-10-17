@@ -13,7 +13,7 @@
 <f:if condition="{withdrawalPeriodDays}">
 <f:render partial="Withdrawal/Instructions" arguments="{instructions: instructions}" />
 <f:if condition="{withdrawalUrl}">
-<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_button_label" />: {withdrawalUrl}
+<f:translate key="LLL:EXT:products_core/Resources/Private/Language/locallang_email.xlf:withdrawal_button_label" />: {withdrawalUrl -> f:format.raw()}
 </f:if>
 <f:render partial="Withdrawal/ModelForm" arguments="{instructions: instructions}" />
 <f:if condition="{withdrawalExcludedItems}">

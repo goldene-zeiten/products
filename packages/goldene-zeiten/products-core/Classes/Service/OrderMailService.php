@@ -219,7 +219,12 @@ final class OrderMailService
         }
 
         $email = $this->buildEmail($order, 'OrderStatusChanged', self::LANGUAGE_FILE . 'order_status_changed_subject', $order->getEmail());
-        $email->assignMultiple(['previousStatus' => $previousStatus, 'newStatus' => $newStatus]);
+        $email->assignMultiple([
+            'previousStatus' => $previousStatus,
+            'newStatus' => $newStatus,
+            'previousStatusLabel' => $this->statusLabel($previousStatus),
+            'newStatusLabel' => $this->statusLabel($newStatus),
+        ]);
         $this->send($email, $order, 'OrderStatusChanged');
     }
 
@@ -312,6 +317,20 @@ final class OrderMailService
             ->setTemplate('LowStockWarning')
             ->assignMultiple(['title' => $title, 'newStock' => $newStock]);
         $this->mailer->send($email);
+    }
+
+    private function statusLabel(OrderStatus $status): string
+    {
+        $key = match ($status) {
+            OrderStatus::NEW => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.status.new',
+            OrderStatus::PENDING => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.status.pending',
+            OrderStatus::CONFIRMED => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.status.confirmed',
+            OrderStatus::CANCELLED => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.status.cancelled',
+            OrderStatus::SHIPPED => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.status.shipped',
+            OrderStatus::COMPLETED => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.status.completed',
+            OrderStatus::WITHDRAWN => 'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:order.status.withdrawn',
+        };
+        return (string)(LocalizationUtility::translate($key) ?? $status->value);
     }
 
     private function buildEmail(Order $order, string $template, string $subjectKey, string $recipient): FluidEmail
