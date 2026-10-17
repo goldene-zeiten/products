@@ -30,6 +30,7 @@ $EM_CONF[$_EXTKEY] = [
             'FontLib\\' => 'Resources/Private/Php/ComposerVendor/dompdf/php-font-lib/src/FontLib/',
             'Svg\\' => 'Resources/Private/Php/ComposerVendor/dompdf/php-svg-lib/src/Svg/',
             'Sabberworm\\CSS\\' => 'Resources/Private/Php/ComposerVendor/sabberworm/php-css-parser/src/',
+            'Masterminds\\' => 'Resources/Private/Php/ComposerVendor/masterminds/html5/src/',
         ],
     ],
 ];
