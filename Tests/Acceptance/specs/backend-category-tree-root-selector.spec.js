@@ -19,3 +19,15 @@ test('a tree with several root categories shows one root at a time and remembers
   await expect(navigation.locator('select[data-tree-root-selector]')).toHaveValue('category-5');
   await expect(topLevelNames).toHaveText(['Electronics']);
 });
+
+test('the root selector takes only its own height above the tree', async ({ page }) => {
+  await loginToBackend(page);
+  await page.goto('/typo3/module/products/management');
+  const navigation = page.locator('goldene-zeiten-products-category-tree');
+  const rootSelect = navigation.locator('select[data-tree-root-selector]');
+  await expect(rootSelect).toBeVisible();
+
+  const selectBox = await rootSelect.boundingBox();
+  const searchBox = await navigation.locator('input[type="search"]').boundingBox();
+  expect(searchBox.y - (selectBox.y + selectBox.height)).toBeLessThan(40);
+});

@@ -45,15 +45,21 @@ export class CategoryTreeClient {
     return this.getJson<TreeNode[]>(url, []);
   }
 
-  async filter(query: string): Promise<SearchMatch[]> {
+  async filter(query: string, root: string | null = null): Promise<SearchMatch[]> {
     const url = new URL(ajaxUrl('products_category_tree_filter'), window.location.href);
     url.searchParams.set('query', query);
+    if (root !== null) {
+      url.searchParams.set('root', root);
+    }
     return this.getJson<SearchMatch[]>(url, []);
   }
 
-  async fetchRootline(identifier: string): Promise<string[]> {
+  async fetchRootline(identifier: string, root: string | null = null): Promise<string[]> {
     const url = new URL(ajaxUrl('products_category_tree_rootline'), window.location.href);
     url.searchParams.set('identifier', identifier);
+    if (root !== null) {
+      url.searchParams.set('root', root);
+    }
     return this.getJson<string[]>(url, []);
   }
 
