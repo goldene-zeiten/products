@@ -72,18 +72,31 @@ final class LegacyMediaMigrator
         return $queryBuilder->executeQuery()->fetchAllAssociative();
     }
 
+    /**
+     * tt_products 3.x dropped some filename columns in favour of FAL (`tt_products.datasheet`,
+     * `tt_products_cat.image`); a filename list is only looked for where the legacy schema still has it.
+     */
     private function hasLegacyMediaCondition(QueryBuilder $queryBuilder, LegacyMediaFieldMapping $mapping): string
     {
+        $legacyReferences = sprintf(
+            'EXISTS (SELECT 1 FROM %s WHERE tablenames = %s AND fieldname = %s AND uid_foreign = %s AND deleted = 0)',
+            $queryBuilder->quoteIdentifier('sys_file_reference'),
+            $queryBuilder->createNamedParameter($mapping->legacyTable),
+            $queryBuilder->createNamedParameter($mapping->legacyField . '_uid'),
+            $queryBuilder->quoteIdentifier('legacy.uid')
+        );
+        if (!$this->hasLegacyColumn($mapping->legacyTable, $mapping->legacyField)) {
+            return $legacyReferences;
+        }
         return (string)$queryBuilder->expr()->or(
             $queryBuilder->expr()->neq('legacy.' . $mapping->legacyField, $queryBuilder->createNamedParameter('')),
-            sprintf(
-                'EXISTS (SELECT 1 FROM %s WHERE tablenames = %s AND fieldname = %s AND uid_foreign = %s AND deleted = 0)',
-                $queryBuilder->quoteIdentifier('sys_file_reference'),
-                $queryBuilder->createNamedParameter($mapping->legacyTable),
-                $queryBuilder->createNamedParameter($mapping->legacyField . '_uid'),
-                $queryBuilder->quoteIdentifier('legacy.uid')
-            )
+            $legacyReferences
         );
+    }
+
+    private function hasLegacyColumn(string $table, string $column): bool
+    {
+        return $this->connectionPool->getConnectionForTable($table)->createSchemaManager()->introspectTable($table)->hasColumn($column);
     }
 
     private function notYetMigratedCondition(QueryBuilder $queryBuilder, LegacyMediaFieldMapping $mapping): string
