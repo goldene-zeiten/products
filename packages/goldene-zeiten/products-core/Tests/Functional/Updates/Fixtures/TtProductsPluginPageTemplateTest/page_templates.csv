@@ -1,0 +1,28 @@
+"pages",,,,,,
+,"uid","pid","sorting","deleted","title","slug"
+,10,2,256,0,"Kuehnel","/shop/kuehnel"
+,11,2,512,0,"Unikate","/shop/unikate"
+,223,1,768,0,"Kuehnel products","/kuehnel-products"
+"sys_template",,,,,,,
+,"uid","pid","sorting","deleted","hidden","root","config"
+,1,1,256,0,0,1,"plugin.tt_products.conf.tt_products.ALL.limit = 144
+plugin.tt_products.conf.tt_products.ALL.orderBy = uid"
+,2,10,256,0,0,0,"plugin.tt_products {
+  pid_list = 223
+  conf.tt_products.ALL {
+    limit = 36
+    orderBy = price
+  }
+}"
+,3,10,512,0,1,0,"plugin.tt_products.conf.tt_products.ALL.limit = 999"
+,4,11,256,0,0,0,"plugin.tt_products.pid_list = 369"
+"tt_content",,,,,,,,,,
+,"uid","pid","sorting","deleted","colPos","CType","list_type","pages","pi_flexform","tx_products_category"
+,200,10,256,0,0,"list","5","","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""display_mode""><value index=""vDEF"">LIST</value></field></language></sheet></data></T3FlexForms>",""
+,201,2,256,0,0,"list","5","","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""display_mode""><value index=""vDEF"">LIST</value></field></language></sheet></data></T3FlexForms>",""
+,202,10,512,0,0,"list","5","12","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""display_mode""><value index=""vDEF"">LIST</value></field></language></sheet></data></T3FlexForms>",""
+,203,11,256,0,0,"list","5","","<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""display_mode""><value index=""vDEF"">LIST</value></field></language></sheet></data></T3FlexForms>",""
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"pages",223,"tx_products_domain_model_category",7
+,"pages",12,"tx_products_domain_model_category",3
