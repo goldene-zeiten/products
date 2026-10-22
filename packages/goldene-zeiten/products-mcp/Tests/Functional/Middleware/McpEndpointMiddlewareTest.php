@@ -56,7 +56,7 @@ final class McpEndpointMiddlewareTest extends AbstractFrontendTestCase
         $this->post(['jsonrpc' => '2.0', 'method' => 'notifications/initialized'], $sessionId);
 
         $list = $this->resultOf($this->post(['jsonrpc' => '2.0', 'id' => 2, 'method' => 'tools/list'], $sessionId));
-        $this->assertSame(['shop_info'], array_column($list['tools'], 'name'));
+        $this->assertContains('shop_info', array_column($list['tools'], 'name'));
 
         $call = $this->resultOf($this->post([
             'jsonrpc' => '2.0',

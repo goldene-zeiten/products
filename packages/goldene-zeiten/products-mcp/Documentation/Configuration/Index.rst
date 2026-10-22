@@ -60,6 +60,8 @@ Tools
 ``shop_info``
     Returns the name, base URL and currency of the site the client is connected to.
 
+The tools to search and describe the catalogue are listed under :ref:`tools`.
+
 An extension adds a tool by implementing :php:`GoldeneZeiten\Products\Mcp\Registry\McpToolInterface`; the service
 is picked up through autoconfiguration. Resources work the same way with
 :php:`GoldeneZeiten\Products\Mcp\Registry\McpResourceInterface`.

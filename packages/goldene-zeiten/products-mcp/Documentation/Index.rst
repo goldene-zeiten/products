@@ -55,6 +55,10 @@ site and discover the shop's tools and resources.
 
         The guides and facts an assistant reads, and how a site overrides them.
 
+    ..  card:: :ref:`Tools <tools>`
+
+        The read tools: search products, product details, categories, manufacturers and shipping options.
+
 **Table of Contents:**
 
 ..  toctree::
@@ -64,3 +68,4 @@ site and discover the shop's tools and resources.
     Installation/Index
     Configuration/Index
     Resources/Index
+    Tools/Index
