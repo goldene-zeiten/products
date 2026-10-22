@@ -22,9 +22,11 @@ use GoldeneZeiten\Products\Core\Service\ContentElement\SelectedCategoriesResolve
 use GoldeneZeiten\Products\Core\Service\Variant\ArticleVariantResolver;
 use GoldeneZeiten\Products\Core\Visibility\ProductVisibilityResolver;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Frontend\Controller\ErrorController;
 
 final class ProductController extends ActionController
 {
@@ -39,6 +41,7 @@ final class ProductController extends ActionController
         private readonly ProductVisibilityResolver $productVisibilityResolver,
         private readonly ProductListService $productListService,
         private readonly ProductHeadRenderer $productHeadRenderer,
+        private readonly ErrorController $errorController,
     ) {}
 
     public function listAction(int $currentPage = 1): ResponseInterface
@@ -55,6 +58,7 @@ final class ProductController extends ActionController
 
     /**
      * @param int[] $attributeValues Selected variant attribute-value uids (ignored if $selectedArticle is set).
+     * @throws PropagateResponseException
      * @throws ProductPathMismatchException
      * @throws ProductNotVisibleException
      */
@@ -66,9 +70,9 @@ final class ProductController extends ActionController
     ): ResponseInterface {
         $product ??= $selectedArticle?->getProduct();
         if (!$product instanceof Product) {
-            throw new ProductPathMismatchException(
-                'Neither a product nor a selected article could be resolved from the request.',
-                1783800100
+            throw new PropagateResponseException(
+                $this->errorController->pageNotFoundAction($this->request, 'The product does not exist.'),
+                1792401337
             );
         }
         if ($selectedArticle?->getProduct()?->getUid() !== $product->getUid()) {

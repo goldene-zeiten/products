@@ -130,6 +130,45 @@ final class ProductControllerTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function showActionWithoutAProductAnswersNotFound(): void
+    {
+        $this->importCSVDataSet(self::sharedFixture('pages.csv'));
+        $this->importCSVDataSet(self::sharedFixture('shop.csv'));
+        $this->writeSiteConfiguration(
+            'products',
+            $this->buildSiteConfiguration(1),
+            [
+                $this->buildDefaultLanguageConfiguration('en', '/'),
+            ]
+        );
+        $this->setUpFrontendRootPage(1, [
+            'constants' => [
+                'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
+                'EXT:products_core/Configuration/TypoScript/constants.typoscript',
+            ],
+            'setup' => [
+                'EXT:products_core/Configuration/TypoScript/setup.typoscript',
+            ],
+        ]);
+        $this->addTypoScriptToTemplateRecord(1, '
+            plugin.tx_productscore.persistence.storagePid = 2
+            page = PAGE
+            page.10 = USER
+            page.10 {
+                userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+                extensionName = ProductsCore
+                pluginName = ProductDetail
+                vendorName = GoldeneZeiten
+            }
+        ');
+
+        $response = $this->executeFrontendSubRequest(new InternalRequest('http://localhost/shop'));
+
+        $this->assertSame(404, $response->getStatusCode());
+        $this->assertStringNotContainsString('Oops, an error occurred', (string)$response->getBody());
+    }
+
+    #[Test]
     public function showActionRendersRelatedAndAccessoryProducts(): void
     {
         $this->importCSVDataSet(self::sharedFixture('pages.csv'));
