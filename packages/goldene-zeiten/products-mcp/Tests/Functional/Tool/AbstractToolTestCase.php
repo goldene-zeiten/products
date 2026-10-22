@@ -74,6 +74,25 @@ abstract class AbstractToolTestCase extends AbstractFrontendTestCase
         return ['isError' => (bool)($result['isError'] ?? false), 'data' => is_array($data) ? $data : [], 'text' => $text];
     }
 
+    /**
+     * Sends any request of the protocol, such as "tools/list", within the session and returns its result.
+     *
+     * @param array<string, mixed> $params
+     * @return array<string, mixed>
+     */
+    protected function requestResult(string $method, array $params = []): array
+    {
+        $response = $this->post(
+            ['jsonrpc' => '2.0', 'id' => 11, 'method' => $method, 'params' => $params === [] ? new \stdClass() : $params],
+            $this->sessionId
+        );
+        $this->assertSame(200, $response->getStatusCode(), (string)$response->getBody());
+        $payload = json_decode((string)$response->getBody(), true, flags: JSON_THROW_ON_ERROR);
+        $this->assertArrayHasKey('result', $payload, (string)$response->getBody());
+
+        return $payload['result'];
+    }
+
     private function openSession(): string
     {
         $response = $this->post([

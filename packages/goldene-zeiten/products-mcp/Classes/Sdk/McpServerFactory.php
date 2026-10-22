@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Mcp\Sdk;
 
+use GoldeneZeiten\Products\Mcp\Event\ModifyMcpResourcesEvent;
+use GoldeneZeiten\Products\Mcp\Event\ModifyMcpToolsEvent;
 use GoldeneZeiten\Products\Mcp\Registry\McpContext;
 use GoldeneZeiten\Products\Mcp\Registry\McpResourceRegistry;
 use GoldeneZeiten\Products\Mcp\Registry\McpToolRegistry;
@@ -12,6 +14,7 @@ use Mcp\Schema\Tool;
 use Mcp\Server;
 use Mcp\Server\Builder;
 use Mcp\Server\Session\SessionStoreInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -25,7 +28,8 @@ final readonly class McpServerFactory
     public function __construct(
         private McpToolRegistry $toolRegistry,
         private McpResourceRegistry $resourceRegistry,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private EventDispatcherInterface $eventDispatcher
     ) {}
 
     public function create(McpContext $context, SessionStoreInterface $sessionStore): Server
@@ -42,17 +46,21 @@ final readonly class McpServerFactory
 
     private function addTools(Builder $builder, McpContext $context): void
     {
-        foreach ($this->toolRegistry->all() as $tool) {
+        $event = new ModifyMcpToolsEvent($this->toolRegistry->all(), $context);
+        $this->eventDispatcher->dispatch($event);
+        foreach ($event->getTools() as $tool) {
             $builder->add(
                 new Tool($tool->getName(), null, $tool->getInputSchema(), $tool->getDescription(), null),
-                new ToolHandlerAdapter($tool, $context)
+                new ToolHandlerAdapter($tool, $context, $this->eventDispatcher)
             );
         }
     }
 
     private function addResources(Builder $builder, McpContext $context): void
     {
-        foreach ($this->resourceRegistry->all() as $resource) {
+        $event = new ModifyMcpResourcesEvent($this->resourceRegistry->all(), $context);
+        $this->eventDispatcher->dispatch($event);
+        foreach ($event->getResources() as $resource) {
             $builder->add(
                 new ResourceDefinition(
                     $resource->getUri(),
