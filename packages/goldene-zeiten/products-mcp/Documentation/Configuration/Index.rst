@@ -61,6 +61,22 @@ the endpoint, then adjust its settings under :guilabel:`Site Management > Sites 
     kept for less than 60 seconds. Sites that share a database should use the same value, since expired baskets
     are removed for all of them.
 
+..  confval:: products.mcp.rateLimit
+    :type: int
+    :Default: 120
+
+    Requests per minute one client IP may send to the endpoint. A request over the limit is answered with
+    ``429 Too Many Requests``, a JSON-RPC error body and a ``Retry-After`` header. ``0`` switches the limit off.
+    The counters are kept in the caching framework (cache ``ratelimiter``), so they are shared by all PHP
+    processes.
+
+..  confval:: products.mcp.checkoutRateLimit
+    :type: int
+    :Default: 30
+
+    Checkout links one client IP may open per minute, counted apart from the endpoint requests and answered the
+    same way. ``0`` switches the limit off.
+
 ..  _configuration-tools:
 
 Tools

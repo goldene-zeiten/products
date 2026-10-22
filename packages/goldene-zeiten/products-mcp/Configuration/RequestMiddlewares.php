@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use GoldeneZeiten\Products\Mcp\Middleware\CheckoutHandoffMiddleware;
 use GoldeneZeiten\Products\Mcp\Middleware\McpEndpointMiddleware;
+use GoldeneZeiten\Products\Mcp\Middleware\McpRateLimitMiddleware;
 
 /**
  * The endpoint runs after the site has been resolved - it answers for that site's settings - but before page
@@ -12,6 +13,16 @@ use GoldeneZeiten\Products\Mcp\Middleware\McpEndpointMiddleware;
  */
 return [
     'frontend' => [
+        'goldene-zeiten/products-mcp/rate-limit' => [
+            'target' => McpRateLimitMiddleware::class,
+            'after' => [
+                'typo3/cms-frontend/site',
+            ],
+            'before' => [
+                'goldene-zeiten/products-mcp/checkout-handoff',
+                'goldene-zeiten/products-mcp/endpoint',
+            ],
+        ],
         'goldene-zeiten/products-mcp/checkout-handoff' => [
             'target' => CheckoutHandoffMiddleware::class,
             'after' => [

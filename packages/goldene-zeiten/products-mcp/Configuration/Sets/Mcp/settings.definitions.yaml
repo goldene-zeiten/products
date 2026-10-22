@@ -34,3 +34,13 @@ settings:
     default: 86400
     label: 'LLL:EXT:products_mcp/Resources/Private/Language/locallang_settings.xlf:setting.products.mcp.checkoutLinkLifetime'
     category: mcp
+  products.mcp.rateLimit:
+    type: int
+    default: 120
+    label: 'LLL:EXT:products_mcp/Resources/Private/Language/locallang_settings.xlf:setting.products.mcp.rateLimit'
+    category: mcp
+  products.mcp.checkoutRateLimit:
+    type: int
+    default: 30
+    label: 'LLL:EXT:products_mcp/Resources/Private/Language/locallang_settings.xlf:setting.products.mcp.checkoutRateLimit'
+    category: mcp
