@@ -1,0 +1,19 @@
+categories:
+  mcp:
+    label: 'LLL:EXT:products_mcp/Resources/Private/Language/locallang_settings.xlf:category.mcp'
+settings:
+  products.mcp.enabled:
+    type: bool
+    default: false
+    label: 'LLL:EXT:products_mcp/Resources/Private/Language/locallang_settings.xlf:setting.products.mcp.enabled'
+    category: mcp
+  products.mcp.path:
+    type: string
+    default: '/mcp'
+    label: 'LLL:EXT:products_mcp/Resources/Private/Language/locallang_settings.xlf:setting.products.mcp.path'
+    category: mcp
+  products.mcp.sessionLifetime:
+    type: int
+    default: 3600
+    label: 'LLL:EXT:products_mcp/Resources/Private/Language/locallang_settings.xlf:setting.products.mcp.sessionLifetime'
+    category: mcp

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_mcp/Resources/Private/Language/de.locallang_settings.xlf" date="2026-10-23T02:00:00Z" product-name="products_mcp">
+		<header/>
+		<body>
+			<trans-unit id="category.mcp" resname="category.mcp">
+				<source>MCP endpoint</source>
+				<target>MCP-Endpunkt</target>
+			</trans-unit>
+			<trans-unit id="setting.products.mcp.enabled" resname="setting.products.mcp.enabled">
+				<source>Serve the Model Context Protocol endpoint for this site</source>
+				<target>Den Model-Context-Protocol-Endpunkt für diese Site ausliefern</target>
+			</trans-unit>
+			<trans-unit id="setting.products.mcp.path" resname="setting.products.mcp.path">
+				<source>Path of the MCP endpoint, relative to the site base</source>
+				<target>Pfad des MCP-Endpunkts, relativ zur Site-Basis</target>
+			</trans-unit>
+			<trans-unit id="setting.products.mcp.sessionLifetime" resname="setting.products.mcp.sessionLifetime">
+				<source>Seconds an MCP session stays valid without a request</source>
+				<target>Sekunden, die eine MCP-Session ohne Anfrage gültig bleibt</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
