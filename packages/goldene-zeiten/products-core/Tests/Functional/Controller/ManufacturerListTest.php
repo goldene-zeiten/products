@@ -88,4 +88,20 @@ final class ManufacturerListTest extends AbstractFrontendTestCase
 
         $this->assertStringContainsString('<a href="https://alpha.example"', $body);
     }
+
+    #[Test]
+    public function theListIsSortedByTheShownNameCaseInsensitively(): void
+    {
+        $connection = $this->getConnectionPool()->getConnectionForTable('tx_products_domain_model_manufacturer');
+        $connection->update('tx_products_domain_model_manufacturer', ['name' => 'Cammilli Firenze', 'brand_name' => 'Zeta Brand'], ['uid' => 1]);
+        $connection->update('tx_products_domain_model_manufacturer', ['name' => 'Zebra Ltd', 'brand_name' => 'beta Brand'], ['uid' => 2]);
+        $connection->update('tx_products_domain_model_manufacturer', ['name' => 'Alpha Ltd', 'brand_name' => 'Ärger Brand'], ['uid' => 3]);
+        $contentConnection = $this->getConnectionPool()->getConnectionForTable('tt_content');
+        $contentConnection->update('tt_content', ['hidden' => 1], ['pid' => 2]);
+        $contentConnection->update('tt_content', ['hidden' => 0], ['uid' => 812]);
+
+        $body = (string)$this->executeFrontendSubRequest(new InternalRequest('http://localhost/shop'))->getBody();
+
+        $this->assertMatchesRegularExpression('/Ärger Brand.*beta Brand.*Zeta Brand/s', $body);
+    }
 }

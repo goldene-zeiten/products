@@ -8,7 +8,6 @@ use GoldeneZeiten\Products\Core\Domain\Model\Manufacturer;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
-use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 
 /**
  * @extends AbstractReadOnlyRepository<Manufacturer>
@@ -30,16 +29,20 @@ final class ManufacturerRepository extends AbstractReadOnlyRepository
 
     /**
      * The visible manufacturers with a visible product that is in at least one category of every group;
-     * without groups, every manufacturer with a visible product.
+     * without groups, every manufacturer with a visible product. Sorted by the brand name shown in the list,
+     * following German collation.
      *
      * @param int[][] $categoryGroups
-     * @return QueryResultInterface<int, Manufacturer>
+     * @return list<Manufacturer>
      */
-    public function findWithProductsInCategories(array $categoryGroups): QueryResultInterface
+    public function findWithProductsInCategories(array $categoryGroups): array
     {
         $query = $this->createQuery();
         $query->matching($query->in('uid', $this->manufacturerUids($categoryGroups) ?: [0]));
-        return $query->execute();
+        $manufacturers = $query->execute()->toArray();
+        $collator = new \Collator('de_DE');
+        usort($manufacturers, static fn(Manufacturer $a, Manufacturer $b): int => $collator->compare($a->getBrandName(), $b->getBrandName()) ?: $a->getUid() <=> $b->getUid());
+        return $manufacturers;
     }
 
     /**
