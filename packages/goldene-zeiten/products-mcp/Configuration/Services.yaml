@@ -6,3 +6,8 @@ services:
 
   GoldeneZeiten\Products\Mcp\:
     resource: '../Classes/*'
+    exclude:
+      - '../Classes/Registry/McpContext.php'
+      - '../Classes/Sdk/Typo3SessionStore.php'
+      - '../Classes/Sdk/ToolHandlerAdapter.php'
+      - '../Classes/Sdk/ResourceHandlerAdapter.php'
