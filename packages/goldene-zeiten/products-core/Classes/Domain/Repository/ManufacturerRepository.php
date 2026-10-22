@@ -38,7 +38,8 @@ final class ManufacturerRepository extends AbstractReadOnlyRepository
     public function findWithProductsInCategories(array $categoryGroups): array
     {
         $query = $this->createQuery();
-        $query->matching($query->in('uid', $this->manufacturerUids($categoryGroups) ?: [0]));
+        $uids = $this->manufacturerUids($categoryGroups) ?: [0];
+        $query->matching($query->logicalOr($query->in('uid', $uids), $query->in('l10n_parent', $uids)));
         $manufacturers = $query->execute()->toArray();
         $collator = new \Collator('de_DE');
         usort($manufacturers, static fn(Manufacturer $a, Manufacturer $b): int => $collator->compare($a->getBrandName(), $b->getBrandName()) ?: $a->getUid() <=> $b->getUid());
