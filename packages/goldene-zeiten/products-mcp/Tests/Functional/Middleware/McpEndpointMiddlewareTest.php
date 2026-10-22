@@ -71,6 +71,15 @@ final class McpEndpointMiddlewareTest extends AbstractFrontendTestCase
     }
 
     #[Test]
+    public function aSiteWithoutHostInItsBaseAnswersOnTheHostTheRequestCameInOn(): void
+    {
+        $response = $this->initialize('http://shop.example.com/mcp');
+
+        $this->assertSame(200, $response->getStatusCode(), (string)$response->getBody());
+        $this->assertNotSame('', $response->getHeaderLine('Mcp-Session-Id'));
+    }
+
+    #[Test]
     public function aRequestWithAnUnknownSessionIsRejected(): void
     {
         $response = $this->post(
@@ -112,7 +121,7 @@ final class McpEndpointMiddlewareTest extends AbstractFrontendTestCase
         );
     }
 
-    private function initialize(): ResponseInterface
+    private function initialize(string $url = 'http://localhost/mcp'): ResponseInterface
     {
         return $this->post([
             'jsonrpc' => '2.0',
@@ -123,7 +132,7 @@ final class McpEndpointMiddlewareTest extends AbstractFrontendTestCase
                 'capabilities' => new \stdClass(),
                 'clientInfo' => ['name' => 'phpunit', 'version' => '1.0.0'],
             ],
-        ]);
+        ], null, $url);
     }
 
     /**
@@ -131,9 +140,9 @@ final class McpEndpointMiddlewareTest extends AbstractFrontendTestCase
      *
      * @param array<string, mixed> $message
      */
-    private function post(array $message, ?string $sessionId = null): ResponseInterface
+    private function post(array $message, ?string $sessionId = null, string $url = 'http://localhost/mcp'): ResponseInterface
     {
-        $request = (new InternalRequest('http://localhost/mcp'))
+        $request = (new InternalRequest($url))
             ->withMethod('POST')
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Accept', 'application/json, text/event-stream')
