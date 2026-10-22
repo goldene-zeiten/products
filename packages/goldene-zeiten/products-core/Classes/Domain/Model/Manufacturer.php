@@ -140,13 +140,14 @@ class Manufacturer extends AbstractEntity
     }
 
     /**
-     * The non-empty lines of the postal address: street, ZIP code with city, country code.
+     * The non-empty lines of the postal address: street, ZIP code with city. The country is
+     * left to the template, which names it in the language of the page.
      *
      * @return string[]
      */
     public function getAddressLines(): array
     {
-        $lines = [$this->street, trim($this->zip . ' ' . $this->city), $this->country];
+        $lines = [$this->street, trim($this->zip . ' ' . $this->city)];
         return array_values(array_filter($lines, static fn(string $line): bool => $line !== ''));
     }
 

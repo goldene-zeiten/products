@@ -1,4 +1,6 @@
-<html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:p="http://typo3.org/ns/GoldeneZeiten/Products/Core/ViewHelpers">
 <f:if condition="{manufacturer}">
     <section class="product-manufacturer mt-4">
         <h2 class="h5"><f:translate key="manufacturer.heading" extensionName="ProductsCore" /></h2>
@@ -9,11 +11,12 @@
                 <dt><f:translate key="manufacturer.brand" extensionName="ProductsCore" /></dt>
                 <dd>{manufacturer.brandName}</dd>
             </f:if>
-            <f:if condition="{manufacturer.addressLines}">
+            <f:if condition="{manufacturer.addressLines} || {manufacturer.country}">
                 <dt><f:translate key="manufacturer.address" extensionName="ProductsCore" /></dt>
                 <dd>
                     <address>
-                        <f:for each="{manufacturer.addressLines}" as="line" iteration="iterator">{line}<f:if condition="{iterator.isLast} == 0"><br></f:if></f:for>
+                        <f:for each="{manufacturer.addressLines}" as="line">{line}<br></f:for>
+                        <f:if condition="{manufacturer.country}"><p:format.countryName isoCode="{manufacturer.country}" /></f:if>
                     </address>
                 </dd>
             </f:if>
