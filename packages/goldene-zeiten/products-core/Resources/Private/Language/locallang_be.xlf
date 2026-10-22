@@ -351,6 +351,9 @@
 			<trans-unit id="tt_content.tx_products_sorting.newest" resname="tt_content.tx_products_sorting.newest">
 				<source>Newest first</source>
 			</trans-unit>
+			<trans-unit id="plugin.manufacturer_list" resname="plugin.manufacturer_list">
+				<source>Manufacturer List</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

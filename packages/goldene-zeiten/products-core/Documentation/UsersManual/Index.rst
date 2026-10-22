@@ -150,6 +150,27 @@ The EU General Product Safety Regulation (EU) 2023/988, Art. 19, requires an onl
 
 The description, the logo and the link to a page are optional and not part of the legal minimum.
 
+Listing manufacturers
+---------------------
+
+The content element :guilabel:`Manufacturer List` shows the brand names of the manufacturers that have at
+least one visible product, ordered by name. Each links to its :guilabel:`Page`, otherwise to its
+:guilabel:`Website`, otherwise it is not linked. A manufacturer with its logo set shows the logo as well.
+
+The list uses the product list's fields:
+
+:guilabel:`Categories`
+    A manufacturer is listed if it has a product in at least one of the selected categories, each
+    including its subcategories.
+
+:guilabel:`Filter categories`
+    The product must also be in every one of these categories (again including subcategories). With the
+    category "Wedding rings" and the filter category "White gold", the list shows the manufacturers that
+    have a white gold wedding ring.
+
+Without any category, every manufacturer with a visible product is listed. Hidden manufacturers, and
+manufacturers whose products are all hidden, are not listed.
+
 ..  _users-manual-cross-selling:
 
 Cross-selling: related and accessory products

@@ -1,0 +1,33 @@
+"tx_products_domain_model_category",,,,,
+,"uid","pid","title","slug","parent_category"
+,91,2,"Wedding rings","wedding-rings",0
+,92,2,"White gold","white-gold",0
+,93,2,"Jewellery","jewellery",0
+"tx_products_domain_model_manufacturer",,,,,,,
+,"uid","pid","hidden","deleted","name","brand_name","website"
+,1,2,0,0,"Alpha Rings GmbH","Alpha Rings","https://alpha.example"
+,2,2,0,0,"Beta Rings GmbH","Beta Rings",""
+,3,2,0,0,"Gamma Jewels GmbH","Gamma Jewels",""
+,4,2,1,0,"Hidden Maker","Hidden Maker",""
+,5,2,0,0,"Ghost Maker","Ghost Maker",""
+,6,2,0,0,"Idle Maker","Idle Maker",""
+"tx_products_domain_model_product",,,,,,,,,
+,"uid","pid","hidden","title","slug","price","tax_class","categories","manufacturer"
+,91,2,0,"Alpha white gold ring","alpha-white-gold-ring","100.00",1,2,1
+,92,2,0,"Beta ring","beta-ring","100.00",1,1,2
+,93,2,0,"Gamma pendant","gamma-pendant","100.00",1,1,3
+,94,2,0,"Hidden maker ring","hidden-maker-ring","100.00",1,1,4
+,95,2,1,"Ghost ring","ghost-ring","100.00",1,1,5
+"tx_products_product_category_mm",,,
+,"uid_local","uid_foreign","sorting"
+,91,91,1
+,91,92,2
+,92,91,1
+,93,93,1
+,94,91,1
+,95,91,1
+"tt_content",,,,,,,,,,,,
+,"uid","pid","sorting","deleted","hidden","colPos","CType","header","tx_products_category","tx_products_filter_categories"
+,810,2,256,0,0,0,"productscore_manufacturerlist","Wedding rings in white gold","91","92"
+,811,2,256,0,1,0,"productscore_manufacturerlist","Wedding rings","91",""
+,812,2,256,0,1,0,"productscore_manufacturerlist","All manufacturers","",""

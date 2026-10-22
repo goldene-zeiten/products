@@ -1,0 +1,8 @@
+<html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
+<div class="manufacturer-item card p-3 mb-3">
+    <f:if condition="{manufacturer.logo}">
+        <f:image image="{manufacturer.logo}" maxWidth="200" alt="{manufacturer.brandName}" class="img-fluid mb-2" />
+    </f:if>
+    <h3 class="h5"><f:if condition="{manufacturer.page}"><f:then><f:link.page pageUid="{manufacturer.page}">{manufacturer.brandName}</f:link.page></f:then><f:else if="{manufacturer.website}"><a href="{manufacturer.website}" rel="noopener">{manufacturer.brandName}</a></f:else><f:else>{manufacturer.brandName}</f:else></f:if></h3>
+</div>
+</html>
