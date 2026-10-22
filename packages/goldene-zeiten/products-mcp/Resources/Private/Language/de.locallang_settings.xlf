@@ -31,6 +31,14 @@
 				<source>Seconds a checkout link and the basket behind it stay valid</source>
 				<target>Sekunden, die ein Checkout-Link und der Warenkorb dahinter gültig bleiben</target>
 			</trans-unit>
+			<trans-unit id="setting.products.mcp.rateLimit" resname="setting.products.mcp.rateLimit">
+				<source>Requests per minute and client IP the MCP endpoint answers, 0 for no limit</source>
+				<target>Anfragen pro Minute und Client-IP, die der MCP-Endpunkt beantwortet, 0 für kein Limit</target>
+			</trans-unit>
+			<trans-unit id="setting.products.mcp.checkoutRateLimit" resname="setting.products.mcp.checkoutRateLimit">
+				<source>Checkout links per minute and client IP that are opened, 0 for no limit</source>
+				<target>Checkout-Links pro Minute und Client-IP, die geöffnet werden, 0 für kein Limit</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
