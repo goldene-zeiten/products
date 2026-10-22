@@ -11,10 +11,20 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class BasketStorage
 {
+    /**
+     * Request attribute holding a {@see BasketStoreInterface} that replaces the frontend user's session.
+     */
+    public const STORE_ATTRIBUTE = 'products.basketStore';
+
     private const SESSION_KEY = 'tx_products_basket';
 
     public function load(ServerRequestInterface $request): Basket
     {
+        $store = $request->getAttribute(self::STORE_ATTRIBUTE);
+        if ($store instanceof BasketStoreInterface) {
+            return $store->load();
+        }
+
         $frontendUser = $request->getAttribute('frontend.user');
         if (!$frontendUser instanceof FrontendUserAuthentication) {
             return new Basket();
@@ -44,6 +54,12 @@ final class BasketStorage
 
     public function save(ServerRequestInterface $request, Basket $basket): void
     {
+        $store = $request->getAttribute(self::STORE_ATTRIBUTE);
+        if ($store instanceof BasketStoreInterface) {
+            $store->save($basket);
+            return;
+        }
+
         $frontendUser = $request->getAttribute('frontend.user');
         if (!$frontendUser instanceof FrontendUserAuthentication) {
             return;
