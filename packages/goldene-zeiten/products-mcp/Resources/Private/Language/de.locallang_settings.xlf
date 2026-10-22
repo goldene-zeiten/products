@@ -19,6 +19,14 @@
 				<source>Seconds an MCP session stays valid without a request</source>
 				<target>Sekunden, die eine MCP-Session ohne Anfrage gültig bleibt</target>
 			</trans-unit>
+			<trans-unit id="setting.products.mcp.templateRootPaths" resname="setting.products.mcp.templateRootPaths">
+				<source>Template root paths of the guides; a later path overrides an earlier one</source>
+				<target>Template-Root-Pfade der Leitfäden; ein späterer Pfad überschreibt einen früheren</target>
+			</trans-unit>
+			<trans-unit id="setting.products.mcp.partialRootPaths" resname="setting.products.mcp.partialRootPaths">
+				<source>Partial root paths of the guides; a later path overrides an earlier one</source>
+				<target>Partial-Root-Pfade der Leitfäden; ein späterer Pfad überschreibt einen früheren</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

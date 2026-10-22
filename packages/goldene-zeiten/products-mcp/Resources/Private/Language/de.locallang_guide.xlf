@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="EXT:products_mcp/Resources/Private/Language/de.locallang_guide.xlf" date="2026-10-23T02:00:00Z" product-name="products_mcp">
+		<header/>
+		<body>
+			<trans-unit id="facts.title" resname="facts.title">
+				<source>Shop facts</source>
+				<target>Shop-Fakten</target>
+			</trans-unit>
+			<trans-unit id="facts.baseUrl" resname="facts.baseUrl">
+				<source>Web address</source>
+				<target>Webadresse</target>
+			</trans-unit>
+			<trans-unit id="facts.currency" resname="facts.currency">
+				<source>Currency</source>
+				<target>Währung</target>
+			</trans-unit>
+			<trans-unit id="facts.pricing.gross" resname="facts.pricing.gross">
+				<source>Prices include VAT.</source>
+				<target>Die Preise enthalten die Mehrwertsteuer.</target>
+			</trans-unit>
+			<trans-unit id="facts.pricing.net" resname="facts.pricing.net">
+				<source>Prices exclude VAT. VAT is added to the total.</source>
+				<target>Die Preise verstehen sich ohne Mehrwertsteuer. Sie wird zur Summe addiert.</target>
+			</trans-unit>
+			<trans-unit id="facts.vatId" resname="facts.vatId">
+				<source>VAT ID</source>
+				<target>USt-IdNr.</target>
+			</trans-unit>
+			<trans-unit id="facts.taxNumber" resname="facts.taxNumber">
+				<source>Tax number</source>
+				<target>Steuernummer</target>
+			</trans-unit>
+			<trans-unit id="facts.trader" resname="facts.trader">
+				<source>Trader</source>
+				<target>Anbieter</target>
+			</trans-unit>
+			<trans-unit id="facts.trader.name" resname="facts.trader.name">
+				<source>Name</source>
+				<target>Name</target>
+			</trans-unit>
+			<trans-unit id="facts.trader.address" resname="facts.trader.address">
+				<source>Address</source>
+				<target>Anschrift</target>
+			</trans-unit>
+			<trans-unit id="facts.trader.email" resname="facts.trader.email">
+				<source>Email</source>
+				<target>E-Mail</target>
+			</trans-unit>
+			<trans-unit id="facts.trader.phone" resname="facts.trader.phone">
+				<source>Phone</source>
+				<target>Telefon</target>
+			</trans-unit>
+			<trans-unit id="search.title" resname="search.title">
+				<source>How to search in %s</source>
+				<target>So suchen Sie in %s</target>
+			</trans-unit>
+			<trans-unit id="search.covers" resname="search.covers">
+				<source>The search matches a word or phrase against these fields of a product:</source>
+				<target>Die Suche vergleicht ein Wort oder eine Wendung mit diesen Feldern eines Produkts:</target>
+			</trans-unit>
+			<trans-unit id="search.field.title" resname="search.field.title">
+				<source>Title</source>
+				<target>Titel</target>
+			</trans-unit>
+			<trans-unit id="search.field.subtitle" resname="search.field.subtitle">
+				<source>Subtitle</source>
+				<target>Untertitel</target>
+			</trans-unit>
+			<trans-unit id="search.field.itemNumber" resname="search.field.itemNumber">
+				<source>Item number</source>
+				<target>Artikelnummer</target>
+			</trans-unit>
+			<trans-unit id="search.field.description" resname="search.field.description">
+				<source>Description</source>
+				<target>Beschreibung</target>
+			</trans-unit>
+			<trans-unit id="search.field.ean" resname="search.field.ean">
+				<source>EAN (barcode number)</source>
+				<target>EAN (Strichcode-Nummer)</target>
+			</trans-unit>
+			<trans-unit id="search.filters" resname="search.filters">
+				<source>Filters</source>
+				<target>Filter</target>
+			</trans-unit>
+			<trans-unit id="search.filter.category" resname="search.filter.category">
+				<source>By category: a category lists the products assigned directly to it, not those of its subcategories.</source>
+				<target>Nach Kategorie: Eine Kategorie listet die ihr direkt zugeordneten Produkte, nicht die ihrer Unterkategorien.</target>
+			</trans-unit>
+			<trans-unit id="search.filter.rootCategory" resname="search.filter.rootCategory">
+				<source>A root category only groups subcategories, so choose one of its subcategories to see products.</source>
+				<target>Eine Hauptkategorie gruppiert nur Unterkategorien. Wählen Sie eine ihrer Unterkategorien, um Produkte zu sehen.</target>
+			</trans-unit>
+			<trans-unit id="search.filter.manufacturer" resname="search.filter.manufacturer">
+				<source>By manufacturer: the products of one manufacturer.</source>
+				<target>Nach Hersteller: die Produkte eines Herstellers.</target>
+			</trans-unit>
+			<trans-unit id="search.paging" resname="search.paging">
+				<source>Paging</source>
+				<target>Seitenweise Ergebnisse</target>
+			</trans-unit>
+			<trans-unit id="search.paging.text" resname="search.paging.text">
+				<source>Results come in pages of %s products. Ask for the next page until no more results are returned.</source>
+				<target>Die Ergebnisse kommen in Seiten zu je %s Produkten. Fordern Sie die nächste Seite an, bis keine Ergebnisse mehr kommen.</target>
+			</trans-unit>
+			<trans-unit id="ordering.title" resname="ordering.title">
+				<source>How to order in %s</source>
+				<target>So bestellen Sie in %s</target>
+			</trans-unit>
+			<trans-unit id="ordering.step.product" resname="ordering.step.product">
+				<source>Open the product you want.</source>
+				<target>Öffnen Sie das gewünschte Produkt.</target>
+			</trans-unit>
+			<trans-unit id="ordering.step.variant" resname="ordering.step.variant">
+				<source>If the product comes in variants (articles), choose one by selecting its attributes, such as size or colour. The price and the availability belong to the chosen variant.</source>
+				<target>Gibt es das Produkt in Varianten (Artikeln), wählen Sie eine über ihre Merkmale, etwa Größe oder Farbe. Preis und Verfügbarkeit gehören zur gewählten Variante.</target>
+			</trans-unit>
+			<trans-unit id="ordering.step.quantity" resname="ordering.step.quantity">
+				<source>Choose the quantity. Some products have a minimum or maximum quantity, and the quantity cannot exceed the stock.</source>
+				<target>Wählen Sie die Menge. Manche Produkte haben eine Mindest- oder Höchstmenge, und die Menge kann den Lagerbestand nicht übersteigen.</target>
+			</trans-unit>
+			<trans-unit id="ordering.step.basket" resname="ordering.step.basket">
+				<source>Put the product into the basket, then continue shopping or go to the checkout.</source>
+				<target>Legen Sie das Produkt in den Warenkorb und kaufen Sie weiter oder gehen Sie zur Kasse.</target>
+			</trans-unit>
+			<trans-unit id="ordering.basketUrl" resname="ordering.basketUrl">
+				<source>The basket</source>
+				<target>Der Warenkorb</target>
+			</trans-unit>
+			<trans-unit id="ordering.personalization" resname="ordering.personalization">
+				<source>Personalised products</source>
+				<target>Personalisierte Produkte</target>
+			</trans-unit>
+			<trans-unit id="ordering.personalization.text" resname="ordering.personalization.text">
+				<source>Some products offer options the customer fills in, such as an engraving text or a choice of extras. They are entered together with the quantity and show up in the basket line.</source>
+				<target>Manche Produkte bieten Optionen, die der Kunde ausfüllt, etwa einen Gravurtext oder eine Auswahl an Extras. Sie werden zusammen mit der Menge eingegeben und erscheinen in der Warenkorbzeile.</target>
+			</trans-unit>
+			<trans-unit id="ordering.voucher" resname="ordering.voucher">
+				<source>Vouchers</source>
+				<target>Gutscheine</target>
+			</trans-unit>
+			<trans-unit id="ordering.voucher.text" resname="ordering.voucher.text">
+				<source>A voucher code is entered in the basket. The discount is shown there before the order is placed.</source>
+				<target>Ein Gutscheincode wird im Warenkorb eingegeben. Der Rabatt wird dort vor dem Abschluss der Bestellung angezeigt.</target>
+			</trans-unit>
+			<trans-unit id="checkout.title" resname="checkout.title">
+				<source>How to check out in %s</source>
+				<target>So bezahlen Sie in %s</target>
+			</trans-unit>
+			<trans-unit id="checkout.steps" resname="checkout.steps">
+				<source>The checkout has these steps, in this order:</source>
+				<target>Die Kasse hat diese Schritte in dieser Reihenfolge:</target>
+			</trans-unit>
+			<trans-unit id="checkout.step.address" resname="checkout.step.address">
+				<source>Address: billing and delivery address of the customer.</source>
+				<target>Adresse: Rechnungs- und Lieferadresse des Kunden.</target>
+			</trans-unit>
+			<trans-unit id="checkout.step.shipping" resname="checkout.step.shipping">
+				<source>Shipping method: choose among the options offered for the basket and the delivery country.</source>
+				<target>Versandart: Wählen Sie unter den Optionen, die für den Warenkorb und das Lieferland angeboten werden.</target>
+			</trans-unit>
+			<trans-unit id="checkout.step.payment" resname="checkout.step.payment">
+				<source>Payment method: choose how to pay.</source>
+				<target>Zahlungsart: Wählen Sie, wie bezahlt wird.</target>
+			</trans-unit>
+			<trans-unit id="checkout.step.review" resname="checkout.step.review">
+				<source>Review: check the items, the costs and the addresses.</source>
+				<target>Prüfung: Kontrollieren Sie Artikel, Kosten und Adressen.</target>
+			</trans-unit>
+			<trans-unit id="checkout.step.finalize" resname="checkout.step.finalize">
+				<source>Place the order: accept the terms and, where it applies, the waiver of the right of withdrawal.</source>
+				<target>Bestellung abschließen: Akzeptieren Sie die AGB und, wo es zutrifft, den Verzicht auf das Widerrufsrecht.</target>
+			</trans-unit>
+			<trans-unit id="checkout.url" resname="checkout.url">
+				<source>The checkout</source>
+				<target>Die Kasse</target>
+			</trans-unit>
+			<trans-unit id="checkout.payment" resname="checkout.payment">
+				<source>Payment methods</source>
+				<target>Zahlungsarten</target>
+			</trans-unit>
+			<trans-unit id="checkout.payment.note" resname="checkout.payment.note">
+				<source>Which of them is offered can depend on the basket, the delivery country and the customer.</source>
+				<target>Welche davon angeboten wird, kann vom Warenkorb, vom Lieferland und vom Kunden abhängen.</target>
+			</trans-unit>
+			<trans-unit id="checkout.shipping" resname="checkout.shipping">
+				<source>Shipping</source>
+				<target>Versand</target>
+			</trans-unit>
+			<trans-unit id="checkout.shipping.text" resname="checkout.shipping.text">
+				<source>The shipping options and their costs depend on the basket and the delivery country. These shipping providers are installed:</source>
+				<target>Die Versandoptionen und ihre Kosten hängen vom Warenkorb und vom Lieferland ab. Diese Versanddienstleister sind installiert:</target>
+			</trans-unit>
+			<trans-unit id="checkout.countries" resname="checkout.countries">
+				<source>Delivery countries</source>
+				<target>Lieferländer</target>
+			</trans-unit>
+			<trans-unit id="checkout.countries.all" resname="checkout.countries.all">
+				<source>The shop delivers to every country.</source>
+				<target>Der Shop liefert in jedes Land.</target>
+			</trans-unit>
+			<trans-unit id="checkout.legal" resname="checkout.legal">
+				<source>Terms, privacy and withdrawal</source>
+				<target>AGB, Datenschutz und Widerruf</target>
+			</trans-unit>
+			<trans-unit id="checkout.legal.text" resname="checkout.legal.text">
+				<source>The customer has a right of withdrawal of %s days for most goods. Read these pages before ordering:</source>
+				<target>Der Kunde hat für die meisten Waren ein Widerrufsrecht von %s Tagen. Lesen Sie diese Seiten vor der Bestellung:</target>
+			</trans-unit>
+			<trans-unit id="checkout.legal.terms" resname="checkout.legal.terms">
+				<source>Terms and conditions</source>
+				<target>Allgemeine Geschäftsbedingungen</target>
+			</trans-unit>
+			<trans-unit id="checkout.legal.privacy" resname="checkout.legal.privacy">
+				<source>Privacy policy</source>
+				<target>Datenschutzerklärung</target>
+			</trans-unit>
+			<trans-unit id="checkout.legal.withdrawalInstructions" resname="checkout.legal.withdrawalInstructions">
+				<source>Instructions on the right of withdrawal</source>
+				<target>Widerrufsbelehrung</target>
+			</trans-unit>
+			<trans-unit id="checkout.legal.withdrawal" resname="checkout.legal.withdrawal">
+				<source>Withdrawal form</source>
+				<target>Widerrufsformular</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
