@@ -82,6 +82,20 @@ Configuration`, tab :guilabel:`migration`) before running the product and articl
     Columns of :confval:`upgrading-column-categories` holding several values, separated by commas,
     semicolons or line breaks.
 
+..  confval:: migration.manufacturerColumn
+    :name: upgrading-manufacturer-column
+    :type: string
+    :Default: (empty)
+
+    The ``tt_products`` column holding the manufacturer's name, e.g. ``form``. It is independent of
+    :confval:`upgrading-column-categories`. The wizard :guilabel:`Turn the tt_products manufacturer
+    column into manufacturer records` creates a manufacturer record per distinct value (the first
+    spelling wins, regardless of case and accents) in the storage folder and links every migrated
+    product to it; a product that already has a manufacturer keeps it. The records are completed from
+    ``tt_products.address`` (a :sql:`tt_address` record: postal address, email, website) and
+    ``tt_products.www`` (website), filling only empty fields, the first product winning. Names that look
+    like duplicates, such as ``Stelmach`` and ``Stelmach Trauringe``, are reported and not merged.
+
 ..  confval:: migration.articleAttributeColumns
     :name: upgrading-article-attribute-columns
     :type: string
@@ -166,6 +180,9 @@ Run the wizards in this order — each one links its rows back to the previous o
     :confval:`upgrading-column-categories`) — builds the category trees of the configured columns
     and assigns the migrated products. Run it after the product wizard and before the plugin
     wizard, which waits for it.
+#.  **Turn the manufacturer column into manufacturer records** (``products_ttProductsManufacturers``,
+    only with :confval:`upgrading-manufacturer-column`) — creates the manufacturer records and links
+    the migrated products. Run it after the product wizard.
 #.  **Migrate orders** (``products_ttProductsOrderMigration``) — ``sys_products_orders`` and its
     line items, linked to the migrated products/articles.
 #.  **Migrate media** (``products_ttProductsMediaMigration``) — product/category/article images and

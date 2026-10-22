@@ -26,6 +26,8 @@ CREATE TABLE tt_products (
 	size mediumtext,
 	quality mediumtext,
 	form mediumtext,
+	address int(11) DEFAULT '0' NOT NULL,
+	www varchar(255) DEFAULT '' NOT NULL,
 	description mediumtext,
 	category int(11) unsigned DEFAULT '0' NOT NULL,
 	inStock int(11) DEFAULT '1' NOT NULL,
@@ -38,6 +40,22 @@ CREATE TABLE tt_products (
 	image text,
 	smallimage text,
 	datasheet text,
+
+	PRIMARY KEY (uid)
+);
+
+CREATE TABLE tt_address (
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+	deleted tinyint(4) DEFAULT '0' NOT NULL,
+	hidden tinyint(4) DEFAULT '0' NOT NULL,
+	name varchar(255) DEFAULT '' NOT NULL,
+	address varchar(255) DEFAULT '' NOT NULL,
+	zip varchar(20) DEFAULT '' NOT NULL,
+	city varchar(255) DEFAULT '' NOT NULL,
+	country varchar(100) DEFAULT '' NOT NULL,
+	email varchar(255) DEFAULT '' NOT NULL,
+	www varchar(255) DEFAULT '' NOT NULL,
 
 	PRIMARY KEY (uid)
 );

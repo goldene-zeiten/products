@@ -1,0 +1,21 @@
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title","manufacturer"
+,80,2,0,"Ring A",0
+,81,2,0,"Ring B",0
+,82,2,0,"Ring C",0
+,83,2,0,"Ring D",0
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",1,"tx_products_domain_model_product",80
+,"tt_products",2,"tx_products_domain_model_product",81
+,"tt_products",3,"tx_products_domain_model_product",82
+,"tt_products",4,"tx_products_domain_model_product",83
+"tt_address",,,,,,,,,,,
+,"uid","pid","deleted","hidden","name","address","zip","city","country","email","www"
+,1,2,0,0,"Stelmach","Hauptstrasse 1","12345","Musterstadt","DE","info@stelmach.example","https://address.example"
+"tt_products",,,,,,,,,,,,,,,,,,,,,
+,"uid","pid","deleted","hidden","title","itemnumber","ean","price","category","inStock","basketminquantity","basketmaxquantity","taxcat_id","weight","offer","highlight","form","address","www"
+,1,2,0,0,"Ring A","RA","","10.00",0,1,"0.00","0.00",1,"0.000000",0,0,"Stelmach",1,""
+,2,2,0,0,"Ring B","RB","","10.00",0,1,"0.00","0.00",1,"0.000000",0,0,"Stelmach Trauringe",0,"https://trauringe.example"
+,3,2,0,0,"Ring C","RC","","10.00",0,1,"0.00","0.00",1,"0.000000",0,0,"stelmach ",0,"https://other.example"
+,4,2,0,0,"Ring D","RD","","10.00",0,1,"0.00","0.00",1,"0.000000",0,0,"",0,""

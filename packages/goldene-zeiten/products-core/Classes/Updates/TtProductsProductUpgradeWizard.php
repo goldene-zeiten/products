@@ -138,6 +138,7 @@ final class TtProductsProductUpgradeWizard implements UpgradeWizardInterface, Ch
                 ...self::HANDLED_COLUMNS,
                 ...array_keys($this->migrationConfiguration->getColumnCategories()),
                 ...($this->migrationConfiguration->getBool('note2AsKeywords') ? ['note2'] : []),
+                ...($this->migrationConfiguration->getManufacturerColumn() !== '' ? [$this->migrationConfiguration->getManufacturerColumn(), 'address', 'www'] : []),
             ],
             $this->output
         );

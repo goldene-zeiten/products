@@ -43,6 +43,15 @@ final class LegacyMigrationConfiguration
     }
 
     /**
+     * `migration.manufacturerColumn`, the tt_products column holding the manufacturer's name; empty when the
+     * manufacturers are not migrated.
+     */
+    public function getManufacturerColumn(): string
+    {
+        return $this->getString('manufacturerColumn');
+    }
+
+    /**
      * `migration.articleAttributeColumns`, e.g. "material:Material".
      *
      * @return array<string, string> legacy article column => title of its attribute
