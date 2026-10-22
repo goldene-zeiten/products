@@ -29,13 +29,14 @@ final readonly class McpEndpointMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private McpHttpHandler $httpHandler,
+        private EndpointPaths $paths,
         private Context $context
     ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $site = $request->getAttribute('site');
-        if (!$site instanceof Site || !$this->isEndpoint($site, $request)) {
+        if (!$site instanceof Site || !$this->paths->isEndpoint($site, $request)) {
             return $handler->handle($request);
         }
 
@@ -45,16 +46,5 @@ final readonly class McpEndpointMiddleware implements MiddlewareInterface
         }
 
         return $this->httpHandler->handle(new McpContext($site, $request));
-    }
-
-    private function isEndpoint(Site $site, ServerRequestInterface $request): bool
-    {
-        $settings = $site->getSettings();
-        if (!(bool)$settings->get('products.mcp.enabled', false)) {
-            return false;
-        }
-        $path = '/' . trim((string)$settings->get('products.mcp.path', '/mcp'), '/');
-
-        return rtrim($site->getBase()->getPath(), '/') . $path === rtrim($request->getUri()->getPath(), '/');
     }
 }

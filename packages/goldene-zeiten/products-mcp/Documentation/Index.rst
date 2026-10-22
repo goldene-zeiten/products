@@ -57,7 +57,8 @@ site and discover the shop's tools and resources.
 
     ..  card:: :ref:`Tools <tools>`
 
-        The read tools: search products, product details, categories, manufacturers and shipping options.
+        The tools: search products, product details, categories, manufacturers and shipping options, and build a basket
+        and hand it over to the checkout.
 
 **Table of Contents:**
 

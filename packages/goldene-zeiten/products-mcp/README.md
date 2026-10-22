@@ -11,10 +11,13 @@ the site (default `/mcp`) and discover the shop's tools and resources. The proto
 [`mcp/sdk`](https://github.com/modelcontextprotocol/php-sdk); MCP sessions are stored with TYPO3's session
 framework.
 
-This is an early version: it ships the endpoint, the registry for tools and resources, the session storage, one
-demo tool (`shop_info`) and four resources generated from the shop configuration, in the site language and
-overridable per site: the guides `shop://guide/search`, `shop://guide/ordering` and `shop://guide/checkout`, and
-`shop://shop/facts`.
+It ships the endpoint, the registry for tools and resources, the session storage, four resources generated from
+the shop configuration (in the site language and overridable per site: `shop://guide/search`,
+`shop://guide/ordering`, `shop://guide/checkout`, `shop://shop/facts`), tools to search the catalogue, and tools to
+build a basket and hand it to the customer. An assistant creates a basket (`create_basket`, `add_to_basket`,
+`update_basket_item`, `get_basket`) and `start_checkout` returns a signed, expiring link; opening it puts the basket
+into the customer's own session and continues in the normal checkout, where terms, withdrawal and payment happen as
+for any order.
 
 ## Installation
 

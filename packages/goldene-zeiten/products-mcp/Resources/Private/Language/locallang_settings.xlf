@@ -21,6 +21,9 @@
 			<trans-unit id="setting.products.mcp.partialRootPaths" resname="setting.products.mcp.partialRootPaths">
 				<source>Partial root paths of the guides; a later path overrides an earlier one</source>
 			</trans-unit>
+			<trans-unit id="setting.products.mcp.checkoutLinkLifetime" resname="setting.products.mcp.checkoutLinkLifetime">
+				<source>Seconds a checkout link and the basket behind it stay valid</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
