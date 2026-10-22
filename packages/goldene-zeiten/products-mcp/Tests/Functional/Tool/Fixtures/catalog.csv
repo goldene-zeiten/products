@@ -26,9 +26,9 @@
 ,1,2,1,"Small",1
 ,2,2,1,"Large",2
 "tx_products_domain_model_article",,,,,,,,
-,"uid","pid","product","title","item_number","price","in_stock","unlimited_stock"
-,71,2,3,"Signet small","S1-S","37.50",3,0
-,72,2,3,"Signet large","S1-L","42.00",0,1
+,"uid","pid","sorting","product","title","item_number","price","in_stock","unlimited_stock"
+,71,2,128,3,"Signet small","S1-S","37.50",3,0
+,72,2,256,3,"Signet large","S1-L","42.00",0,1
 "tx_products_article_attributevalue_mm",,,
 ,"uid_local","uid_foreign","sorting"
 ,71,1,1
