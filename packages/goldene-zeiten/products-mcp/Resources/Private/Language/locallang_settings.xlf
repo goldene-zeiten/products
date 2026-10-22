@@ -15,6 +15,12 @@
 			<trans-unit id="setting.products.mcp.sessionLifetime" resname="setting.products.mcp.sessionLifetime">
 				<source>Seconds an MCP session stays valid without a request</source>
 			</trans-unit>
+			<trans-unit id="setting.products.mcp.templateRootPaths" resname="setting.products.mcp.templateRootPaths">
+				<source>Template root paths of the guides; a later path overrides an earlier one</source>
+			</trans-unit>
+			<trans-unit id="setting.products.mcp.partialRootPaths" resname="setting.products.mcp.partialRootPaths">
+				<source>Partial root paths of the guides; a later path overrides an earlier one</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

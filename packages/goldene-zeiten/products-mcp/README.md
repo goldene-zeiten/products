@@ -11,8 +11,10 @@ the site (default `/mcp`) and discover the shop's tools and resources. The proto
 [`mcp/sdk`](https://github.com/modelcontextprotocol/php-sdk); MCP sessions are stored with TYPO3's session
 framework.
 
-This is an early version: it ships the endpoint, the registry for tools and resources, the session storage and one
-demo tool (`shop_info`).
+This is an early version: it ships the endpoint, the registry for tools and resources, the session storage, one
+demo tool (`shop_info`) and four resources generated from the shop configuration, in the site language and
+overridable per site: the guides `shop://guide/search`, `shop://guide/ordering` and `shop://guide/checkout`, and
+`shop://shop/facts`.
 
 ## Installation
 

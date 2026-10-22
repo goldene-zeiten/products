@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_mcp/Resources/Private/Language/locallang_guide.xlf" date="2026-10-23T02:00:00Z" product-name="products_mcp">
+		<header/>
+		<body>
+			<trans-unit id="facts.title" resname="facts.title">
+				<source>Shop facts</source>
+			</trans-unit>
+			<trans-unit id="facts.baseUrl" resname="facts.baseUrl">
+				<source>Web address</source>
+			</trans-unit>
+			<trans-unit id="facts.currency" resname="facts.currency">
+				<source>Currency</source>
+			</trans-unit>
+			<trans-unit id="facts.pricing.gross" resname="facts.pricing.gross">
+				<source>Prices include VAT.</source>
+			</trans-unit>
+			<trans-unit id="facts.pricing.net" resname="facts.pricing.net">
+				<source>Prices exclude VAT. VAT is added to the total.</source>
+			</trans-unit>
+			<trans-unit id="facts.vatId" resname="facts.vatId">
+				<source>VAT ID</source>
+			</trans-unit>
+			<trans-unit id="facts.taxNumber" resname="facts.taxNumber">
+				<source>Tax number</source>
+			</trans-unit>
+			<trans-unit id="facts.trader" resname="facts.trader">
+				<source>Trader</source>
+			</trans-unit>
+			<trans-unit id="facts.trader.name" resname="facts.trader.name">
+				<source>Name</source>
+			</trans-unit>
+			<trans-unit id="facts.trader.address" resname="facts.trader.address">
+				<source>Address</source>
+			</trans-unit>
+			<trans-unit id="facts.trader.email" resname="facts.trader.email">
+				<source>Email</source>
+			</trans-unit>
+			<trans-unit id="facts.trader.phone" resname="facts.trader.phone">
+				<source>Phone</source>
+			</trans-unit>
+			<trans-unit id="search.title" resname="search.title">
+				<source>How to search in %s</source>
+			</trans-unit>
+			<trans-unit id="search.covers" resname="search.covers">
+				<source>The search matches a word or phrase against these fields of a product:</source>
+			</trans-unit>
+			<trans-unit id="search.field.title" resname="search.field.title">
+				<source>Title</source>
+			</trans-unit>
+			<trans-unit id="search.field.subtitle" resname="search.field.subtitle">
+				<source>Subtitle</source>
+			</trans-unit>
+			<trans-unit id="search.field.itemNumber" resname="search.field.itemNumber">
+				<source>Item number</source>
+			</trans-unit>
+			<trans-unit id="search.field.description" resname="search.field.description">
+				<source>Description</source>
+			</trans-unit>
+			<trans-unit id="search.field.ean" resname="search.field.ean">
+				<source>EAN (barcode number)</source>
+			</trans-unit>
+			<trans-unit id="search.filters" resname="search.filters">
+				<source>Filters</source>
+			</trans-unit>
+			<trans-unit id="search.filter.category" resname="search.filter.category">
+				<source>By category: a category lists the products assigned directly to it, not those of its subcategories.</source>
+			</trans-unit>
+			<trans-unit id="search.filter.rootCategory" resname="search.filter.rootCategory">
+				<source>A root category only groups subcategories, so choose one of its subcategories to see products.</source>
+			</trans-unit>
+			<trans-unit id="search.filter.manufacturer" resname="search.filter.manufacturer">
+				<source>By manufacturer: the products of one manufacturer.</source>
+			</trans-unit>
+			<trans-unit id="search.paging" resname="search.paging">
+				<source>Paging</source>
+			</trans-unit>
+			<trans-unit id="search.paging.text" resname="search.paging.text">
+				<source>Results come in pages of %s products. Ask for the next page until no more results are returned.</source>
+			</trans-unit>
+			<trans-unit id="ordering.title" resname="ordering.title">
+				<source>How to order in %s</source>
+			</trans-unit>
+			<trans-unit id="ordering.step.product" resname="ordering.step.product">
+				<source>Open the product you want.</source>
+			</trans-unit>
+			<trans-unit id="ordering.step.variant" resname="ordering.step.variant">
+				<source>If the product comes in variants (articles), choose one by selecting its attributes, such as size or colour. The price and the availability belong to the chosen variant.</source>
+			</trans-unit>
+			<trans-unit id="ordering.step.quantity" resname="ordering.step.quantity">
+				<source>Choose the quantity. Some products have a minimum or maximum quantity, and the quantity cannot exceed the stock.</source>
+			</trans-unit>
+			<trans-unit id="ordering.step.basket" resname="ordering.step.basket">
+				<source>Put the product into the basket, then continue shopping or go to the checkout.</source>
+			</trans-unit>
+			<trans-unit id="ordering.basketUrl" resname="ordering.basketUrl">
+				<source>The basket</source>
+			</trans-unit>
+			<trans-unit id="ordering.personalization" resname="ordering.personalization">
+				<source>Personalised products</source>
+			</trans-unit>
+			<trans-unit id="ordering.personalization.text" resname="ordering.personalization.text">
+				<source>Some products offer options the customer fills in, such as an engraving text or a choice of extras. They are entered together with the quantity and show up in the basket line.</source>
+			</trans-unit>
+			<trans-unit id="ordering.voucher" resname="ordering.voucher">
+				<source>Vouchers</source>
+			</trans-unit>
+			<trans-unit id="ordering.voucher.text" resname="ordering.voucher.text">
+				<source>A voucher code is entered in the basket. The discount is shown there before the order is placed.</source>
+			</trans-unit>
+			<trans-unit id="checkout.title" resname="checkout.title">
+				<source>How to check out in %s</source>
+			</trans-unit>
+			<trans-unit id="checkout.steps" resname="checkout.steps">
+				<source>The checkout has these steps, in this order:</source>
+			</trans-unit>
+			<trans-unit id="checkout.step.address" resname="checkout.step.address">
+				<source>Address: billing and delivery address of the customer.</source>
+			</trans-unit>
+			<trans-unit id="checkout.step.shipping" resname="checkout.step.shipping">
+				<source>Shipping method: choose among the options offered for the basket and the delivery country.</source>
+			</trans-unit>
+			<trans-unit id="checkout.step.payment" resname="checkout.step.payment">
+				<source>Payment method: choose how to pay.</source>
+			</trans-unit>
+			<trans-unit id="checkout.step.review" resname="checkout.step.review">
+				<source>Review: check the items, the costs and the addresses.</source>
+			</trans-unit>
+			<trans-unit id="checkout.step.finalize" resname="checkout.step.finalize">
+				<source>Place the order: accept the terms and, where it applies, the waiver of the right of withdrawal.</source>
+			</trans-unit>
+			<trans-unit id="checkout.url" resname="checkout.url">
+				<source>The checkout</source>
+			</trans-unit>
+			<trans-unit id="checkout.payment" resname="checkout.payment">
+				<source>Payment methods</source>
+			</trans-unit>
+			<trans-unit id="checkout.payment.note" resname="checkout.payment.note">
+				<source>Which of them is offered can depend on the basket, the delivery country and the customer.</source>
+			</trans-unit>
+			<trans-unit id="checkout.shipping" resname="checkout.shipping">
+				<source>Shipping</source>
+			</trans-unit>
+			<trans-unit id="checkout.shipping.text" resname="checkout.shipping.text">
+				<source>The shipping options and their costs depend on the basket and the delivery country. These shipping providers are installed:</source>
+			</trans-unit>
+			<trans-unit id="checkout.countries" resname="checkout.countries">
+				<source>Delivery countries</source>
+			</trans-unit>
+			<trans-unit id="checkout.countries.all" resname="checkout.countries.all">
+				<source>The shop delivers to every country.</source>
+			</trans-unit>
+			<trans-unit id="checkout.legal" resname="checkout.legal">
+				<source>Terms, privacy and withdrawal</source>
+			</trans-unit>
+			<trans-unit id="checkout.legal.text" resname="checkout.legal.text">
+				<source>The customer has a right of withdrawal of %s days for most goods. Read these pages before ordering:</source>
+			</trans-unit>
+			<trans-unit id="checkout.legal.terms" resname="checkout.legal.terms">
+				<source>Terms and conditions</source>
+			</trans-unit>
+			<trans-unit id="checkout.legal.privacy" resname="checkout.legal.privacy">
+				<source>Privacy policy</source>
+			</trans-unit>
+			<trans-unit id="checkout.legal.withdrawalInstructions" resname="checkout.legal.withdrawalInstructions">
+				<source>Instructions on the right of withdrawal</source>
+			</trans-unit>
+			<trans-unit id="checkout.legal.withdrawal" resname="checkout.legal.withdrawal">
+				<source>Withdrawal form</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

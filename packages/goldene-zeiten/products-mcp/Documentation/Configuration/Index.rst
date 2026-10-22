@@ -38,6 +38,20 @@ the endpoint, then adjust its settings under :guilabel:`Site Management > Sites 
     Seconds an MCP session stays valid without a request. Expired sessions are removed by the garbage collection
     that runs with a fraction of the requests.
 
+..  confval:: products.mcp.templateRootPaths
+    :type: stringlist
+    :Default: EXT:products_mcp/Resources/Private/Templates/
+
+    Template root paths of the guide resources. A later path overrides an earlier one, so a site replaces a guide
+    by adding a path that contains ``Guide/Search.md`` (or ``Checkout.md``, ``Ordering.md``, ``Facts.md``).
+    Start the template with ``{escapingEnabled=false}`` so that Markdown characters are not escaped.
+
+..  confval:: products.mcp.partialRootPaths
+    :type: stringlist
+    :Default: EXT:products_mcp/Resources/Private/Partials/
+
+    Partial root paths of the guide resources, used like the template root paths.
+
 ..  _configuration-tools:
 
 Tools

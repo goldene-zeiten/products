@@ -51,6 +51,10 @@ site and discover the shop's tools and resources.
 
         Site settings, the demo tool and how MCP sessions are stored.
 
+    ..  card:: :ref:`Resources <resources>`
+
+        The guides and facts an assistant reads, and how a site overrides them.
+
 **Table of Contents:**
 
 ..  toctree::
@@ -59,3 +63,4 @@ site and discover the shop's tools and resources.
 
     Installation/Index
     Configuration/Index
+    Resources/Index
