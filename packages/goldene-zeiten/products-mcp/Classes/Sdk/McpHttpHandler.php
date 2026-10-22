@@ -44,11 +44,15 @@ final readonly class McpHttpHandler
     }
 
     /**
+     * The hosts the endpoint answers on: the host of the site base, or the host of the request when the base
+     * has none, such as "/", since such a site answers on every host.
+     *
      * @return list<CorsMiddleware|DnsRebindingProtectionMiddleware>
      */
     private function middleware(McpContext $context): array
     {
-        $hosts = [...self::LOCAL_HOSTS, $context->site->getBase()->getHost()];
+        $baseHost = $context->site->getBase()->getHost();
+        $hosts = [...self::LOCAL_HOSTS, $baseHost !== '' ? $baseHost : $context->request->getUri()->getHost()];
 
         return [
             new CorsMiddleware(),
