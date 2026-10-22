@@ -495,6 +495,9 @@
 			<trans-unit id="manufacturer.eu_responsible" resname="manufacturer.eu_responsible">
 				<source>Responsible person in the EU</source>
 			</trans-unit>
+			<trans-unit id="manufacturers.none" resname="manufacturers.none">
+				<source>No manufacturers found.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

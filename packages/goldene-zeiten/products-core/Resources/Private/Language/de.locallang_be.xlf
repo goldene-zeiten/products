@@ -467,6 +467,10 @@
 				<source>Newest first</source>
 				<target>Neueste zuerst</target>
 			</trans-unit>
+			<trans-unit id="plugin.manufacturer_list" resname="plugin.manufacturer_list">
+				<source>Manufacturer List</source>
+				<target>Herstellerliste</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

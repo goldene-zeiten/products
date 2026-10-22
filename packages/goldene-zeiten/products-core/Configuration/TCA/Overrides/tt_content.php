@@ -60,6 +60,13 @@ defined('TYPO3') or die();
 
     ExtensionUtility::registerPlugin(
         'ProductsCore',
+        'ManufacturerList',
+        'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.manufacturer_list',
+        'EXT:products_core/Resources/Public/Icons/Manufacturer.svg'
+    );
+
+    ExtensionUtility::registerPlugin(
+        'ProductsCore',
         'Withdrawal',
         'LLL:EXT:products_core/Resources/Private/Language/locallang_be.xlf:plugin.withdrawal',
         'EXT:products_core/Resources/Public/Icons/Extension.svg'
@@ -259,5 +266,10 @@ defined('TYPO3') or die();
         'tt_content',
         'tx_products_category',
         'productscore_categorylist',
+    );
+    ExtensionManagementUtility::addToAllTCAtypes(
+        'tt_content',
+        'tx_products_category, tx_products_filter_categories',
+        'productscore_manufacturerlist',
     );
 })();

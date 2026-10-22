@@ -659,6 +659,10 @@
 				<source>Responsible person in the EU</source>
 				<target>Verantwortliche Person in der EU</target>
 			</trans-unit>
+			<trans-unit id="manufacturers.none" resname="manufacturers.none">
+				<source>No manufacturers found.</source>
+				<target>Keine Hersteller gefunden.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

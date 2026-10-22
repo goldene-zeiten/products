@@ -6,6 +6,7 @@ use GoldeneZeiten\Products\Core\Controller\CheckoutController;
 use GoldeneZeiten\Products\Core\Controller\DownloadController;
 use GoldeneZeiten\Products\Core\Controller\InvoiceController;
 use GoldeneZeiten\Products\Core\Controller\OrderController;
+use GoldeneZeiten\Products\Core\Controller\ManufacturerController;
 use GoldeneZeiten\Products\Core\Controller\ProductController;
 use GoldeneZeiten\Products\Core\Controller\WithdrawalController;
 use GoldeneZeiten\Products\Core\Hooks\CategoryMountAccessHook;
@@ -106,6 +107,16 @@ defined('TYPO3') or die();
         'CategoryNavigation',
         [
             CategoryController::class => 'navigation',
+        ],
+        [],
+        ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+    );
+
+    ExtensionUtility::configurePlugin(
+        'ProductsCore',
+        'ManufacturerList',
+        [
+            ManufacturerController::class => 'list',
         ],
         [],
         ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT

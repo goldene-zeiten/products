@@ -1,0 +1,16 @@
+<div class="products-manufacturer-list">
+    <f:if condition="{manufacturers}">
+        <f:then>
+            <div class="row">
+                <f:for each="{manufacturers}" as="manufacturer">
+                    <div class="col-md-3">
+                        <f:render partial="Manufacturer/ListItem" arguments="{manufacturer: manufacturer}" />
+                    </div>
+                </f:for>
+            </div>
+        </f:then>
+        <f:else>
+            <p><f:translate key="manufacturers.none" /></p>
+        </f:else>
+    </f:if>
+</div>
