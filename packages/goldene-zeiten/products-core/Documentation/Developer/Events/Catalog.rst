@@ -93,8 +93,9 @@ ModifyProductStructuredDataEvent
 --------------------------------
 
 Lets integrators extend or replace the schema.org ``Product`` data of a product detail page
-before it is rendered as JSON-LD - add a brand, a GTIN, reviews or shipping details. Setting an
-empty array renders no structured data.
+before it is rendered as JSON-LD - add a GTIN, reviews or shipping details. ``brand`` and
+``manufacturer`` are already filled from the product's manufacturer record, so the event is for
+additions and corrections. Setting an empty array renders no structured data.
 
 Mutable: Yes (via ``setData(array $data)``)
 
@@ -108,7 +109,9 @@ Example listener:
         public function __invoke(ModifyProductStructuredDataEvent $event): void
         {
             $data = $event->getData();
-            $data['brand'] = ['@type' => 'Brand', 'name' => $this->brandOf($event->getProduct())];
+            // brand and manufacturer are already set when the product has a manufacturer record;
+            // this listener only covers products without one.
+            $data['brand'] ??= ['@type' => 'Brand', 'name' => $this->brandOf($event->getProduct())];
             $event->setData($data);
         }
     }

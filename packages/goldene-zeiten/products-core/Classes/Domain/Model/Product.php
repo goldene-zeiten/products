@@ -31,6 +31,7 @@ class Product extends AbstractEntity
     protected string $deposit = '0.00';
     protected ?TaxClass $taxClass = null;
     protected ?ShippingPoint $shippingPoint = null;
+    protected ?Manufacturer $manufacturer = null;
     /**
      * @var ObjectStorage<Category>
      */
@@ -195,6 +196,16 @@ class Product extends AbstractEntity
     public function setTaxClass(?TaxClass $taxClass): void
     {
         $this->taxClass = $taxClass;
+    }
+
+    public function getManufacturer(): ?Manufacturer
+    {
+        return $this->manufacturer;
+    }
+
+    public function setManufacturer(?Manufacturer $manufacturer): void
+    {
+        $this->manufacturer = $manufacturer;
     }
 
     public function getShippingPoint(): ?ShippingPoint

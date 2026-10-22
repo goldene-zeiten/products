@@ -1075,6 +1075,94 @@
 				<source>Leave empty to use the product's value.</source>
 				<target>Leer lassen, um den Wert des Produkts zu verwenden.</target>
 			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer" resname="tx_products_domain_model_manufacturer">
+				<source>Manufacturer</source>
+				<target>Hersteller</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.tab_general" resname="tx_products_domain_model_manufacturer.tab_general">
+				<source>General</source>
+				<target>Allgemein</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.tab_contact" resname="tx_products_domain_model_manufacturer.tab_contact">
+				<source>Contact</source>
+				<target>Kontakt</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.tab_eu_responsible" resname="tx_products_domain_model_manufacturer.tab_eu_responsible">
+				<source>EU responsible person</source>
+				<target>Verantwortliche Person in der EU</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.name" resname="tx_products_domain_model_manufacturer.name">
+				<source>Name (registered trade name)</source>
+				<target>Name (eingetragener Handelsname)</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.brand_name" resname="tx_products_domain_model_manufacturer.brand_name">
+				<source>Brand name</source>
+				<target>Markenname</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.brand_name.description" resname="tx_products_domain_model_manufacturer.brand_name.description">
+				<source>Trademark under which the products are sold. Leave empty to use the name.</source>
+				<target>Marke, unter der die Produkte verkauft werden. Leer lassen, um den Namen zu verwenden.</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.logo" resname="tx_products_domain_model_manufacturer.logo">
+				<source>Logo</source>
+				<target>Logo</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.description" resname="tx_products_domain_model_manufacturer.description">
+				<source>Description</source>
+				<target>Beschreibung</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.page" resname="tx_products_domain_model_manufacturer.page">
+				<source>Page</source>
+				<target>Seite</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.website" resname="tx_products_domain_model_manufacturer.website">
+				<source>Website</source>
+				<target>Website</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.email" resname="tx_products_domain_model_manufacturer.email">
+				<source>Email address</source>
+				<target>E-Mail-Adresse</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.contact_url" resname="tx_products_domain_model_manufacturer.contact_url">
+				<source>Contact URL</source>
+				<target>Kontakt-URL</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.street" resname="tx_products_domain_model_manufacturer.street">
+				<source>Street and number</source>
+				<target>Straße und Hausnummer</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.zip" resname="tx_products_domain_model_manufacturer.zip">
+				<source>ZIP code</source>
+				<target>Postleitzahl</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.city" resname="tx_products_domain_model_manufacturer.city">
+				<source>City</source>
+				<target>Ort</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.country" resname="tx_products_domain_model_manufacturer.country">
+				<source>Country</source>
+				<target>Land</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.eu_responsible_name" resname="tx_products_domain_model_manufacturer.eu_responsible_name">
+				<source>Name</source>
+				<target>Name</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.eu_responsible_name.description" resname="tx_products_domain_model_manufacturer.eu_responsible_name.description">
+				<source>Required by the GPSR for a manufacturer outside the EU.</source>
+				<target>Für Hersteller außerhalb der EU nach der GPSR erforderlich.</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.eu_responsible_address" resname="tx_products_domain_model_manufacturer.eu_responsible_address">
+				<source>Postal address</source>
+				<target>Postanschrift</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_manufacturer.eu_responsible_email" resname="tx_products_domain_model_manufacturer.eu_responsible_email">
+				<source>Email address</source>
+				<target>E-Mail-Adresse</target>
+			</trans-unit>
+			<trans-unit id="tx_products_domain_model_product.manufacturer" resname="tx_products_domain_model_product.manufacturer">
+				<source>Manufacturer</source>
+				<target>Hersteller</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
