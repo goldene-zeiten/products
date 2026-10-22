@@ -60,6 +60,10 @@ site and discover the shop's tools and resources.
         The tools: search products, product details, categories, manufacturers and shipping options, and build a basket
         and hand it over to the checkout.
 
+    ..  card:: :ref:`Events <mcp-events>`
+
+        PSR-14 events to add or remove tools and resources and to change the result of a tool call.
+
 **Table of Contents:**
 
 ..  toctree::
@@ -70,3 +74,4 @@ site and discover the shop's tools and resources.
     Configuration/Index
     Resources/Index
     Tools/Index
+    Developer/Events

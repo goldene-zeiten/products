@@ -1,0 +1,24 @@
+{
+  "name": "goldene-zeiten/products-mcp-fixture",
+  "type": "typo3-cms-extension",
+  "description": "Listeners that add, remove and rewrite MCP tools and resources to prove EXT:products_mcp dispatches its events.",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "goldene-zeiten/products-mcp": "^1.0",
+    "typo3/cms-core": "^13.4 || ^14.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\McpFixture\\": "Classes/"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "products_mcp_fixture",
+      "version": "1.0.0",
+      "Package": {
+        "providesPackages": {}
+      }
+    }
+  }
+}

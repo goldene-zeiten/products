@@ -1,0 +1,11 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  GoldeneZeiten\Products\McpFixture\:
+    resource: '../Classes/*'
+    exclude:
+      - '../Classes/FixturePingTool.php'
+      - '../Classes/FixtureGuideResource.php'

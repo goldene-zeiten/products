@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\Mcp\Sdk;
 
+use GoldeneZeiten\Products\Mcp\Event\AfterMcpToolCalledEvent;
 use GoldeneZeiten\Products\Mcp\Exception\ToolFailedException;
 use GoldeneZeiten\Products\Mcp\Registry\McpContext;
 use GoldeneZeiten\Products\Mcp\Registry\McpToolInterface;
@@ -12,6 +13,7 @@ use Mcp\Schema\Content\TextContent;
 use Mcp\Schema\Result\CallToolResult;
 use Mcp\Server\ClientGateway;
 use Mcp\Server\Handler\ToolHandlerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Lets the SDK call a tool of this extension. The tool's array goes back as structured content and as JSON
@@ -21,7 +23,8 @@ final readonly class ToolHandlerAdapter implements ToolHandlerInterface
 {
     public function __construct(
         private McpToolInterface $tool,
-        private McpContext $context
+        private McpContext $context,
+        private EventDispatcherInterface $eventDispatcher
     ) {}
 
     public function execute(array $arguments, ClientGateway $gateway): CallToolResult
@@ -31,6 +34,9 @@ final readonly class ToolHandlerAdapter implements ToolHandlerInterface
         } catch (ToolFailedException $exception) {
             throw new ToolCallException($exception->getMessage(), 1792710718, $exception);
         }
+        $event = new AfterMcpToolCalledEvent($this->tool->getName(), $arguments, $result, $this->context);
+        $this->eventDispatcher->dispatch($event);
+        $result = $event->getResult();
 
         return new CallToolResult([new TextContent($result)], structuredContent: $result);
     }
