@@ -12,7 +12,8 @@
     "allow-plugins": {
       "typo3/cms-composer-installers": true,
       "typo3/class-alias-loader": true,
-      "sbuerk/fixture-packages": true
+      "sbuerk/fixture-packages": true,
+      "php-http/discovery": true
     }
   },
   "require": {
@@ -22,6 +23,7 @@
     "goldene-zeiten/products-credit-points": "^1.0",
     "goldene-zeiten/products-express-paypal": "^1.0",
     "goldene-zeiten/products-express-stripe": "^1.0",
+    "goldene-zeiten/products-mcp": "^1.0",
     "goldene-zeiten/products-payment-amazon": "^1.0",
     "goldene-zeiten/products-payment-klarna": "^1.0",
     "goldene-zeiten/products-payment-offline": "^1.0",
@@ -46,6 +48,7 @@
       "GoldeneZeiten\\Products\\Solr\\Tests\\": "packages/goldene-zeiten/products-solr/Tests/",
       "GoldeneZeiten\\Products\\Testing\\": "packages-dev/products_testing/Classes/",
       "GoldeneZeiten\\Products\\RecentlyViewed\\Tests\\": "packages/goldene-zeiten/products-recently-viewed/Tests/",
+      "GoldeneZeiten\\Products\\Mcp\\Tests\\": "packages/goldene-zeiten/products-mcp/Tests/",
       "GoldeneZeiten\\Products\\Wishlist\\Tests\\": "packages/goldene-zeiten/products-wishlist/Tests/",
       "GoldeneZeiten\\Products\\CreditPoints\\Tests\\": "packages/goldene-zeiten/products-credit-points/Tests/",
       "GoldeneZeiten\\Products\\Voucher\\Tests\\": "packages/goldene-zeiten/products-voucher/Tests/",
@@ -106,7 +109,8 @@
           "goldene-zeiten/products-basket-summary": "1.0.0",
           "goldene-zeiten/products-personalization": "1.0.0",
           "goldene-zeiten/products-payment-offline": "1.0.0",
-          "goldene-zeiten/products-shipping-pickup": "1.0.0"
+          "goldene-zeiten/products-shipping-pickup": "1.0.0",
+          "goldene-zeiten/products-mcp": "1.0.0"
         }
       }
     }

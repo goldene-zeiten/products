@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-mcp
+label: Products MCP
+dependencies:
+  - goldene-zeiten/products-core

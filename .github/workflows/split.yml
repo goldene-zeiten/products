@@ -38,6 +38,9 @@ jobs:
           - package: products-recently-viewed
             directory: packages/goldene-zeiten/products-recently-viewed
             repository: products-recently-viewed
+          - package: products-mcp
+            directory: packages/goldene-zeiten/products-mcp
+            repository: products-mcp
           - package: products-basket-summary
             directory: packages/goldene-zeiten/products-basket-summary
             repository: products-basket-summary
