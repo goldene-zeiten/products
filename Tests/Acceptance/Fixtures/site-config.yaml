@@ -24,8 +24,12 @@ dependencies:
   - goldene-zeiten/products-credit-points
   - goldene-zeiten/products-voucher
   - goldene-zeiten/products-watermark
+  - goldene-zeiten/products-mcp
 settings:
   products:
+    # The endpoint assistants talk to, at /mcp; mcp-search-to-checkout.spec.js drives it.
+    mcp:
+      enabled: true
     creditPoints:
       enabled: true
     shipping:

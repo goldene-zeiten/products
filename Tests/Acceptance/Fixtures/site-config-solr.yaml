@@ -35,6 +35,7 @@ dependencies:
   - goldene-zeiten/products-voucher
   - goldene-zeiten/products-watermark
   - goldene-zeiten/products-solr
+  - goldene-zeiten/products-mcp
 # Solr connection coordinates. The literal placeholders are substituted with the live Solr
 # container's name/port by setupInstance.sh (env SOLR_HOST/SOLR_PORT threaded from runTests.sh).
 solr_enabled_read: true
@@ -44,6 +45,9 @@ solr_port_read: ___SOLR_PORT___
 solr_path_read: '/'
 settings:
   products:
+    # The endpoint assistants talk to, at /mcp; mcp-search-to-checkout.spec.js drives it.
+    mcp:
+      enabled: true
     creditPoints:
       enabled: true
     shipping:
