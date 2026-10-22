@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Core\Updates;
 use TYPO3\CMS\Core\Country\CountryProvider;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 
 /**
  * The manufacturer records built from a legacy manufacturer column ({@see LegacyMigrationConfiguration::getManufacturerColumn()}):
@@ -42,17 +43,7 @@ final class LegacyManufacturers
      */
     public function names(string $column): array
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_products_migration_map');
-        $queryBuilder->select('manufacturer.uid', 'manufacturer.name')
-            ->from('tx_products_migration_map', 'map')
-            ->innerJoin('map', 'tx_products_domain_model_manufacturer', 'manufacturer', 'manufacturer.uid = map.local_uid')
-            ->where(
-                $queryBuilder->expr()->eq('map.legacy_table', $queryBuilder->createNamedParameter($this->mapKey($column))),
-                $queryBuilder->expr()->eq('map.local_table', $queryBuilder->createNamedParameter('tx_products_domain_model_manufacturer')),
-                $queryBuilder->expr()->eq('manufacturer.deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
-            )
-            ->orderBy('manufacturer.uid');
-        $result = $queryBuilder->executeQuery();
+        $result = $this->migrated($column, 'name')->executeQuery();
         $names = [];
         while ($row = $result->fetchAssociative()) {
             $names[(int)$row['uid']] = (string)$row['name'];
@@ -110,8 +101,27 @@ final class LegacyManufacturers
     }
 
     /**
-     * Pairs of names where one begins with the other, e.g. "Stelmach" and "Stelmach Trauringe": likely the
-     * same manufacturer spelled twice, which only the shop owner can decide.
+     * How many manufacturers migrated from the column lack a postal address (street, zip and city all empty)
+     * or an electronic contact (email and website both empty).
+     */
+    public function lackingAddressCount(string $column): int
+    {
+        $result = $this->migrated($column, 'street', 'zip', 'city', 'email', 'website')->executeQuery();
+        $count = 0;
+        while ($row = $result->fetchAssociative()) {
+            $noPostalAddress = (string)$row['street'] === '' && (string)$row['zip'] === '' && (string)$row['city'] === '';
+            $noElectronicContact = (string)$row['email'] === '' && (string)$row['website'] === '';
+            if ($noPostalAddress || $noElectronicContact) {
+                $count++;
+            }
+        }
+        return $count;
+    }
+
+    /**
+     * Pairs of names that look like the same manufacturer spelled twice, each reported once: one name begins
+     * with the other ("Stelmach" / "Stelmach Trauringe"), or both start with the same first word
+     * ("Linder Schmuckwaren" / "Linder Trauringmanufaktur"). Only the shop owner can decide these are one.
      *
      * @return array<int, array{0: string, 1: string}>
      */
@@ -119,16 +129,55 @@ final class LegacyManufacturers
     {
         $names = array_values($this->names($column));
         $pairs = [];
-        foreach ($names as $short) {
-            foreach ($names as $long) {
-                $shortKey = LegacyComparisonKey::of($short);
-                $longKey = LegacyComparisonKey::of($long);
-                if ($shortKey !== $longKey && str_starts_with($longKey, $shortKey)) {
-                    $pairs[] = [$short, $long];
+        $count = count($names);
+        for ($i = 0; $i < $count; $i++) {
+            for ($j = $i + 1; $j < $count; $j++) {
+                $first = $names[$i];
+                $second = $names[$j];
+                $firstKey = LegacyComparisonKey::of($first);
+                $secondKey = LegacyComparisonKey::of($second);
+                if ($firstKey === $secondKey) {
+                    continue;
+                }
+                if (str_starts_with($secondKey, $firstKey)) {
+                    $pairs[] = [$first, $second];
+                } elseif (str_starts_with($firstKey, $secondKey)) {
+                    $pairs[] = [$second, $first];
+                } elseif (self::firstWord($firstKey) !== '' && self::firstWord($firstKey) === self::firstWord($secondKey)) {
+                    $pairs[] = [$first, $second];
                 }
             }
         }
         return $pairs;
+    }
+
+    /**
+     * The live manufacturer records migrated from the column, in uid order, with the given fields.
+     */
+    private function migrated(string $column, string ...$fields): QueryBuilder
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_products_migration_map');
+        $selects = ['manufacturer.uid'];
+        foreach ($fields as $field) {
+            $selects[] = 'manufacturer.' . $field;
+        }
+        return $queryBuilder->select(...$selects)
+            ->from('tx_products_migration_map', 'map')
+            ->innerJoin('map', 'tx_products_domain_model_manufacturer', 'manufacturer', 'manufacturer.uid = map.local_uid')
+            ->where(
+                $queryBuilder->expr()->eq('map.legacy_table', $queryBuilder->createNamedParameter($this->mapKey($column))),
+                $queryBuilder->expr()->eq('map.local_table', $queryBuilder->createNamedParameter('tx_products_domain_model_manufacturer')),
+                $queryBuilder->expr()->eq('manufacturer.deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
+            )
+            ->orderBy('manufacturer.uid');
+    }
+
+    /**
+     * The first word of a comparison key: the text up to the first whitespace.
+     */
+    private static function firstWord(string $key): string
+    {
+        return preg_split('/\s/', $key)[0] ?? '';
     }
 
     private function create(string $column, string $name, int $pid): int

@@ -93,6 +93,7 @@ final class TtProductsManufacturerUpgradeWizard implements UpgradeWizardInterfac
             }
         }
         $this->reportLookAlikes($column);
+        $this->reportLackingAddress($column);
         return true;
     }
 
@@ -130,6 +131,19 @@ final class TtProductsManufacturerUpgradeWizard implements UpgradeWizardInterfac
                 $long
             ));
         }
+    }
+
+    private function reportLackingAddress(string $column): void
+    {
+        $count = $this->manufacturers->lackingAddressCount($column);
+        if ($count === 0) {
+            return;
+        }
+        $this->output->writeln(sprintf(
+            '<comment>%d %s the postal or electronic address the GPSR requires; complete them in the backend.</comment>',
+            $count,
+            $count === 1 ? 'manufacturer lacks' : 'manufacturers lack'
+        ));
     }
 
     private function productUid(int $legacyUid): ?int
