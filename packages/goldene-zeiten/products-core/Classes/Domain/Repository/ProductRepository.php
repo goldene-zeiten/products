@@ -128,15 +128,19 @@ final class ProductRepository extends AbstractReadOnlyRepository
      */
     private function termConstraint(QueryInterface $query, string $term): ConstraintInterface
     {
-        $productUids = $this->uidsMatchingTerm($term);
+        $productUids = $this->findUidsMatchingTerm($term);
 
         return $productUids === [] ? $query->equals('uid', 0) : $query->in('uid', $productUids);
     }
 
     /**
+     * The uids of the products whose title, subtitle, item number, description or EAN contains the term, for
+     * a caller that combines the search with the criteria of {@see self::createListQuery()}. Deleted products
+     * are left out; visibility and storage are left to the query the uids are used in.
+     *
      * @return int[]
      */
-    private function uidsMatchingTerm(string $term): array
+    public function findUidsMatchingTerm(string $term): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_products_domain_model_product');
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
