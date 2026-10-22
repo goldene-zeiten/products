@@ -26,6 +26,10 @@ return [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:products_core/Resources/Public/Icons/Category.svg',
     ],
+    'products-manufacturer' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:products_core/Resources/Public/Icons/Manufacturer.svg',
+    ],
     'products-product' => [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:products_core/Resources/Public/Icons/Product.svg',

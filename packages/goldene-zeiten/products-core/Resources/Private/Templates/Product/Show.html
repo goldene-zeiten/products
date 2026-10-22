@@ -29,6 +29,8 @@
         </div>
     </div>
 
+    <f:render partial="Product/ManufacturerInformation" arguments="{manufacturer: product.manufacturer}" />
+
     <f:render partial="Product/Downloads" arguments="{downloads: product.downloads}" />
 
     <f:render partial="Product/RelatedProducts" arguments="{relatedProducts: relatedProducts, settings: settings}" />

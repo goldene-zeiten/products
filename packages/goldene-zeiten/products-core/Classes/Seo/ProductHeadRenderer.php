@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\Core\Seo;
 use GoldeneZeiten\Products\Core\Configuration\ProductsConfigurationFactory;
 use GoldeneZeiten\Products\Core\Domain\Dto\Catalog\ProductSeoMetadata;
 use GoldeneZeiten\Products\Core\Domain\Model\Article;
+use GoldeneZeiten\Products\Core\Domain\Model\Manufacturer;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Event\ModifyProductStructuredDataEvent;
 use GoldeneZeiten\Products\Core\PageTitle\CurrentProductHolder;
@@ -87,7 +88,33 @@ final class ProductHeadRenderer
         if ($imageUrl !== '') {
             $data['image'] = $imageUrl;
         }
+        $manufacturer = $product->getManufacturer();
+        if ($manufacturer instanceof Manufacturer) {
+            $data['brand'] = ['@type' => 'Brand', 'name' => $manufacturer->getBrandName()];
+            $data['manufacturer'] = $this->manufacturerData($manufacturer);
+        }
         return $data;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function manufacturerData(Manufacturer $manufacturer): array
+    {
+        $address = array_filter([
+            '@type' => 'PostalAddress',
+            'streetAddress' => $manufacturer->getStreet(),
+            'postalCode' => $manufacturer->getZip(),
+            'addressLocality' => $manufacturer->getCity(),
+            'addressCountry' => $manufacturer->getCountry(),
+        ], static fn(string $value): bool => $value !== '');
+        return array_filter([
+            '@type' => 'Organization',
+            'name' => $manufacturer->getName(),
+            'url' => $manufacturer->getWebsite(),
+            'email' => $manufacturer->getEmail(),
+            'address' => count($address) > 1 ? $address : '',
+        ], static fn(array|string $value): bool => $value !== '');
     }
 
     /**

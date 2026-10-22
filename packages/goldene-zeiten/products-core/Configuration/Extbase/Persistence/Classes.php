@@ -7,6 +7,7 @@ use GoldeneZeiten\Products\Core\Domain\Model\Attribute;
 use GoldeneZeiten\Products\Core\Domain\Model\AttributeValue;
 use GoldeneZeiten\Products\Core\Domain\Model\Category;
 use GoldeneZeiten\Products\Core\Domain\Model\HandlingFee;
+use GoldeneZeiten\Products\Core\Domain\Model\Manufacturer;
 use GoldeneZeiten\Products\Core\Domain\Model\Order;
 use GoldeneZeiten\Products\Core\Domain\Model\OrderAddress;
 use GoldeneZeiten\Products\Core\Domain\Model\OrderItem;
@@ -31,6 +32,7 @@ return [
     AttributeValue::class => ['tableName' => 'tx_products_domain_model_attributevalue'],
     Category::class => ['tableName' => 'tx_products_domain_model_category'],
     HandlingFee::class => ['tableName' => 'tx_products_domain_model_handlingfee'],
+    Manufacturer::class => ['tableName' => 'tx_products_domain_model_manufacturer'],
     Order::class => ['tableName' => 'tx_products_domain_model_order'],
     OrderAddress::class => ['tableName' => 'tx_products_domain_model_orderaddress'],
     OrderItem::class => ['tableName' => 'tx_products_domain_model_orderitem'],

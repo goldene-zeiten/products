@@ -126,6 +126,30 @@ follows directly from how TYPO3's core `DataHandler` permission checks work, not
 specific to this extension. A flash message summarises how many records moved, or reports any
 failure (e.g. a non-Sysfolder destination) instead of moving nothing silently.
 
+..  _users-manual-manufacturers:
+
+Manufacturers and product safety information
+=============================================
+
+Create the makers of your products as :guilabel:`Manufacturer` records in the same folder as the products
+and pick one in the :guilabel:`Manufacturer` field of each product. A variant (article) uses the manufacturer
+of its product.
+
+The detail page shows the manufacturer in the block "Manufacturer information" and the product's structured
+data (JSON-LD) carries it as ``brand`` and ``manufacturer``.
+
+The EU General Product Safety Regulation (EU) 2023/988, Art. 19, requires an online offer to show:
+
+*  the manufacturer's name (registered trade name or trademark): :guilabel:`Name` and, if the products are sold
+   under a different trademark, :guilabel:`Brand name`
+*  the manufacturer's postal address: :guilabel:`Street and number`, :guilabel:`ZIP code`, :guilabel:`City`
+   and :guilabel:`Country`
+*  the manufacturer's electronic address: :guilabel:`Email address` or :guilabel:`Contact URL`
+*  for a manufacturer outside the EU, the responsible person in the EU, on the tab
+   :guilabel:`EU responsible person` (name, postal address, email)
+
+The description, the logo and the link to a page are optional and not part of the legal minimum.
+
 ..  _users-manual-cross-selling:
 
 Cross-selling: related and accessory products

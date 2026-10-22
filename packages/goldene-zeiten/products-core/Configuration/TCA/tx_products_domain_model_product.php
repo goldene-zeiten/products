@@ -20,7 +20,7 @@ return [
         'iconfile' => 'EXT:products_core/Resources/Public/Icons/Product.svg',
     ],
     'types' => [
-        '1' => ['showitem' => '--div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_general, title, subtitle, slug, --palette--;;identifiers, categories, description, withdrawal_exclusion, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_prices, --palette--;;pricing, --palette--;;discount, price_tiers, price_periods, --linebreak--, --palette--;;unitPricing, tax_class, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_stock, --palette--;;stock, --palette--;;basketLimits, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_shipping, --palette--;;shipping, shipping_point, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_marketing, --palette--;;flags, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_media, images, downloads, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_relations, articles, related_products, accessory_products, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_seo, --palette--;;seo, --palette--;;openGraph, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
+        '1' => ['showitem' => '--div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_general, title, subtitle, slug, --palette--;;identifiers, manufacturer, categories, description, withdrawal_exclusion, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_prices, --palette--;;pricing, --palette--;;discount, price_tiers, price_periods, --linebreak--, --palette--;;unitPricing, tax_class, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_stock, --palette--;;stock, --palette--;;basketLimits, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_shipping, --palette--;;shipping, shipping_point, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_marketing, --palette--;;flags, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_media, images, downloads, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_relations, articles, related_products, accessory_products, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.tab_seo, --palette--;;seo, --palette--;;openGraph, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource'],
     ],
     'palettes' => [
         'seo' => [
@@ -224,6 +224,24 @@ return [
                 'renderType' => 'selectSingle',
                 'foreign_table' => 'tx_products_domain_model_taxclass',
                 'minitems' => 1,
+                'maxitems' => 1,
+            ],
+        ],
+        'manufacturer' => [
+            'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_product.manufacturer',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'foreign_table' => 'tx_products_domain_model_manufacturer',
+                'foreign_table_where' => 'AND {#tx_products_domain_model_manufacturer}.{#pid}=###CURRENT_PID###',
+                'items' => [
+                    [
+                        'label' => '',
+                        'value' => 0,
+                    ],
+                ],
+                'default' => 0,
+                'minitems' => 0,
                 'maxitems' => 1,
             ],
         ],

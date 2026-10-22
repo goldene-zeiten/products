@@ -1,0 +1,43 @@
+<html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
+<f:if condition="{manufacturer}">
+    <section class="product-manufacturer mt-4">
+        <h2 class="h5"><f:translate key="manufacturer.heading" extensionName="ProductsCore" /></h2>
+        <dl>
+            <dt><f:translate key="manufacturer.name" extensionName="ProductsCore" /></dt>
+            <dd>{manufacturer.name}</dd>
+            <f:if condition="{manufacturer.brandName} != {manufacturer.name}">
+                <dt><f:translate key="manufacturer.brand" extensionName="ProductsCore" /></dt>
+                <dd>{manufacturer.brandName}</dd>
+            </f:if>
+            <f:if condition="{manufacturer.addressLines}">
+                <dt><f:translate key="manufacturer.address" extensionName="ProductsCore" /></dt>
+                <dd>
+                    <address>
+                        <f:for each="{manufacturer.addressLines}" as="line" iteration="iterator">{line}<f:if condition="{iterator.isLast} == 0"><br></f:if></f:for>
+                    </address>
+                </dd>
+            </f:if>
+            <f:if condition="{manufacturer.email}">
+                <dt><f:translate key="manufacturer.email" extensionName="ProductsCore" /></dt>
+                <dd><a href="mailto:{manufacturer.email}">{manufacturer.email}</a></dd>
+            </f:if>
+            <f:if condition="{manufacturer.contactUrl}">
+                <dt><f:translate key="manufacturer.contact_url" extensionName="ProductsCore" /></dt>
+                <dd><a href="{manufacturer.contactUrl}" rel="noopener">{manufacturer.contactUrl}</a></dd>
+            </f:if>
+            <f:if condition="{manufacturer.website}">
+                <dt><f:translate key="manufacturer.website" extensionName="ProductsCore" /></dt>
+                <dd><a href="{manufacturer.website}" rel="noopener">{manufacturer.website}</a></dd>
+            </f:if>
+        </dl>
+        <f:if condition="{manufacturer.euResponsibleSet}">
+            <h3 class="h6"><f:translate key="manufacturer.eu_responsible" extensionName="ProductsCore" /></h3>
+            <address>
+                <f:if condition="{manufacturer.euResponsibleName}">{manufacturer.euResponsibleName}<br></f:if>
+                <f:if condition="{manufacturer.euResponsibleAddress}"><f:format.nl2br>{manufacturer.euResponsibleAddress}</f:format.nl2br><br></f:if>
+                <f:if condition="{manufacturer.euResponsibleEmail}"><a href="mailto:{manufacturer.euResponsibleEmail}">{manufacturer.euResponsibleEmail}</a></f:if>
+            </address>
+        </f:if>
+    </section>
+</f:if>
+</html>

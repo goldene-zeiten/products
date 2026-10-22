@@ -627,6 +627,38 @@
 				<source>Next</source>
 				<target>Weiter</target>
 			</trans-unit>
+			<trans-unit id="manufacturer.heading" resname="manufacturer.heading">
+				<source>Manufacturer information</source>
+				<target>Herstellerangaben</target>
+			</trans-unit>
+			<trans-unit id="manufacturer.name" resname="manufacturer.name">
+				<source>Manufacturer</source>
+				<target>Hersteller</target>
+			</trans-unit>
+			<trans-unit id="manufacturer.brand" resname="manufacturer.brand">
+				<source>Brand</source>
+				<target>Marke</target>
+			</trans-unit>
+			<trans-unit id="manufacturer.address" resname="manufacturer.address">
+				<source>Postal address</source>
+				<target>Postanschrift</target>
+			</trans-unit>
+			<trans-unit id="manufacturer.email" resname="manufacturer.email">
+				<source>Email</source>
+				<target>E-Mail</target>
+			</trans-unit>
+			<trans-unit id="manufacturer.contact_url" resname="manufacturer.contact_url">
+				<source>Contact form</source>
+				<target>Kontaktformular</target>
+			</trans-unit>
+			<trans-unit id="manufacturer.website" resname="manufacturer.website">
+				<source>Website</source>
+				<target>Website</target>
+			</trans-unit>
+			<trans-unit id="manufacturer.eu_responsible" resname="manufacturer.eu_responsible">
+				<source>Responsible person in the EU</source>
+				<target>Verantwortliche Person in der EU</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
