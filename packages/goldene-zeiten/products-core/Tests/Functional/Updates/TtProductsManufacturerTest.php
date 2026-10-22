@@ -91,6 +91,57 @@ final class TtProductsManufacturerTest extends AbstractFunctionalTestCase
     }
 
     #[Test]
+    public function namesSharingTheirFirstWordAreReportedNotMerged(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsManufacturerTest/first_word_values.csv');
+        $output = new BufferedOutput();
+        $subject = $this->get(TtProductsManufacturerUpgradeWizard::class);
+        $subject->setOutput($output);
+
+        $subject->executeUpdate();
+
+        $this->assertStringContainsString('"Linder Schmuckwaren" / "Linder Trauringmanufaktur"', $output->fetch());
+        $this->assertCount(4, $this->manufacturers());
+    }
+
+    #[Test]
+    public function manufacturersWithoutPostalOrElectronicAddressAreCounted(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsManufacturerTest/first_word_values.csv');
+        $output = new BufferedOutput();
+        $subject = $this->get(TtProductsManufacturerUpgradeWizard::class);
+        $subject->setOutput($output);
+
+        $subject->executeUpdate();
+
+        // Stelmach is complete; Stelmach Trauringe has no postal address and both Linder manufacturers have none at all.
+        $this->assertStringContainsString(
+            '3 manufacturers lack the postal or electronic address the GPSR requires; complete them in the backend.',
+            $output->fetch()
+        );
+    }
+
+    #[Test]
+    public function aFullyAddressedManufacturerIsNotCounted(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/TtProductsManufacturerTest/first_word_values.csv');
+        $subject = $this->get(TtProductsManufacturerUpgradeWizard::class);
+        $subject->setOutput(new BufferedOutput());
+        $subject->executeUpdate();
+        $this->get(ConnectionPool::class)->getQueryBuilderForTable('tx_products_domain_model_manufacturer')
+            ->update('tx_products_domain_model_manufacturer')
+            ->set('street', 'Hauptstrasse 1')
+            ->set('email', 'info@example.test')
+            ->executeStatement();
+        $output = new BufferedOutput();
+        $subject->setOutput($output);
+
+        $subject->executeUpdate();
+
+        $this->assertStringNotContainsString('lack the postal or electronic address', $output->fetch());
+    }
+
+    #[Test]
     public function runningTheWizardAgainChangesNothing(): void
     {
         $subject = $this->get(TtProductsManufacturerUpgradeWizard::class);

@@ -1,0 +1,12 @@
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title","manufacturer"
+,84,2,0,"Linder Ring",0
+,85,2,0,"Linder Ring 2",0
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",5,"tx_products_domain_model_product",84
+,"tt_products",6,"tx_products_domain_model_product",85
+"tt_products",,,,,,,,,,,,,,,,,,,,,
+,"uid","pid","deleted","hidden","title","itemnumber","ean","price","category","inStock","basketminquantity","basketmaxquantity","taxcat_id","weight","offer","highlight","form","address","www"
+,5,2,0,0,"Linder Ring","LA","","10.00",0,1,"0.00","0.00",1,"0.000000",0,0,"Linder Schmuckwaren",0,""
+,6,2,0,0,"Linder Ring 2","LB","","10.00",0,1,"0.00","0.00",1,"0.000000",0,0,"Linder Trauringmanufaktur",0,""
