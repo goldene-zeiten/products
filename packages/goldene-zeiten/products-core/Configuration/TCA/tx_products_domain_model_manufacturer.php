@@ -11,6 +11,9 @@ return [
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'versioningWS' => true,
+        'languageField' => 'sys_language_uid',
+        'transOrigPointerField' => 'l10n_parent',
+        'transOrigDiffSourceField' => 'l10n_diffsource',
         'delete' => 'deleted',
         'sortby' => 'sorting',
         'enablecolumns' => [
@@ -19,7 +22,7 @@ return [
         'iconfile' => 'EXT:products_core/Resources/Public/Icons/Manufacturer.svg',
     ],
     'types' => [
-        '1' => ['showitem' => '--div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.tab_general, name, brand_name, logo, description, page, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.tab_contact, website, --palette--;;electronicContact, --palette--;;postalAddress, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.tab_eu_responsible, eu_responsible_name, eu_responsible_address, eu_responsible_email, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access, hidden'],
+        '1' => ['showitem' => '--div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.tab_general, name, brand_name, logo, description, page, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.tab_contact, website, --palette--;;electronicContact, --palette--;;postalAddress, --div--;LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.tab_eu_responsible, eu_responsible_name, eu_responsible_address, eu_responsible_email, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access, hidden'],
     ],
     'palettes' => [
         'electronicContact' => [
@@ -30,6 +33,35 @@ return [
         ],
     ],
     'columns' => [
+        'sys_language_uid' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
+            'config' => [
+                'type' => 'language',
+            ],
+        ],
+        'l10n_parent' => [
+            'displayCond' => 'FIELD:sys_language_uid:>:0',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'default' => 0,
+                'items' => [
+                    [
+                        'label' => '',
+                        'value' => 0,
+                    ],
+                ],
+                'foreign_table' => 'tx_products_domain_model_manufacturer',
+                'foreign_table_where' => 'AND {#tx_products_domain_model_manufacturer}.{#pid}=###CURRENT_PID### AND {#tx_products_domain_model_manufacturer}.{#sys_language_uid} IN (-1,0)',
+            ],
+        ],
+        'l10n_diffsource' => [
+            'config' => [
+                'type' => 'passthrough',
+            ],
+        ],
         'name' => [
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.name',
             'config' => [
@@ -49,6 +81,7 @@ return [
             ],
         ],
         'logo' => [
+            'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.logo',
             'config' => [
                 'type' => 'file',
@@ -64,6 +97,7 @@ return [
             ],
         ],
         'page' => [
+            'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.page',
             'config' => [
                 'type' => 'group',
@@ -73,6 +107,7 @@ return [
             ],
         ],
         'website' => [
+            'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.website',
             'config' => [
                 'type' => 'link',
@@ -80,6 +115,7 @@ return [
             ],
         ],
         'email' => [
+            'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.email',
             'config' => [
                 'type' => 'email',
@@ -88,6 +124,7 @@ return [
             ],
         ],
         'contact_url' => [
+            'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.contact_url',
             'config' => [
                 'type' => 'link',
@@ -95,6 +132,7 @@ return [
             ],
         ],
         'street' => [
+            'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.street',
             'config' => [
                 'type' => 'input',
@@ -103,6 +141,7 @@ return [
             ],
         ],
         'zip' => [
+            'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.zip',
             'config' => [
                 'type' => 'input',
@@ -111,6 +150,7 @@ return [
             ],
         ],
         'city' => [
+            'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.city',
             'config' => [
                 'type' => 'input',
@@ -119,6 +159,7 @@ return [
             ],
         ],
         'country' => [
+            'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.country',
             'config' => [
                 'type' => 'select',
@@ -127,6 +168,7 @@ return [
             ],
         ],
         'eu_responsible_name' => [
+            'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.eu_responsible_name',
             'description' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.eu_responsible_name.description',
             'config' => [
@@ -136,6 +178,7 @@ return [
             ],
         ],
         'eu_responsible_address' => [
+            'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.eu_responsible_address',
             'config' => [
                 'type' => 'text',
@@ -143,6 +186,7 @@ return [
             ],
         ],
         'eu_responsible_email' => [
+            'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:products_core/Resources/Private/Language/locallang_tca.xlf:tx_products_domain_model_manufacturer.eu_responsible_email',
             'config' => [
                 'type' => 'email',
