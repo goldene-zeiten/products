@@ -69,22 +69,13 @@ final class LegacyColumnCategories
                 $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
             )
             ->executeQuery();
-        $key = $this->comparisonKey($value);
+        $key = LegacyComparisonKey::of($value);
         while ($row = $result->fetchAssociative()) {
-            if ($this->comparisonKey((string)$row['title']) === $key) {
+            if (LegacyComparisonKey::of((string)$row['title']) === $key) {
                 return ['uid' => (int)$row['uid'], 'title' => (string)$row['title']];
             }
         }
         return null;
-    }
-
-    /**
-     * "Rosègold" and "roségold" are the same value: lower case, accents dropped.
-     */
-    private function comparisonKey(string $title): string
-    {
-        $decomposed = \Normalizer::normalize(mb_strtolower($title), \Normalizer::FORM_D);
-        return preg_replace('/\p{Mn}+/u', '', $decomposed === false ? mb_strtolower($title) : $decomposed) ?? $title;
     }
 
     public function valueCategory(string $column, string $rootTitle, string $value, int $pid): int

@@ -13,6 +13,9 @@ migration.columnCategories =
 # cat=migration/catalog/30; type=string; label=Columns holding several values: Comma-separated columns from "Columns that become categories" whose values are lists separated by commas, semicolons or line breaks.
 migration.columnCategoriesMultiValue =
 
+# cat=migration/catalog/35; type=string; label=Column holding the manufacturer: The tt_products column holding the manufacturer's name, e.g. "form". The wizard "Turn the tt_products manufacturer column into manufacturer records" creates a manufacturer record per distinct value (case and accents ignored), links the migrated products and completes the records from tt_products.address (a tt_address record) and tt_products.www. Names that look like duplicates are reported, not merged. Independent of "Columns that become categories".
+migration.manufacturerColumn =
+
 # cat=migration/catalog/40; type=boolean; label=note2 holds keywords: The legacy shop used the second text field note2 for meta keywords. The product migration then takes them as the product keywords where tt_products.keyword is empty.
 migration.note2AsKeywords = 0
 
