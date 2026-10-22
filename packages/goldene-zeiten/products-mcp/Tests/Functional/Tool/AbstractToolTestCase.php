@@ -33,6 +33,7 @@ abstract class AbstractToolTestCase extends AbstractFrontendTestCase
     {
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/catalog.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/checkout_pages.csv');
         $this->writeSiteConfiguration(
             'products',
             $this->buildSiteConfiguration(1, additionalRootConfiguration: [
@@ -41,7 +42,7 @@ abstract class AbstractToolTestCase extends AbstractFrontendTestCase
                 'settings' => [
                     'products' => [
                         'mcp' => ['enabled' => true],
-                        'pids' => ['storageFolder' => 2, 'detailPage' => 2],
+                        'pids' => ['storageFolder' => 2, 'detailPage' => 2, 'basketPage' => 3, 'checkoutPage' => 4],
                         'shipping' => ['enabled' => true],
                     ],
                 ],

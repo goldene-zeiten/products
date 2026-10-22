@@ -7,7 +7,8 @@
 Tools
 =====
 
-The read tools let an assistant look around the shop. They answer in the language of the site language the
+The read tools let an assistant look around the shop; the :ref:`basket tools <tools-basket>` let it collect
+products for the customer and :ref:`hand the basket over <tools-start-checkout>`. They answer in the language of the site language the
 endpoint was called on, read the products from the storage folder of the site (``products.pids.storageFolder``)
 and leave out hidden products, like the frontend. Every tool returns a JSON object, both as structured content
 and as JSON text. A call that cannot be answered, such as a product that does not exist, is returned as a tool
@@ -185,3 +186,108 @@ Output
 ``options``
     Each with ``key``, ``label``, ``cost`` (decimal string) and ``deliveryEstimate``. The list is empty while
     shipping is disabled for the site or no provider ships to the country.
+
+..  _tools-basket:
+
+Basket tools
+============
+
+An assistant builds a basket on the server. It is not the browser basket of any customer: the basket is stored
+under a random ``basketToken`` that ``create_basket`` returns and every other basket tool asks for. A basket
+expires :confval:`after the checkout link lifetime <products.mcp.checkoutLinkLifetime>` without a change; an
+unknown or expired token is a tool error.
+
+Products are added through the basket service of the shop, so a basket line is priced, taxed and addressed
+exactly like a line in the customer's basket, including options. The prices are the customer-independent ones:
+discounts of a customer group are applied once the customer is in the checkout.
+
+..  _tools-create-basket:
+
+create_basket
+-------------
+
+Takes no input and returns ``basketToken``.
+
+..  _tools-add-to-basket:
+
+add_to_basket
+-------------
+
+Input
+    ``basketToken`` (required), ``product`` (uid, required), ``article`` (uid of the variant), ``quantity``
+    (1 by default) and ``selections`` (object of option identifier to value, for products with line options
+    such as an engraving).
+
+Adding a product the basket already holds raises its line. The tool returns the basket as ``get_basket`` does.
+These are tool errors that say why:
+
+*   the product does not exist, is hidden or not visible to the customer,
+*   a product with variants was added without ``article``, or the article is not a variant of the product,
+*   the quantity in the basket would be below the minimum or above the maximum of the product or variant,
+*   the quantity in the basket would exceed the stock (the frontend basket only checks the stock when the
+    order is placed; the assistant is told at once), or
+*   a listener refuses the ``selections``.
+
+The limits and the stock count all lines of the same product or variant, whatever their options.
+
+..  _tools-update-basket-item:
+
+update_basket_item
+------------------
+
+Input
+    ``basketToken``, ``line`` and ``quantity``, all required. ``line`` is the ``line`` key of a line in
+    ``get_basket``, such as ``3:71:`` (product, article or 0, key of the options). Quantity ``0`` removes the
+    line.
+
+Returns the basket. A line that is not in the basket, and a quantity the limits or stock do not allow, are tool
+errors.
+
+..  _tools-get-basket:
+
+get_basket
+----------
+
+Input
+    ``basketToken``.
+
+Output
+    ``currency``; ``itemCount``; ``lines``, each with ``line``, ``product``, ``title``, ``article`` (``uid``,
+    ``title``, ``itemNumber`` or ``null``), ``options`` (``label``, ``value``, ``surcharge``), ``quantity``,
+    ``vatRate`` (percent), ``unitPrice`` and ``lineTotal`` (each with ``net`` and ``gross``); ``totals`` with
+    ``net``, ``tax`` and ``gross``; ``vat``, the totals per VAT rate. Shipping and payment fees are not
+    included; they depend on the customer's address and choices in the checkout.
+
+..  _tools-start-checkout:
+
+start_checkout
+--------------
+
+Input
+    ``basketToken``.
+
+Output
+    ``checkoutUrl``, an absolute address below the MCP path (``/mcp/checkout?token=...``), and ``expiresAt``
+    (ISO 8601, UTC). An empty basket is a tool error.
+
+The assistant gives the link to the customer. The token in it is signed with an HMAC over the installation's
+encryption key and carries its expiry (:confval:`products.mcp.checkoutLinkLifetime`); the customer cannot swap
+the basket or extend the link.
+
+Opening the link in a browser:
+
+#.  verifies signature and expiry,
+#.  adds the lines of the assistant's basket to the basket in the visitor's own frontend session, through the
+    basket service again, so a line that cannot be sold any more is left out and the lines add to what the
+    visitor already collected, and
+#.  redirects with ``303 See Other`` to the checkout page (``products.pids.checkoutPage``, or the basket page
+    while none is set).
+
+A basket is merged once per browser session, so reloading the link or going back to it does not double the
+quantities. The link can be opened by several visitors (it is a bearer link, like a shared basket); each gets
+the lines in their own session.
+
+A link that is malformed, tampered with or expired, or whose basket has expired, merges nothing and redirects
+with ``303`` to the basket page (``products.pids.basketPage``, or the site root), where the visitor sees the
+basket they have. The order itself is never placed through MCP: terms, the withdrawal waiver and payment happen
+in the checkout.

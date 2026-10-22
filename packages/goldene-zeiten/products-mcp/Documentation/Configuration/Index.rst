@@ -52,6 +52,15 @@ the endpoint, then adjust its settings under :guilabel:`Site Management > Sites 
 
     Partial root paths of the guide resources, used like the template root paths.
 
+..  confval:: products.mcp.checkoutLinkLifetime
+    :type: int
+    :Default: 86400
+
+    Seconds a checkout link stays valid, and how long an assistant basket is kept after its last change. The
+    link is opened by the customer later than it is created, so it is generous by default; a basket is never
+    kept for less than 60 seconds. Sites that share a database should use the same value, since expired baskets
+    are removed for all of them.
+
 ..  _configuration-tools:
 
 Tools
@@ -74,3 +83,7 @@ Sessions
 MCP sessions are stored in the table ``tx_productsmcp_session`` through TYPO3's session framework, under the
 session identifier ``products_mcp`` in :php:`$GLOBALS['TYPO3_CONF_VARS']['SYS']['session']`. Point that identifier
 at another session backend to keep the sessions elsewhere.
+
+Baskets that assistants build are kept apart from the MCP sessions, in the table ``tx_productsmcp_basket`` under
+the session identifier ``products_mcp_basket``, because the garbage collection of a session backend removes by
+age across its whole table and a basket has to outlive the session.

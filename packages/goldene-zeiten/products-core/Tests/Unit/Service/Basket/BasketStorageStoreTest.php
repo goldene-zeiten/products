@@ -17,7 +17,7 @@ final class BasketStorageStoreTest extends UnitTestCase
     #[Test]
     public function aStoreOnTheRequestReplacesTheFrontendUserSession(): void
     {
-        $store = new class implements BasketStoreInterface {
+        $store = new class () implements BasketStoreInterface {
             public ?Basket $saved = null;
 
             public function load(): Basket

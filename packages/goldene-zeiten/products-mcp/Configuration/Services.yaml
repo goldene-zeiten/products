@@ -11,3 +11,5 @@ services:
       - '../Classes/Sdk/Typo3SessionStore.php'
       - '../Classes/Sdk/ToolHandlerAdapter.php'
       - '../Classes/Sdk/ResourceHandlerAdapter.php'
+      - '../Classes/Basket/McpBasketStore.php'
+      - '../Classes/Basket/OpenBasket.php'

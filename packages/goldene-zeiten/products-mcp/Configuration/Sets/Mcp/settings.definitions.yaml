@@ -29,3 +29,8 @@ settings:
       - 'EXT:products_mcp/Resources/Private/Partials/'
     label: 'LLL:EXT:products_mcp/Resources/Private/Language/locallang_settings.xlf:setting.products.mcp.partialRootPaths'
     category: mcp
+  products.mcp.checkoutLinkLifetime:
+    type: int
+    default: 86400
+    label: 'LLL:EXT:products_mcp/Resources/Private/Language/locallang_settings.xlf:setting.products.mcp.checkoutLinkLifetime'
+    category: mcp

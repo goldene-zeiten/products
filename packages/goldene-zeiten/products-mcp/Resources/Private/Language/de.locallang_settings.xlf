@@ -27,6 +27,10 @@
 				<source>Partial root paths of the guides; a later path overrides an earlier one</source>
 				<target>Partial-Root-Pfade der Leitfäden; ein späterer Pfad überschreibt einen früheren</target>
 			</trans-unit>
+			<trans-unit id="setting.products.mcp.checkoutLinkLifetime" resname="setting.products.mcp.checkoutLinkLifetime">
+				<source>Seconds a checkout link and the basket behind it stay valid</source>
+				<target>Sekunden, die ein Checkout-Link und der Warenkorb dahinter gültig bleiben</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
