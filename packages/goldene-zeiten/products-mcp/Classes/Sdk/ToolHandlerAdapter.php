@@ -29,7 +29,7 @@ final readonly class ToolHandlerAdapter implements ToolHandlerInterface
         try {
             $result = $this->tool->execute($arguments, $this->context);
         } catch (ToolFailedException $exception) {
-            throw new ToolCallException($exception->getMessage(), 0, $exception);
+            throw new ToolCallException($exception->getMessage(), 1792710718, $exception);
         }
 
         return new CallToolResult([new TextContent($result)], structuredContent: $result);
