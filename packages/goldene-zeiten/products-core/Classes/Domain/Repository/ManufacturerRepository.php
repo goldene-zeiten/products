@@ -32,12 +32,19 @@ final class ManufacturerRepository extends AbstractReadOnlyRepository
      * without groups, every manufacturer with a visible product. Sorted by the brand name shown in the list,
      * following German collation.
      *
+     * The manufacturer records are read from the configured storage folder; a caller without the TypoScript
+     * of a rendered page names the folder in $storagePageIds.
+     *
      * @param int[][] $categoryGroups
+     * @param int[] $storagePageIds empty: the configured storage folder
      * @return list<Manufacturer>
      */
-    public function findWithProductsInCategories(array $categoryGroups): array
+    public function findWithProductsInCategories(array $categoryGroups, array $storagePageIds = []): array
     {
         $query = $this->createQuery();
+        if ($storagePageIds !== []) {
+            $query->getQuerySettings()->setStoragePageIds($storagePageIds);
+        }
         $uids = $this->manufacturerUids($categoryGroups) ?: [0];
         $query->matching($query->logicalOr($query->in('uid', $uids), $query->in('l10n_parent', $uids)));
         $manufacturers = $query->execute()->toArray();
