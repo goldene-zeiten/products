@@ -32,6 +32,17 @@ final class PaymentMethodRegistry
     }
 
     /**
+     * Every registered method, whether or not it would be offered for a given basket - for documentation of
+     * what the shop supports, not for offering a choice to a customer.
+     *
+     * @return array<PaymentMethodInterface>
+     */
+    public function getAll(): array
+    {
+        return array_values($this->paymentMethods);
+    }
+
+    /**
      * Discovery phase: the methods that may be offered for this context, highest priority first.
      *
      * @return array<PaymentMethodInterface>

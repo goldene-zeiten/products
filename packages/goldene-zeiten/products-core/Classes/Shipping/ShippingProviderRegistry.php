@@ -44,6 +44,17 @@ final class ShippingProviderRegistry
     }
 
     /**
+     * The identifiers of all registered carriers, highest priority first - for documentation of what the shop
+     * supports, since the options themselves depend on the basket and the destination.
+     *
+     * @return string[]
+     */
+    public function getIdentifiers(): array
+    {
+        return array_keys($this->providers);
+    }
+
+    /**
      * Discovery phase: every option a real carrier can serve for this basket, or - only when none can - the
      * options of the shop's own fallback carrier; the supplementary options follow either.
      *
