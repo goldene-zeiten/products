@@ -15,7 +15,6 @@ Requirements
 *   TYPO3 13.4 LTS or 14.3
 *   PHP 8.2, 8.3, 8.4 or 8.5
 *   EXT:products_core (``goldene-zeiten/products-core``) ^1.0
-*   Composer mode: the protocol layer is the Composer package ``mcp/sdk`` and its dependencies
 
 ..  _installation-composer:
 
@@ -31,3 +30,12 @@ Composer asks to allow the ``php-http/discovery`` plugin, a dependency of ``mcp/
 
 Then activate the :guilabel:`Products MCP` site set (``goldene-zeiten/products-mcp``) on the site that should
 serve the endpoint and enable the :confval:`products.mcp.enabled <products.mcp.enabled>` setting.
+
+..  _installation-classic:
+
+Installation without Composer
+=============================
+
+Download the extension from the TYPO3 Extension Repository (TER) and activate it in the extension manager,
+after EXT:products_core. The TER release bundles the protocol layer (``mcp/sdk`` and the libraries it needs
+beyond those TYPO3 ships), so nothing else has to be installed.

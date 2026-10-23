@@ -42,7 +42,9 @@
       "extension-key": "products_mcp",
       "version": "1.0.0",
       "Package": {
-        "providesPackages": {}
+        "providesPackages": {
+          "mcp/sdk": "Resources/Private/Php/ComposerVendor"
+        }
       }
     },
     "branch-alias": {
