@@ -17,4 +17,14 @@ $EM_CONF[$_EXTKEY] = [
         'conflicts' => [],
         'suggests' => [],
     ],
+    'autoload' => [
+        'psr-4' => [
+            'GoldeneZeiten\\Products\\Mcp\\' => 'Classes/',
+            'Mcp\\' => 'Resources/Private/Php/ComposerVendor/mcp/sdk/src/',
+            'Opis\\JsonSchema\\' => 'Resources/Private/Php/ComposerVendor/opis/json-schema/src/',
+            'Opis\\String\\' => 'Resources/Private/Php/ComposerVendor/opis/string/src/',
+            'Opis\\Uri\\' => 'Resources/Private/Php/ComposerVendor/opis/uri/src/',
+            'Http\\Discovery\\' => 'Resources/Private/Php/ComposerVendor/php-http/discovery/src/',
+        ],
+    ],
 ];

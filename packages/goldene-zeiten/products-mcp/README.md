@@ -25,6 +25,8 @@ for any order.
 composer require goldene-zeiten/products-mcp
 ```
 
+Without Composer, install the extension from the TER; the release bundles `mcp/sdk` and the libraries it needs.
+
 Add the "Products MCP" site set to your site and enable the `products.mcp.enabled` setting.
 
 ## Documentation
@@ -36,7 +38,6 @@ See `Documentation/` (rendered on the TYPO3 documentation site) for installation
 - TYPO3 13.4 LTS or 14.3 LTS
 - PHP 8.2 or newer
 - `goldene-zeiten/products-core`
-- Composer mode (the bundled-dependencies setup for classic installs is not available yet)
 
 ## License
 
